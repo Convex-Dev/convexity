@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -98,7 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            FlatButton(onPressed: () {  }, child: Text('Hello')),
+            FlatButton(onPressed: () {
+              var url = 'https://convex.world/api/v1/faucet';
+              Future<http.Response> req=http.get(url );
+              req.then((value) => _incrementCounter());
+            }, child: Text('Request')),
             Text(
               'You have pushed the button this many times:',
             ),
