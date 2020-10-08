@@ -67,3 +67,25 @@ Future<http.Response> account({
 
   return client.get(uri);
 }
+
+Future<http.Response> faucet({
+  http.Client client,
+  String scheme = 'https',
+  String host = CONVEX_WORLD_HOST,
+  int port = 443,
+  String address,
+  int amount,
+}) {
+  var uri = Uri(scheme: scheme, host: host, port: port, path: 'api/v1/faucet');
+
+  var body = convert.jsonEncode({
+    'address': address,
+    'amount': amount,
+  });
+
+  if (client == null) {
+    return http.post(uri, body: body);
+  }
+
+  return client.post(uri, body: body);
+}

@@ -32,6 +32,18 @@ Future<http.Response> _account({
       address: address,
     );
 
+Future<http.Response> _faucet({
+  String address,
+  int amount,
+}) =>
+    convex.faucet(
+      scheme: 'http',
+      host: '127.0.0.1',
+      port: 8080,
+      address: address,
+      amount: amount,
+    );
+
 void main() {
   group('Account', () {
     test('Details', () async {
@@ -113,6 +125,24 @@ void main() {
       expect(response.statusCode, 200);
       expect(
           convert.jsonDecode(response.body), {'value': '0x' + _HERO_ADDRESS});
+    });
+  });
+
+  test('Faucet', () async {
+    var response = await _faucet(
+      address: _HERO_ADDRESS,
+      amount: 1000,
+    );
+
+    expect(response.statusCode, 200);
+
+    Map body = convert.jsonDecode(response.body);
+
+    expect(body.keys.toSet(), {
+      'address',
+      'amount',
+      'id',
+      'value',
     });
   });
 }
