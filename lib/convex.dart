@@ -8,17 +8,7 @@ enum Lang {
   convexScript,
 }
 
-Future<http.Response> query({
-  http.Client client,
-  String scheme = 'https',
-  String host = convexWorldHost,
-  int port = 443,
-  String source,
-  String address,
-  Lang lang = Lang.convexLisp,
-}) {
-  var uri = Uri(scheme: scheme, host: host, port: port, path: 'api/v1/query');
-
+String langString(Lang lang) {
   var _lang;
 
   switch (lang) {
@@ -30,10 +20,24 @@ Future<http.Response> query({
       break;
   }
 
+  return _lang;
+}
+
+Future<http.Response> query({
+  http.Client client,
+  String scheme = 'https',
+  String host = convexWorldHost,
+  int port = 443,
+  String source,
+  String address,
+  Lang lang = Lang.convexLisp,
+}) {
+  var uri = Uri(scheme: scheme, host: host, port: port, path: 'api/v1/query');
+
   var body = convert.jsonEncode({
     'source': source,
     'address': address,
-    'lang': _lang,
+    'lang': langString(lang),
   });
 
   if (client == null) {
