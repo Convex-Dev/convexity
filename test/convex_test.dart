@@ -77,6 +77,20 @@ void main() {
       expect(
           convert.jsonDecode(response.body), {'value': '0x' + _HERO_ADDRESS});
     });
+
+    test('Error - UNDECLARED', () async {
+      var response = await _query(source: '(incc 1)');
+
+      expect(response.statusCode, 200);
+      expect(convert.jsonDecode(response.body)['error-code'], 'UNDECLARED');
+    });
+
+    test('Error - CAST', () async {
+      var response = await _query(source: '(map inc 1)');
+
+      expect(response.statusCode, 200);
+      expect(convert.jsonDecode(response.body)['error-code'], 'CAST');
+    });
   });
 
   group('Query - Convex Scrypt', () {
