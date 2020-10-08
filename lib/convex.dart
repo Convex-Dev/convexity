@@ -1,7 +1,7 @@
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 
-const convexWorldHost = 'convex.world';
+const CONVEX_WORLD_HOST = 'convex.world';
 
 enum Lang {
   convexLisp,
@@ -26,7 +26,7 @@ String langString(Lang lang) {
 Future<http.Response> query({
   http.Client client,
   String scheme = 'https',
-  String host = convexWorldHost,
+  String host = CONVEX_WORLD_HOST,
   int port = 443,
   String source,
   String address,
@@ -45,4 +45,25 @@ Future<http.Response> query({
   }
 
   return client.post(uri, body: body);
+}
+
+Future<http.Response> account({
+  http.Client client,
+  String scheme = 'https',
+  String host = CONVEX_WORLD_HOST,
+  int port = 443,
+  String address,
+}) {
+  var uri = Uri(
+    scheme: scheme,
+    host: host,
+    port: port,
+    path: 'api/v1/accounts/' + address,
+  );
+
+  if (client == null) {
+    return http.get(uri);
+  }
+
+  return client.get(uri);
 }
