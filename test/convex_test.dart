@@ -3,7 +3,7 @@ import 'dart:convert' as convert;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:convex_wallet/convex.dart' as convex;
+import '../lib/convex.dart' as convex;
 
 const _HERO_ADDRESS =
     '7E66429CA9c10e68eFae2dCBF1804f0F6B3369c7164a3187D6233683c258710f';
