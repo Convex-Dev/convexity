@@ -74,8 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
           (body) => setState(
             () {
               _account = Account(
-                address: body['address'],
+                address: Address(hex: body['address']),
                 balance: body['value'],
+                type: AccountType.user,
               );
 
               _keyPair = randomKeyPair;
@@ -137,17 +138,32 @@ class AccountDetails extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Text('ADDRESS'),
-        Text('${account.address}'),
+        Text('${account.address.hex}'),
         Text('BALANCE'),
         Text('${account.balance}'),
+        Text('TYPE'),
+        Text('${account.type.toString()}'),
       ],
     );
   }
 }
 
-class Account {
-  final String address;
-  final int balance;
+class Address {
+  final String hex;
 
-  Account({this.address, this.balance});
+  Address({this.hex});
+}
+
+enum AccountType {
+  user,
+  library,
+  actor,
+}
+
+class Account {
+  final Address address;
+  final int balance;
+  final AccountType type;
+
+  Account({this.address, this.balance, this.type});
 }
