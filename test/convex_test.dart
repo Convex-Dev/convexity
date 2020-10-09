@@ -1,6 +1,5 @@
 import 'dart:convert' as convert;
 
-import 'package:convex_wallet/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,7 +46,7 @@ Future<http.Response> _faucet({
 
 Future<http.Response> _prepareTransaction({
   String source,
-  Address address,
+  convex.Address address,
 }) =>
     convex.prepareTransaction(
       scheme: 'http',
@@ -157,7 +156,7 @@ void main() {
   group('Transaction', () {
     test('Prepare', () async {
       var response = await _prepareTransaction(
-        address: Address(hex: _HERO_ADDRESS),
+        address: convex.Address(hex: _HERO_ADDRESS),
         source: '(inc 1)',
       );
 

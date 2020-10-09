@@ -12,7 +12,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Account _account;
+  convex.Account _account;
   sodium.KeyPair _keyPair;
 
   void onCreateAccountClick() {
@@ -125,7 +124,7 @@ class WelcomeNoAccount extends StatelessWidget {
 class AccountDetails extends StatelessWidget {
   AccountDetails({Key key, this.account}) : super(key: key);
 
-  final Account account;
+  final convex.Account account;
 
   @override
   Widget build(BuildContext context) {
@@ -143,24 +142,4 @@ class AccountDetails extends StatelessWidget {
       ],
     );
   }
-}
-
-class Address {
-  final String hex;
-
-  Address({this.hex});
-}
-
-enum AccountType {
-  user,
-  library,
-  actor,
-}
-
-class Account {
-  final Address address;
-  final int balance;
-  final AccountType type;
-
-  Account({this.address, this.balance, this.type});
 }

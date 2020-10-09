@@ -5,15 +5,35 @@ import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
 const CONVEX_WORLD_HOST = 'convex.world';
 
-sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
-
-Uint8List sign(Uint8List hash, Uint8List secretKey) =>
-    sodium.CryptoSign.signDetached(hash, secretKey);
-
 enum Lang {
   convexLisp,
   convexScript,
 }
+
+class Address {
+  final String hex;
+
+  Address({this.hex});
+}
+
+enum AccountType {
+  user,
+  library,
+  actor,
+}
+
+class Account {
+  final Address address;
+  final int balance;
+  final AccountType type;
+
+  Account({this.address, this.balance, this.type});
+}
+
+sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
+
+Uint8List sign(Uint8List hash, Uint8List secretKey) =>
+    sodium.CryptoSign.signDetached(hash, secretKey);
 
 String langString(Lang lang) {
   var _lang;
