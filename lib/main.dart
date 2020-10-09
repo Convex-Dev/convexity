@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
 import 'dart:convert' as convert;
 
 import 'convex.dart' as convex;
 
 void main() {
+  sodium.Sodium.init();
+
   runApp(MyApp());
 }
 
@@ -39,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   Map _account;
+  sodium.KeyPair _keyPair;
 
   void _incrementCounter() {
     setState(() {
@@ -65,14 +68,39 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             FlatButton(
                 onPressed: () {
+                  var randomKeyPair = sodium.CryptoSign.randomKeys();
+
+                  var curve25519PK =
+                      sodium.Sodium.cryptoSignEd25519PkToCurve25519(
+                    randomKeyPair.pk,
+                  );
+
+                  var curve25519SK =
+                      sodium.Sodium.cryptoSignEd25519SkToCurve25519(
+                    randomKeyPair.sk,
+                  );
+
+                  print(
+                    'PK\nEd25519 ${sodium.Sodium.bin2hex(randomKeyPair.pk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519PK)}',
+                  );
+
+                  print(
+                    'SK\nEd25519${sodium.Sodium.bin2hex(randomKeyPair.sk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519SK)}',
+                  );
+
                   convex
                       .faucet(
-                        address:
-                            '7E66429CA9c10e68eFae2dCBF1804f0F6B3369c7164a3187D6233683c258711f',
+                        scheme: 'http',
+                        host: '127.0.0.1',
+                        port: 8080,
+                        address: sodium.Sodium.bin2hex(randomKeyPair.pk),
                         amount: 1000,
                       )
                       .then((value) => convert.jsonDecode(value.body))
-                      .then((body) => setState(() => _account = body));
+                      .then((body) => setState(() {
+                            _account = body;
+                            _keyPair = randomKeyPair;
+                          }));
                 },
                 child: Text('Create Account')),
             Text('$_account'),
