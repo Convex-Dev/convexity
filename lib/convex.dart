@@ -38,18 +38,14 @@ Uint8List sign(Uint8List hash, Uint8List secretKey) =>
     sodium.CryptoSign.signDetached(hash, secretKey);
 
 String langString(Lang lang) {
-  var _lang;
-
   switch (lang) {
     case Lang.convexLisp:
-      _lang = 'convex-lisp';
-      break;
+      return 'convex-lisp';
     case Lang.convexScript:
-      _lang = 'convex-scrypt';
-      break;
+      return 'convex-scrypt';
   }
 
-  return _lang;
+  return '';
 }
 
 Future<http.Response> query({
