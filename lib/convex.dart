@@ -8,7 +8,7 @@ const CONVEX_WORLD_HOST = 'convex.world';
 sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
 
 Uint8List sign(Uint8List hash, Uint8List secretKey) =>
-    sodium.CryptoSign.sign(hash, secretKey);
+    sodium.CryptoSign.signDetached(hash, secretKey);
 
 enum Lang {
   convexLisp,
@@ -160,8 +160,6 @@ Future<Result> transact({
 
   var sigBin = sign(hashBin, secretKey);
   var sigHex = sodium.Sodium.bin2hex(sigBin);
-
-  print('Transact - Hash $hashHex, Sig $sigHex');
 
   var submitResponse = await submitTransaction(
     client: client,

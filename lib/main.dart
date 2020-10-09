@@ -45,76 +45,41 @@ class _MyHomePageState extends State<MyHomePage> {
   void onCreateAccountClick() {
     var randomKeyPair = sodium.CryptoSign.randomKeys();
 
-    var curve25519PK = sodium.Sodium.cryptoSignEd25519PkToCurve25519(
-      randomKeyPair.pk,
-    );
-
-    var curve25519SK = sodium.Sodium.cryptoSignEd25519SkToCurve25519(
-      randomKeyPair.sk,
-    );
-
-    // print(
-    //   'PK\nEd25519 ${sodium.Sodium.bin2hex(randomKeyPair.pk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519PK)}',
-    // );
-
-    // print(
-    //   'SK\nEd25519 ${sodium.Sodium.bin2hex(randomKeyPair.sk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519SK)}',
-    // );
-
-    // convex
-    //     .prepareTransaction(
-    //       scheme: 'http',
-    //       host: '127.0.0.1',
-    //       port: 8080,
-    //       source: '(inc 1)',
-    //       address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-    //     )
-    //     .then((value) => convert.jsonDecode(value.body))
-    //     .then((body) => print('Prepare body $body'));
-
-    convex
-        .transact(
-          scheme: 'http',
-          host: '127.0.0.1',
-          port: 8080,
-          source: '(inc 1)',
-          address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-          secretKey: randomKeyPair.sk,
-        )
-        .then((result) => print(result))
-        .catchError((error) => print(error));
-
     convex
         .faucet(
           scheme: 'http',
           host: '127.0.0.1',
           port: 8080,
           address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-          amount: 1000,
+          amount: 1000000,
         )
         .then((value) => convert.jsonDecode(value.body))
         .then(
-          (body) => setState(
-            () {
-              // var signed = convex.sign(
-              //   sodium.Sodium.hex2bin(
-              //     'badb861fc51d49e0212c0304b1890da42e4a4b54228986be17de8d7dccd845e2',
-              //   ),
-              //   randomKeyPair.sk,
-              // );
+      (body) {
+        convex
+            .transact(
+              scheme: 'http',
+              host: '127.0.0.1',
+              port: 8080,
+              source: '(inc 1)',
+              address: sodium.Sodium.bin2hex(randomKeyPair.pk),
+              secretKey: randomKeyPair.sk,
+            )
+            .then((value) => print('Value: ${value.value}'));
 
-              // print('Sig ${sodium.Sodium.bin2hex(signed)}');
+        // setState(
+        //   () {
+        //     _account = Account(
+        //       address: Address(hex: body['address']),
+        //       balance: body['value'],
+        //       type: AccountType.user,
+        //     );
 
-              _account = Account(
-                address: Address(hex: body['address']),
-                balance: body['value'],
-                type: AccountType.user,
-              );
-
-              _keyPair = randomKeyPair;
-            },
-          ),
-        );
+        //     _keyPair = randomKeyPair;
+        //   },
+        // );
+      },
+    );
   }
 
   @override
