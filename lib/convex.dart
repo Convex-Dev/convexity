@@ -1,7 +1,14 @@
 import 'dart:convert' as convert;
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
 const CONVEX_WORLD_HOST = 'convex.world';
+
+sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
+
+Uint8List sign(Uint8List hash, Uint8List secretKey) =>
+    sodium.CryptoSign.sign(hash, secretKey);
 
 enum Lang {
   convexLisp,

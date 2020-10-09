@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     print(
-      'SK\nEd25519${sodium.Sodium.bin2hex(randomKeyPair.sk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519SK)}',
+      'SK\nEd25519 ${sodium.Sodium.bin2hex(randomKeyPair.sk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519SK)}',
     );
 
     convex
@@ -73,6 +73,15 @@ class _MyHomePageState extends State<MyHomePage> {
         .then(
           (body) => setState(
             () {
+              var signed = convex.sign(
+                sodium.Sodium.hex2bin(
+                  'badb861fc51d49e0212c0304b1890da42e4a4b54228986be17de8d7dccd845e2',
+                ),
+                randomKeyPair.sk,
+              );
+
+              print('Sig ${sodium.Sodium.bin2hex(signed)}');
+
               _account = Account(
                 address: Address(hex: body['address']),
                 balance: body['value'],

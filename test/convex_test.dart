@@ -45,6 +45,19 @@ Future<http.Response> _faucet({
     );
 
 void main() {
+  // test('Sign', () {
+  //   var randomKeyPair = convex.randomKeyPair();
+
+  //   var signed = convex.sign(
+  //     sodium.Sodium.hex2bin(
+  //       'badb861fc51d49e0212c0304b1890da42e4a4b54228986be17de8d7dccd845e2',
+  //     ),
+  //     randomKeyPair.sk,
+  //   );
+
+  //   expect(sodium.Sodium.bin2hex(signed), '');
+  // });
+
   group('Account', () {
     test('Details', () async {
       var response = await _account(address: _HERO_ADDRESS);
