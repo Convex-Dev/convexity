@@ -5,11 +5,11 @@ import 'package:http/http.dart' as http;
 
 import '../lib/convex.dart' as convex;
 
-const _HERO_ADDRESS =
+const _TEST_ADDRESS =
     '7E66429CA9c10e68eFae2dCBF1804f0F6B3369c7164a3187D6233683c258710f';
 
 Future<http.Response> _query({
-  String address = _HERO_ADDRESS,
+  String address = _TEST_ADDRESS,
   String source,
   convex.Lang lang = convex.Lang.convexLisp,
 }) =>
@@ -23,7 +23,7 @@ Future<http.Response> _query({
     );
 
 Future<http.Response> _account({
-  String address = _HERO_ADDRESS,
+  String address = _TEST_ADDRESS,
 }) =>
     convex.account(
       scheme: 'http',
@@ -72,7 +72,7 @@ void main() {
 
   group('Account', () {
     test('Details', () async {
-      var response = await _account(address: _HERO_ADDRESS);
+      var response = await _account(address: _TEST_ADDRESS);
 
       Map body = convert.jsonDecode(response.body);
 
@@ -112,7 +112,7 @@ void main() {
 
       expect(response.statusCode, 200);
       expect(
-          convert.jsonDecode(response.body), {'value': '0x' + _HERO_ADDRESS});
+          convert.jsonDecode(response.body), {'value': '0x' + _TEST_ADDRESS});
     });
 
     test('Error - UNDECLARED', () async {
@@ -149,14 +149,14 @@ void main() {
 
       expect(response.statusCode, 200);
       expect(
-          convert.jsonDecode(response.body), {'value': '0x' + _HERO_ADDRESS});
+          convert.jsonDecode(response.body), {'value': '0x' + _TEST_ADDRESS});
     });
   });
 
   group('Transaction', () {
     test('Prepare', () async {
       var response = await _prepareTransaction(
-        address: convex.Address(hex: _HERO_ADDRESS),
+        address: convex.Address(hex: _TEST_ADDRESS),
         source: '(inc 1)',
       );
 
@@ -175,7 +175,7 @@ void main() {
 
   test('Faucet', () async {
     var response = await _faucet(
-      address: _HERO_ADDRESS,
+      address: _TEST_ADDRESS,
       amount: 1000,
     );
 
