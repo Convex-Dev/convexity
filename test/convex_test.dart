@@ -1,5 +1,6 @@
 import 'dart:convert' as convert;
 
+import 'package:convex_wallet/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -42,6 +43,18 @@ Future<http.Response> _faucet({
       port: 8080,
       address: address,
       amount: amount,
+    );
+
+Future<http.Response> _prepareTransaction({
+  String source,
+  Address address,
+}) =>
+    convex.prepareTransaction(
+      scheme: 'http',
+      host: '127.0.0.1',
+      port: 8080,
+      source: source,
+      address: address.hex,
     );
 
 void main() {
@@ -138,6 +151,26 @@ void main() {
       expect(response.statusCode, 200);
       expect(
           convert.jsonDecode(response.body), {'value': '0x' + _HERO_ADDRESS});
+    });
+  });
+
+  group('Transaction', () {
+    test('Prepare', () async {
+      var response = await _prepareTransaction(
+        address: Address(hex: _HERO_ADDRESS),
+        source: '(inc 1)',
+      );
+
+      Map body = convert.jsonDecode(response.body);
+
+      expect(response.statusCode, 200);
+      expect(body.keys.toSet(), {
+        'sequence_number',
+        'address',
+        'source',
+        'lang',
+        'hash',
+      });
     });
   });
 
