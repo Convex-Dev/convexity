@@ -44,7 +44,32 @@ Future<http.Response> _faucet({
       amount: amount,
     );
 
+Future<http.Response> _prepareTransaction({
+  String source,
+  convex.Address address,
+}) =>
+    convex.prepareTransaction(
+      scheme: 'http',
+      host: '127.0.0.1',
+      port: 8080,
+      source: source,
+      address: address.hex,
+    );
+
 void main() {
+  // test('Sign', () {
+  //   var randomKeyPair = convex.randomKeyPair();
+
+  //   var signed = convex.sign(
+  //     sodium.Sodium.hex2bin(
+  //       'badb861fc51d49e0212c0304b1890da42e4a4b54228986be17de8d7dccd845e2',
+  //     ),
+  //     randomKeyPair.sk,
+  //   );
+
+  //   expect(sodium.Sodium.bin2hex(signed), '');
+  // });
+
   group('Account', () {
     test('Details', () async {
       var response = await _account(address: _HERO_ADDRESS);
@@ -125,6 +150,26 @@ void main() {
       expect(response.statusCode, 200);
       expect(
           convert.jsonDecode(response.body), {'value': '0x' + _HERO_ADDRESS});
+    });
+  });
+
+  group('Transaction', () {
+    test('Prepare', () async {
+      var response = await _prepareTransaction(
+        address: convex.Address(hex: _HERO_ADDRESS),
+        source: '(inc 1)',
+      );
+
+      Map body = convert.jsonDecode(response.body);
+
+      expect(response.statusCode, 200);
+      expect(body.keys.toSet(), {
+        'sequence_number',
+        'address',
+        'source',
+        'lang',
+        'hash',
+      });
     });
   });
 
