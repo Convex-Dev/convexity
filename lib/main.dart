@@ -39,19 +39,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  Map _account;
+  Account _account;
   sodium.KeyPair _keyPair;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void onCreateAccountClick() {
+    var randomKeyPair = sodium.CryptoSign.randomKeys();
+
+    var curve25519PK = sodium.Sodium.cryptoSignEd25519PkToCurve25519(
+      randomKeyPair.pk,
+    );
+
+    var curve25519SK = sodium.Sodium.cryptoSignEd25519SkToCurve25519(
+      randomKeyPair.sk,
+    );
+
+    print(
+      'PK\nEd25519 ${sodium.Sodium.bin2hex(randomKeyPair.pk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519PK)}',
+    );
+
+    print(
+      'SK\nEd25519${sodium.Sodium.bin2hex(randomKeyPair.sk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519SK)}',
+    );
+
+    convex
+        .faucet(
+          scheme: 'http',
+          host: '127.0.0.1',
+          port: 8080,
+          address: sodium.Sodium.bin2hex(randomKeyPair.pk),
+          amount: 1000,
+        )
+        .then((value) => convert.jsonDecode(value.body))
+        .then(
+          (body) => setState(
+            () {
+              _account = Account(
+                address: body['address'],
+                balance: body['value'],
+              );
+
+              _keyPair = randomKeyPair;
+            },
+          ),
+        );
   }
 
   @override
@@ -63,55 +93,61 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FlatButton(
-                onPressed: () {
-                  var randomKeyPair = sodium.CryptoSign.randomKeys();
-
-                  var curve25519PK =
-                      sodium.Sodium.cryptoSignEd25519PkToCurve25519(
-                    randomKeyPair.pk,
-                  );
-
-                  var curve25519SK =
-                      sodium.Sodium.cryptoSignEd25519SkToCurve25519(
-                    randomKeyPair.sk,
-                  );
-
-                  print(
-                    'PK\nEd25519 ${sodium.Sodium.bin2hex(randomKeyPair.pk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519PK)}',
-                  );
-
-                  print(
-                    'SK\nEd25519${sodium.Sodium.bin2hex(randomKeyPair.sk)}\nCurve25519 ${sodium.Sodium.bin2hex(curve25519SK)}',
-                  );
-
-                  convex
-                      .faucet(
-                        scheme: 'http',
-                        host: '127.0.0.1',
-                        port: 8080,
-                        address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-                        amount: 1000,
-                      )
-                      .then((value) => convert.jsonDecode(value.body))
-                      .then((body) => setState(() {
-                            _account = body;
-                            _keyPair = randomKeyPair;
-                          }));
-                },
-                child: Text('Create Account')),
-            Text('$_account'),
-          ],
-        ),
+        child: _account == null
+            ? WelcomeNoAccount(
+                onCreateAccountClick: onCreateAccountClick,
+              )
+            : AccountDetails(
+                account: _account,
+              ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+class WelcomeNoAccount extends StatelessWidget {
+  WelcomeNoAccount({Key key, this.onCreateAccountClick}) : super(key: key);
+
+  final Function onCreateAccountClick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ElevatedButton(
+          onPressed: onCreateAccountClick,
+          child: Text('CREATE ACCOUNT'),
+        ),
+      ],
+    );
+  }
+}
+
+class AccountDetails extends StatelessWidget {
+  AccountDetails({Key key, this.account}) : super(key: key);
+
+  final Account account;
+
+  @override
+  Widget build(BuildContext context) {
+    print(account);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Text('ADDRESS'),
+        Text('${account.address}'),
+        Text('BALANCE'),
+        Text('${account.balance}'),
+      ],
+    );
+  }
+}
+
+class Account {
+  final String address;
+  final int balance;
+
+  Account({this.address, this.balance});
 }
