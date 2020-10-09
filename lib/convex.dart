@@ -5,6 +5,8 @@ import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
 const CONVEX_WORLD_HOST = 'convex.world';
 
+// -- Types
+
 enum Lang {
   convexLisp,
   convexScript,
