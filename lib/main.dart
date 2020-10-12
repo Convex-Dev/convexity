@@ -4,6 +4,7 @@ import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'dart:convert' as convert;
 
 import 'convex.dart' as convex;
+import 'nav.dart' as nav;
 
 void main() {
   sodium.Sodium.init();
@@ -86,10 +87,44 @@ class _WalletState extends State<Wallet> {
           (keyPair) => Card(
             child: ListTile(
               title: Text(sodium.Sodium.bin2hex(keyPair.pk)),
+              onTap: () => nav.push(
+                context,
+                (context) => AccountDetailsScreen(
+                  address: convex.Address(
+                    hex: sodium.Sodium.bin2hex(keyPair.pk),
+                  ),
+                ),
+              ),
             ),
           ),
         )
       ],
+    );
+  }
+}
+
+class AccountDetailsScreen extends StatelessWidget {
+  AccountDetailsScreen({
+    this.address,
+  }) {
+    assert(address != null);
+  }
+
+  final convex.Address address;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Account Details'),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Text('Address'),
+          Text(address.hex),
+        ],
+      ),
     );
   }
 }
