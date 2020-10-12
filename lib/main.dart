@@ -73,9 +73,7 @@ class _WalletState extends State<Wallet> {
 
                   Scaffold.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        sodium.Sodium.bin2hex(randomKeyPair.pk),
-                      ),
+                      content: Text('Your new account is ready.'),
                     ),
                   );
                 }
