@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
+import 'package:http/http.dart';
 
 import 'dart:convert' as convert;
 
@@ -107,27 +108,83 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 }
 
 class AccountDetailsScreen extends StatelessWidget {
+  final convex.Address address;
+
   AccountDetailsScreen({
     this.address,
   }) {
     assert(address != null);
   }
 
-  final convex.Address address;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Account Details'),
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Text('Address'),
-          Text(address.hex),
-        ],
-      ),
+      appBar: AppBar(title: Text('Account Details')),
+      body: AccountDetailsScreenBody(address: address),
     );
   }
+}
+
+class AccountDetailsScreenBody extends StatefulWidget {
+  final convex.Address address;
+
+  const AccountDetailsScreenBody({Key key, this.address}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() =>
+      _AccountDetailsScreenBodyState(address);
+}
+
+class _AccountDetailsScreenBodyState extends State<AccountDetailsScreenBody> {
+  final convex.Address address;
+
+  Future<Response> response;
+
+  _AccountDetailsScreenBodyState(this.address);
+
+  @override
+  void initState() {
+    super.initState();
+
+    response = convex.account(
+      scheme: 'http',
+      host: '127.0.0.1',
+      port: 8080,
+      address: address,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+        future: response,
+        // ignore: missing_return
+        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
+          var progressIndicator = Center(child: CircularProgressIndicator());
+
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return progressIndicator;
+            case ConnectionState.waiting:
+              return progressIndicator;
+            case ConnectionState.active:
+              return progressIndicator;
+            case ConnectionState.done:
+              var body = convert.jsonDecode(snapshot.data.body);
+              return Column(
+                children: [
+                  Text('Address'),
+                  Text(body['address']),
+                  Text('Type'),
+                  Text(body['type']),
+                  Text('Balance'),
+                  Text(body['balance'].toString()),
+                  Text('Memory Size'),
+                  Text(body['memory_size'].toString()),
+                  Text('Memory Allowance'),
+                  Text(body['allowance'].toString()),
+                ],
+              );
+          }
+        },
+      );
 }

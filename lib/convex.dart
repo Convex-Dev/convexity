@@ -207,13 +207,13 @@ Future<http.Response> account({
   String scheme = 'https',
   String host = CONVEX_WORLD_HOST,
   int port = 443,
-  String address,
+  Address address,
 }) {
   var uri = Uri(
     scheme: scheme,
     host: host,
     port: port,
-    path: 'api/v1/accounts/' + address,
+    path: 'api/v1/accounts/' + address.hex,
   );
 
   if (client == null) {

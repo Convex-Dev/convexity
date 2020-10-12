@@ -29,7 +29,7 @@ Future<http.Response> _account({
       scheme: 'http',
       host: '127.0.0.1',
       port: 8080,
-      address: address,
+      address: convex.Address(hex: address),
     );
 
 Future<http.Response> _faucet({
