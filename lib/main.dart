@@ -82,29 +82,13 @@ class _WalletState extends State<Wallet> {
             );
           },
         ),
-        ...keyPairs.map((keyPair) => WalletEntry(keyPair: keyPair))
-      ],
-    );
-  }
-}
-
-class WalletEntry extends StatelessWidget {
-  WalletEntry({
-    Key key,
-    this.keyPair,
-    this.onClick,
-  }) : super(key: key);
-
-  final sodium.KeyPair keyPair;
-  final Function onClick;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Text('Public Key'),
-        Text('${sodium.Sodium.bin2hex(keyPair.pk)}'),
+        ...keyPairs.map(
+          (keyPair) => Card(
+            child: ListTile(
+              title: Text(sodium.Sodium.bin2hex(keyPair.pk)),
+            ),
+          ),
+        )
       ],
     );
   }
