@@ -8,10 +8,10 @@ import 'convex.dart' as convex;
 void main() {
   sodium.Sodium.init();
 
-  runApp(MyApp());
+  runApp(Root());
 }
 
-class MyApp extends StatelessWidget {
+class Root extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,65 +23,67 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Convex Wallet'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  List<sodium.KeyPair> _wallet = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(8),
-          children: [
-            ElevatedButton(
-              onPressed: createAccount,
-              child: Text('CREATE ACCOUNT'),
-            ),
-            ..._wallet.map(
-              (keyPair) => WalletEntry(keyPair: keyPair),
-            )
-          ],
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Convex Wallet'),
+        ),
+        body: Center(
+          child: Wallet(),
         ),
       ),
     );
   }
+}
 
-  void createAccount() {
-    var randomKeyPair = sodium.CryptoSign.randomKeys();
+class Wallet extends StatefulWidget {
+  Wallet({Key key}) : super(key: key);
 
-    convex
-        .faucet(
-      scheme: 'http',
-      host: '127.0.0.1',
-      port: 8080,
-      address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-      amount: 1000000,
-    )
-        .then(
-      (response) {
-        if (response.statusCode == 200) {
-          setState(
-            () => _wallet.add(randomKeyPair),
-          );
-        }
-      },
+  @override
+  _WalletState createState() => _WalletState();
+}
+
+class _WalletState extends State<Wallet> {
+  final List<sodium.KeyPair> keyPairs = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(8),
+      children: [
+        ElevatedButton(
+          child: Text('CREATE ACCOUNT'),
+          onPressed: () {
+            var randomKeyPair = sodium.CryptoSign.randomKeys();
+
+            convex
+                .faucet(
+              scheme: 'http',
+              host: '127.0.0.1',
+              port: 8080,
+              address: sodium.Sodium.bin2hex(randomKeyPair.pk),
+              amount: 1000000,
+            )
+                .then(
+              (response) {
+                if (response.statusCode == 200) {
+                  setState(() {
+                    keyPairs.add(randomKeyPair);
+                  });
+
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        sodium.Sodium.bin2hex(randomKeyPair.pk),
+                      ),
+                    ),
+                  );
+                }
+              },
+            );
+          },
+        ),
+        ...keyPairs.map((keyPair) => WalletEntry(keyPair: keyPair))
+      ],
     );
   }
 }
