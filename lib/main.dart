@@ -38,48 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  convex.Account _account;
-  sodium.KeyPair _keyPair;
-
-  void onCreateAccountClick() {
-    var randomKeyPair = sodium.CryptoSign.randomKeys();
-
-    convex
-        .faucet(
-          scheme: 'http',
-          host: '127.0.0.1',
-          port: 8080,
-          address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-          amount: 1000000,
-        )
-        .then((value) => convert.jsonDecode(value.body))
-        .then(
-      (body) {
-        convex
-            .transact(
-              scheme: 'http',
-              host: '127.0.0.1',
-              port: 8080,
-              source: '(inc 1)',
-              address: sodium.Sodium.bin2hex(randomKeyPair.pk),
-              secretKey: randomKeyPair.sk,
-            )
-            .then((value) => print('Value: ${value.value}'));
-
-        // setState(
-        //   () {
-        //     _account = Account(
-        //       address: Address(hex: body['address']),
-        //       balance: body['value'],
-        //       type: AccountType.user,
-        //     );
-
-        //     _keyPair = randomKeyPair;
-        //   },
-        // );
-      },
-    );
-  }
+  List<sodium.KeyPair> _wallet = [];
 
   @override
   Widget build(BuildContext context) {
@@ -88,57 +47,62 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: _account == null
-            ? WelcomeNoAccount(
-                onCreateAccountClick: onCreateAccountClick,
-              )
-            : AccountDetails(
-                account: _account,
-              ),
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: [
+            ElevatedButton(
+              onPressed: createAccount,
+              child: Text('CREATE ACCOUNT'),
+            ),
+            ..._wallet.map(
+              (keyPair) => WalletEntry(keyPair: keyPair),
+            )
+          ],
+        ),
       ),
     );
   }
-}
 
-class WelcomeNoAccount extends StatelessWidget {
-  WelcomeNoAccount({Key key, this.onCreateAccountClick}) : super(key: key);
+  void createAccount() {
+    var randomKeyPair = sodium.CryptoSign.randomKeys();
 
-  final Function onCreateAccountClick;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ElevatedButton(
-          onPressed: onCreateAccountClick,
-          child: Text('CREATE ACCOUNT'),
-        ),
-      ],
+    convex
+        .faucet(
+      scheme: 'http',
+      host: '127.0.0.1',
+      port: 8080,
+      address: sodium.Sodium.bin2hex(randomKeyPair.pk),
+      amount: 1000000,
+    )
+        .then(
+      (response) {
+        if (response.statusCode == 200) {
+          setState(
+            () => _wallet.add(randomKeyPair),
+          );
+        }
+      },
     );
   }
 }
 
-class AccountDetails extends StatelessWidget {
-  AccountDetails({Key key, this.account}) : super(key: key);
+class WalletEntry extends StatelessWidget {
+  WalletEntry({
+    Key key,
+    this.keyPair,
+    this.onClick,
+  }) : super(key: key);
 
-  final convex.Account account;
+  final sodium.KeyPair keyPair;
+  final Function onClick;
 
   @override
   Widget build(BuildContext context) {
-    print(account);
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Text('ADDRESS'),
-        Text('${account.address.hex}'),
-        Text('BALANCE'),
-        Text('${account.balance}'),
-        Text('TYPE'),
-        Text('${account.type.toString()}'),
+        Text('Public Key'),
+        Text('${sodium.Sodium.bin2hex(keyPair.pk)}'),
       ],
     );
   }
