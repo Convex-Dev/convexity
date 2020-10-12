@@ -169,19 +169,20 @@ class _AccountDetailsScreenBodyState extends State<AccountDetailsScreenBody> {
             case ConnectionState.active:
               return progressIndicator;
             case ConnectionState.done:
-              var body = convert.jsonDecode(snapshot.data.body);
+              var account = convex.Account.fromJson(snapshot.data.body);
+
               return Column(
                 children: [
                   Text('Address'),
-                  Text(body['address']),
+                  Text(account.address.hex),
                   Text('Type'),
-                  Text(body['type']),
+                  Text(account.type.toString()),
                   Text('Balance'),
-                  Text(body['balance'].toString()),
+                  Text(account.balance.toString()),
                   Text('Memory Size'),
-                  Text(body['memory_size'].toString()),
+                  Text(account.memorySize.toString()),
                   Text('Memory Allowance'),
-                  Text(body['allowance'].toString()),
+                  Text(account.memoryAllowance.toString()),
                 ],
               );
           }

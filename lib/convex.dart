@@ -26,10 +26,30 @@ enum AccountType {
 
 class Account {
   final Address address;
-  final int balance;
   final AccountType type;
+  final int balance;
+  final int memorySize;
+  final int memoryAllowance;
 
-  Account({this.address, this.balance, this.type});
+  Account({
+    this.address,
+    this.balance,
+    this.type,
+    this.memorySize,
+    this.memoryAllowance,
+  });
+
+  static Account fromJson(String json) {
+    var m = convert.jsonDecode(json);
+
+    return Account(
+      address: Address(hex: m['address']),
+      balance: m['balance'],
+      type: AccountType.user,
+      memorySize: m['memory_size'],
+      memoryAllowance: m['allowance'],
+    );
+  }
 }
 
 sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
