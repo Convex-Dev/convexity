@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:http/http.dart';
 
-import 'dart:convert' as convert;
-
 import 'convex.dart' as convex;
 import 'nav.dart' as nav;
 
