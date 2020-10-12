@@ -24,26 +24,31 @@ class Root extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Convex Wallet'),
-        ),
-        body: Center(
-          child: Wallet(),
-        ),
-      ),
+      home: WalletScreen(),
     );
   }
 }
 
-class Wallet extends StatefulWidget {
-  Wallet({Key key}) : super(key: key);
-
+class WalletScreen extends StatelessWidget {
   @override
-  _WalletState createState() => _WalletState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Convex Wallet'),
+      ),
+      body: WalletScreenBody(),
+    );
+  }
 }
 
-class _WalletState extends State<Wallet> {
+class WalletScreenBody extends StatefulWidget {
+  WalletScreenBody({Key key}) : super(key: key);
+
+  @override
+  _WalletScreenBodyState createState() => _WalletScreenBodyState();
+}
+
+class _WalletScreenBodyState extends State<WalletScreenBody> {
   final List<sodium.KeyPair> keyPairs = [];
 
   @override
