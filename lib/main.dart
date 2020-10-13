@@ -88,7 +88,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                 width: 64,
               ),
               title: Text(
-                sodium.Sodium.bin2hex(keyPair.pk),
+                convex.prefix0x(sodium.Sodium.bin2hex(keyPair.pk)),
                 overflow: TextOverflow.ellipsis,
               ),
               onTap: () => nav.push(

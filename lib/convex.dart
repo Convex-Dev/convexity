@@ -54,6 +54,8 @@ class Account {
   }
 }
 
+String prefix0x(String s) => '0x$s';
+
 sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
 
 Uint8List sign(Uint8List hash, Uint8List secretKey) =>
