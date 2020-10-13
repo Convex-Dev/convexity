@@ -2,20 +2,26 @@ PODS:
   - Flutter (1.0.0)
   - flutter_sodium (0.0.1):
     - Flutter
+  - shared_preferences (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_sodium (from `.symlinks/plugins/flutter_sodium/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_sodium:
     :path: ".symlinks/plugins/flutter_sodium/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_sodium: c84426b4de738514b5b66cfdeb8a06634e72fe0b
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 

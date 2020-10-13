@@ -5,6 +5,7 @@ import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'convex.dart' as convex;
+import 'wallet.dart' as wallet;
 import 'nav.dart' as nav;
 
 void main() {
@@ -36,6 +37,14 @@ class WalletScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Convex Wallet'),
+        actions: [
+          IconButton(
+              icon: SvgPicture.string(
+                Jdenticon.toSvg('ABC'),
+                fit: BoxFit.contain,
+              ),
+              onPressed: () {})
+        ],
       ),
       body: WalletScreenBody(),
     );
@@ -54,6 +63,10 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    wallet.read().then((wallet) {
+      print('Wallet $wallet');
+    });
+
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
@@ -70,6 +83,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                 .then(
               (response) {
                 if (response.statusCode == 200) {
+                  wallet.addKeyPair(randomKeyPair);
+
                   setState(() {
                     keyPairs.add(randomKeyPair);
                   });
