@@ -14,9 +14,6 @@ Future<http.Response> _query({
   convex.Lang lang = convex.Lang.convexLisp,
 }) =>
     convex.query(
-      scheme: 'http',
-      host: '127.0.0.1',
-      port: 8080,
       source: source,
       lang: lang,
       address: address,
@@ -26,9 +23,6 @@ Future<http.Response> _account({
   String address = _TEST_ADDRESS,
 }) =>
     convex.getAccount(
-      scheme: 'http',
-      host: '127.0.0.1',
-      port: 8080,
       address: convex.Address(hex: address),
     );
 
@@ -37,9 +31,6 @@ Future<http.Response> _faucet({
   int amount,
 }) =>
     convex.faucet(
-      scheme: 'http',
-      host: '127.0.0.1',
-      port: 8080,
       address: address,
       amount: amount,
     );
@@ -49,9 +40,6 @@ Future<http.Response> _prepareTransaction({
   convex.Address address,
 }) =>
     convex.prepareTransaction(
-      scheme: 'http',
-      host: '127.0.0.1',
-      port: 8080,
       source: source,
       address: address.hex,
     );
