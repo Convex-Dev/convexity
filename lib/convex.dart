@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
+import 'config.dart' as config;
+
 const CONVEX_WORLD_HOST = 'convex.world';
 
 // -- Types
@@ -222,17 +224,19 @@ Future<Result> transact({
   );
 }
 
-Future<http.Response> account({
+Future<http.Response> getAccount({
   http.Client client,
-  String scheme = 'https',
-  String host = CONVEX_WORLD_HOST,
-  int port = 443,
+  String scheme,
+  String host,
+  int port,
   Address address,
 }) {
+  var u = config.convexServerUri();
+
   var uri = Uri(
-    scheme: scheme,
-    host: host,
-    port: port,
+    scheme: scheme ?? u.scheme,
+    host: host ?? u.host,
+    port: port ?? u.port,
     path: 'api/v1/accounts/' + address.hex,
   );
 
@@ -245,13 +249,19 @@ Future<http.Response> account({
 
 Future<http.Response> faucet({
   http.Client client,
-  String scheme = 'https',
-  String host = CONVEX_WORLD_HOST,
-  int port = 443,
+  String scheme,
+  String host,
+  int port,
   String address,
   int amount,
 }) {
-  var uri = Uri(scheme: scheme, host: host, port: port, path: 'api/v1/faucet');
+  var u = config.convexServerUri();
+
+  var uri = Uri(
+      scheme: scheme ?? u.scheme,
+      host: host ?? u.host,
+      port: port ?? u.port,
+      path: 'api/v1/faucet');
 
   var body = convert.jsonEncode({
     'address': address,

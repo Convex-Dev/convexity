@@ -62,9 +62,6 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
             convex
                 .faucet(
-              scheme: 'http',
-              host: '127.0.0.1',
-              port: 8080,
               address: sodium.Sodium.bin2hex(randomKeyPair.pk),
               amount: 1000000,
             )
@@ -144,12 +141,7 @@ class _AccountDetailsScreenBodyState extends State<AccountDetailsScreenBody> {
   void initState() {
     super.initState();
 
-    response = convex.account(
-      scheme: 'http',
-      host: '127.0.0.1',
-      port: 8080,
-      address: address,
-    );
+    response = convex.getAccount(address: address);
   }
 
   @override
