@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:http/http.dart';
+import 'package:jdenticon_dart/jdenticon_dart.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'convex.dart' as convex;
 import 'nav.dart' as nav;
@@ -85,6 +87,12 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         ...keyPairs.map(
           (keyPair) => Card(
             child: ListTile(
+              leading: SvgPicture.string(
+                Jdenticon.toSvg(sodium.Sodium.bin2hex(keyPair.pk)),
+                fit: BoxFit.contain,
+                height: 64,
+                width: 64,
+              ),
               title: Text(sodium.Sodium.bin2hex(keyPair.pk)),
               onTap: () => nav.push(
                 context,
