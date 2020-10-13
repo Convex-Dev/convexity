@@ -73,12 +73,6 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                   setState(() {
                     keyPairs.add(randomKeyPair);
                   });
-
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Your new account is ready.'),
-                    ),
-                  );
                 }
               },
             );
