@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../convex.dart' as convex;
 import '../wallet.dart' as wallet;
-import '../route.dart' as route;
+import '../nav.dart' as nav;
 
 class WalletScreen extends StatelessWidget {
   @override
@@ -71,10 +71,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                 convex.prefix0x(sodium.Sodium.bin2hex(keyPair.pk)),
                 overflow: TextOverflow.ellipsis,
               ),
-              onTap: () => Navigator.pushNamed(
+              onTap: () => nav.account(
                 context,
-                route.account,
-                arguments: convex.Address(
+                convex.Address(
                   hex: sodium.Sodium.bin2hex(keyPair.pk),
                 ),
               ),

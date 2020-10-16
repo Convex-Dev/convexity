@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-void push(BuildContext context, Widget Function(BuildContext) builder) =>
-    Navigator.push(context, MaterialPageRoute(builder: builder));
+import 'convex.dart' as convex;
+import 'route.dart' as route;
+
+void account(BuildContext context, convex.Address address) =>
+    Navigator.pushNamed(
+      context,
+      route.account,
+      arguments: address,
+    );

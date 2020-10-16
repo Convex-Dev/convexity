@@ -10,21 +10,21 @@ class AccountScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Account Details')),
-      body: AccountScreenBody(address: address),
+      body: _AccountScreenBody(address: address),
     );
   }
 }
 
-class AccountScreenBody extends StatefulWidget {
+class _AccountScreenBody extends StatefulWidget {
   final convex.Address address;
 
-  const AccountScreenBody({Key key, this.address}) : super(key: key);
+  const _AccountScreenBody({Key key, this.address}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AccountScreenBodyState(address);
 }
 
-class _AccountScreenBodyState extends State<AccountScreenBody> {
+class _AccountScreenBodyState extends State<_AccountScreenBody> {
   final convex.Address address;
 
   Future<Response> response;
