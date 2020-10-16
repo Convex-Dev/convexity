@@ -1,7 +1,8 @@
+import 'package:convex_wallet/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
-import 'screen/home.dart';
+import 'route.dart';
 
 void main() {
   sodium.Sodium.init();
@@ -21,7 +22,7 @@ class App extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      routes: routes(),
     );
   }
 }

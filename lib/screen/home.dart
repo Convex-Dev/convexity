@@ -3,6 +3,7 @@ import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 
+import '../route.dart' as route;
 import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
 import './wallet.dart';
@@ -56,21 +57,11 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
               title: Text('Wallet'),
               onTap: () {
                 Navigator.pop(context);
 
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WalletScreen(),
-                    ));
+                Navigator.pushNamed(context, route.wallet);
               },
             ),
           ],
