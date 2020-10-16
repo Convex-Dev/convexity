@@ -5,7 +5,7 @@ import 'package:jdenticon_dart/jdenticon_dart.dart';
 
 import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
-import '../main.dart';
+import './wallet.dart';
 
 Widget _identicon() => FutureBuilder(
       future: wallet.active(),
