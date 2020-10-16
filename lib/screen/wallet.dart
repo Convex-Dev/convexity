@@ -30,6 +30,13 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
   final List<sodium.KeyPair> keyPairs = [];
 
   @override
+  void initState() {
+    super.initState();
+
+    wallet.keyPairs().then((value) => setState(() => keyPairs.addAll(value)));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(8),
