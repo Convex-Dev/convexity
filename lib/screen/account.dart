@@ -3,40 +3,33 @@ import 'package:http/http.dart';
 
 import '../convex.dart' as convex;
 
-class AccountDetailsScreen extends StatelessWidget {
-  final convex.Address address;
-
-  AccountDetailsScreen({
-    this.address,
-  }) {
-    assert(address != null);
-  }
-
+class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final convex.Address address = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(title: Text('Account Details')),
-      body: AccountDetailsScreenBody(address: address),
+      body: AccountScreenBody(address: address),
     );
   }
 }
 
-class AccountDetailsScreenBody extends StatefulWidget {
+class AccountScreenBody extends StatefulWidget {
   final convex.Address address;
 
-  const AccountDetailsScreenBody({Key key, this.address}) : super(key: key);
+  const AccountScreenBody({Key key, this.address}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-      _AccountDetailsScreenBodyState(address);
+  State<StatefulWidget> createState() => _AccountScreenBodyState(address);
 }
 
-class _AccountDetailsScreenBodyState extends State<AccountDetailsScreenBody> {
+class _AccountScreenBodyState extends State<AccountScreenBody> {
   final convex.Address address;
 
   Future<Response> response;
 
-  _AccountDetailsScreenBodyState(this.address);
+  _AccountScreenBodyState(this.address);
 
   @override
   void initState() {

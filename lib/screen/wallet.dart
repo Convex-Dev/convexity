@@ -5,8 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../convex.dart' as convex;
 import '../wallet.dart' as wallet;
-import '../nav.dart' as nav;
-import './account.dart';
+import '../route.dart' as route;
 
 class WalletScreen extends StatelessWidget {
   @override
@@ -14,14 +13,6 @@ class WalletScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Convex Wallet'),
-        actions: [
-          IconButton(
-              icon: SvgPicture.string(
-                Jdenticon.toSvg('ABC'),
-                fit: BoxFit.contain,
-              ),
-              onPressed: () {})
-        ],
       ),
       body: WalletScreenBody(),
     );
@@ -80,12 +71,11 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                 convex.prefix0x(sodium.Sodium.bin2hex(keyPair.pk)),
                 overflow: TextOverflow.ellipsis,
               ),
-              onTap: () => nav.push(
+              onTap: () => Navigator.pushNamed(
                 context,
-                (context) => AccountDetailsScreen(
-                  address: convex.Address(
-                    hex: sodium.Sodium.bin2hex(keyPair.pk),
-                  ),
+                route.account,
+                arguments: convex.Address(
+                  hex: sodium.Sodium.bin2hex(keyPair.pk),
                 ),
               ),
             ),
