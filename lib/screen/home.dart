@@ -5,6 +5,7 @@ import 'package:jdenticon_dart/jdenticon_dart.dart';
 
 import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
+import '../main.dart';
 
 Widget _identicon() => FutureBuilder(
       future: wallet.active(),
@@ -43,6 +44,37 @@ class HomeScreen extends StatelessWidget {
         actions: [
           if (identicon != null) identicon,
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              child: Text('Convexity'),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Wallet'),
+              onTap: () {
+                Navigator.pop(context);
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WalletScreen(),
+                    ));
+              },
+            ),
+          ],
+        ),
       ),
       body: HomeScreenBody(),
     );
