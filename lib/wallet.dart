@@ -1,26 +1,26 @@
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const _walletPreferencesKey = 'wallet';
+
 void addKeyPair(KeyPair keyPair) {
   SharedPreferences.getInstance().then((preferences) {
-    var k = 'wallet';
+    List<String> wallet =
+        preferences.getStringList(_walletPreferencesKey) ?? [];
 
-    List<String> wallet = preferences.getStringList(k) ?? [];
-
+    // Wallet is encoded as a list of public key ';' private key string.
     wallet.add(
       '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}',
     );
 
-    preferences.setStringList(k, wallet);
+    preferences.setStringList(_walletPreferencesKey, wallet);
   });
 }
 
 Future<List<KeyPair>> read() async {
   var preferences = await SharedPreferences.getInstance();
 
-  var k = 'wallet';
-
-  List<String> wallet = preferences.getStringList(k) ?? [];
+  List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
 
   return wallet.map((s) {
     var keys = s.split(';');

@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'convex.dart' as convex;
 import 'wallet.dart' as wallet;
 import 'nav.dart' as nav;
+import 'screen/home.dart';
 
 void main() {
   sodium.Sodium.init();
@@ -26,7 +27,7 @@ class Root extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: WalletScreen(),
+      home: HomeScreen(),
     );
   }
 }
@@ -63,10 +64,6 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    wallet.read().then((wallet) {
-      print('Wallet $wallet');
-    });
-
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
