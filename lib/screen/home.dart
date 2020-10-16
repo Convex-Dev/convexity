@@ -4,25 +4,28 @@ import 'package:flutter_svg/svg.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 
 import '../wallet.dart' as wallet;
+import '../convex.dart' as convex;
 
 Widget _identicon() => FutureBuilder(
-      future: wallet.read(),
+      future: wallet.active(),
       builder: (
         BuildContext context,
-        AsyncSnapshot<List<KeyPair>> snapshot,
+        AsyncSnapshot<KeyPair> snapshot,
       ) {
         if (snapshot.connectionState == ConnectionState.done) {
-          var keyPair = snapshot.data.first;
+          var keyPair = snapshot.data;
 
-          return IconButton(
-            icon: SvgPicture.string(
-              Jdenticon.toSvg(
-                Sodium.bin2hex(keyPair.pk),
+          if (keyPair != null) {
+            return IconButton(
+              icon: SvgPicture.string(
+                Jdenticon.toSvg(
+                  Sodium.bin2hex(keyPair.pk),
+                ),
+                fit: BoxFit.contain,
               ),
-              fit: BoxFit.contain,
-            ),
-            onPressed: () {},
-          );
+              onPressed: () {},
+            );
+          }
         }
 
         return Center(child: CircularProgressIndicator());
@@ -32,11 +35,13 @@ Widget _identicon() => FutureBuilder(
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var identicon = _identicon();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Convexity'),
         actions: [
-          _identicon(),
+          if (identicon != null) identicon,
         ],
       ),
       body: HomeScreenBody(),
@@ -54,15 +59,46 @@ class HomeScreenBody extends StatefulWidget {
 class _HomeScreenBodyState extends State<HomeScreenBody> {
   @override
   Widget build(BuildContext context) => FutureBuilder(
-        future: wallet.read(),
+        future: wallet.active(),
         builder: (
           BuildContext context,
-          AsyncSnapshot<List<KeyPair>> snapshot,
+          AsyncSnapshot<KeyPair> snapshot,
         ) {
           if (snapshot.connectionState == ConnectionState.done) {
+            var keyPair = snapshot.data;
+
             return Column(
               children: [
-                Text(Sodium.bin2hex(snapshot.data.first.pk)),
+                if (keyPair == null)
+                  ElevatedButton(
+                    child: Text('CREATE ACCOUNT'),
+                    onPressed: () {
+                      var randomKeyPair = CryptoSign.randomKeys();
+
+                      convex
+                          .faucet(
+                        address: Sodium.bin2hex(randomKeyPair.pk),
+                        amount: 1000000,
+                      )
+                          .then(
+                        (response) {
+                          if (response.statusCode == 200) {
+                            wallet.addKeyPair(randomKeyPair);
+                            wallet.select(randomKeyPair);
+                          }
+                        },
+                      );
+                    },
+                  )
+                else ...[
+                  SvgPicture.string(
+                    Jdenticon.toSvg(
+                      Sodium.bin2hex(keyPair.pk),
+                    ),
+                    fit: BoxFit.contain,
+                  ),
+                  Text(Sodium.bin2hex(keyPair.pk)),
+                ],
               ],
             );
           }

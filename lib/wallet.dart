@@ -2,32 +2,52 @@ import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _walletPreferencesKey = 'wallet';
+const _activeKeyPair = 'activeKeyPair';
 
-void addKeyPair(KeyPair keyPair) {
-  SharedPreferences.getInstance().then((preferences) {
-    List<String> wallet =
-        preferences.getStringList(_walletPreferencesKey) ?? [];
+String encodeKeyPair(KeyPair keyPair) =>
+    '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
 
-    // Wallet is encoded as a list of public key ';' private key string.
-    wallet.add(
-      '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}',
-    );
+KeyPair decodeKeyPair(String s) {
+  var keys = s.split(';');
 
-    preferences.setStringList(_walletPreferencesKey, wallet);
-  });
+  return KeyPair(
+    pk: Sodium.hex2bin(keys[0]),
+    sk: Sodium.hex2bin(keys[1]),
+  );
 }
 
-Future<List<KeyPair>> read() async {
+Future<bool> addKeyPair(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
   List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
 
-  return wallet.map((s) {
-    var keys = s.split(';');
+  wallet.add(encodeKeyPair(keyPair));
 
-    return KeyPair(
-      pk: Sodium.hex2bin(keys[0]),
-      sk: Sodium.hex2bin(keys[1]),
-    );
-  }).toList();
+  return preferences.setStringList(_walletPreferencesKey, wallet);
+}
+
+Future<bool> select(KeyPair keyPair) async {
+  var preferences = await SharedPreferences.getInstance();
+
+  return preferences.setString(_activeKeyPair, encodeKeyPair(keyPair));
+}
+
+Future<List<KeyPair>> keyPairs() async {
+  var preferences = await SharedPreferences.getInstance();
+
+  List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
+
+  return wallet.map(decodeKeyPair).toList();
+}
+
+Future<KeyPair> active() async {
+  var preferences = await SharedPreferences.getInstance();
+
+  var s = preferences.getString(_activeKeyPair);
+
+  if (s != null) {
+    return decodeKeyPair(s);
+  }
+
+  return null;
 }
