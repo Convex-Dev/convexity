@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 
 import '../route.dart' as route;
+import '../nav.dart' as nav;
 import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
 
@@ -121,6 +122,13 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                   )
                 else ...[
                   Text(Sodium.bin2hex(keyPair.pk)),
+                  ElevatedButton(
+                    child: Text('Details'),
+                    onPressed: () {
+                      nav.account(context,
+                          convex.Address(hex: Sodium.bin2hex(keyPair.pk)));
+                    },
+                  )
                 ],
               ],
             );
