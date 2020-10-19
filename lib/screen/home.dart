@@ -97,40 +97,43 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
           if (snapshot.connectionState == ConnectionState.done) {
             var keyPair = snapshot.data;
 
-            return Column(
-              children: [
-                if (keyPair == null)
-                  ElevatedButton(
-                    child: Text('CREATE ACCOUNT'),
-                    onPressed: () {
-                      var randomKeyPair = CryptoSign.randomKeys();
+            return Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  if (keyPair == null)
+                    ElevatedButton(
+                      child: Text('CREATE ACCOUNT'),
+                      onPressed: () {
+                        var randomKeyPair = CryptoSign.randomKeys();
 
-                      convex
-                          .faucet(
-                        address: Sodium.bin2hex(randomKeyPair.pk),
-                        amount: 1000000,
-                      )
-                          .then(
-                        (response) {
-                          if (response.statusCode == 200) {
-                            wallet.addKeyPair(randomKeyPair);
-                            wallet.select(randomKeyPair);
-                          }
-                        },
-                      );
-                    },
-                  )
-                else ...[
-                  Text(Sodium.bin2hex(keyPair.pk)),
-                  ElevatedButton(
-                    child: Text('Details'),
-                    onPressed: () {
-                      nav.account(context,
-                          convex.Address(hex: Sodium.bin2hex(keyPair.pk)));
-                    },
-                  )
+                        convex
+                            .faucet(
+                          address: Sodium.bin2hex(randomKeyPair.pk),
+                          amount: 1000000,
+                        )
+                            .then(
+                          (response) {
+                            if (response.statusCode == 200) {
+                              wallet.addKeyPair(randomKeyPair);
+                              wallet.select(randomKeyPair);
+                            }
+                          },
+                        );
+                      },
+                    )
+                  else ...[
+                    Text(Sodium.bin2hex(keyPair.pk)),
+                    ElevatedButton(
+                      child: Text('Details'),
+                      onPressed: () {
+                        nav.account(context,
+                            convex.Address(hex: Sodium.bin2hex(keyPair.pk)));
+                      },
+                    )
+                  ],
                 ],
-              ],
+              ),
             );
           }
 

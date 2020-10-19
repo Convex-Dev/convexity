@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:jdenticon_dart/jdenticon_dart.dart';
 
 import '../convex.dart' as convex;
 
@@ -55,19 +57,26 @@ class _AccountScreenBodyState extends State<_AccountScreenBody> {
             case ConnectionState.done:
               var account = convex.Account.fromJson(snapshot.data.body);
 
-              return Column(
-                children: [
-                  Text('Address'),
-                  Text(account.address.hex),
-                  Text('Type'),
-                  Text(account.type.toString()),
-                  Text('Balance'),
-                  Text(account.balance.toString()),
-                  Text('Memory Size'),
-                  Text(account.memorySize.toString()),
-                  Text('Memory Allowance'),
-                  Text(account.memoryAllowance.toString()),
-                ],
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    SvgPicture.string(
+                      Jdenticon.toSvg(account.address.hex, size: 80),
+                      fit: BoxFit.contain,
+                    ),
+                    Text('Address'),
+                    Text(account.address.hex),
+                    Text('Type'),
+                    Text(account.type.toString()),
+                    Text('Balance'),
+                    Text(account.balance.toString()),
+                    Text('Memory Size'),
+                    Text(account.memorySize.toString()),
+                    Text('Memory Allowance'),
+                    Text(account.memoryAllowance.toString()),
+                  ],
+                ),
               );
           }
         },
