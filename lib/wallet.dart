@@ -4,6 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 const _walletPreferencesKey = 'wallet';
 const _activeKeyPair = 'activeKeyPair';
 
+class ActiveAndAll {
+  final KeyPair active;
+  final List<KeyPair> all;
+
+  ActiveAndAll(this.active, this.all);
+}
+
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
 
@@ -22,6 +29,16 @@ Future<bool> addKeyPair(KeyPair keyPair) async {
   List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
 
   wallet.add(encodeKeyPair(keyPair));
+
+  return preferences.setStringList(_walletPreferencesKey, wallet);
+}
+
+Future<bool> removeKeyPair(KeyPair keyPair) async {
+  var preferences = await SharedPreferences.getInstance();
+
+  List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
+
+  wallet.removeWhere((s) => s == encodeKeyPair(keyPair));
 
   return preferences.setStringList(_walletPreferencesKey, wallet);
 }
@@ -50,13 +67,6 @@ Future<KeyPair> active() async {
   }
 
   return null;
-}
-
-class ActiveAndAll {
-  final KeyPair active;
-  final List<KeyPair> all;
-
-  ActiveAndAll(this.active, this.all);
 }
 
 Future<ActiveAndAll> activeAndAll() async {

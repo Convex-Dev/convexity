@@ -66,22 +66,37 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           },
         ),
         ...keyPairs.map(
-          (keyPair) => Card(
-            child: ListTile(
-              leading: SvgPicture.string(
-                Jdenticon.toSvg(sodium.Sodium.bin2hex(keyPair.pk)),
-                fit: BoxFit.contain,
-                height: 64,
-                width: 64,
-              ),
-              title: Text(
-                convex.prefix0x(sodium.Sodium.bin2hex(keyPair.pk)),
-                overflow: TextOverflow.ellipsis,
-              ),
-              onTap: () => nav.account(
-                context,
-                convex.Address(
-                  hex: sodium.Sodium.bin2hex(keyPair.pk),
+          (dismissibleKeyPair) => Dismissible(
+            key: Key(sodium.Sodium.bin2hex(dismissibleKeyPair.pk)),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) => setState(() {
+              keyPairs.removeWhere(
+                (_keyPair) {
+                  var eq = dismissibleKeyPair == _keyPair;
+
+                  return eq;
+                },
+              );
+
+              wallet.removeKeyPair(dismissibleKeyPair);
+            }),
+            child: Card(
+              child: ListTile(
+                leading: SvgPicture.string(
+                  Jdenticon.toSvg(sodium.Sodium.bin2hex(dismissibleKeyPair.pk)),
+                  fit: BoxFit.contain,
+                  height: 64,
+                  width: 64,
+                ),
+                title: Text(
+                  convex.prefix0x(sodium.Sodium.bin2hex(dismissibleKeyPair.pk)),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => nav.account(
+                  context,
+                  convex.Address(
+                    hex: sodium.Sodium.bin2hex(dismissibleKeyPair.pk),
+                  ),
                 ),
               ),
             ),
