@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,32 +8,6 @@ import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
 
 Widget _identicon() => FutureBuilder(
-      future: wallet.active(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<KeyPair> snapshot,
-      ) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          var keyPair = snapshot.data;
-
-          if (keyPair != null) {
-            return IconButton(
-              icon: SvgPicture.string(
-                Jdenticon.toSvg(
-                  Sodium.bin2hex(keyPair.pk),
-                ),
-                fit: BoxFit.contain,
-              ),
-              onPressed: () {},
-            );
-          }
-        }
-
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-
-Widget _identiconDropdown() => FutureBuilder(
       future: wallet.activeAndAll(),
       builder: (
         BuildContext context,
@@ -71,7 +43,7 @@ Widget _identiconDropdown() => FutureBuilder(
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var identicon = _identiconDropdown();
+    var identicon = _identicon();
 
     return Scaffold(
       appBar: AppBar(
@@ -148,12 +120,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                     },
                   )
                 else ...[
-                  SvgPicture.string(
-                    Jdenticon.toSvg(
-                      Sodium.bin2hex(keyPair.pk),
-                    ),
-                    fit: BoxFit.contain,
-                  ),
                   Text(Sodium.bin2hex(keyPair.pk)),
                 ],
               ],
