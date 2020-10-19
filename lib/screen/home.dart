@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_svg/svg.dart';
@@ -33,10 +35,43 @@ Widget _identicon() => FutureBuilder(
       },
     );
 
+Widget _identiconDropdown() => FutureBuilder(
+      future: wallet.activeAndAll(),
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<wallet.ActiveAndAll> snapshot,
+      ) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          var activeHex = Sodium.bin2hex(snapshot.data.active.pk);
+          var allHex = snapshot.data.all.map((e) => Sodium.bin2hex(e.pk));
+
+          if (allHex.isNotEmpty) {
+            return DropdownButton<String>(
+              value: activeHex,
+              items: allHex
+                  .map(
+                    (s) => DropdownMenuItem(
+                      child: SvgPicture.string(
+                        Jdenticon.toSvg(s),
+                        fit: BoxFit.contain,
+                      ),
+                      value: s,
+                    ),
+                  )
+                  .toList(),
+              onChanged: (k) {},
+            );
+          }
+        }
+
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var identicon = _identicon();
+    var identicon = _identiconDropdown();
 
     return Scaffold(
       appBar: AppBar(

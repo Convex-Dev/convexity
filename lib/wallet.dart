@@ -51,3 +51,23 @@ Future<KeyPair> active() async {
 
   return null;
 }
+
+class ActiveAndAll {
+  final KeyPair active;
+  final List<KeyPair> all;
+
+  ActiveAndAll(this.active, this.all);
+}
+
+Future<ActiveAndAll> activeAndAll() async {
+  var preferences = await SharedPreferences.getInstance();
+
+  var active = preferences.getString(_activeKeyPair);
+
+  var all = preferences.getStringList(_walletPreferencesKey) ?? [];
+
+  return ActiveAndAll(
+    active != null ? decodeKeyPair(active) : null,
+    all.map(decodeKeyPair).toList(),
+  );
+}
