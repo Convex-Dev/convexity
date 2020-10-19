@@ -62,7 +62,7 @@ class _AccountScreenBodyState extends State<_AccountScreenBody> {
                 child: Column(
                   children: [
                     SvgPicture.string(
-                      Jdenticon.toSvg(account.address.hex, size: 80),
+                      Jdenticon.toSvg(account.address.hex, size: 88),
                       fit: BoxFit.contain,
                     ),
                     Text('Address'),
