@@ -55,7 +55,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
               (response) {
                 if (response.statusCode == 200) {
                   wallet.addKeyPair(randomKeyPair);
-                  wallet.select(randomKeyPair);
+                  wallet.setActive(randomKeyPair);
 
                   setState(() {
                     keyPairs.add(randomKeyPair);

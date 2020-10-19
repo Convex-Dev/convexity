@@ -15,13 +15,19 @@ Widget _identicon() => FutureBuilder(
         AsyncSnapshot<wallet.ActiveAndAll> snapshot,
       ) {
         if (snapshot.connectionState == ConnectionState.done) {
-          var activeHex = Sodium.bin2hex(snapshot.data.active.pk);
-          var allHex = snapshot.data.all.map((e) => Sodium.bin2hex(e.pk));
+          var activeKeyPair = snapshot.data.active;
+          var allKeyPairs = snapshot.data.all;
 
-          if (allHex.isNotEmpty) {
+          var activeKeyPairHex =
+              activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
+
+          var allKeyPairsHex =
+              allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
+
+          if (allKeyPairsHex.isNotEmpty) {
             return DropdownButton<String>(
-              value: activeHex,
-              items: allHex
+              value: activeKeyPairHex,
+              items: allKeyPairsHex
                   .map(
                     (s) => DropdownMenuItem(
                       child: SvgPicture.string(
@@ -116,7 +122,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                           (response) {
                             if (response.statusCode == 200) {
                               wallet.addKeyPair(randomKeyPair);
-                              wallet.select(randomKeyPair);
+                              wallet.setActive(randomKeyPair);
                             }
                           },
                         );

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,17 +35,40 @@ Future<bool> addKeyPair(KeyPair keyPair) async {
   return preferences.setStringList(_walletPreferencesKey, wallet);
 }
 
-Future<bool> removeKeyPair(KeyPair keyPair) async {
+Future<void> removeKeyPair(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
-  List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
+  var wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
 
+  // Remove KeyPair from Wallet.
   wallet.removeWhere((s) => s == encodeKeyPair(keyPair));
 
-  return preferences.setStringList(_walletPreferencesKey, wallet);
+  // Replace persisted Wallet.
+  preferences.setStringList(_walletPreferencesKey, wallet);
+
+  // If this KeyPair is active, we have to:
+  // - replace with the last KeyPair from Wallet (if there is one)
+  // - or simply remove from storage.
+  var active = preferences.getString(_activeKeyPair);
+
+  var isRemovingActive = active == encodeKeyPair(keyPair);
+
+  log('Remove KeyPair ${encodeKeyPair(keyPair)}. Active? $isRemovingActive');
+
+  if (isRemovingActive) {
+    if (wallet.isEmpty) {
+      preferences.remove(_activeKeyPair);
+
+      log('Removed the active KeyPair from Wallet.');
+    } else {
+      preferences.setString(_activeKeyPair, wallet.last);
+
+      log('Replaced the active KeyPair with the last one from Wallet.');
+    }
+  }
 }
 
-Future<bool> select(KeyPair keyPair) async {
+Future<bool> setActive(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
   return preferences.setString(_activeKeyPair, encodeKeyPair(keyPair));
