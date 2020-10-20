@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _walletPreferencesKey = 'wallet';
+const _allKeyPairs = 'wallet';
 const _activeKeyPair = 'activeKeyPair';
 
 class ActiveAndAll {
@@ -28,23 +28,23 @@ KeyPair decodeKeyPair(String s) {
 Future<bool> addKeyPair(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
-  List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
+  List<String> wallet = preferences.getStringList(_allKeyPairs) ?? [];
 
   wallet.add(encodeKeyPair(keyPair));
 
-  return preferences.setStringList(_walletPreferencesKey, wallet);
+  return preferences.setStringList(_allKeyPairs, wallet);
 }
 
 Future<void> removeKeyPair(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
-  var wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
+  var wallet = preferences.getStringList(_allKeyPairs) ?? [];
 
   // Remove KeyPair from Wallet.
   wallet.removeWhere((s) => s == encodeKeyPair(keyPair));
 
   // Replace persisted Wallet.
-  preferences.setStringList(_walletPreferencesKey, wallet);
+  preferences.setStringList(_allKeyPairs, wallet);
 
   // If this KeyPair is active, we have to:
   // - replace with the last KeyPair from Wallet (if there is one)
@@ -68,6 +68,12 @@ Future<void> removeKeyPair(KeyPair keyPair) async {
   }
 }
 
+Future<bool> setKeyPairs(List<KeyPair> keyPairs) async {
+  var preferences = await SharedPreferences.getInstance();
+
+  return preferences.setStringList(_allKeyPairs, keyPairs.map(encodeKeyPair));
+}
+
 Future<bool> setActive(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
@@ -77,7 +83,7 @@ Future<bool> setActive(KeyPair keyPair) async {
 Future<List<KeyPair>> keyPairs() async {
   var preferences = await SharedPreferences.getInstance();
 
-  List<String> wallet = preferences.getStringList(_walletPreferencesKey) ?? [];
+  List<String> wallet = preferences.getStringList(_allKeyPairs) ?? [];
 
   return wallet.map(decodeKeyPair).toList();
 }
@@ -92,17 +98,4 @@ Future<KeyPair> activeKeyPair() async {
   }
 
   return null;
-}
-
-Future<ActiveAndAll> activeAndAll() async {
-  var preferences = await SharedPreferences.getInstance();
-
-  var active = preferences.getString(_activeKeyPair);
-
-  var all = preferences.getStringList(_walletPreferencesKey) ?? [];
-
-  return ActiveAndAll(
-    active != null ? decodeKeyPair(active) : null,
-    all.map(decodeKeyPair).toList(),
-  );
 }

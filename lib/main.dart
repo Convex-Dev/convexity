@@ -29,7 +29,7 @@ class App extends StatelessWidget {
       (keyPairs) {
         log('Init *all* Key Pairs: ${keyPairs.map((e) => Sodium.bin2hex(e.pk))}');
 
-        context.read<AppState>().addKeyPairs(keyPairs);
+        context.read<AppState>().setKeyPairs(keyPairs);
       },
     );
 

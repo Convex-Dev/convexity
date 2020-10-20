@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 
+import 'wallet.dart' as wallet;
+
 class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
@@ -11,6 +13,14 @@ class Model {
     this.activeKeyPair,
     this.allKeyPairs = const [],
   });
+
+  KeyPair activeKeyPairOrDefault() {
+    if (activeKeyPair != null) {
+      return activeKeyPair;
+    }
+
+    return allKeyPairs.isNotEmpty ? allKeyPairs.last : null;
+  }
 
   Model copyWith({
     activeKeyPair,
@@ -40,18 +50,24 @@ class AppState with ChangeNotifier {
   void setState(Model f(Model m)) {
     model = f(model);
 
-    log('STATE\n'
-        '-----\n'
-        '$model\n'
-        '---------------------------------\n');
+    log(
+      '*STATE*\n'
+      '-------\n'
+      '$model\n'
+      '---------------------------------\n',
+    );
 
     notifyListeners();
   }
 
-  KeyPair activeKeyPair() => model.activeKeyPair ?? model.allKeyPairs.last;
-
   void setActiveKeyPair(KeyPair active) {
     setState((m) => m.copyWith(activeKeyPair: active));
+  }
+
+  void setKeyPairs(List<KeyPair> keyPairs) {
+    setState(
+      (m) => m.copyWith(allKeyPairs: keyPairs),
+    );
   }
 
   void addKeyPair(KeyPair k) {
@@ -60,14 +76,17 @@ class AppState with ChangeNotifier {
     );
   }
 
-  void addKeyPairs(List<KeyPair> keyPairs) {
-    setState(
-      (m) => m.copyWith(
-          allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..addAll(keyPairs)),
-    );
-  }
-
   void dispose() {
     super.dispose();
+
+    if (model.activeKeyPair != null) {
+      wallet.setActive(model.activeKeyPair);
+
+      log('Saved active KeyPair in storage.');
+    }
+
+    wallet.setKeyPairs(model.allKeyPairs);
+
+    log('Saved all KeyPairs in storage.');
   }
 }

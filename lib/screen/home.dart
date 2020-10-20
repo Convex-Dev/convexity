@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -15,16 +17,15 @@ Widget _identicon(
   KeyPair activeKeyPair,
   List<KeyPair> allKeyPairs,
 ) {
-  var activeKeyPairHex =
+  var activePK =
       activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
 
-  var allKeyPairsHex =
-      allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
+  var allPKs = allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
 
-  if (allKeyPairsHex.isNotEmpty) {
+  if (allPKs.isNotEmpty) {
     return DropdownButton<String>(
-      value: activeKeyPairHex,
-      items: allKeyPairsHex
+      value: activePK,
+      items: allPKs
           .map(
             (s) => DropdownMenuItem(
               child: SvgPicture.string(
@@ -35,7 +36,12 @@ Widget _identicon(
             ),
           )
           .toList(),
-      onChanged: (k) {},
+      onChanged: (_pk) {
+        var selectedKeyPair = allKeyPairs
+            .firstWhere((_keyPair) => _pk == Sodium.bin2hex(_keyPair.pk));
+
+        context.read<AppState>().setActiveKeyPair(selectedKeyPair);
+      },
     );
   }
 
@@ -47,7 +53,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var identicon = _identicon(
       context,
-      context.watch<AppState>().model.activeKeyPair,
+      context.watch<AppState>().model.activeKeyPairOrDefault(),
       context.watch<AppState>().model.allKeyPairs,
     );
 
@@ -93,57 +99,48 @@ class HomeScreenBody extends StatefulWidget {
 
 class _HomeScreenBodyState extends State<HomeScreenBody> {
   @override
-  Widget build(BuildContext context) => FutureBuilder(
-        future: wallet.activeKeyPair(),
-        builder: (
-          BuildContext context,
-          AsyncSnapshot<KeyPair> snapshot,
-        ) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            var keyPair = snapshot.data;
+  Widget build(BuildContext context) {
+    var activeKeyPair =
+        context.watch<AppState>().model.activeKeyPairOrDefault();
 
-            return Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  if (keyPair == null)
-                    ElevatedButton(
-                      child: Text('CREATE ACCOUNT'),
-                      onPressed: () {
-                        var randomKeyPair = CryptoSign.randomKeys();
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          if (activeKeyPair == null)
+            Center(
+              child: ElevatedButton(
+                child: Text('CREATE ACCOUNT'),
+                onPressed: () {
+                  var randomKeyPair = CryptoSign.randomKeys();
 
-                        convex
-                            .faucet(
-                          address: Sodium.bin2hex(randomKeyPair.pk),
-                          amount: 1000000,
-                        )
-                            .then(
-                          (response) {
-                            if (response.statusCode == 200) {
-                              context
-                                  .read<AppState>()
-                                  .addKeyPair(randomKeyPair);
-                            }
-                          },
-                        );
-                      },
-                    )
-                  else ...[
-                    Text(Sodium.bin2hex(keyPair.pk)),
-                    ElevatedButton(
-                      child: Text('Details'),
-                      onPressed: () {
-                        nav.account(context,
-                            convex.Address(hex: Sodium.bin2hex(keyPair.pk)));
-                      },
-                    )
-                  ],
-                ],
+                  convex
+                      .faucet(
+                    address: Sodium.bin2hex(randomKeyPair.pk),
+                    amount: 1000000,
+                  )
+                      .then(
+                    (response) {
+                      if (response.statusCode == 200) {
+                        context.read<AppState>().addKeyPair(randomKeyPair);
+                      }
+                    },
+                  );
+                },
               ),
-            );
-          }
-
-          return Center(child: CircularProgressIndicator());
-        },
-      );
+            )
+          else ...[
+            Text(Sodium.bin2hex(activeKeyPair.pk)),
+            ElevatedButton(
+              child: Text('Details'),
+              onPressed: () {
+                nav.account(context,
+                    convex.Address(hex: Sodium.bin2hex(activeKeyPair.pk)));
+              },
+            )
+          ],
+        ],
+      ),
+    );
+  }
 }
