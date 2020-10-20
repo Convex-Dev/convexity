@@ -7,13 +7,23 @@ import 'package:provider/provider.dart';
 
 import '../convex.dart' as convex;
 import '../nav.dart' as nav;
+import '../widget.dart' as widget;
 
 class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var identicon = widget.identicon(
+      context,
+      context.watch<AppState>().model.activeKeyPairOrDefault(),
+      context.watch<AppState>().model.allKeyPairs,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Convex Wallet'),
+        actions: [
+          if (identicon != null) identicon,
+        ],
       ),
       body: WalletScreenBody(),
     );
