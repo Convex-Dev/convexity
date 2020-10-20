@@ -82,7 +82,7 @@ Future<List<KeyPair>> keyPairs() async {
   return wallet.map(decodeKeyPair).toList();
 }
 
-Future<KeyPair> active() async {
+Future<KeyPair> activeKeyPair() async {
   var preferences = await SharedPreferences.getInstance();
 
   var s = preferences.getString(_activeKeyPair);

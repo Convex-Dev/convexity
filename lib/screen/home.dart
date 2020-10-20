@@ -95,7 +95,7 @@ class HomeScreenBody extends StatefulWidget {
 class _HomeScreenBodyState extends State<HomeScreenBody> {
   @override
   Widget build(BuildContext context) => FutureBuilder(
-        future: wallet.active(),
+        future: wallet.activeKeyPair(),
         builder: (
           BuildContext context,
           AsyncSnapshot<KeyPair> snapshot,

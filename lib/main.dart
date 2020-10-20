@@ -1,18 +1,53 @@
+import 'dart:developer';
+
 import 'package:convex_wallet/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
+import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:provider/provider.dart';
 
 import 'route.dart';
+import 'model.dart';
+import 'wallet.dart' as wallet;
 
 void main() {
   sodium.Sodium.init();
 
-  runApp(App());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ModelNotifier(model: Model()),
+      child: App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Initialize *active* Key Pair.
+    wallet.activeKeyPair().then(
+      (activeKeyPair) {
+        if (activeKeyPair != null) {
+          log('Init *active* Key Pair: ${Sodium.bin2hex(activeKeyPair.pk)}');
+
+          context
+              .read<ModelNotifier>()
+              .setState((m) => m.copyWith(activeKeyPair: activeKeyPair));
+        }
+      },
+    );
+
+    // Initialize *all* Key Pairs.
+    wallet.keyPairs().then(
+      (keyPairs) {
+        log('Init *all* Key Pairs: ${keyPairs.map((e) => Sodium.bin2hex(e.pk))}');
+
+        context
+            .read<ModelNotifier>()
+            .setState((m) => m.copyWith(allKeyPairs: keyPairs));
+      },
+    );
+
     return MaterialApp(
       title: 'Convex Wallet',
       theme: ThemeData(
