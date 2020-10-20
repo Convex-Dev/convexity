@@ -6,22 +6,22 @@ import 'package:provider/provider.dart';
 import '../route.dart' as route;
 import '../nav.dart' as nav;
 import '../convex.dart' as convex;
-import '../widget.dart' as widget;
+import '../widget.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var identicon = widget.identicon(
-      context,
-      context.watch<AppState>().model.activeKeyPairOrDefault(),
-      context.watch<AppState>().model.allKeyPairs,
-    );
+    var appState = context.watch<AppState>();
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Convexity'),
         actions: [
-          if (identicon != null) identicon,
+          if (appState.model.allKeyPairs.isNotEmpty)
+            IdenticonDropdown(
+              activeKeyPair: appState.model.activeKeyPairOrDefault(),
+              allKeyPairs: appState.model.allKeyPairs,
+            ),
         ],
       ),
       drawer: Drawer(

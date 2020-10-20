@@ -6,13 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 const _allKeyPairs = 'wallet';
 const _activeKeyPair = 'activeKeyPair';
 
-class ActiveAndAll {
-  final KeyPair active;
-  final List<KeyPair> all;
-
-  ActiveAndAll(this.active, this.all);
-}
-
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
 

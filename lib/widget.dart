@@ -6,17 +6,22 @@ import 'package:provider/provider.dart';
 
 import 'model.dart';
 
-Widget identicon(
-  BuildContext context,
-  KeyPair activeKeyPair,
-  List<KeyPair> allKeyPairs,
-) {
-  var activePK =
-      activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
+class IdenticonDropdown extends StatelessWidget {
+  final KeyPair activeKeyPair;
+  final List<KeyPair> allKeyPairs;
 
-  var allPKs = allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
+  const IdenticonDropdown({
+    Key key,
+    this.activeKeyPair,
+    this.allKeyPairs,
+  }) : super(key: key);
 
-  if (allPKs.isNotEmpty) {
+  @override
+  Widget build(BuildContext context) {
+    var activePK = Sodium.bin2hex(activeKeyPair.pk);
+
+    var allPKs = allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
+
     return DropdownButton<String>(
       value: activePK,
       items: allPKs
@@ -38,6 +43,4 @@ Widget identicon(
       },
     );
   }
-
-  return null;
 }
