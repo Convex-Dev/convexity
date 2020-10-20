@@ -5,6 +5,7 @@ import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
 
 import 'model.dart';
+import 'wallet.dart' as wallet;
 
 class IdenticonDropdown extends StatelessWidget {
   final KeyPair activeKeyPair;
@@ -42,6 +43,8 @@ class IdenticonDropdown extends StatelessWidget {
             .firstWhere((_keyPair) => _pk == Sodium.bin2hex(_keyPair.pk));
 
         context.read<AppState>().setActiveKeyPair(selectedKeyPair);
+
+        wallet.setActive(selectedKeyPair);
       },
     );
   }

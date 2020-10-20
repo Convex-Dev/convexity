@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../convex.dart' as convex;
 import '../nav.dart' as nav;
 import '../widget.dart';
+import '../wallet.dart' as wallet;
 
 class WalletScreen extends StatelessWidget {
   @override
@@ -73,6 +74,8 @@ class WalletScreenBody extends StatelessWidget {
               (response) {
                 if (response.statusCode == 200) {
                   context.read<AppState>().addKeyPair(randomKeyPair);
+
+                  wallet.addKeyPair(randomKeyPair);
                 }
               },
             );

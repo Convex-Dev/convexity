@@ -7,6 +7,7 @@ import '../route.dart' as route;
 import '../nav.dart' as nav;
 import '../convex.dart' as convex;
 import '../widget.dart';
+import '../wallet.dart' as wallet;
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -76,6 +77,8 @@ class HomeScreenBody extends StatelessWidget {
                     (response) {
                       if (response.statusCode == 200) {
                         context.read<AppState>().addKeyPair(randomKeyPair);
+
+                        wallet.addKeyPair(randomKeyPair);
                       }
                     },
                   );
