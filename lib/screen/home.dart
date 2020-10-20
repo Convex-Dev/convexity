@@ -60,6 +60,7 @@ class HomeScreenBody extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (activeKeyPair == null)
             Center(
@@ -87,15 +88,27 @@ class HomeScreenBody extends StatelessWidget {
             )
           else ...[
             Text(Sodium.bin2hex(activeKeyPair.pk)),
-            ElevatedButton(
-              child: Text('Details'),
+            OutlinedButton(
+              child: Text('Account Details'),
               onPressed: () {
                 nav.account(
                   context,
                   convex.Address(hex: Sodium.bin2hex(activeKeyPair.pk)),
                 );
               },
-            )
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text('Action 1'),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text('Action 2'),
+            ),
+            OutlinedButton(
+              onPressed: () {},
+              child: Text('Action 3'),
+            ),
           ],
         ],
       ),
