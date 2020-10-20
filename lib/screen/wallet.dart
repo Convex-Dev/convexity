@@ -10,6 +10,43 @@ import '../nav.dart' as nav;
 import '../widget.dart';
 import '../wallet.dart' as wallet;
 
+class NewAccount extends StatelessWidget {
+  const NewAccount({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      child: Icon(Icons.add),
+      onPressed: () {
+        var randomKeyPair = CryptoSign.randomKeys();
+
+        convex
+            .faucet(
+          address: Sodium.bin2hex(randomKeyPair.pk),
+          amount: 1000000,
+        )
+            .then(
+          (response) {
+            if (response.statusCode == 200) {
+              context.read<AppState>().addKeyPair(randomKeyPair);
+
+              wallet.addKeyPair(randomKeyPair);
+
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Your new Convex Account is ready.'),
+                ),
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+}
+
 class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -27,6 +64,7 @@ class WalletScreen extends StatelessWidget {
         ],
       ),
       body: WalletScreenBody(),
+      floatingActionButton: NewAccount(),
     );
   }
 }
@@ -59,32 +97,11 @@ class WalletScreenBody extends StatelessWidget {
 
     return ListView(
       padding: const EdgeInsets.all(8),
-      children: [
-        ElevatedButton(
-          child: Text('CREATE ACCOUNT'),
-          onPressed: () {
-            var randomKeyPair = CryptoSign.randomKeys();
-
-            convex
-                .faucet(
-              address: Sodium.bin2hex(randomKeyPair.pk),
-              amount: 1000000,
-            )
-                .then(
-              (response) {
-                if (response.statusCode == 200) {
-                  context.read<AppState>().addKeyPair(randomKeyPair);
-
-                  wallet.addKeyPair(randomKeyPair);
-                }
-              },
-            );
-          },
-        ),
-        ...allKeyPairs.map(
-          (_keyPair) => keyPairCard(context, _keyPair),
-        )
-      ],
+      children: allKeyPairs
+          .map(
+            (_keyPair) => keyPairCard(context, _keyPair),
+          )
+          .toList(),
     );
   }
 }
