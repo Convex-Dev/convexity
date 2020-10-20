@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 
-import 'wallet.dart' as wallet;
-
 class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
@@ -77,18 +75,4 @@ class AppState with ChangeNotifier {
   }
 
   void removeKeyPair(KeyPair k) {}
-
-  void dispose() {
-    super.dispose();
-
-    if (model.activeKeyPair != null) {
-      wallet.setActive(model.activeKeyPair);
-
-      log('Saved active KeyPair in storage.');
-    }
-
-    wallet.setKeyPairs(model.allKeyPairs);
-
-    log('Saved all KeyPairs in storage.');
-  }
 }
