@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -9,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../route.dart' as route;
 import '../nav.dart' as nav;
-import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
 
 Widget _identicon(
@@ -90,14 +87,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class HomeScreenBody extends StatefulWidget {
-  const HomeScreenBody({Key key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _HomeScreenBodyState();
-}
-
-class _HomeScreenBodyState extends State<HomeScreenBody> {
+class HomeScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var activeKeyPair =
