@@ -124,8 +124,10 @@ class HomeScreenBody extends StatelessWidget {
             ElevatedButton(
               child: Text('Details'),
               onPressed: () {
-                nav.account(context,
-                    convex.Address(hex: Sodium.bin2hex(activeKeyPair.pk)));
+                nav.account(
+                  context,
+                  convex.Address(hex: Sodium.bin2hex(activeKeyPair.pk)),
+                );
               },
             )
           ],

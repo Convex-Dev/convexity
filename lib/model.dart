@@ -76,6 +76,8 @@ class AppState with ChangeNotifier {
     );
   }
 
+  void removeKeyPair(KeyPair k) {}
+
   void dispose() {
     super.dispose();
 
