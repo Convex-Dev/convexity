@@ -1,56 +1,55 @@
+import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
+import 'package:provider/provider.dart';
 
 import '../route.dart' as route;
 import '../nav.dart' as nav;
 import '../wallet.dart' as wallet;
 import '../convex.dart' as convex;
 
-Widget _identicon() => FutureBuilder(
-      future: wallet.activeAndAll(),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<wallet.ActiveAndAll> snapshot,
-      ) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          var activeKeyPair = snapshot.data.active;
-          var allKeyPairs = snapshot.data.all;
+Widget _identicon(
+  BuildContext context,
+  KeyPair activeKeyPair,
+  List<KeyPair> allKeyPairs,
+) {
+  var activeKeyPairHex =
+      activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
 
-          var activeKeyPairHex =
-              activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
+  var allKeyPairsHex =
+      allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
 
-          var allKeyPairsHex =
-              allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
-
-          if (allKeyPairsHex.isNotEmpty) {
-            return DropdownButton<String>(
-              value: activeKeyPairHex,
-              items: allKeyPairsHex
-                  .map(
-                    (s) => DropdownMenuItem(
-                      child: SvgPicture.string(
-                        Jdenticon.toSvg(s),
-                        fit: BoxFit.contain,
-                      ),
-                      value: s,
-                    ),
-                  )
-                  .toList(),
-              onChanged: (k) {},
-            );
-          }
-        }
-
-        return Center(child: CircularProgressIndicator());
-      },
+  if (allKeyPairsHex.isNotEmpty) {
+    return DropdownButton<String>(
+      value: activeKeyPairHex,
+      items: allKeyPairsHex
+          .map(
+            (s) => DropdownMenuItem(
+              child: SvgPicture.string(
+                Jdenticon.toSvg(s),
+                fit: BoxFit.contain,
+              ),
+              value: s,
+            ),
+          )
+          .toList(),
+      onChanged: (k) {},
     );
+  }
+
+  return null;
+}
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var identicon = _identicon();
+    var identicon = _identicon(
+      context,
+      context.watch<AppState>().model.activeKeyPair,
+      context.watch<AppState>().model.allKeyPairs,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -121,8 +120,9 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                             .then(
                           (response) {
                             if (response.statusCode == 200) {
-                              wallet.addKeyPair(randomKeyPair);
-                              wallet.setActive(randomKeyPair);
+                              context
+                                  .read<AppState>()
+                                  .addKeyPair(randomKeyPair);
                             }
                           },
                         );

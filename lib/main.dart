@@ -15,7 +15,7 @@ void main() {
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => ModelNotifier(model: Model()),
+      create: (_) => AppState(model: Model()),
       child: App(),
     ),
   );
@@ -24,27 +24,23 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Initialize *all* Key Pairs.
+    wallet.keyPairs().then(
+      (keyPairs) {
+        log('Init *all* Key Pairs: ${keyPairs.map((e) => Sodium.bin2hex(e.pk))}');
+
+        context.read<AppState>().addKeyPairs(keyPairs);
+      },
+    );
+
     // Initialize *active* Key Pair.
     wallet.activeKeyPair().then(
       (activeKeyPair) {
         if (activeKeyPair != null) {
           log('Init *active* Key Pair: ${Sodium.bin2hex(activeKeyPair.pk)}');
 
-          context
-              .read<ModelNotifier>()
-              .setState((m) => m.copyWith(activeKeyPair: activeKeyPair));
+          context.read<AppState>().setActiveKeyPair(activeKeyPair);
         }
-      },
-    );
-
-    // Initialize *all* Key Pairs.
-    wallet.keyPairs().then(
-      (keyPairs) {
-        log('Init *all* Key Pairs: ${keyPairs.map((e) => Sodium.bin2hex(e.pk))}');
-
-        context
-            .read<ModelNotifier>()
-            .setState((m) => m.copyWith(allKeyPairs: keyPairs));
       },
     );
 

@@ -9,7 +9,7 @@ class Model {
 
   Model({
     this.activeKeyPair,
-    this.allKeyPairs,
+    this.allKeyPairs = const [],
   });
 
   Model copyWith({
@@ -32,16 +32,42 @@ class Model {
   }
 }
 
-class ModelNotifier with ChangeNotifier {
+class AppState with ChangeNotifier {
   Model model;
 
-  ModelNotifier({this.model});
+  AppState({this.model});
 
   void setState(Model f(Model m)) {
     model = f(model);
 
-    log('STATE\n-----\n$model\n---------------------------------');
+    log('STATE\n'
+        '-----\n'
+        '$model\n'
+        '---------------------------------\n');
 
     notifyListeners();
+  }
+
+  KeyPair activeKeyPair() => model.activeKeyPair ?? model.allKeyPairs.last;
+
+  void setActiveKeyPair(KeyPair active) {
+    setState((m) => m.copyWith(activeKeyPair: active));
+  }
+
+  void addKeyPair(KeyPair k) {
+    setState(
+      (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
+    );
+  }
+
+  void addKeyPairs(List<KeyPair> keyPairs) {
+    setState(
+      (m) => m.copyWith(
+          allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..addAll(keyPairs)),
+    );
+  }
+
+  void dispose() {
+    super.dispose();
   }
 }
