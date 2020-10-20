@@ -29,6 +29,8 @@ class IdenticonDropdown extends StatelessWidget {
             (s) => DropdownMenuItem(
               child: SvgPicture.string(
                 Jdenticon.toSvg(s),
+                width: 40,
+                height: 40,
                 fit: BoxFit.contain,
               ),
               value: s,
