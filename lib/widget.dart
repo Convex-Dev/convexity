@@ -7,14 +7,30 @@ import 'package:provider/provider.dart';
 import 'model.dart';
 import 'wallet.dart' as wallet;
 
+class Identicon extends StatelessWidget {
+  final KeyPair keyPair;
+
+  const Identicon({Key key, @required this.keyPair}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => SvgPicture.string(
+        Jdenticon.toSvg(Sodium.bin2hex(keyPair.pk)),
+        fit: BoxFit.contain,
+      );
+}
+
 class IdenticonDropdown extends StatelessWidget {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
+  final double width;
+  final double height;
 
   const IdenticonDropdown({
     Key key,
     this.activeKeyPair,
     this.allKeyPairs,
+    this.width,
+    this.height,
   }) : super(key: key);
 
   @override
@@ -30,8 +46,8 @@ class IdenticonDropdown extends StatelessWidget {
             (s) => DropdownMenuItem(
               child: SvgPicture.string(
                 Jdenticon.toSvg(s),
-                width: 40,
-                height: 40,
+                width: width ?? 40,
+                height: height ?? 40,
                 fit: BoxFit.contain,
               ),
               value: s,

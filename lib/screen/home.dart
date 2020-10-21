@@ -73,59 +73,37 @@ class HomeScreenBody extends StatelessWidget {
     var activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
 
+    var allKeyPairs = context.watch<AppState>().model.allKeyPairs;
+
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if (activeKeyPair == null)
-            Center(
-              child: ElevatedButton(
-                child: Text('CREATE ACCOUNT'),
-                onPressed: () {
-                  var randomKeyPair = CryptoSign.randomKeys();
-
-                  convex
-                      .faucet(
-                    address: Sodium.bin2hex(randomKeyPair.pk),
-                    amount: 1000000,
-                  )
-                      .then(
-                    (response) {
-                      if (response.statusCode == 200) {
-                        context.read<AppState>().addKeyPair(randomKeyPair);
-
-                        wallet.addKeyPair(randomKeyPair);
-                      }
-                    },
-                  );
-                },
-              ),
-            )
-          else ...[
-            Text(Sodium.bin2hex(activeKeyPair.pk)),
-            OutlinedButton(
-              child: Text('Account Details'),
-              onPressed: () {
-                nav.account(
-                  context,
-                  convex.Address(hex: Sodium.bin2hex(activeKeyPair.pk)),
-                );
-              },
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Identicon(keyPair: activeKeyPair),
+                  title: Text('100,000,000'),
+                  subtitle: Text('Bar'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      child: Text('ACTION'),
+                      onPressed: () {},
+                    ),
+                    TextButton(
+                      child: Text('ACTION'),
+                      onPressed: () {},
+                    )
+                  ],
+                )
+              ],
             ),
-            OutlinedButton(
-              onPressed: () {},
-              child: Text('Action 1'),
-            ),
-            OutlinedButton(
-              onPressed: () {},
-              child: Text('Action 2'),
-            ),
-            OutlinedButton(
-              onPressed: () {},
-              child: Text('Action 3'),
-            ),
-          ],
+          )
         ],
       ),
     );
