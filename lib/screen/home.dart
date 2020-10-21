@@ -8,6 +8,7 @@ import '../nav.dart' as nav;
 import '../convex.dart' as convex;
 import '../widget.dart';
 import '../wallet.dart' as wallet;
+import 'package:gap/gap.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -68,6 +69,24 @@ class HomeScreen extends StatelessWidget {
 }
 
 class HomeScreenBody extends StatelessWidget {
+  Widget action() => Column(
+        children: [
+          Ink(
+            decoration: const ShapeDecoration(
+              color: Colors.lightBlue,
+              shape: CircleBorder(),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.money),
+              color: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+          Gap(6),
+          Text('Label')
+        ],
+      );
+
   @override
   Widget build(BuildContext context) {
     var activeKeyPair =
@@ -76,9 +95,9 @@ class HomeScreenBody extends StatelessWidget {
     var allKeyPairs = context.watch<AppState>().model.allKeyPairs;
 
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Card(
             child: Column(
@@ -103,6 +122,27 @@ class HomeScreenBody extends StatelessWidget {
                 )
               ],
             ),
+          ),
+          Gap(40),
+          Text(
+            'Quick actions',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Gap(20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              action(),
+              Gap(12),
+              action(),
+              Gap(12),
+              action(),
+              Gap(12),
+              action(),
+            ],
           )
         ],
       ),
