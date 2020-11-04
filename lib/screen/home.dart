@@ -1,13 +1,9 @@
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:provider/provider.dart';
 
 import '../route.dart' as route;
-import '../nav.dart' as nav;
-import '../convex.dart' as convex;
 import '../widget.dart';
-import '../wallet.dart' as wallet;
 import 'package:gap/gap.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -48,22 +44,6 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       body: HomeScreenBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Wallet',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
-        ],
-      ),
     );
   }
 }
