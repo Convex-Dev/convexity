@@ -92,37 +92,36 @@ class HomeScreenBody extends StatelessWidget {
     var activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
 
-    var allKeyPairs = context.watch<AppState>().model.allKeyPairs;
-
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: Identicon(keyPair: activeKeyPair),
-                  title: Text('100,000,000'),
-                  subtitle: Text('Bar'),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      child: Text('ACTION'),
-                      onPressed: () {},
-                    ),
-                    TextButton(
-                      child: Text('ACTION'),
-                      onPressed: () {},
-                    )
-                  ],
-                )
-              ],
+          if (activeKeyPair != null)
+            Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Identicon(keyPair: activeKeyPair),
+                    title: Text('100,000,000'),
+                    subtitle: Text('Bar'),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        child: Text('ACTION'),
+                        onPressed: () {},
+                      ),
+                      TextButton(
+                        child: Text('ACTION'),
+                        onPressed: () {},
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
           Gap(40),
           Text(
             'Quick actions',
