@@ -10,8 +10,33 @@ import '../nav.dart' as nav;
 import '../widget.dart';
 import '../wallet.dart' as wallet;
 
-class NewAccount extends StatelessWidget {
-  const NewAccount({
+void _createAccount(BuildContext context) {
+  var randomKeyPair = CryptoSign.randomKeys();
+
+  convex
+      .faucet(
+    address: Sodium.bin2hex(randomKeyPair.pk),
+    amount: 1000000,
+  )
+      .then(
+    (response) {
+      if (response.statusCode == 200) {
+        context.read<AppState>().addKeyPair(randomKeyPair);
+
+        wallet.addKeyPair(randomKeyPair);
+
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Your new Convex Account is ready.'),
+          ),
+        );
+      }
+    },
+  );
+}
+
+class CreateAccountButton extends StatelessWidget {
+  const CreateAccountButton({
     Key key,
   }) : super(key: key);
 
@@ -20,28 +45,7 @@ class NewAccount extends StatelessWidget {
     return FloatingActionButton(
       child: Icon(Icons.add),
       onPressed: () {
-        var randomKeyPair = CryptoSign.randomKeys();
-
-        convex
-            .faucet(
-          address: Sodium.bin2hex(randomKeyPair.pk),
-          amount: 1000000,
-        )
-            .then(
-          (response) {
-            if (response.statusCode == 200) {
-              context.read<AppState>().addKeyPair(randomKeyPair);
-
-              wallet.addKeyPair(randomKeyPair);
-
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Your new Convex Account is ready.'),
-                ),
-              );
-            }
-          },
-        );
+        _createAccount(context);
       },
     );
   }
@@ -64,7 +68,7 @@ class WalletScreen extends StatelessWidget {
         ],
       ),
       body: WalletScreenBody(),
-      floatingActionButton: NewAccount(),
+      floatingActionButton: CreateAccountButton(),
     );
   }
 }
@@ -94,6 +98,17 @@ class WalletScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var allKeyPairs = context.watch<AppState>().model.allKeyPairs;
+
+    if (allKeyPairs.isEmpty) {
+      return Center(
+        child: RaisedButton(
+          child: Text('Create Account'),
+          onPressed: () {
+            _createAccount(context);
+          },
+        ),
+      );
+    }
 
     return ListView(
       padding: const EdgeInsets.all(8),
