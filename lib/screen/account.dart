@@ -55,27 +55,36 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
             case ConnectionState.active:
               return progressIndicator;
             case ConnectionState.done:
-              var account = convex.Account.fromJson(snapshot.data.body);
+              if (snapshot.data.statusCode == 200) {
+                var account = convex.Account.fromJson(snapshot.data.body);
+
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      SvgPicture.string(
+                        Jdenticon.toSvg(account.address.hex, size: 88),
+                        fit: BoxFit.contain,
+                      ),
+                      Text('Address'),
+                      Text(account.address.hex),
+                      Text('Type'),
+                      Text(account.type.toString()),
+                      Text('Balance'),
+                      Text(account.balance.toString()),
+                      Text('Memory Size'),
+                      Text(account.memorySize.toString()),
+                      Text('Memory Allowance'),
+                      Text(account.memoryAllowance.toString()),
+                    ],
+                  ),
+                );
+              }
 
               return Padding(
                 padding: const EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    SvgPicture.string(
-                      Jdenticon.toSvg(account.address.hex, size: 88),
-                      fit: BoxFit.contain,
-                    ),
-                    Text('Address'),
-                    Text(account.address.hex),
-                    Text('Type'),
-                    Text(account.type.toString()),
-                    Text('Balance'),
-                    Text(account.balance.toString()),
-                    Text('Memory Size'),
-                    Text(account.memorySize.toString()),
-                    Text('Memory Allowance'),
-                    Text(account.memoryAllowance.toString()),
-                  ],
+                child: Center(
+                  child: Text('Account not found.'),
                 ),
               );
           }
