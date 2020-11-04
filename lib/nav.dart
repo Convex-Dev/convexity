@@ -10,3 +10,8 @@ void account(BuildContext context, convex.Address address) =>
       route.account,
       arguments: address,
     );
+
+void settings(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.settings,
+    );

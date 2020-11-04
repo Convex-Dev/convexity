@@ -7,6 +7,7 @@ import '../widget.dart';
 import './home.dart';
 import './wallet.dart';
 import './account.dart';
+import '../nav.dart' as nav;
 
 class LauncherScreen extends StatefulWidget {
   @override
@@ -29,6 +30,10 @@ class _LauncherScreenState extends State<LauncherScreen> {
               activeKeyPair: appState.model.activeKeyPairOrDefault(),
               allKeyPairs: appState.model.allKeyPairs,
             ),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () => nav.settings(context),
+          )
         ],
       ),
       body: body(appState),
@@ -57,17 +62,14 @@ class _LauncherScreenState extends State<LauncherScreen> {
     switch (currentIndex) {
       case 0:
         return HomeScreenBody();
-        break;
       case 1:
         return WalletScreenBody();
-        break;
       case 2:
         return AccountScreenBody(
           address: Address.fromKeyPair(
             appState.model.activeKeyPair,
           ),
         );
-        break;
       default:
         return HomeScreenBody();
     }
