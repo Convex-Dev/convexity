@@ -16,6 +16,9 @@ class Address {
   final String hex;
 
   Address({this.hex});
+
+  static Address fromKeyPair(sodium.KeyPair keyPair) =>
+      Address(hex: sodium.Sodium.bin2hex(keyPair.pk));
 }
 
 enum AccountType {

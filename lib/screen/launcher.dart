@@ -1,11 +1,21 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widget.dart';
 import './home.dart';
+import './wallet.dart';
+import './account.dart';
 
-class LauncherScreen extends StatelessWidget {
+class LauncherScreen extends StatefulWidget {
+  @override
+  _LauncherScreenState createState() => _LauncherScreenState();
+}
+
+class _LauncherScreenState extends State<LauncherScreen> {
+  var currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -21,8 +31,9 @@ class LauncherScreen extends StatelessWidget {
             ),
         ],
       ),
-      body: HomeScreenBody(),
+      body: body(appState),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -37,7 +48,28 @@ class LauncherScreen extends StatelessWidget {
             label: 'Account',
           ),
         ],
+        onTap: (index) => setState(() => currentIndex = index),
       ),
     );
+  }
+
+  Widget body(AppState appState) {
+    switch (currentIndex) {
+      case 0:
+        return HomeScreenBody();
+        break;
+      case 1:
+        return WalletScreenBody();
+        break;
+      case 2:
+        return AccountScreenBody(
+          address: Address.fromKeyPair(
+            appState.model.activeKeyPair,
+          ),
+        );
+        break;
+      default:
+        return HomeScreenBody();
+    }
   }
 }
