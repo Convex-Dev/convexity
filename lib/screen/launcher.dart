@@ -3,11 +3,14 @@ import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../widget.dart';
 import './home.dart';
 import './wallet.dart';
 import './account.dart';
 import '../nav.dart' as nav;
+
+enum _PopupChoice {
+  settings,
+}
 
 class LauncherScreen extends StatefulWidget {
   @override
@@ -21,18 +24,24 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
+    // if (appState.model.allKeyPairs.isNotEmpty)
+    //         IdenticonDropdown(
+    //           activeKeyPair: appState.model.activeKeyPairOrDefault(),
+    //           allKeyPairs: appState.model.allKeyPairs,
+    //         ),
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Convexity'),
         actions: [
-          if (appState.model.allKeyPairs.isNotEmpty)
-            IdenticonDropdown(
-              activeKeyPair: appState.model.activeKeyPairOrDefault(),
-              allKeyPairs: appState.model.allKeyPairs,
-            ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () => nav.settings(context),
+          PopupMenuButton<_PopupChoice>(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: Text('Settings'),
+                value: _PopupChoice.settings,
+              )
+            ],
+            onSelected: (s) => nav.settings(context),
           )
         ],
       ),
