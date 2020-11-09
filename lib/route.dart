@@ -1,3 +1,4 @@
+import 'package:convex_wallet/screen/assets.dart';
 import 'package:convex_wallet/screen/transfer.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ const String wallet = '/wallet';
 const String account = '/account';
 const String transfer = '/transfer';
 const String settings = '/settings';
+const String assets = '/assets';
 
 Map<String, WidgetBuilder> routes() => {
       launcher: (context) => LauncherScreen(),
@@ -21,4 +23,5 @@ Map<String, WidgetBuilder> routes() => {
       account: (context) => AccountScreen(),
       transfer: (context) => TransferScreen(),
       settings: (context) => SettingsScreen(),
+      assets: (context) => AssetsScreen(),
     };

@@ -20,3 +20,8 @@ void pushTransfer(BuildContext context) => Navigator.pushNamed(
       context,
       route.transfer,
     );
+
+void pushAssets(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.assets,
+    );
