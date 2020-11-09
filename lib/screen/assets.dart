@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -25,9 +24,9 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
       padding: const EdgeInsets.all(8),
       child: Center(
         child: QrImage(
-          data: '1234567890',
+          data: 'Convexity',
           version: QrVersions.auto,
-          size: 200.0,
+          size: 200,
         ),
       ),
     );
