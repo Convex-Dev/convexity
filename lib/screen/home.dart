@@ -110,11 +110,12 @@ class HomeScreenBody extends StatelessWidget {
                 ],
               ),
             ),
+            Gap(40),
             Center(
               child: QrImage(
                 data: Sodium.bin2hex(activeKeyPair.pk),
                 version: QrVersions.auto,
-                size: 100,
+                size: 160,
               ),
             ),
           ],
