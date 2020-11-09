@@ -1,5 +1,7 @@
+import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -24,7 +26,11 @@ class SettingsScreenBody extends StatelessWidget {
             child: Text('CLEAR'),
             onPressed: () {
               SharedPreferences.getInstance().then(
-                (preferences) => preferences.clear(),
+                (preferences) {
+                  preferences.clear();
+
+                  context.read<AppState>().reset();
+                },
               );
             },
           ),

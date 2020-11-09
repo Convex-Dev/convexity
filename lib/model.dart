@@ -75,4 +75,10 @@ class AppState with ChangeNotifier {
   }
 
   void removeKeyPair(KeyPair k) {}
+
+  void reset() {
+    setState(
+      (m) => Model(),
+    );
+  }
 }
