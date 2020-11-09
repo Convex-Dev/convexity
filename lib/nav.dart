@@ -4,14 +4,19 @@ import 'package:flutter/widgets.dart';
 import 'convex.dart' as convex;
 import 'route.dart' as route;
 
-void account(BuildContext context, convex.Address address) =>
+void pushAccount(BuildContext context, convex.Address address) =>
     Navigator.pushNamed(
       context,
       route.account,
       arguments: address,
     );
 
-void settings(BuildContext context) => Navigator.pushNamed(
+void pushSettings(BuildContext context) => Navigator.pushNamed(
       context,
       route.settings,
+    );
+
+void pushTransfer(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.transfer,
     );

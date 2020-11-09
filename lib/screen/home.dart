@@ -1,10 +1,11 @@
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:gap/gap.dart';
 
 import '../route.dart' as route;
+import '../nav.dart' as nav;
 import '../widget.dart';
-import 'package:gap/gap.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class HomeScreenBody extends StatelessWidget {
-  Widget action() => Column(
+  Widget action(BuildContext context) => Column(
         children: [
           Ink(
             decoration: const ShapeDecoration(
@@ -59,7 +60,7 @@ class HomeScreenBody extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.money),
               color: Colors.white,
-              onPressed: () {},
+              onPressed: () => nav.pushTransfer(context),
             ),
           ),
           Gap(6),
@@ -114,13 +115,13 @@ class HomeScreenBody extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              action(),
+              action(context),
               Gap(12),
-              action(),
+              action(context),
               Gap(12),
-              action(),
+              action(context),
               Gap(12),
-              action(),
+              action(context),
             ],
           )
         ],

@@ -41,7 +41,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
                 value: _PopupChoice.settings,
               )
             ],
-            onSelected: (s) => nav.settings(context),
+            onSelected: (s) => nav.pushSettings(context),
           )
         ],
       ),

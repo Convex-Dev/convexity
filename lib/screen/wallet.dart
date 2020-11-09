@@ -86,7 +86,7 @@ class WalletScreenBody extends StatelessWidget {
             convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
             overflow: TextOverflow.ellipsis,
           ),
-          onTap: () => nav.account(
+          onTap: () => nav.pushAccount(
             context,
             convex.Address(
               hex: Sodium.bin2hex(keyPair.pk),
