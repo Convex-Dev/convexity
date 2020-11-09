@@ -120,13 +120,13 @@ class HomeScreenBody extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              action(context, 'Faucet', () => nav.pushTransfer(context)),
+              Gap(12),
               action(context, 'Transfer', () => nav.pushTransfer(context)),
               Gap(12),
-              action(context, 'Label', () => null),
+              action(context, 'Quick action', () => null),
               Gap(12),
-              action(context, 'Label', () => null),
-              Gap(12),
-              action(context, 'Label', () => null),
+              action(context, 'Quick action', () => null),
             ],
           )
         ],
