@@ -23,6 +23,7 @@ void _createAccount(BuildContext context) {
       if (response.statusCode == 200) {
         context.read<AppState>().addKeyPair(randomKeyPair);
 
+        wallet.setActiveKeyPair(randomKeyPair);
         wallet.addKeyPair(randomKeyPair);
 
         Scaffold.of(context).showSnackBar(

@@ -1,9 +1,13 @@
 import 'dart:developer';
 
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
+
+import '../model.dart';
+import '../widget.dart';
 
 class TransferScreen extends StatelessWidget {
   @override
@@ -26,6 +30,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Form(
@@ -50,6 +56,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               )
             : Column(
                 children: [
+                  IdenticonDropdown(
+                    activeKeyPair: appState.model.activeKeyPair,
+                    allKeyPairs: appState.model.allKeyPairs,
+                  ),
                   ElevatedButton(
                     child: Text('Scan QA Code'),
                     onPressed: () {

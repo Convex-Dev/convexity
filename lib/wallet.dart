@@ -67,7 +67,7 @@ Future<bool> setKeyPairs(List<KeyPair> keyPairs) async {
   return preferences.setStringList(_allKeyPairs, keyPairs.map(encodeKeyPair));
 }
 
-Future<bool> setActive(KeyPair keyPair) async {
+Future<bool> setActiveKeyPair(KeyPair keyPair) async {
   var preferences = await SharedPreferences.getInstance();
 
   return preferences.setString(_activeKeyPair, encodeKeyPair(keyPair));

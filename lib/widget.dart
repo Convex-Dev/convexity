@@ -60,7 +60,7 @@ class IdenticonDropdown extends StatelessWidget {
 
         context.read<AppState>().setActiveKeyPair(selectedKeyPair);
 
-        wallet.setActive(selectedKeyPair);
+        wallet.setActiveKeyPair(selectedKeyPair);
       },
     );
   }
