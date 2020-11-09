@@ -1,7 +1,9 @@
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../route.dart' as route;
 import '../nav.dart' as nav;
@@ -83,7 +85,7 @@ class HomeScreenBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (activeKeyPair != null)
+          if (activeKeyPair != null) ...[
             Card(
               child: Column(
                 children: [
@@ -108,6 +110,14 @@ class HomeScreenBody extends StatelessWidget {
                 ],
               ),
             ),
+            Center(
+              child: QrImage(
+                data: Sodium.bin2hex(activeKeyPair.pk),
+                version: QrVersions.auto,
+                size: 100,
+              ),
+            ),
+          ],
           Gap(40),
           Text(
             'Quick actions',
