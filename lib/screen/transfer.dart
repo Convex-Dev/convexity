@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class TransferScreen extends StatelessWidget {
@@ -28,19 +29,24 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
         child: Column(
           children: [
             TextFormField(
+              autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Destination',
                 hintText: 'Address',
               ),
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Please enter the Account Address';
+                  return 'Please enter the address';
                 }
 
                 return null;
               },
             ),
             TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
               decoration: InputDecoration(
                 labelText: 'Amount',
               ),

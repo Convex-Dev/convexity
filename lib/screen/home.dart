@@ -50,7 +50,12 @@ class HomeScreen extends StatelessWidget {
 }
 
 class HomeScreenBody extends StatelessWidget {
-  Widget action(BuildContext context) => Column(
+  Widget action(
+    BuildContext context,
+    String label,
+    void Function() onPressed,
+  ) =>
+      Column(
         children: [
           Ink(
             decoration: const ShapeDecoration(
@@ -60,11 +65,11 @@ class HomeScreenBody extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.money),
               color: Colors.white,
-              onPressed: () => nav.pushTransfer(context),
+              onPressed: onPressed,
             ),
           ),
           Gap(6),
-          Text('Label')
+          Text(label)
         ],
       );
 
@@ -115,13 +120,13 @@ class HomeScreenBody extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              action(context),
+              action(context, 'Transfer', () => nav.pushTransfer(context)),
               Gap(12),
-              action(context),
+              action(context, 'Label', () => null),
               Gap(12),
-              action(context),
+              action(context, 'Label', () => null),
               Gap(12),
-              action(context),
+              action(context, 'Label', () => null),
             ],
           )
         ],
