@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,11 +28,6 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   scan() async {
     var result = await BarcodeScanner.scan();
-
-    print(result.type);
-    print(result.rawContent);
-    print(result.format);
-    print(result.formatNote);
 
     setState(() {
       _targetController.text = result.rawContent;
