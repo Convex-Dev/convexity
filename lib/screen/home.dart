@@ -137,8 +137,6 @@ class HomeScreenBody extends StatelessWidget {
               action(context, 'Transfer', () => nav.pushTransfer(context)),
               Gap(12),
               action(context, 'Assets', () => nav.pushAssets(context)),
-              Gap(12),
-              action(context, 'Quick action', () => null),
             ],
           )
         ],
