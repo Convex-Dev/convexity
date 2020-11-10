@@ -78,9 +78,19 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
         key: formKey,
         child: Column(
           children: [
-            IdenticonDropdown(
-              activeKeyPair: appState.model.activeKeyPair,
-              allKeyPairs: appState.model.allKeyPairs,
+            Row(
+              children: [
+                IdenticonDropdown(
+                  activeKeyPair: appState.model.activeKeyPair,
+                  allKeyPairs: appState.model.allKeyPairs,
+                ),
+                Expanded(
+                  child: Text(
+                    appState.model.activeAddress,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              ],
             ),
             ElevatedButton(
               child: Text('Scan QA Code'),
