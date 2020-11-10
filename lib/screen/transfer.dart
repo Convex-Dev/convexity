@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 import '../model.dart';
 import '../widget.dart';
@@ -26,7 +26,15 @@ class TransferScreenBody extends StatefulWidget {
 
 class _TransferScreenBodyState extends State<TransferScreenBody> {
   var _formKey = GlobalKey<FormState>();
-  var _isScanning = false;
+
+  scan() async {
+    var result = await BarcodeScanner.scan();
+
+    print(result.type);
+    print(result.rawContent);
+    print(result.format);
+    print(result.formatNote);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,80 +44,62 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
       padding: const EdgeInsets.all(8),
       child: Form(
         key: _formKey,
-        child: _isScanning
-            ? Center(
-                child: SizedBox(
-                  height: 1000,
-                  width: 500,
-                  child: QRBarScannerCamera(
-                    onError: (context, error) => Text(
-                      error.toString(),
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    qrCodeCallback: (code) {
-                      log('QR Code $code');
-
-                      setState(() => _isScanning = false);
-                    },
-                  ),
-                ),
-              )
-            : Column(
-                children: [
-                  IdenticonDropdown(
-                    activeKeyPair: appState.model.activeKeyPair,
-                    allKeyPairs: appState.model.allKeyPairs,
-                  ),
-                  ElevatedButton(
-                    child: Text('Scan QA Code'),
-                    onPressed: () {
-                      setState(() => _isScanning = true);
-                    },
-                  ),
-                  TextFormField(
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      labelText: 'Destination',
-                      hintText: 'Address',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter the address';
-                      }
-
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'Amount',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter the amount';
-                      }
-
-                      return null;
-                    },
-                  ),
-                  ElevatedButton(
-                    child: Text('Transfer'),
-                    onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('OK'),
-                          ),
-                        );
-                      }
-                    },
-                  )
-                ],
+        child: Column(
+          children: [
+            IdenticonDropdown(
+              activeKeyPair: appState.model.activeKeyPair,
+              allKeyPairs: appState.model.allKeyPairs,
+            ),
+            ElevatedButton(
+              child: Text('Scan QA Code'),
+              onPressed: () {
+                scan();
+              },
+            ),
+            TextFormField(
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: 'Destination',
+                hintText: 'Address',
               ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Please enter the address';
+                }
+
+                return null;
+              },
+            ),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              decoration: InputDecoration(
+                labelText: 'Amount',
+              ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Please enter the amount';
+                }
+
+                return null;
+              },
+            ),
+            ElevatedButton(
+              child: Text('Transfer'),
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('OK'),
+                    ),
+                  );
+                }
+              },
+            )
+          ],
+        ),
       ),
     );
   }
