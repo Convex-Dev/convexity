@@ -47,6 +47,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     String targetAddress,
     int amount,
   }) async {
+    setState(() {
+      isTransfering = true;
+    });
+
     var result = await convex.transact(
       address: targetAddress,
       source: '(transfer "$targetAddress" $amount)',
@@ -58,6 +62,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
         content: Text('${result.value}'),
       ),
     );
+
+    setState(() {
+      isTransfering = false;
+    });
   }
 
   @override
@@ -117,17 +125,25 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               },
             ),
             ElevatedButton(
-              child: Text('Transfer'),
-              onPressed: () {
-                if (formKey.currentState.validate()) {
-                  transfer(
-                    context: context,
-                    signerSecretKey: appState.model.activeKeyPair.sk,
-                    targetAddress: appState.model.activeAddress,
-                    amount: int.parse(amountController.text),
-                  );
-                }
-              },
+              child: isTransfering
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(),
+                    )
+                  : Text('Transfer'),
+              onPressed: isTransfering
+                  ? null
+                  : () {
+                      if (formKey.currentState.validate()) {
+                        transfer(
+                          context: context,
+                          signerSecretKey: appState.model.activeKeyPair.sk,
+                          targetAddress: appState.model.activeAddress,
+                          amount: int.parse(amountController.text),
+                        );
+                      }
+                    },
             )
           ],
         ),
