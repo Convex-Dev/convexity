@@ -1,6 +1,5 @@
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -77,6 +76,8 @@ class HomeScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var model = context.watch<AppState>().model;
+
     var activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
 
@@ -113,7 +114,7 @@ class HomeScreenBody extends StatelessWidget {
             Gap(40),
             Center(
               child: QrImage(
-                data: Sodium.bin2hex(activeKeyPair.pk),
+                data: model.activeAddress,
                 version: QrVersions.auto,
                 size: 160,
               ),

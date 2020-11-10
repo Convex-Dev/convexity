@@ -93,7 +93,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               ],
             ),
             ElevatedButton(
-              child: Text('Scan QA Code'),
+              child: Text('Scan QR Code'),
               onPressed: () {
                 scan();
               },
@@ -103,7 +103,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               controller: targetController,
               decoration: InputDecoration(
                 labelText: 'Destination',
-                hintText: 'Address',
+                hintText: 'Address of payee',
               ),
               validator: (value) {
                 if (value.isEmpty) {
@@ -121,6 +121,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               ],
               decoration: InputDecoration(
                 labelText: 'Amount',
+                hintText: 'Amount in Convex Coins',
               ),
               validator: (value) {
                 if (value.isEmpty) {
