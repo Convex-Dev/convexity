@@ -198,6 +198,10 @@ Future<Result> transact({
 
   var prepareBody = convert.jsonDecode(prepareResponse.body);
 
+  if (prepareResponse.statusCode != 200) {
+    throw Exception(prepareBody['error']['message']);
+  }
+
   var hashHex = prepareBody['hash'];
   var hashBin = sodium.Sodium.hex2bin(hashHex);
 

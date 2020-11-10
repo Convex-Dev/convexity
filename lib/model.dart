@@ -12,6 +12,9 @@ class Model {
     this.allKeyPairs = const [],
   });
 
+  String get activeAddress =>
+      activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
+
   KeyPair activeKeyPairOrDefault() {
     if (activeKeyPair != null) {
       return activeKeyPair;

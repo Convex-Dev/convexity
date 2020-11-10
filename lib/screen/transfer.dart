@@ -6,6 +6,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 
 import '../model.dart';
 import '../widget.dart';
+import '../convex.dart' as convex;
 
 class TransferScreen extends StatelessWidget {
   @override
@@ -25,6 +26,7 @@ class TransferScreenBody extends StatefulWidget {
 class _TransferScreenBodyState extends State<TransferScreenBody> {
   var _formKey = GlobalKey<FormState>();
   var _targetController = TextEditingController();
+  var _amountController = TextEditingController();
 
   scan() async {
     var result = await BarcodeScanner.scan();
@@ -71,6 +73,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
             ),
             TextFormField(
               keyboardType: TextInputType.number,
+              controller: _amountController,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
               ],
@@ -89,11 +92,20 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               child: Text('Transfer'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('OK'),
-                    ),
-                  );
+                  convex
+                      .transact(
+                    address: appState.model.activeAddress,
+                    source:
+                        '(transfer "${appState.model.activeAddress}" ${_amountController.text})',
+                    secretKey: appState.model.activeKeyPair.sk,
+                  )
+                      .then((value) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${value.value}'),
+                      ),
+                    );
+                  });
                 }
               },
             )
