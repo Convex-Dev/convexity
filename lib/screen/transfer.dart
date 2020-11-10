@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,16 +26,38 @@ class TransferScreenBody extends StatefulWidget {
 }
 
 class _TransferScreenBodyState extends State<TransferScreenBody> {
-  var _formKey = GlobalKey<FormState>();
-  var _targetController = TextEditingController();
-  var _amountController = TextEditingController();
+  var isTransfering = false;
 
-  scan() async {
+  var formKey = GlobalKey<FormState>();
+
+  var targetController = TextEditingController();
+  var amountController = TextEditingController();
+
+  void scan() async {
     var result = await BarcodeScanner.scan();
 
     setState(() {
-      _targetController.text = result.rawContent;
+      targetController.text = result.rawContent;
     });
+  }
+
+  void transfer({
+    BuildContext context,
+    Uint8List signerSecretKey,
+    String targetAddress,
+    int amount,
+  }) async {
+    var result = await convex.transact(
+      address: targetAddress,
+      source: '(transfer "$targetAddress" $amount)',
+      secretKey: signerSecretKey,
+    );
+
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${result.value}'),
+      ),
+    );
   }
 
   @override
@@ -43,7 +67,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Form(
-        key: _formKey,
+        key: formKey,
         child: Column(
           children: [
             IdenticonDropdown(
@@ -58,14 +82,14 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
             ),
             TextFormField(
               autofocus: false,
-              controller: _targetController,
+              controller: targetController,
               decoration: InputDecoration(
                 labelText: 'Destination',
                 hintText: 'Address',
               ),
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Please enter the address';
+                  return 'Please enter the address.';
                 }
 
                 return null;
@@ -73,7 +97,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
             ),
             TextFormField(
               keyboardType: TextInputType.number,
-              controller: _amountController,
+              controller: amountController,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
               ],
@@ -82,7 +106,11 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               ),
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Please enter the amount';
+                  return 'Please enter the amount.';
+                }
+
+                if (int.tryParse(value) == null) {
+                  return 'Please enter the amount as number.';
                 }
 
                 return null;
@@ -91,21 +119,13 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
             ElevatedButton(
               child: Text('Transfer'),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  convex
-                      .transact(
-                    address: appState.model.activeAddress,
-                    source:
-                        '(transfer "${appState.model.activeAddress}" ${_amountController.text})',
-                    secretKey: appState.model.activeKeyPair.sk,
-                  )
-                      .then((value) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${value.value}'),
-                      ),
-                    );
-                  });
+                if (formKey.currentState.validate()) {
+                  transfer(
+                    context: context,
+                    signerSecretKey: appState.model.activeKeyPair.sk,
+                    targetAddress: appState.model.activeAddress,
+                    amount: int.parse(amountController.text),
+                  );
                 }
               },
             )
@@ -117,7 +137,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   @override
   void dispose() {
-    _targetController.dispose();
+    targetController.dispose();
+    amountController.dispose();
 
     super.dispose();
   }
