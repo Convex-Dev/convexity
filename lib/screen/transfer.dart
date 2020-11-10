@@ -26,6 +26,7 @@ class TransferScreenBody extends StatefulWidget {
 
 class _TransferScreenBodyState extends State<TransferScreenBody> {
   var _formKey = GlobalKey<FormState>();
+  var _targetController = TextEditingController();
 
   scan() async {
     var result = await BarcodeScanner.scan();
@@ -34,6 +35,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     print(result.rawContent);
     print(result.format);
     print(result.formatNote);
+
+    setState(() {
+      _targetController.text = result.rawContent;
+    });
   }
 
   @override
@@ -57,7 +62,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               },
             ),
             TextFormField(
-              autofocus: true,
+              autofocus: false,
+              controller: _targetController,
               decoration: InputDecoration(
                 labelText: 'Destination',
                 hintText: 'Address',
@@ -102,5 +108,12 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _targetController.dispose();
+
+    super.dispose();
   }
 }
