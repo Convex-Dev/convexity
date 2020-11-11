@@ -3,6 +3,28 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 
+abstract class Token {}
+
+class FungibleToken extends Token {
+  final String name;
+  final int balance;
+
+  FungibleToken({
+    @required this.name,
+    @required this.balance,
+  });
+}
+
+class NonFungibleToken extends Token {
+  final String name;
+  final List<String> coll;
+
+  NonFungibleToken({
+    @required this.name,
+    @required this.coll,
+  });
+}
+
 class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
