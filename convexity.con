@@ -1,0 +1,31 @@
+(def convexity
+  (deploy-once
+   '(do
+      (defn assets []
+        [{:address ""
+          :name "A1",
+          :description "A1 description",
+          :type :fungible
+          :symbol "SA1",
+          :decimals 2}
+
+         {:address ""
+          :name "A2",
+          :description "A2 description",
+          :type :fungible
+          :symbol "SA2",
+          :decimals 2}
+
+         {:address ""
+          :name "NFT1",
+          :description "NFT1 description",
+          :type :non-fungible
+          :symbol "SA2"}
+
+         {:address ""
+          :name "NFT2",
+          :description "NFT2 description",
+          :type :non-fungible
+          :symbol "SA2"}])
+
+      (export assets))))
