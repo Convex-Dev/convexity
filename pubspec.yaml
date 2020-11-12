@@ -32,7 +32,7 @@ dependencies:
   gap: ^1.2.0
   barcode_scan: 3.0.1
   qr_flutter: ^3.1.0
-  path_provider: 0.4.1
+  path_provider: ^1.6.24
   flag: ^3.0.5
 
   # The following adds the Cupertino Icons font to your application.
