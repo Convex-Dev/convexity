@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+
+import '../convex.dart' as convex;
+import '../backend.dart' as backend;
 
 class AssetsScreen extends StatelessWidget {
   @override
@@ -22,6 +24,8 @@ class AssetsScreenBody extends StatefulWidget {
 }
 
 class _AssetsScreenBodyState extends State<AssetsScreenBody> {
+  convex.Result result;
+
   final A = [
     FungibleToken(name: 'T1', balance: 10),
     FungibleToken(name: 'T2', balance: 5),
@@ -43,7 +47,19 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    var convexityAddress =
+        '581C366197D3f2016755d3D120068803dfb3781E7fed3A05F8369DE2a7dAcAD8';
+
+    backend.queryAssets(convexityAddress).then((value) => print(value));
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print('${result?.value} ${result?.value.runtimeType}');
+
     return GridView.count(
       padding: const EdgeInsets.all(20),
       crossAxisCount: 2,
@@ -51,7 +67,7 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
           .map(
             (token) => Container(
               padding: const EdgeInsets.all(8),
-              child: TokenRenderer(token: token),
+              child: AssetRenderer(token: token),
             ),
           )
           .toList(),
@@ -59,10 +75,10 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
   }
 }
 
-class TokenRenderer extends StatelessWidget {
+class AssetRenderer extends StatelessWidget {
   final Token token;
 
-  const TokenRenderer({Key key, @required this.token}) : super(key: key);
+  const AssetRenderer({Key key, @required this.token}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

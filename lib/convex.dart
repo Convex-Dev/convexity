@@ -97,6 +97,35 @@ Future<http.Response> query({
   return client.post(uri, body: body);
 }
 
+/// Executes a query on the Convex Network.
+Future<Result> queryResult({
+  String source,
+  String address,
+  Lang lang = Lang.convexLisp,
+}) async {
+  var response = await query(
+    source: source,
+    address: address,
+    lang: lang,
+  );
+
+  var bodyDecoded = convert.jsonDecode(response.body);
+
+  var resultValue = bodyDecoded['value'];
+  var resultErrorCode = bodyDecoded['error-code'];
+
+  if (resultErrorCode != null) {
+    return Result(
+      value: resultValue,
+      errorCode: resultErrorCode,
+    );
+  } else {
+    return Result(
+      value: resultValue,
+    );
+  }
+}
+
 Future<http.Response> prepareTransaction({
   http.Client client,
   String scheme = 'https',
