@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:meta/meta.dart';
 
 import 'convex.dart';
 
 abstract class Token {}
 
+@immutable
 class FungibleToken extends Token {
   final Address address;
   final String name;
@@ -23,6 +25,7 @@ class FungibleToken extends Token {
   });
 }
 
+@immutable
 class NonFungibleToken extends Token {
   final Address address;
   final String name;
@@ -37,6 +40,7 @@ class NonFungibleToken extends Token {
   });
 }
 
+@immutable
 class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
