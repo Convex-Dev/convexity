@@ -23,6 +23,7 @@ class AssetsScreenBody extends StatefulWidget {
 }
 
 class _AssetsScreenBodyState extends State<AssetsScreenBody> {
+  var isLoading = true;
   var assets = [];
 
   @override
@@ -32,25 +33,36 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
     var convexityAddress =
         '2ce438E5FF6F10204B1A83634Aa37cccC1D9C20F3C54885DDA4A93Fc6bc94A77';
 
-    backend
-        .queryAssets(convexityAddress)
-        .then((assets) => setState(() => this.assets = assets));
+    backend.queryAssets(convexityAddress).then(
+          (assets) => setState(
+            () {
+              this.isLoading = false;
+              this.assets = assets;
+            },
+          ),
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      padding: const EdgeInsets.all(20),
-      crossAxisCount: 2,
-      children: assets
-          .map(
-            (token) => Container(
-              padding: const EdgeInsets.all(8),
-              child: AssetRenderer(token: token),
-            ),
-          )
-          .toList(),
-    );
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return GridView.count(
+        padding: const EdgeInsets.all(20),
+        crossAxisCount: 2,
+        children: assets
+            .map(
+              (token) => Container(
+                padding: const EdgeInsets.all(8),
+                child: AssetRenderer(token: token),
+              ),
+            )
+            .toList(),
+      );
+    }
   }
 }
 
