@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
+import 'package:flag/flag.dart';
 
 import '../backend.dart' as backend;
 
@@ -95,6 +96,8 @@ class FungibleTokenRenderer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Flag('gb', height: 20),
+            Gap(10),
             Text(
               token.name,
               style: Theme.of(context).textTheme.subtitle1,
