@@ -3,24 +3,36 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 
+import 'convex.dart';
+
 abstract class Token {}
 
 class FungibleToken extends Token {
+  final Address address;
   final String name;
-  final int balance;
+  final String description;
+  final String symbol;
+  final int decimals;
 
   FungibleToken({
+    @required this.address,
     @required this.name,
-    @required this.balance,
+    @required this.description,
+    @required this.symbol,
+    @required this.decimals,
   });
 }
 
 class NonFungibleToken extends Token {
+  final Address address;
   final String name;
-  final List<String> coll;
+  final String description;
+  final List<Object> coll;
 
   NonFungibleToken({
+    @required this.address,
     @required this.name,
+    @required this.description,
     @required this.coll,
   });
 }

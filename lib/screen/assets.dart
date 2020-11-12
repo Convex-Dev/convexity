@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 
-import '../convex.dart' as convex;
 import '../backend.dart' as backend;
 
 class AssetsScreen extends StatelessWidget {
@@ -24,46 +23,26 @@ class AssetsScreenBody extends StatefulWidget {
 }
 
 class _AssetsScreenBodyState extends State<AssetsScreenBody> {
-  convex.Result result;
-
-  final A = [
-    FungibleToken(name: 'T1', balance: 10),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-    FungibleToken(name: 'T1', balance: 10),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-    FungibleToken(name: 'T1', balance: 10),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-    FungibleToken(name: 'T2', balance: 5),
-    NonFungibleToken(name: 'NFT1', coll: []),
-  ];
+  var assets = [];
 
   @override
   void initState() {
     super.initState();
 
     var convexityAddress =
-        '581C366197D3f2016755d3D120068803dfb3781E7fed3A05F8369DE2a7dAcAD8';
+        '2ce438E5FF6F10204B1A83634Aa37cccC1D9C20F3C54885DDA4A93Fc6bc94A77';
 
-    backend.queryAssets(convexityAddress).then((value) => print(value));
+    backend
+        .queryAssets(convexityAddress)
+        .then((assets) => setState(() => this.assets = assets));
   }
 
   @override
   Widget build(BuildContext context) {
-    print('${result?.value} ${result?.value.runtimeType}');
-
     return GridView.count(
       padding: const EdgeInsets.all(20),
       crossAxisCount: 2,
-      children: A
+      children: assets
           .map(
             (token) => Container(
               padding: const EdgeInsets.all(8),
@@ -116,7 +95,7 @@ class FungibleTokenRenderer extends StatelessWidget {
                   style: Theme.of(context).textTheme.overline,
                 ),
                 Text(
-                  token.balance.toString(),
+                  '-',
                   style: Theme.of(context).textTheme.headline3,
                 ),
               ],

@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'dart:developer';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
@@ -115,6 +116,8 @@ Future<Result> queryResult({
   var resultErrorCode = bodyDecoded['error-code'];
 
   if (resultErrorCode != null) {
+    log('Query returned an error code: $resultErrorCode');
+
     return Result(
       value: resultValue,
       errorCode: resultErrorCode,
