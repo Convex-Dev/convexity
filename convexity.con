@@ -2,30 +2,52 @@
   (deploy-once
    '(do
       (defn assets []
-        [{:address ""
-          :name "A1",
-          :description "A1 description",
+        [{:name "Bahraini Dinar"
+          :description "Bahrain’s national currency."
           :type :fungible
-          :symbol "SA1",
+          :symbol "BHD"
           :decimals 2}
 
-         {:address ""
-          :name "A2",
-          :description "A2 description",
+         {:name "Oman Rial"
+          :description "Oman’s national currency."
           :type :fungible
-          :symbol "SA2",
+          :symbol "OMR"
           :decimals 2}
 
-         {:address ""
-          :name "NFT1",
-          :description "NFT1 description",
-          :type :non-fungible
-          :symbol "SA2"}
+         {:name "Jordan Dinar"
+          :description "Jordan’s national currency."
+          :type :fungible
+          :symbol "JOD"
+          :decimals 2}
 
-         {:address ""
-          :name "NFT2",
-          :description "NFT2 description",
-          :type :non-fungible
-          :symbol "SA2"}])
+         {:name "British Pound Sterling"
+          :description "United Kingdom’s national currency."
+          :type :fungible
+          :symbol "GBP"
+          :decimals 2}
+
+         {:name "European Euro"
+          :description "European Union’s money."
+          :type :fungible
+          :symbol "EUR"
+          :decimals 2}
+
+         {:name "Swiss Franc"
+          :description "Switzerland’s national currency."
+          :type :fungible
+          :symbol "CHF"
+          :decimals 2}
+
+         {:name "US Dollar"
+          :description "United States’ national currency."
+          :type :fungible
+          :symbol "USD"
+          :decimals 2}
+
+         {:name "Canadian Dollar"
+          :description "Canada’s national currency."
+          :type :fungible
+          :symbol "CAD"
+          :decimals 2}])
 
       (export assets))))

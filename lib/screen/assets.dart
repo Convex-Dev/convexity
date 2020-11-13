@@ -32,7 +32,7 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
     super.initState();
 
     var convexityAddress =
-        '2ce438E5FF6F10204B1A83634Aa37cccC1D9C20F3C54885DDA4A93Fc6bc94A77';
+        '33391329CBf87B84EdD482B04D7De6A7bC33Bb99B384D9d77B0365BD7a7e2562';
 
     backend.queryAssets(convexityAddress).then(
           (assets) => setState(
@@ -88,6 +88,40 @@ class FungibleTokenRenderer extends StatelessWidget {
   const FungibleTokenRenderer({Key key, @required this.token})
       : super(key: key);
 
+  String symbolToCountryCode(String symbol) {
+    switch (symbol) {
+      // Kuwait Dinar
+      case 'KWD':
+        return 'kw';
+      // Bahrain Dinar
+      case 'BHD':
+        return 'bh';
+      // Oman Rial
+      case 'OMR':
+        return 'om';
+      // Jordan Dinar
+      case 'JOD':
+        return 'jo';
+      // British Pound Sterling
+      case 'GBP':
+        return 'gb';
+      // European Euro
+      case 'EUR':
+        return 'eu';
+      // Swiss Franc
+      case 'CHF':
+        return 'ch';
+      // US Dollar
+      case 'USD':
+        return 'us';
+      case 'KYD':
+        return 'ky';
+      // Canadian Dollar
+      case 'CAD':
+        return 'ca';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -96,13 +130,14 @@ class FungibleTokenRenderer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flag('gb', height: 20),
+            Flag(symbolToCountryCode(token.symbol), height: 20),
             Gap(10),
             Text(
               token.name,
-              style: Theme.of(context).textTheme.subtitle1,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
-            Gap(10),
+            Gap(8),
             Column(
               children: [
                 Text(
