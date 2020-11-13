@@ -7,6 +7,7 @@ import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:flag/flag.dart';
 
 import '../backend.dart' as backend;
+import '../nav.dart' as nav;
 
 class AssetsScreen extends StatelessWidget {
   @override
@@ -14,6 +15,10 @@ class AssetsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Assets')),
       body: AssetsScreenBody(),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => nav.pushNewAsset(context),
+      ),
     );
   }
 }
@@ -120,6 +125,8 @@ class FungibleTokenRenderer extends StatelessWidget {
       case 'CAD':
         return 'ca';
     }
+
+    return null;
   }
 
   @override
