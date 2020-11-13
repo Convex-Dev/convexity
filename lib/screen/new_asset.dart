@@ -67,7 +67,7 @@ class _NewAssetScreenBodyState extends State<NewAssetScreenBody> {
             value: _Option.myHoldings,
           ),
           option(
-            title: 'Entry Asset ID',
+            title: 'Asset ID',
             value: _Option.assetId,
           ),
           Gap(20),
