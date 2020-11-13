@@ -1,5 +1,7 @@
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 enum _Option {
   recommended,
@@ -112,10 +114,26 @@ class _Recommended extends StatelessWidget {
 }
 
 class _ScanQRCode extends StatelessWidget {
+  void scan() async {
+    var result = await BarcodeScanner.scan();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Scan QR Code'),
+    return Column(
+      children: [
+        QrImage(
+          data: 'Convexity',
+          version: QrVersions.auto,
+          size: 160,
+        ),
+        ElevatedButton(
+          child: Text('Scan QR Code'),
+          onPressed: () {
+            scan();
+          },
+        ),
+      ],
     );
   }
 }
