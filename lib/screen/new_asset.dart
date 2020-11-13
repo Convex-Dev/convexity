@@ -4,12 +4,8 @@ class NewAssetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Assets')),
+      appBar: AppBar(title: Text('New Asset')),
       body: NewAssetScreenBody(),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {},
-      ),
     );
   }
 }
