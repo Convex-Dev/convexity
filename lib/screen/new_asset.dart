@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
-enum _EntryType {
+enum _Option {
   recommended,
   scanQRCode,
   search,
@@ -24,19 +25,19 @@ class NewAssetScreenBody extends StatefulWidget {
 }
 
 class _NewAssetScreenBodyState extends State<NewAssetScreenBody> {
-  var selectedType = _EntryType.recommended;
+  var selectedOption = _Option.recommended;
 
   Widget option({
     @required String title,
-    @required _EntryType value,
+    @required _Option value,
   }) =>
       RadioListTile(
         title: Text(title),
         value: value,
-        groupValue: selectedType,
+        groupValue: selectedOption,
         onChanged: (value) {
           setState(() {
-            selectedType = value;
+            selectedOption = value;
           });
         },
       );
@@ -49,26 +50,99 @@ class _NewAssetScreenBodyState extends State<NewAssetScreenBody> {
         children: [
           option(
             title: 'Recommended',
-            value: _EntryType.recommended,
+            value: _Option.recommended,
           ),
           option(
             title: 'Scan QR Code',
-            value: _EntryType.scanQRCode,
+            value: _Option.scanQRCode,
           ),
           option(
             title: 'Search',
-            value: _EntryType.search,
+            value: _Option.search,
           ),
           option(
             title: 'My Holdings',
-            value: _EntryType.myHoldings,
+            value: _Option.myHoldings,
           ),
           option(
             title: 'Entry Asset ID',
-            value: _EntryType.assetId,
+            value: _Option.assetId,
           ),
+          Gap(20),
+          OptionRenderer(
+            option: selectedOption,
+          )
         ],
       ),
+    );
+  }
+}
+
+class OptionRenderer extends StatelessWidget {
+  final _Option option;
+
+  const OptionRenderer({Key key, this.option}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    switch (option) {
+      case _Option.recommended:
+        return _Recommended();
+      case _Option.scanQRCode:
+        return _ScanQRCode();
+      case _Option.search:
+        return _Search();
+      case _Option.myHoldings:
+        return _MyHoldings();
+      case _Option.assetId:
+        return _AssetID();
+    }
+
+    throw Exception("No renderer for $option");
+  }
+}
+
+class _Recommended extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Recommended'),
+    );
+  }
+}
+
+class _ScanQRCode extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Scan QR Code'),
+    );
+  }
+}
+
+class _Search extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Search'),
+    );
+  }
+}
+
+class _MyHoldings extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('My Holdings'),
+    );
+  }
+}
+
+class _AssetID extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Asset ID'),
     );
   }
 }
