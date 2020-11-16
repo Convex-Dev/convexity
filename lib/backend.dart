@@ -14,7 +14,8 @@ Future<List<Token>> queryAssets(String convexityAddress) async {
     (m) {
       if (m['type'] == 'fungible') {
         return FungibleToken(
-          address: convex.Address(hex: m['address'] as String),
+          // TODO
+          address: convex.Address(hex: m['symbol'] as String),
           name: m['name'] as String,
           description: m['description'] as String,
           symbol: m['symbol'] as String,

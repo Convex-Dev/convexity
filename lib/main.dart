@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:convex_wallet/route.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'route.dart';
 import 'model.dart';
@@ -24,6 +26,20 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SharedPreferences.getInstance().then((preferences) {
+      var following = preferences.getString('following');
+
+      if (following != null) {
+        var followingDecoded = jsonDecode(following) as List;
+
+        context.read<AppState>().setFollowing(
+              followingDecoded
+                  .map((json) => FungibleToken.fromJson(json))
+                  .toSet(),
+            );
+      }
+    });
+
     // Initialize *all* Key Pairs.
     wallet.keyPairs().then(
       (keyPairs) {

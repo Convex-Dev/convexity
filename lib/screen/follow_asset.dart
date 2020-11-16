@@ -2,6 +2,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../config.dart' as config;
 import '../backend.dart' as backend;
@@ -121,10 +122,6 @@ class __RecommendedState extends State<_Recommended> {
 
   var assets = [];
 
-  var selectedToken;
-
-  Set<Token> selection = {};
-
   void initState() {
     super.initState();
 
@@ -145,43 +142,67 @@ class __RecommendedState extends State<_Recommended> {
 
   @override
   Widget build(BuildContext context) {
+    var following = context.watch<AppState>().model.following;
+
     if (isLoading) {
       return Center(
         child: CircularProgressIndicator(),
       );
     } else {
-      return GridView.count(
-        padding: const EdgeInsets.all(20),
-        crossAxisCount: 2,
-        children: assets
-            .map(
-              (token) => Stack(
-                children: [
-                  TokenRenderer(
-                    token: token,
-                    onTap: (token) {
-                      setState(() {
-                        if (selection.contains(token)) {
-                          selection.remove(token);
-                        } else {
-                          selection.add(token);
-                        }
-                      });
-                    },
-                  ),
-                  if (selection.contains(token))
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      alignment: Alignment.topRight,
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    )
-                ],
-              ),
-            )
-            .toList(),
+      return Column(
+        children: [
+          ElevatedButton(
+            child: Text('Follow'),
+            onPressed: following.isEmpty
+                ? null
+                : () {
+                    context
+                        .read<AppState>()
+                        .setFollowing(following, shouldPersist: true);
+
+                    Navigator.pop(context);
+                  },
+          ),
+          Expanded(
+            child: GridView.count(
+              padding: const EdgeInsets.all(20),
+              crossAxisCount: 2,
+              children: assets
+                  .map(
+                    (token) => Stack(
+                      children: [
+                        TokenRenderer(
+                          token: token,
+                          onTap: (token) {
+                            var followingCopy = Set<Token>.from(following);
+
+                            if (followingCopy.contains(token)) {
+                              followingCopy.remove(token);
+                            } else {
+                              followingCopy.add(token);
+                            }
+
+                            context
+                                .read<AppState>()
+                                .setFollowing(followingCopy);
+                          },
+                        ),
+                        if (following.contains(token))
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            alignment: Alignment.topRight,
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.green,
+                            ),
+                          )
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ],
       );
     }
   }
@@ -189,7 +210,7 @@ class __RecommendedState extends State<_Recommended> {
 
 class _ScanQRCode extends StatelessWidget {
   void scan() async {
-    var result = await BarcodeScanner.scan();
+    BarcodeScanner.scan();
   }
 
   @override
