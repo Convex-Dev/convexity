@@ -6,7 +6,7 @@ import 'screen/wallet.dart';
 import 'screen/account.dart';
 import 'screen/settings.dart';
 import 'screen/assets.dart';
-import 'screen/new_asset.dart';
+import 'screen/follow_asset.dart';
 import 'screen/transfer.dart';
 
 const String launcher = '/';
@@ -16,7 +16,7 @@ const String account = '/account';
 const String transfer = '/transfer';
 const String settings = '/settings';
 const String assets = '/assets';
-const String newAsset = '/assets/new';
+const String followAsset = '/assets/follow';
 
 Map<String, WidgetBuilder> routes() => {
       launcher: (context) => LauncherScreen(),
@@ -26,5 +26,5 @@ Map<String, WidgetBuilder> routes() => {
       transfer: (context) => TransferScreen(),
       settings: (context) => SettingsScreen(),
       assets: (context) => AssetsScreen(),
-      newAsset: (context) => NewAssetScreen(),
+      followAsset: (context) => FollowAssetScreen(),
     };

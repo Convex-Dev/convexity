@@ -28,5 +28,5 @@ void pushAssets(BuildContext context) => Navigator.pushNamed(
 
 void pushNewAsset(BuildContext context) => Navigator.pushNamed(
       context,
-      route.newAsset,
+      route.followAsset,
     );

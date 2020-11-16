@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../backend.dart' as backend;
 import '../nav.dart' as nav;
-import '../config.dart' as config;
 import '../widget.dart';
 
 class AssetsScreen extends StatelessWidget {
@@ -26,21 +24,12 @@ class AssetsScreenBody extends StatefulWidget {
 }
 
 class _AssetsScreenBodyState extends State<AssetsScreenBody> {
-  var isLoading = true;
+  var isLoading = false;
   var assets = [];
 
   @override
   void initState() {
     super.initState();
-
-    backend.queryAssets(config.convexityAddress).then(
-          (assets) => setState(
-            () {
-              this.isLoading = false;
-              this.assets = assets;
-            },
-          ),
-        );
   }
 
   @override
