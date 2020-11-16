@@ -155,26 +155,30 @@ class __RecommendedState extends State<_Recommended> {
         crossAxisCount: 2,
         children: assets
             .map(
-              (token) => Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  color: selection.contains(token)
-                      ? Colors.blue.withOpacity(0.4)
-                      : Colors.transparent,
-                ),
-                child: TokenRenderer(
-                  token: token,
-                  onTap: (token) {
-                    setState(() {
-                      if (selection.contains(token)) {
-                        selection.remove(token);
-                      } else {
-                        selection.add(token);
-                      }
-                    });
-                  },
-                ),
+              (token) => Stack(
+                children: [
+                  TokenRenderer(
+                    token: token,
+                    onTap: (token) {
+                      setState(() {
+                        if (selection.contains(token)) {
+                          selection.remove(token);
+                        } else {
+                          selection.add(token);
+                        }
+                      });
+                    },
+                  ),
+                  if (selection.contains(token))
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.topRight,
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.green,
+                      ),
+                    )
+                ],
               ),
             )
             .toList(),

@@ -144,6 +144,7 @@ class FungibleTokenRenderer extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(12),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flag(symbolToCountryCode(token.symbol), height: 20),
