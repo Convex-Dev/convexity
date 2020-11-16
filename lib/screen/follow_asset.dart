@@ -149,60 +149,43 @@ class __RecommendedState extends State<_Recommended> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return Column(
-        children: [
-          ElevatedButton(
-            child: Text('Follow'),
-            onPressed: following.isEmpty
-                ? null
-                : () {
-                    context
-                        .read<AppState>()
-                        .setFollowing(following, shouldPersist: true);
+      return GridView.count(
+        padding: const EdgeInsets.all(20),
+        crossAxisCount: 2,
+        children: assets
+            .map(
+              (token) => Stack(
+                children: [
+                  TokenRenderer(
+                    token: token,
+                    onTap: (token) {
+                      var followingCopy = Set<Token>.from(following);
 
-                    Navigator.pop(context);
-                  },
-          ),
-          Expanded(
-            child: GridView.count(
-              padding: const EdgeInsets.all(20),
-              crossAxisCount: 2,
-              children: assets
-                  .map(
-                    (token) => Stack(
-                      children: [
-                        TokenRenderer(
-                          token: token,
-                          onTap: (token) {
-                            var followingCopy = Set<Token>.from(following);
+                      if (followingCopy.contains(token)) {
+                        followingCopy.remove(token);
+                      } else {
+                        followingCopy.add(token);
+                      }
 
-                            if (followingCopy.contains(token)) {
-                              followingCopy.remove(token);
-                            } else {
-                              followingCopy.add(token);
-                            }
-
-                            context
-                                .read<AppState>()
-                                .setFollowing(followingCopy);
-                          },
-                        ),
-                        if (following.contains(token))
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            alignment: Alignment.topRight,
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.green,
-                            ),
-                          )
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-        ],
+                      context.read<AppState>().setFollowing(
+                            followingCopy,
+                            shouldPersist: true,
+                          );
+                    },
+                  ),
+                  if (following.contains(token))
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.topRight,
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.green,
+                      ),
+                    )
+                ],
+              ),
+            )
+            .toList(),
       );
     }
   }
