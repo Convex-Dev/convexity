@@ -122,14 +122,19 @@ class __RecommendedState extends State<_Recommended> {
   void initState() {
     super.initState();
 
-    backend.queryAssets(config.convexityAddress).then(
-          (assets) => setState(
-            () {
-              this.isLoading = false;
-              this.assets = assets;
-            },
-          ),
+    backend.queryAssets(config.convexityAddress).then((assets) {
+      // It's important to check if the Widget is mounted
+      // because the user might change the selected option
+      // while we're still loading the recommended Assets.
+      if (mounted) {
+        setState(
+          () {
+            this.isLoading = false;
+            this.assets = assets;
+          },
         );
+      }
+    });
   }
 
   @override
