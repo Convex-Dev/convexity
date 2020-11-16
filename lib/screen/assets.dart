@@ -57,7 +57,7 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
             .map(
               (token) => Container(
                 padding: const EdgeInsets.all(8),
-                child: AssetRenderer(token: token),
+                child: TokenRenderer(token: token),
               ),
             )
             .toList(),

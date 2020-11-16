@@ -18,6 +18,9 @@ class Address {
 
   Address({this.hex});
 
+  @override
+  String toString() => 'Address: $hex';
+
   static Address fromKeyPair(sodium.KeyPair keyPair) =>
       Address(hex: sodium.Sodium.bin2hex(keyPair.pk));
 }

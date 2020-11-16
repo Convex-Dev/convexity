@@ -117,7 +117,10 @@ class _Recommended extends StatefulWidget {
 
 class __RecommendedState extends State<_Recommended> {
   var isLoading = true;
+
   var assets = [];
+
+  var selectedToken;
 
   void initState() {
     super.initState();
@@ -150,8 +153,21 @@ class __RecommendedState extends State<_Recommended> {
         children: assets
             .map(
               (token) => Container(
-                padding: const EdgeInsets.all(8),
-                child: AssetRenderer(token: token),
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  color: token == selectedToken
+                      ? Colors.blue.withOpacity(0.4)
+                      : Colors.transparent,
+                ),
+                child: TokenRenderer(
+                  token: token,
+                  onTap: (token) {
+                    setState(() {
+                      selectedToken = token;
+                    });
+                  },
+                ),
               ),
             )
             .toList(),

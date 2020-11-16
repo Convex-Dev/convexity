@@ -23,6 +23,16 @@ class FungibleToken extends Token {
     @required this.symbol,
     @required this.decimals,
   });
+
+  @override
+  String toString() {
+    return '''FungibleToken:
+      address: $address,
+      name: $name, 
+      description: $description,
+      symbol: $symbol,
+      decimals: $decimals''';
+  }
 }
 
 @immutable
