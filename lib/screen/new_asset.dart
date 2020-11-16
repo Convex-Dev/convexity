@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../config.dart' as config;
+import '../backend.dart' as backend;
+import '../widget.dart';
+
 enum _Option {
   recommended,
   scanQRCode,
@@ -71,8 +75,10 @@ class _NewAssetScreenBodyState extends State<NewAssetScreenBody> {
             value: _Option.assetId,
           ),
           Gap(20),
-          OptionRenderer(
-            option: selectedOption,
+          Expanded(
+            child: OptionRenderer(
+              option: selectedOption,
+            ),
           )
         ],
       ),
@@ -104,12 +110,48 @@ class OptionRenderer extends StatelessWidget {
   }
 }
 
-class _Recommended extends StatelessWidget {
+class _Recommended extends StatefulWidget {
+  @override
+  __RecommendedState createState() => __RecommendedState();
+}
+
+class __RecommendedState extends State<_Recommended> {
+  var isLoading = true;
+  var assets = [];
+
+  void initState() {
+    super.initState();
+
+    backend.queryAssets(config.convexityAddress).then(
+          (assets) => setState(
+            () {
+              this.isLoading = false;
+              this.assets = assets;
+            },
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Recommended'),
-    );
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return GridView.count(
+        padding: const EdgeInsets.all(20),
+        crossAxisCount: 2,
+        children: assets
+            .map(
+              (token) => Container(
+                padding: const EdgeInsets.all(8),
+                child: AssetRenderer(token: token),
+              ),
+            )
+            .toList(),
+      );
+    }
   }
 }
 
