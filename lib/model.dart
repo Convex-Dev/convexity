@@ -1,37 +1,95 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-abstract class Token {}
+import 'convex.dart';
 
+abstract class Token {
+  Map<String, dynamic> toJson();
+}
+
+@immutable
 class FungibleToken extends Token {
+  final Address address;
   final String name;
-  final int balance;
+  final String description;
+  final String symbol;
+  final int decimals;
 
   FungibleToken({
+    @required this.address,
     @required this.name,
-    @required this.balance,
+    @required this.description,
+    @required this.symbol,
+    @required this.decimals,
   });
+
+  @override
+  bool operator ==(o) => o is FungibleToken && o.address == address;
+
+  @override
+  int get hashCode => address.hex.hashCode;
+
+  @override
+  String toString() {
+    return '''FungibleToken:
+      address: $address,
+      name: $name, 
+      description: $description,
+      symbol: $symbol,
+      decimals: $decimals''';
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'address': address.toJson(),
+        'name': name,
+        'description': description,
+        'symbol': symbol,
+        'decimals': decimals,
+      };
+
+  static FungibleToken fromJson(Map<String, dynamic> json) => FungibleToken(
+        address: Address.fromJson(json['address']),
+        name: json['name'],
+        description: json['description'],
+        symbol: json['symbol'],
+        decimals: json['decimals'],
+      );
 }
 
+@immutable
 class NonFungibleToken extends Token {
+  final Address address;
   final String name;
-  final List<String> coll;
+  final String description;
+  final List<Object> coll;
 
   NonFungibleToken({
+    @required this.address,
     @required this.name,
+    @required this.description,
     @required this.coll,
   });
+
+  @override
+  Map<String, dynamic> toJson() => {};
 }
 
+@immutable
 class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
+  final Set<Token> following;
 
   Model({
     this.activeKeyPair,
     this.allKeyPairs = const [],
+    this.following = const {},
   });
 
   String get activeAddress =>
@@ -48,10 +106,12 @@ class Model {
   Model copyWith({
     activeKeyPair,
     allKeyPairs,
+    following,
   }) =>
       Model(
         activeKeyPair: activeKeyPair ?? this.activeKeyPair,
         allKeyPairs: allKeyPairs ?? this.allKeyPairs,
+        following: following ?? this.following,
       );
 
   String toString() {
@@ -68,6 +128,8 @@ class Model {
 class AppState with ChangeNotifier {
   Model model;
 
+  String _prefFollowing = 'following';
+
   AppState({this.model});
 
   void setState(Model f(Model m)) {
@@ -81,6 +143,19 @@ class AppState with ChangeNotifier {
     );
 
     notifyListeners();
+  }
+
+  void setFollowing(Set<Token> following, {bool isPersistent = false}) {
+    if (isPersistent) {
+      var followingEncoded = jsonEncode(following.toList());
+
+      SharedPreferences.getInstance().then(
+        (preferences) =>
+            preferences.setString(_prefFollowing, followingEncoded),
+      );
+    }
+
+    setState((m) => m.copyWith(following: Set<Token>.from(following)));
   }
 
   void setActiveKeyPair(KeyPair active) {
@@ -98,8 +173,6 @@ class AppState with ChangeNotifier {
       (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
     );
   }
-
-  void removeKeyPair(KeyPair k) {}
 
   void reset() {
     setState(

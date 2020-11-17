@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'dart:developer';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
@@ -17,8 +18,24 @@ class Address {
 
   Address({this.hex});
 
-  static Address fromKeyPair(sodium.KeyPair keyPair) =>
-      Address(hex: sodium.Sodium.bin2hex(keyPair.pk));
+  Address.fromJson(
+    Map<String, dynamic> json,
+  ) : hex = json['hex'] as String;
+
+  Address.fromKeyPair(
+    sodium.KeyPair keyPair,
+  ) : hex = sodium.Sodium.bin2hex(keyPair.pk);
+
+  Map<String, dynamic> toJson() => {'hex': hex};
+
+  @override
+  String toString() => 'Address: $hex';
+
+  @override
+  bool operator ==(o) => o is Address && o.hex == hex;
+
+  @override
+  int get hashCode => hex.hashCode;
 }
 
 enum AccountType {
@@ -115,6 +132,8 @@ Future<Result> queryResult({
   var resultErrorCode = bodyDecoded['error-code'];
 
   if (resultErrorCode != null) {
+    log('Query returned an error code: $resultErrorCode');
+
     return Result(
       value: resultValue,
       errorCode: resultErrorCode,
