@@ -121,7 +121,11 @@ class Model {
     var allKeyPairsStr =
         'All KeyPairs: ${allKeyPairs.map((e) => Sodium.bin2hex(e.pk))}';
 
-    return [activeKeyPairStr, allKeyPairsStr].join('\n');
+    return [
+      activeKeyPairStr,
+      allKeyPairsStr,
+      following.toList(),
+    ].join('\n');
   }
 }
 
