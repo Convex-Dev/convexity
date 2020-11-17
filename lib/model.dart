@@ -145,8 +145,8 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  void setFollowing(Set<Token> following, {bool shouldPersist = false}) {
-    if (shouldPersist) {
+  void setFollowing(Set<Token> following, {bool isPersistent = false}) {
+    if (isPersistent) {
       var followingEncoded = jsonEncode(following.toList());
 
       SharedPreferences.getInstance().then(

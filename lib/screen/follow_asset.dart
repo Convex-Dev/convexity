@@ -114,10 +114,10 @@ class OptionRenderer extends StatelessWidget {
 
 class _Recommended extends StatefulWidget {
   @override
-  __RecommendedState createState() => __RecommendedState();
+  _RecommendedState createState() => _RecommendedState();
 }
 
-class __RecommendedState extends State<_Recommended> {
+class _RecommendedState extends State<_Recommended> {
   var isLoading = true;
 
   var assets = [];
@@ -169,7 +169,7 @@ class __RecommendedState extends State<_Recommended> {
 
                       context.read<AppState>().setFollowing(
                             followingCopy,
-                            shouldPersist: true,
+                            isPersistent: true,
                           );
                     },
                   ),

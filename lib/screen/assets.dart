@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
+import '../model.dart';
 import '../nav.dart' as nav;
 import '../widget.dart';
 
@@ -34,23 +36,19 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    } else {
-      return GridView.count(
-        padding: const EdgeInsets.all(20),
-        crossAxisCount: 2,
-        children: assets
-            .map(
-              (token) => Container(
-                padding: const EdgeInsets.all(8),
-                child: TokenRenderer(token: token),
-              ),
-            )
-            .toList(),
-      );
-    }
+    var following = context.watch<AppState>().model.following;
+
+    return GridView.count(
+      padding: const EdgeInsets.all(8),
+      crossAxisCount: 2,
+      children: following
+          .map(
+            (token) => Container(
+              padding: const EdgeInsets.all(8),
+              child: TokenRenderer(token: token),
+            ),
+          )
+          .toList(),
+    );
   }
 }
