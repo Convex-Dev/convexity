@@ -1,16 +1,12 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:convex_wallet/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
-import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'route.dart';
 import 'model.dart';
 import 'wallet.dart' as wallet;
+import 'asset.dart' as asset;
 
 void main() {
   sodium.Sodium.init();
@@ -23,43 +19,37 @@ void main() {
   );
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  void bootstrap() async {
+    var preferences = await SharedPreferences.getInstance();
+
+    var allKeyPairs = wallet.allKeyPairs(preferences);
+    var activeKeyPair = wallet.activeKeyPair(preferences);
+    var following = asset.following(preferences);
+
+    context.read<AppState>().setState(
+          (_) => Model(
+            allKeyPairs: allKeyPairs,
+            activeKeyPair: activeKeyPair,
+            following: following,
+          ),
+        );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    bootstrap();
+  }
+
   @override
   Widget build(BuildContext context) {
-    SharedPreferences.getInstance().then((preferences) {
-      var following = preferences.getString('following');
-
-      if (following != null) {
-        var followingDecoded = jsonDecode(following) as List;
-
-        context.read<AppState>().setFollowing(
-              followingDecoded
-                  .map((json) => FungibleToken.fromJson(json))
-                  .toSet(),
-            );
-      }
-    });
-
-    // Initialize *all* Key Pairs.
-    wallet.keyPairs().then(
-      (keyPairs) {
-        log('Init *all* Key Pairs: ${keyPairs.map((e) => Sodium.bin2hex(e.pk))}');
-
-        context.read<AppState>().setKeyPairs(keyPairs);
-      },
-    );
-
-    // Initialize *active* Key Pair.
-    wallet.activeKeyPair().then(
-      (activeKeyPair) {
-        if (activeKeyPair != null) {
-          log('Init *active* Key Pair: ${Sodium.bin2hex(activeKeyPair.pk)}');
-
-          context.read<AppState>().setActiveKeyPair(activeKeyPair);
-        }
-      },
-    );
-
     return MaterialApp(
       title: 'Convex Wallet',
       theme: ThemeData(
