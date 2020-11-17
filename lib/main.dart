@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'route.dart';
 import 'model.dart';
 import 'wallet.dart' as wallet;
-import 'asset.dart' as asset;
+import 'asset_manager.dart' as asset_manager;
 
 void main() {
   sodium.Sodium.init();
@@ -30,7 +30,7 @@ class _AppState extends State<App> {
 
     var allKeyPairs = wallet.allKeyPairs(preferences);
     var activeKeyPair = wallet.activeKeyPair(preferences);
-    var following = asset.following(preferences);
+    var following = asset_manager.following(preferences);
 
     context.read<AppState>().setState(
           (_) => Model(

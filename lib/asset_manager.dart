@@ -4,10 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model.dart';
 
-const _prefFollowing = 'following';
+const prefFollowing = 'following';
 
 Set<Token> following(SharedPreferences preferences) {
-  var encoded = preferences.getString(_prefFollowing);
+  var encoded = preferences.getString(prefFollowing);
 
   if (encoded != null) {
     var v = jsonDecode(encoded) as List;
