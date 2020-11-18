@@ -1,53 +1,63 @@
 (def convexity
   (deploy-once
    '(do
-      (defn assets []
-        [{:name "Bahraini Dinar"
-          :description "Bahrain’s national currency."
-          :type :fungible
-          :symbol "BHD"
-          :decimals 2}
 
-         {:name "Oman Rial"
-          :description "Oman’s national currency."
-          :type :fungible
-          :symbol "OMR"
-          :decimals 2}
+      (def registry
+        {"BHD" {:name "Bahraini Dinar"
+                :description "Bahrain’s national currency."
+                :type :fungible
+                :symbol "BHD"
+                :decimals 2}
 
-         {:name "Jordan Dinar"
-          :description "Jordan’s national currency."
-          :type :fungible
-          :symbol "JOD"
-          :decimals 2}
+         "OMR" {:name "Oman Rial"
+                :description "Oman’s national currency."
+                :type :fungible
+                :symbol "OMR"
+                :decimals 2}
 
-         {:name "British Pound Sterling"
-          :description "United Kingdom’s national currency."
-          :type :fungible
-          :symbol "GBP"
-          :decimals 2}
+         "JOD" {:name "Jordan Dinar"
+                :description "Jordan’s national currency."
+                :type :fungible
+                :symbol "JOD"
+                :decimals 2}
 
-         {:name "European Euro"
-          :description "European Union’s money."
-          :type :fungible
-          :symbol "EUR"
-          :decimals 2}
+         "GBP" {:name "British Pound Sterling"
+                :description "United Kingdom’s national currency."
+                :type :fungible
+                :symbol "GBP"
+                :decimals 2}
 
-         {:name "Swiss Franc"
-          :description "Switzerland’s national currency."
-          :type :fungible
-          :symbol "CHF"
-          :decimals 2}
+         "EUR" {:name "European Euro"
+                :description "European Union’s money."
+                :type :fungible
+                :symbol "EUR"
+                :decimals 2}
 
-         {:name "US Dollar"
-          :description "United States’ national currency."
-          :type :fungible
-          :symbol "USD"
-          :decimals 2}
+         "CHF" {:name "Swiss Franc"
+                :description "Switzerland’s national currency."
+                :type :fungible
+                :symbol "CHF"
+                :decimals 2}
 
-         {:name "Canadian Dollar"
-          :description "Canada’s national currency."
-          :type :fungible
-          :symbol "CAD"
-          :decimals 2}])
+         "USD" {:name "US Dollar"
+                :description "United States’ national currency."
+                :type :fungible
+                :symbol "USD"
+                :decimals 2}
 
-      (export assets))))
+         "CAD" {:name "Canadian Dollar"
+                :description "Canada’s national currency."
+                :type :fungible
+                :symbol "CAD"
+                :decimals 2}})
+
+      (defn all-assets []
+        registry)
+
+      (defn register [address metadata]
+        (def registry (assoc registry address metadata)))
+
+      (defn unregister [address]
+        (def registry (dissoc registry address)))
+
+      (export all-assets register unregister))))
