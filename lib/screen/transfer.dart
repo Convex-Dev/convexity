@@ -57,7 +57,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
       secretKey: signerSecretKey,
     );
 
-    Scaffold.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${result.value}'),
       ),
