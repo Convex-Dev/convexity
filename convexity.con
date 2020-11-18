@@ -51,13 +51,28 @@
                 :symbol "CAD"
                 :decimals 2}})
 
-      (defn all-assets []
+      (defn all-assets
+        ^{:doc
+          {:type :function
+           :signature [{:params []}]
+           :description "Returns a mapping of an Actor's Address to its metadata."}}
+        []
         registry)
 
-      (defn register [address metadata]
+      (defn register
+        ^{:doc
+          {:type :function
+           :signature [{:params [address metadata]}]
+           :description "Registers metadata for an Actor's Address."}}
+        [address metadata]
         (def registry (assoc registry address metadata)))
 
-      (defn unregister [address]
+      (defn unregister
+        ^{:doc
+          {:type :function
+           :signature [{:params [address]}]
+           :description "Unregisters metadata for an Actor's Address."}}
+        [address]
         (def registry (dissoc registry address)))
 
       (export all-assets register unregister))))
