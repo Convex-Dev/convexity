@@ -1,6 +1,10 @@
 (def convexity
   (deploy-once
    '(do
+      (import convex.trust :as trust)
+
+      (def trust-monitor
+        (deploy (trust/build-whitelist {:controller *caller* :whitelist [*caller*]})))
 
       (def registry
         {"BHD" {:name "Bahraini Dinar"
@@ -59,20 +63,24 @@
         []
         registry)
 
-      (defn register
+      (defn register-asset
         ^{:doc
           {:type :function
            :signature [{:params [address metadata]}]
            :description "Registers metadata for an Actor's Address."}}
         [address metadata]
-        (def registry (assoc registry address metadata)))
+        (if (trust/trusted? trust-monitor *caller*)
+          (def registry (assoc registry address metadata))
+          (fail :unauthorized "You're not authorized to modify the registry.")))
 
-      (defn unregister
+      (defn unregister-asset
         ^{:doc
           {:type :function
            :signature [{:params [address]}]
            :description "Unregisters metadata for an Actor's Address."}}
         [address]
-        (def registry (dissoc registry address)))
+        (if (trust/trusted? trust-monitor *caller*)
+          (def registry (dissoc registry address))
+          (fail :unauthorized "You're not authorized to modify the registry.")))
 
-      (export all-assets register unregister))))
+      (export all-assets register-asset unregister-asset))))
