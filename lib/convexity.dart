@@ -1,7 +1,7 @@
 import 'convex.dart' as convex;
 import 'model.dart';
 
-Future<List<Token>> queryAssets(String convexityAddress) async {
+Future<List<AssetMetadata>> queryAssets(String convexityAddress) async {
   var source = '(call "$convexityAddress" (assets))';
 
   var result = await convex.queryResult(source: source);
@@ -13,7 +13,7 @@ Future<List<Token>> queryAssets(String convexityAddress) async {
   var tokens = (result.value as List).map(
     (m) {
       if (m['type'] == 'fungible') {
-        return FungibleToken(
+        return FungibleTokenMetadata(
           // TODO
           address: convex.Address(hex: m['symbol'] as String),
           name: m['name'] as String,
@@ -22,7 +22,7 @@ Future<List<Token>> queryAssets(String convexityAddress) async {
           decimals: m['decimals'] as int,
         );
       } else if (m['type'] == 'non-fungible') {
-        return NonFungibleToken(
+        return NonFungibleTokenMetadata(
           address: convex.Address(hex: m['address'] as String),
           name: m['name'] as String,
           description: m['description'] as String,
@@ -41,7 +41,7 @@ class Convexity {
   Convexity(this.address);
 
   /// Query a particular Asset's metadata.
-  Future<Token> assetMetadata(convex.Address assetAddress) async {
+  Future<AssetMetadata> assetMetadata(convex.Address assetAddress) async {
     var source =
         '(call "${this.address.hex}" (asset-metadata (address "${assetAddress.hex}")))';
 
@@ -54,7 +54,7 @@ class Convexity {
     var m = result.value as Map<String, dynamic>;
 
     if (m['type'] == 'fungible') {
-      return FungibleToken(
+      return FungibleTokenMetadata(
         address: assetAddress,
         name: m['name'] as String,
         description: m['description'] as String,
@@ -62,7 +62,7 @@ class Convexity {
         decimals: 2,
       );
     } else if (m['type'] == 'non-fungible') {
-      return NonFungibleToken(
+      return NonFungibleTokenMetadata(
         address: assetAddress,
         name: m['name'] as String,
         description: m['description'] as String,

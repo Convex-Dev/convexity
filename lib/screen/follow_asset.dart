@@ -160,7 +160,7 @@ class _RecommendedState extends State<_Recommended> {
                   TokenRenderer(
                     token: token,
                     onTap: (token) {
-                      var followingCopy = Set<Token>.from(following);
+                      var followingCopy = Set<AssetMetadata>.from(following);
 
                       if (followingCopy.contains(token)) {
                         followingCopy.remove(token);
@@ -208,7 +208,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
   _ScanQRCodeStatus status = _ScanQRCodeStatus.ready;
 
   Address scannedAddress;
-  Token token;
+  AssetMetadata token;
 
   void scan() async {
     var r = await BarcodeScanner.scan();

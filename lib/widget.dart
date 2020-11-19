@@ -69,8 +69,8 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 class TokenRenderer extends StatelessWidget {
-  final Token token;
-  final void Function(Token) onTap;
+  final AssetMetadata token;
+  final void Function(AssetMetadata) onTap;
 
   const TokenRenderer({
     Key key,
@@ -80,7 +80,7 @@ class TokenRenderer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (token is FungibleToken) {
+    if (token is FungibleTokenMetadata) {
       return FungibleTokenRenderer(
         token: token,
         onTap: onTap,
@@ -95,8 +95,8 @@ class TokenRenderer extends StatelessWidget {
 }
 
 class FungibleTokenRenderer extends StatelessWidget {
-  final FungibleToken token;
-  final void Function(Token) onTap;
+  final FungibleTokenMetadata token;
+  final void Function(AssetMetadata) onTap;
 
   const FungibleTokenRenderer({Key key, @required this.token, this.onTap})
       : super(key: key);
@@ -174,8 +174,8 @@ class FungibleTokenRenderer extends StatelessWidget {
 }
 
 class NonFungibleTokenRenderer extends StatelessWidget {
-  final NonFungibleToken token;
-  final void Function(Token) onTap;
+  final NonFungibleTokenMetadata token;
+  final void Function(AssetMetadata) onTap;
 
   const NonFungibleTokenRenderer({Key key, @required this.token, this.onTap})
       : super(key: key);

@@ -8,19 +8,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'convex.dart';
 
-abstract class Token {
+abstract class AssetMetadata {
   Map<String, dynamic> toJson();
 }
 
 @immutable
-class FungibleToken extends Token {
+class FungibleTokenMetadata extends AssetMetadata {
   final Address address;
   final String name;
   final String description;
   final String symbol;
   final int decimals;
 
-  FungibleToken({
+  FungibleTokenMetadata({
     @required this.address,
     @required this.name,
     @required this.description,
@@ -29,7 +29,7 @@ class FungibleToken extends Token {
   });
 
   @override
-  bool operator ==(o) => o is FungibleToken && o.address == address;
+  bool operator ==(o) => o is FungibleTokenMetadata && o.address == address;
 
   @override
   int get hashCode => address.hex.hashCode;
@@ -53,7 +53,8 @@ class FungibleToken extends Token {
         'decimals': decimals,
       };
 
-  static FungibleToken fromJson(Map<String, dynamic> json) => FungibleToken(
+  static FungibleTokenMetadata fromJson(Map<String, dynamic> json) =>
+      FungibleTokenMetadata(
         address: Address.fromJson(json['address']),
         name: json['name'],
         description: json['description'],
@@ -63,13 +64,13 @@ class FungibleToken extends Token {
 }
 
 @immutable
-class NonFungibleToken extends Token {
+class NonFungibleTokenMetadata extends AssetMetadata {
   final Address address;
   final String name;
   final String description;
   final List<Object> coll;
 
-  NonFungibleToken({
+  NonFungibleTokenMetadata({
     @required this.address,
     @required this.name,
     @required this.description,
@@ -84,7 +85,7 @@ class NonFungibleToken extends Token {
 class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
-  final Set<Token> following;
+  final Set<AssetMetadata> following;
 
   Model({
     this.activeKeyPair,
@@ -149,7 +150,7 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  void setFollowing(Set<Token> following, {bool isPersistent = false}) {
+  void setFollowing(Set<AssetMetadata> following, {bool isPersistent = false}) {
     if (isPersistent) {
       var followingEncoded = jsonEncode(following.toList());
 
@@ -159,7 +160,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith(following: Set<Token>.from(following)));
+    setState((m) => m.copyWith(following: Set<AssetMetadata>.from(following)));
   }
 
   void setActiveKeyPair(KeyPair active) {
