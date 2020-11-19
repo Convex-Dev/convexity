@@ -6,7 +6,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../config.dart' as config;
-import '../backend.dart' as backend;
+import '../convexity.dart' as backend;
 import '../widget.dart';
 import '../model.dart';
 
