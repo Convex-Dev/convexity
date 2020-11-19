@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 
+import 'config.dart' as config;
+
 const CONVEX_WORLD_HOST = 'convex.world';
 
 // -- Types
@@ -120,6 +122,10 @@ Future<Result> queryResult({
   String address,
   Lang lang = Lang.convexLisp,
 }) async {
+  if (config.isDebug()) {
+    log('[QUERY] Source: $source, Address: $address, Lang: $lang');
+  }
+
   var response = await query(
     source: source,
     address: address,
@@ -127,6 +133,10 @@ Future<Result> queryResult({
   );
 
   var bodyDecoded = convert.jsonDecode(response.body);
+
+  if (config.isDebug()) {
+    log('[QUERY] Source: $source, Address: $address, Lang: $lang, Result: $bodyDecoded');
+  }
 
   var resultValue = bodyDecoded['value'];
   var resultErrorCode = bodyDecoded['error-code'];
@@ -211,15 +221,20 @@ Future<http.Response> submitTransaction({
 }
 
 class Result {
+  final int id;
+  final dynamic value;
+  final String errorCode;
+
   Result({
     this.id,
     this.value,
     this.errorCode,
   });
 
-  int id;
-  dynamic value;
-  String errorCode;
+  @override
+  String toString() {
+    return 'Result[id: $id, errorCode: $errorCode, value: $value]';
+  }
 }
 
 Future<Result> transact({

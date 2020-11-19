@@ -1,4 +1,5 @@
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -191,30 +192,90 @@ class _RecommendedState extends State<_Recommended> {
   }
 }
 
-class _ScanQRCode extends StatelessWidget {
+enum _ScanQRCodeStatus {
+  ready,
+  loading,
+  loaded,
+  error,
+}
+
+class _ScanQRCode extends StatefulWidget {
+  @override
+  _ScanQRCodeState createState() => _ScanQRCodeState();
+}
+
+class _ScanQRCodeState extends State<_ScanQRCode> {
+  _ScanQRCodeStatus status = _ScanQRCodeStatus.ready;
+
+  Address scannedAddress;
+  Token token;
+
   void scan() async {
     var r = await BarcodeScanner.scan();
+    var rawContent = r.rawContent ?? "";
 
-    print(r.rawContent);
+    if (rawContent.isNotEmpty) {
+      var scannedAddress = Address(hex: rawContent);
+
+      setState(() {
+        this.scannedAddress = scannedAddress;
+        this.status = _ScanQRCodeStatus.loading;
+      });
+
+      var convexity = backend.Convexity(
+        Address(
+          hex:
+              'f9b2293f16E36eEe39bcF6a8b7BAf84FCA070d8b108980f32E2bC31b23b7520c',
+        ),
+      );
+
+      print('Asset Metadata $scannedAddress');
+
+      var token = await convexity.assetMetadata(scannedAddress);
+
+      setState(() {
+        status = _ScanQRCodeStatus.loaded;
+      });
+
+      print('Token $token');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        QrImage(
-          data: 'Convexity',
-          version: QrVersions.auto,
-          size: 160,
-        ),
-        ElevatedButton(
-          child: Text('Scan QR Code'),
-          onPressed: () {
-            scan();
-          },
-        ),
-      ],
-    );
+    switch (status) {
+      case _ScanQRCodeStatus.ready:
+        return Column(
+          children: [
+            QrImage(
+              data: 'Convexity',
+              version: QrVersions.auto,
+              size: 160,
+            ),
+            ElevatedButton(
+              child: Text('Scan QR Code'),
+              onPressed: () {
+                scan();
+              },
+            ),
+          ],
+        );
+      case _ScanQRCodeStatus.loading:
+        return Column(
+          children: [
+            Text(scannedAddress.hex),
+            CircularProgressIndicator(),
+          ],
+        );
+      case _ScanQRCodeStatus.loaded:
+        return Column(
+          children: [
+            Text(scannedAddress.hex),
+          ],
+        );
+      default:
+        return Text('-');
+    }
   }
 }
 

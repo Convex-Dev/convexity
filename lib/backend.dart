@@ -34,3 +34,42 @@ Future<List<Token>> queryAssets(String convexityAddress) async {
 
   return tokens;
 }
+
+class Convexity {
+  final convex.Address address;
+
+  Convexity(this.address);
+
+  /// Query a particular Asset's metadata.
+  Future<Token> assetMetadata(convex.Address assetAddress) async {
+    var source =
+        '(call "${this.address.hex}" (asset-metadata (address "${assetAddress.hex}")))';
+
+    var result = await convex.queryResult(source: source);
+
+    if (result.errorCode != null) {
+      return null;
+    }
+
+    var m = result.value as Map<String, dynamic>;
+
+    if (m['type'] == 'fungible') {
+      return FungibleToken(
+        address: assetAddress,
+        name: m['name'] as String,
+        description: m['description'] as String,
+        symbol: m['symbol'] as String,
+        decimals: 2,
+      );
+    } else if (m['type'] == 'non-fungible') {
+      return NonFungibleToken(
+        address: assetAddress,
+        name: m['name'] as String,
+        description: m['description'] as String,
+        coll: [],
+      );
+    }
+
+    return null;
+  }
+}

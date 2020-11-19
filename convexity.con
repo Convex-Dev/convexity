@@ -22,8 +22,8 @@
           {:type :function
            :signature [{:params []}]
            :description "Returns metadata for a particular Asset."}}
-        [address]
-        (get registry address))
+        [address-or-string]
+        (get registry (address address-or-string)))
 
       (defn register-asset
         ^{:doc
