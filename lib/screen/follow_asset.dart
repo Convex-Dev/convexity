@@ -193,7 +193,9 @@ class _RecommendedState extends State<_Recommended> {
 
 class _ScanQRCode extends StatelessWidget {
   void scan() async {
-    BarcodeScanner.scan();
+    var r = await BarcodeScanner.scan();
+
+    print(r.rawContent);
   }
 
   @override

@@ -2,98 +2,41 @@
   (deploy-once
    '(do
       (import convex.trust :as trust)
-      (import convex.fungible :as fungible)
 
       (def trust-monitor
         (deploy (trust/build-whitelist {:controller *caller* :whitelist [*caller*]})))
 
-      (let [f (fungible/build-token {:supply 1000})]
-        (def token-BHD
-          (deploy f))
-
-        (def token-OMR
-          (deploy f))
-
-        (def token-JOD
-          (deploy f))
-
-        (def token-GBP
-          (deploy f))
-
-        (def token-EUR
-          (deploy f))
-
-        (def token-CHF
-          (deploy f))
-
-        (def token-USD
-          (deploy f))
-
-        (def token-CAD
-          (deploy f)))
-
       (def registry
-        {token-BHD {:name "Bahraini Dinar"
-                    :description "Bahrain’s national currency."
-                    :type :fungible
-                    :symbol "BHD"
-                    :decimals 2}
-
-         token-OMR {:name "Oman Rial"
-                    :description "Oman’s national currency."
-                    :type :fungible
-                    :symbol "OMR"
-                    :decimals 2}
-
-         token-JOD {:name "Jordan Dinar"
-                    :description "Jordan’s national currency."
-                    :type :fungible
-                    :symbol "JOD"
-                    :decimals 2}
-
-         token-GBP {:name "British Pound Sterling"
-                    :description "United Kingdom’s national currency."
-                    :type :fungible
-                    :symbol "GBP"
-                    :decimals 2}
-
-         token-EUR {:name "European Euro"
-                    :description "European Union’s money."
-                    :type :fungible
-                    :symbol "EUR"
-                    :decimals 2}
-
-         token-CHF {:name "Swiss Franc"
-                    :description "Switzerland’s national currency."
-                    :type :fungible
-                    :symbol "CHF"
-                    :decimals 2}
-
-         token-USD {:name "US Dollar"
-                    :description "United States’ national currency."
-                    :type :fungible
-                    :symbol "USD"
-                    :decimals 2}
-
-         token-CAD {:name "Canadian Dollar"
-                    :description "Canada’s national currency."
-                    :type :fungible
-                    :symbol "CAD"
-                    :decimals 2}})
+        {})
 
       (defn all-assets
         ^{:doc
           {:type :function
            :signature [{:params []}]
-           :description "Returns a mapping of an Actor's Address to its metadata."}}
+           :description "Returns a mapping of Address to metadata."}}
         []
         registry)
+
+      (defn asset-metadata
+        ^{:doc
+          {:type :function
+           :signature [{:params []}]
+           :description "Returns metadata for a particular Asset."}}
+        [address]
+        (get registry address))
 
       (defn register-asset
         ^{:doc
           {:type :function
            :signature [{:params [address metadata]}]
-           :description "Registers metadata for an Actor's Address."}}
+           :description "Registers metadata for a particular Asset. Returns registry.
+
+                         Metadata must have:
+                          - name            : string
+                          - description     : string
+                          - type            : keyword fungible | non-fungible
+                          - symbol          : string
+                          - decimals        : number"}}
         [address metadata]
         (if (trust/trusted? trust-monitor *caller*)
           (def registry (assoc registry address metadata))
@@ -103,10 +46,10 @@
         ^{:doc
           {:type :function
            :signature [{:params [address]}]
-           :description "Unregisters metadata for an Actor's Address."}}
+           :description "Unregisters metadata for a particular Asset."}}
         [address]
         (if (trust/trusted? trust-monitor *caller*)
           (def registry (dissoc registry address))
           (fail :unauthorized "You're not authorized to modify the registry.")))
 
-      (export all-assets register-asset unregister-asset))))
+      (export all-assets asset-metadata register-asset unregister-asset))))
