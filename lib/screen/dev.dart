@@ -47,58 +47,60 @@ class _DevScreenBodyState extends State<DevScreenBody> {
 
     return Container(
       padding: EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          RadioListTile<Uri>(
-            title: Text('convex.world'),
-            subtitle: Text('https://convex.world'),
-            value: convexWorldUri,
-            groupValue: appState.model.convexServerUri,
-            onChanged: (value) {
-              appState.setState((m) => m.copyWith(convexServerUri: value));
-            },
-          ),
-          RadioListTile<Uri>(
-            title: Text('dev'),
-            subtitle: Text('http://localhost:8080'),
-            value: Uri.parse('http://localhost:8080'),
-            groupValue: appState.model.convexServerUri,
-            onChanged: (value) {
-              appState.setState((m) => m.copyWith(convexServerUri: value));
-            },
-          ),
-          // Convexity Address Input
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Convexity Address',
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            RadioListTile<Uri>(
+              title: Text('convex.world'),
+              subtitle: Text('https://convex.world'),
+              value: convexWorldUri,
+              groupValue: appState.model.convexServerUri,
+              onChanged: (value) {
+                appState.setState((m) => m.copyWith(convexServerUri: value));
+              },
             ),
-            onChanged: (value) {
-              appState.setState(
-                (model) => model.copyWith(
-                  convexityAddress: Address(hex: value),
-                ),
-              );
-            },
-          ),
-          QrImage(
-            data: 'Convexity',
-            version: QrVersions.auto,
-            size: 160,
-          ),
-          TextButton(
-            child: Text('Scan Convexity QR Code'),
-            onPressed: () {
-              scan();
-            },
-          ),
-          ElevatedButton(
-            child: Text('Start'),
-            onPressed: () {
-              nav.pushLauncher(context);
-            },
-          ),
-        ],
+            RadioListTile<Uri>(
+              title: Text('dev'),
+              subtitle: Text('http://localhost:8080'),
+              value: Uri.parse('http://localhost:8080'),
+              groupValue: appState.model.convexServerUri,
+              onChanged: (value) {
+                appState.setState((m) => m.copyWith(convexServerUri: value));
+              },
+            ),
+            // Convexity Address Input
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Convexity Address',
+              ),
+              onChanged: (value) {
+                appState.setState(
+                  (model) => model.copyWith(
+                    convexityAddress: Address(hex: value),
+                  ),
+                );
+              },
+            ),
+            QrImage(
+              data: 'Convexity',
+              version: QrVersions.auto,
+              size: 160,
+            ),
+            TextButton(
+              child: Text('Scan Convexity QR Code'),
+              onPressed: () {
+                scan();
+              },
+            ),
+            ElevatedButton(
+              child: Text('Start'),
+              onPressed: () {
+                nav.pushLauncher(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
