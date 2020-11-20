@@ -81,13 +81,19 @@ class NonFungibleTokenMetadata extends AssetMetadata {
   Map<String, dynamic> toJson() => {};
 }
 
+final convexWorldUri = Uri.parse('https://convex.world');
+
 @immutable
 class Model {
+  final Uri convexServerUri;
+  final Address convexityAddress;
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
   final Set<AssetMetadata> following;
 
   Model({
+    this.convexServerUri,
+    this.convexityAddress,
     this.activeKeyPair,
     this.allKeyPairs = const [],
     this.following = const {},
@@ -105,11 +111,15 @@ class Model {
   }
 
   Model copyWith({
-    activeKeyPair,
-    allKeyPairs,
-    following,
+    Uri convexServerUri,
+    Address convexityAddress,
+    KeyPair activeKeyPair,
+    List<KeyPair> allKeyPairs,
+    Set<AssetMetadata> following,
   }) =>
       Model(
+        convexServerUri: convexServerUri ?? this.convexServerUri,
+        convexityAddress: convexityAddress ?? this.convexityAddress,
         activeKeyPair: activeKeyPair ?? this.activeKeyPair,
         allKeyPairs: allKeyPairs ?? this.allKeyPairs,
         following: following ?? this.following,

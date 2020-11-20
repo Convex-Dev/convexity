@@ -20,6 +20,8 @@ class Address {
 
   Address({this.hex});
 
+  String get pretty => '0x$hex';
+
   Address.fromJson(
     Map<String, dynamic> json,
   ) : hex = json['hex'] as String;

@@ -8,8 +8,10 @@ import 'screen/settings.dart';
 import 'screen/assets.dart';
 import 'screen/follow_asset.dart';
 import 'screen/transfer.dart';
+import 'screen/dev.dart';
 
-const String launcher = '/';
+const String dev = '/dev';
+const String launcher = '/launcher';
 const String home = '/home';
 const String wallet = '/wallet';
 const String account = '/account';
@@ -19,6 +21,7 @@ const String assets = '/assets';
 const String followAsset = '/assets/follow';
 
 Map<String, WidgetBuilder> routes() => {
+      dev: (context) => DevScreen(),
       launcher: (context) => LauncherScreen(),
       home: (context) => HomeScreen(),
       wallet: (context) => WalletScreen(),

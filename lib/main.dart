@@ -3,10 +3,11 @@ import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'route.dart';
 import 'model.dart';
+import 'route.dart' as route;
 import 'wallet.dart' as wallet;
 import 'asset_manager.dart' as asset_manager;
+import 'config.dart' as config;
 
 void main() {
   sodium.Sodium.init();
@@ -34,6 +35,7 @@ class _AppState extends State<App> {
 
     context.read<AppState>().setState(
           (_) => Model(
+            convexServerUri: convexWorldUri,
             allKeyPairs: allKeyPairs,
             activeKeyPair: activeKeyPair,
             following: following,
@@ -59,7 +61,8 @@ class _AppState extends State<App> {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      routes: routes(),
+      routes: route.routes(),
+      initialRoute: config.isDebug() ? route.dev : route.launcher,
     );
   }
 }
