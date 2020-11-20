@@ -26,7 +26,7 @@ void _createAccount(BuildContext context) {
         wallet.setActiveKeyPair(randomKeyPair);
         wallet.addKeyPair(randomKeyPair);
 
-        ScaffoldMessenger.of(context).showSnackBar(
+        Scaffold.of(context).showSnackBar(
           SnackBar(
             content: Text('Your new Convex Account is ready.'),
           ),
