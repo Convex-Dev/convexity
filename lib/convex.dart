@@ -20,8 +20,6 @@ class Address {
 
   Address({this.hex});
 
-  String get pretty => '0x$hex';
-
   Address.fromJson(
     Map<String, dynamic> json,
   ) : hex = json['hex'] as String;
@@ -33,7 +31,7 @@ class Address {
   Map<String, dynamic> toJson() => {'hex': hex};
 
   @override
-  String toString() => 'Address: $hex';
+  String toString() => '0x$hex';
 
   @override
   bool operator ==(o) => o is Address && o.hex == hex;
@@ -94,7 +92,7 @@ String langString(Lang lang) {
   return '';
 }
 
-Future<http.Response> query({
+Future<http.Response> queryRaw({
   http.Client client,
   String scheme = 'https',
   String host = CONVEX_WORLD_HOST,
@@ -119,7 +117,8 @@ Future<http.Response> query({
 }
 
 /// Executes a query on the Convex Network.
-Future<Result> queryResult({
+Future<Result> query({
+  Uri uri,
   String source,
   String address,
   Lang lang = Lang.convexLisp,
@@ -128,7 +127,10 @@ Future<Result> queryResult({
     log('[QUERY] Source: $source, Address: $address, Lang: $lang');
   }
 
-  var response = await query(
+  var response = await queryRaw(
+    scheme: uri?.scheme ?? 'https',
+    host: uri?.host ?? CONVEX_WORLD_HOST,
+    port: uri?.port ?? 443,
     source: source,
     address: address,
     lang: lang,

@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:convex_wallet/convexity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'convex.dart';
+import 'config.dart' as config;
 
 abstract class AssetMetadata {
   Map<String, dynamic> toJson();
@@ -146,6 +148,21 @@ class AppState with ChangeNotifier {
   String _prefFollowing = 'following';
 
   AppState({this.model});
+
+  Convexity convexity() {
+    if (config.isDebug()) {
+      log('''
+        Convexity client: 
+        convexServerUri ${model.convexServerUri}, 
+        actorAddress ${model.convexityAddress}
+      ''');
+    }
+
+    return Convexity(
+      convexServerUri: model.convexServerUri,
+      actorAddress: model.convexityAddress,
+    );
+  }
 
   void setState(Model f(Model m)) {
     model = f(model);

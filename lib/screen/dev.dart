@@ -45,10 +45,8 @@ class _DevScreenBodyState extends State<DevScreenBody> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    var convexityAddress = appState.model.convexityAddress;
-
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -70,19 +68,26 @@ class _DevScreenBodyState extends State<DevScreenBody> {
               appState.setState((m) => m.copyWith(convexServerUri: value));
             },
           ),
+          // Convexity Address Input
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Convexity Address',
+            ),
+            onChanged: (value) {
+              appState.setState(
+                (model) => model.copyWith(
+                  convexityAddress: Address(hex: value),
+                ),
+              );
+            },
+          ),
           QrImage(
             data: 'Convexity',
             version: QrVersions.auto,
             size: 160,
           ),
-          Text(
-            convexityAddress == null
-                ? 'Please scan a Convexity QR Code.'
-                : convexityAddress.pretty,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          ElevatedButton(
-            child: Text('Scan QR Code'),
+          TextButton(
+            child: Text('Scan Convexity QR Code'),
             onPressed: () {
               scan();
             },

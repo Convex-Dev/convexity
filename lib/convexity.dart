@@ -1,31 +1,35 @@
+import 'package:meta/meta.dart';
+
 import 'convex.dart' as convex;
 import 'model.dart';
 
 Future<List<AssetMetadata>> queryAssets(String convexityAddress) async {
-  var source = '(call "$convexityAddress" (assets))';
+  var source = '(call "$convexityAddress" (all-assets))';
 
-  var result = await convex.queryResult(source: source);
+  var result = await convex.query(source: source);
 
   if (result.errorCode != null) {
     return null;
   }
 
-  var tokens = (result.value as List).map(
-    (m) {
-      if (m['type'] == 'fungible') {
+  var tokens = (result.value as Map<String, dynamic>).entries.map(
+    (entry) {
+      var address = entry.key;
+      var metadata = entry.value as Map<String, dynamic>;
+
+      if (metadata['type'] == 'fungible') {
         return FungibleTokenMetadata(
-          // TODO
-          address: convex.Address(hex: m['symbol'] as String),
-          name: m['name'] as String,
-          description: m['description'] as String,
-          symbol: m['symbol'] as String,
-          decimals: m['decimals'] as int,
+          address: convex.Address(hex: address),
+          name: metadata['name'] as String,
+          description: metadata['description'] as String,
+          symbol: metadata['symbol'] as String,
+          decimals: metadata['decimals'] as int,
         );
-      } else if (m['type'] == 'non-fungible') {
+      } else if (metadata['type'] == 'non-fungible') {
         return NonFungibleTokenMetadata(
-          address: convex.Address(hex: m['address'] as String),
-          name: m['name'] as String,
-          description: m['description'] as String,
+          address: convex.Address(hex: metadata['address'] as String),
+          name: metadata['name'] as String,
+          description: metadata['description'] as String,
           coll: [],
         );
       }
@@ -36,16 +40,23 @@ Future<List<AssetMetadata>> queryAssets(String convexityAddress) async {
 }
 
 class Convexity {
-  final convex.Address address;
+  final Uri convexServerUri;
+  final convex.Address actorAddress;
 
-  Convexity(this.address);
+  Convexity({
+    @required this.convexServerUri,
+    @required this.actorAddress,
+  });
 
   /// Query a particular Asset's metadata.
   Future<AssetMetadata> assetMetadata(convex.Address assetAddress) async {
     var source =
-        '(call "${this.address.hex}" (asset-metadata (address "${assetAddress.hex}")))';
+        '(call "${this.actorAddress.hex}" (asset-metadata (address "${assetAddress.hex}")))';
 
-    var result = await convex.queryResult(source: source);
+    var result = await convex.query(
+      uri: convexServerUri,
+      source: source,
+    );
 
     if (result.errorCode != null) {
       return null;
@@ -71,5 +82,45 @@ class Convexity {
     }
 
     return null;
+  }
+
+  /// Query all Assets in the registry
+  Future<List<AssetMetadata>> allAssets() async {
+    var source = '(call "${this.actorAddress.hex}" (all-assets))';
+
+    var result = await convex.query(
+      uri: convexServerUri,
+      source: source,
+    );
+
+    if (result.errorCode != null) {
+      return null;
+    }
+
+    var tokens = (result.value as Map<String, dynamic>).entries.map(
+      (entry) {
+        var address = entry.key;
+        var metadata = entry.value as Map<String, dynamic>;
+
+        if (metadata['type'] == 'fungible') {
+          return FungibleTokenMetadata(
+            address: convex.Address(hex: address),
+            name: metadata['name'] as String,
+            description: metadata['description'] as String,
+            symbol: metadata['symbol'] as String,
+            decimals: metadata['decimals'] as int,
+          );
+        } else if (metadata['type'] == 'non-fungible') {
+          return NonFungibleTokenMetadata(
+            address: convex.Address(hex: metadata['address'] as String),
+            name: metadata['name'] as String,
+            description: metadata['description'] as String,
+            coll: [],
+          );
+        }
+      },
+    ).toList();
+
+    return tokens;
   }
 }

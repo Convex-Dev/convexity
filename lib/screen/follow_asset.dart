@@ -5,8 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../config.dart' as config;
-import '../convexity.dart' as backend;
 import '../widget.dart';
 import '../model.dart';
 
@@ -34,7 +32,7 @@ class FollowAssetScreenBody extends StatefulWidget {
 }
 
 class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
-  var selectedOption = _Option.recommended;
+  var selectedOption = _Option.scanQRCode;
 
   Widget option({
     @required String title,
@@ -58,12 +56,12 @@ class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
       child: Column(
         children: [
           option(
-            title: 'Recommended',
-            value: _Option.recommended,
-          ),
-          option(
             title: 'Scan QR Code',
             value: _Option.scanQRCode,
+          ),
+          option(
+            title: 'Recommended',
+            value: _Option.recommended,
           ),
           option(
             title: 'Search',
@@ -120,13 +118,12 @@ class _Recommended extends StatefulWidget {
 
 class _RecommendedState extends State<_Recommended> {
   var isLoading = true;
-
-  var assets = [];
+  var assets = <AssetMetadata>[];
 
   void initState() {
     super.initState();
 
-    backend.queryAssets(config.convexityAddress).then((assets) {
+    context.read<AppState>().convexity().allAssets().then((assets) {
       // It's important to check if the Widget is mounted
       // because the user might change the selected option
       // while we're still loading the recommended Assets.
@@ -222,12 +219,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
         this.status = _ScanQRCodeStatus.loading;
       });
 
-      var convexity = backend.Convexity(
-        Address(
-          hex:
-              'f9b2293f16E36eEe39bcF6a8b7BAf84FCA070d8b108980f32E2bC31b23b7520c',
-        ),
-      );
+      var convexity = context.read<AppState>().convexity();
 
       print('Asset Metadata $scannedAddress');
 

@@ -13,7 +13,7 @@ Future<http.Response> _query({
   String source,
   convex.Lang lang = convex.Lang.convexLisp,
 }) =>
-    convex.query(
+    convex.queryRaw(
       source: source,
       lang: lang,
       address: address,
@@ -100,7 +100,9 @@ void main() {
 
       expect(response.statusCode, 200);
       expect(
-          convert.jsonDecode(response.body), {'value': '0x' + _TEST_ADDRESS});
+        convert.jsonDecode(response.body),
+        {'value': _TEST_ADDRESS},
+      );
     });
 
     test('Error - UNDECLARED', () async {
@@ -136,8 +138,7 @@ void main() {
       );
 
       expect(response.statusCode, 200);
-      expect(
-          convert.jsonDecode(response.body), {'value': '0x' + _TEST_ADDRESS});
+      expect(convert.jsonDecode(response.body), {'value': _TEST_ADDRESS});
     });
   });
 
