@@ -64,14 +64,6 @@ class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
             value: _Option.recommended,
           ),
           option(
-            title: 'Search',
-            value: _Option.search,
-          ),
-          option(
-            title: 'My Holdings',
-            value: _Option.myHoldings,
-          ),
-          option(
             title: 'Asset Address',
             value: _Option.assetId,
           ),
@@ -321,7 +313,7 @@ class _AssetIDState extends State<_AssetID> {
                   height: 20,
                   child: CircularProgressIndicator(),
                 )
-              : Text('Check'),
+              : Text('Verify'),
           onPressed: isLoading
               ? null
               : () {

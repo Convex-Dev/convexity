@@ -3,42 +3,6 @@ import 'package:meta/meta.dart';
 import 'convex.dart' as convex;
 import 'model.dart';
 
-Future<List<AssetMetadata>> queryAssets(String convexityAddress) async {
-  var source = '(call "$convexityAddress" (all-assets))';
-
-  var result = await convex.query(source: source);
-
-  if (result.errorCode != null) {
-    return null;
-  }
-
-  var tokens = (result.value as Map<String, dynamic>).entries.map(
-    (entry) {
-      var address = entry.key;
-      var metadata = entry.value as Map<String, dynamic>;
-
-      if (metadata['type'] == 'fungible') {
-        return FungibleTokenMetadata(
-          address: convex.Address(hex: address),
-          name: metadata['name'] as String,
-          description: metadata['description'] as String,
-          symbol: metadata['symbol'] as String,
-          decimals: metadata['decimals'] as int,
-        );
-      } else if (metadata['type'] == 'non-fungible') {
-        return NonFungibleTokenMetadata(
-          address: convex.Address(hex: metadata['address'] as String),
-          name: metadata['name'] as String,
-          description: metadata['description'] as String,
-          coll: [],
-        );
-      }
-    },
-  ).toList();
-
-  return tokens;
-}
-
 class Convexity {
   final Uri convexServerUri;
   final convex.Address actorAddress;
@@ -49,6 +13,8 @@ class Convexity {
   });
 
   /// Query a particular Asset's metadata.
+  ///
+  /// Returns `null` if there is not metadata, or if there was an error.
   Future<AssetMetadata> assetMetadata(convex.Address assetAddress) async {
     var source =
         '(call "${this.actorAddress.hex}" (asset-metadata (address "${assetAddress.hex}")))';
@@ -59,6 +25,10 @@ class Convexity {
     );
 
     if (result.errorCode != null) {
+      return null;
+    }
+
+    if (result.value == null) {
       return null;
     }
 
