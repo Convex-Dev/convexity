@@ -190,6 +190,12 @@ class AppState with ChangeNotifier {
     setState((m) => m.copyWith(following: Set<AssetMetadata>.from(following)));
   }
 
+  void followAsset(AssetMetadata metadata, {bool isPersistent = false}) {
+    var following = Set<AssetMetadata>.from(model.following)..add(metadata);
+
+    setFollowing(following, isPersistent: isPersistent);
+  }
+
   void setActiveKeyPair(KeyPair active) {
     setState((m) => m.copyWith(activeKeyPair: active));
   }
