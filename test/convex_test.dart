@@ -22,7 +22,7 @@ Future<http.Response> _query({
 Future<http.Response> _account({
   String address = _TEST_ADDRESS,
 }) =>
-    convex.getAccount(
+    convex.getAccountRaw(
       address: convex.Address(hex: address),
     );
 

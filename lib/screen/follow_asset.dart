@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../widget.dart';
 import '../model.dart';
+import '../convex.dart' as convex;
 
 enum _Option {
   recommended,
@@ -287,10 +288,54 @@ class _AssetID extends StatefulWidget {
 }
 
 class _AssetIDState extends State<_AssetID> {
-  var isLoading = false;
+  var status = AssetMetadataQueryStatus.ready;
 
   String address;
   AssetMetadata assetMetadata;
+
+  Widget statusRenderer() {
+    switch (status) {
+      case AssetMetadataQueryStatus.ready:
+        return Center(child: Text(''));
+
+      case AssetMetadataQueryStatus.inProgress:
+        return Center(child: CircularProgressIndicator());
+
+      case AssetMetadataQueryStatus.done:
+        return Column(
+          children: [
+            SizedBox(
+              width: 160,
+              child: TokenRenderer(token: assetMetadata),
+            ),
+            ElevatedButton(
+              child: Text('Follow'),
+              onPressed: () {
+                context
+                    .read<AppState>()
+                    .followAsset(assetMetadata, isPersistent: true);
+
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+
+      case AssetMetadataQueryStatus.missingMetadata:
+        return Center(
+          child:
+              Text('The Asset was found, but there is no metadata available.'),
+        );
+
+      case AssetMetadataQueryStatus.notFound:
+        return Center(
+          child: Text('Sorry. The Asset was not found.'),
+        );
+
+      default:
+        return Center(child: Text(''));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -307,18 +352,12 @@ class _AssetIDState extends State<_AssetID> {
           },
         ),
         TextButton(
-          child: isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(),
-                )
-              : Text('Verify'),
-          onPressed: isLoading
+          child: Text('Verify'),
+          onPressed: (AssetMetadataQueryStatus.inProgress == status)
               ? null
               : () {
                   setState(() {
-                    isLoading = true;
+                    status = AssetMetadataQueryStatus.inProgress;
                   });
 
                   context
@@ -326,36 +365,60 @@ class _AssetIDState extends State<_AssetID> {
                       .convexity()
                       .assetMetadata(Address(hex: address))
                       .then(
-                        (value) => setState(() {
-                          isLoading = false;
-                          assetMetadata = value;
-                        }),
-                      );
+                    (_assetMetadata) {
+                      // It's important to check if the Widget is mounted,
+                      // because the user might change the selected option
+                      // while there's a query in progress.
+                      if (mounted) {
+                        if (_assetMetadata != null) {
+                          setState(() {
+                            status = AssetMetadataQueryStatus.done;
+                            assetMetadata = _assetMetadata;
+                          });
+                        } else {
+                          // We already know that there is no metadata,
+                          // but we still want to check if the Asset exists -
+                          // so we can provide a more helpful message to the user.
+
+                          var account =
+                              convex.getAccount(address: Address(hex: address));
+
+                          if (account == null) {
+                            setState(() {
+                              status = AssetMetadataQueryStatus.notFound;
+                              assetMetadata = null;
+                            });
+                          } else {
+                            setState(() {
+                              status = AssetMetadataQueryStatus.missingMetadata;
+                              assetMetadata = null;
+                            });
+                          }
+                        }
+                      }
+                    },
+                  );
                 },
         ),
-        if (assetMetadata != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 28),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: 160,
-                  child: TokenRenderer(token: assetMetadata),
-                ),
-                ElevatedButton(
-                  child: Text('Follow'),
-                  onPressed: () {
-                    context
-                        .read<AppState>()
-                        .followAsset(assetMetadata, isPersistent: true);
-
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            ),
-          ),
+        statusRenderer(),
       ],
     );
   }
+}
+
+enum AssetMetadataQueryStatus {
+  /// Initial status.
+  ready,
+
+  /// Query is in progress.
+  inProgress,
+
+  /// The Asset exists on the Convex Network, but there is not metadata available.
+  missingMetadata,
+
+  /// The Asset doesn't exist on the Convex Network.
+  notFound,
+
+  /// The Asset exists on the Convex Network, and there is metadata available.
+  done,
 }

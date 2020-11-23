@@ -298,7 +298,7 @@ Future<Result> transact({
   );
 }
 
-Future<http.Response> getAccount({
+Future<http.Response> getAccountRaw({
   http.Client client,
   String scheme = 'https',
   String host = CONVEX_WORLD_HOST,
@@ -317,6 +317,28 @@ Future<http.Response> getAccount({
   }
 
   return client.get(uri);
+}
+
+Future<Account> getAccount({
+  http.Client client,
+  String scheme = 'https',
+  String host = CONVEX_WORLD_HOST,
+  int port = 443,
+  Address address,
+}) async {
+  var response = await getAccountRaw(
+    client: client,
+    scheme: scheme,
+    host: host,
+    port: port,
+    address: address,
+  );
+
+  if (response.statusCode != 200) {
+    return null;
+  }
+
+  return Account.fromJson(response.body);
 }
 
 Future<http.Response> faucet({

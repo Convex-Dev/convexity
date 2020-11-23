@@ -37,7 +37,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   void initState() {
     super.initState();
 
-    response = convex.getAccount(address: address);
+    response = convex.getAccountRaw(address: address);
   }
 
   @override
