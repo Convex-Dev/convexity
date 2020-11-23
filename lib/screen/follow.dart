@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../widget.dart';
 import '../model.dart';
-import '../convex.dart' as convex;
 
 enum _Option {
   recommended,
@@ -293,7 +292,7 @@ class _AssetIDState extends State<_AssetID> {
   String address;
   AssetMetadata assetMetadata;
 
-  Widget statusRenderer() {
+  Widget body() {
     switch (status) {
       case AssetMetadataQueryStatus.ready:
         return Center(child: Text(''));
@@ -323,8 +322,10 @@ class _AssetIDState extends State<_AssetID> {
 
       case AssetMetadataQueryStatus.missingMetadata:
         return Center(
-          child:
-              Text('The Asset was found, but there is no metadata available.'),
+          child: Text(
+            'This Address is not registered with Convexity.',
+            style: TextStyle(color: Colors.orange),
+          ),
         );
 
       case AssetMetadataQueryStatus.notFound:
@@ -348,6 +349,7 @@ class _AssetIDState extends State<_AssetID> {
           onChanged: (value) {
             setState(() {
               address = Address.trim0x(value);
+              status = AssetMetadataQueryStatus.ready;
             });
           },
         ),
@@ -366,41 +368,26 @@ class _AssetIDState extends State<_AssetID> {
                       .assetMetadata(Address(hex: address))
                       .then(
                     (_assetMetadata) {
-                      // It's important to check if the Widget is mounted,
+                      // It's important to check wether the Widget is mounted,
                       // because the user might change the selected option
-                      // while there's a query in progress.
+                      // while there is still a query a progress.
                       if (mounted) {
-                        if (_assetMetadata != null) {
-                          setState(() {
-                            status = AssetMetadataQueryStatus.done;
-                            assetMetadata = _assetMetadata;
-                          });
-                        } else {
-                          // We already know that there is no metadata,
-                          // but we still want to check if the Asset exists -
-                          // so we can provide a more helpful message to the user.
+                        setState(() {
+                          status = _assetMetadata == null
+                              ? AssetMetadataQueryStatus.missingMetadata
+                              : AssetMetadataQueryStatus.done;
 
-                          var account =
-                              convex.getAccount(address: Address(hex: address));
-
-                          if (account == null) {
-                            setState(() {
-                              status = AssetMetadataQueryStatus.notFound;
-                              assetMetadata = null;
-                            });
-                          } else {
-                            setState(() {
-                              status = AssetMetadataQueryStatus.missingMetadata;
-                              assetMetadata = null;
-                            });
-                          }
-                        }
+                          assetMetadata = _assetMetadata;
+                        });
                       }
                     },
                   );
                 },
         ),
-        statusRenderer(),
+        Padding(
+          padding: const EdgeInsets.only(top: 22),
+          child: body(),
+        ),
       ],
     );
   }

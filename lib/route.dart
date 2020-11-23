@@ -6,7 +6,7 @@ import 'screen/wallet.dart';
 import 'screen/account.dart';
 import 'screen/settings.dart';
 import 'screen/assets.dart';
-import 'screen/follow_asset.dart';
+import 'screen/follow.dart';
 import 'screen/transfer.dart';
 import 'screen/dev.dart';
 
