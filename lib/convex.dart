@@ -38,6 +38,14 @@ class Address {
 
   @override
   int get hashCode => hex.hashCode;
+
+  static String trim0x(String s) {
+    if (s.startsWith('0x')) {
+      return s.replaceFirst('0x', '');
+    }
+
+    return s;
+  }
 }
 
 enum AccountType {

@@ -75,9 +75,11 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 labelText: 'Convexity Address',
               ),
               onChanged: (value) {
+                var _trimmedValue = Address.trim0x(value);
+
                 appState.setState(
                   (model) => model.copyWith(
-                    convexityAddress: Address(hex: value),
+                    convexityAddress: Address(hex: _trimmedValue),
                   ),
                 );
               },

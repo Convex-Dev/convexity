@@ -347,7 +347,7 @@ class _AssetIDState extends State<_AssetID> {
           ),
           onChanged: (value) {
             setState(() {
-              address = value;
+              address = Address.trim0x(value);
             });
           },
         ),
