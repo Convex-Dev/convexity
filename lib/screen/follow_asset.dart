@@ -72,7 +72,7 @@ class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
             value: _Option.myHoldings,
           ),
           option(
-            title: 'Asset ID',
+            title: 'Asset Address',
             value: _Option.assetId,
           ),
           Gap(20),
@@ -156,13 +156,13 @@ class _RecommendedState extends State<_Recommended> {
                 children: [
                   TokenRenderer(
                     token: token,
-                    onTap: (token) {
+                    onTap: (metadata) {
                       var followingCopy = Set<AssetMetadata>.from(following);
 
-                      if (followingCopy.contains(token)) {
-                        followingCopy.remove(token);
+                      if (followingCopy.contains(metadata)) {
+                        followingCopy.remove(metadata);
                       } else {
-                        followingCopy.add(token);
+                        followingCopy.add(metadata);
                       }
 
                       context.read<AppState>().setFollowing(
@@ -289,11 +289,86 @@ class _MyHoldings extends StatelessWidget {
   }
 }
 
-class _AssetID extends StatelessWidget {
+class _AssetID extends StatefulWidget {
+  @override
+  _AssetIDState createState() => _AssetIDState();
+}
+
+class _AssetIDState extends State<_AssetID> {
+  var isLoading = false;
+
+  String address;
+  AssetMetadata assetMetadata;
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Asset ID'),
+    return Column(
+      children: [
+        TextField(
+          decoration: InputDecoration(
+            labelText: 'Address',
+          ),
+          onChanged: (value) {
+            setState(() {
+              address = value;
+            });
+          },
+        ),
+        TextButton(
+          child: isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(),
+                )
+              : Text('Check'),
+          onPressed: isLoading
+              ? null
+              : () {
+                  setState(() {
+                    isLoading = true;
+                  });
+
+                  context
+                      .read<AppState>()
+                      .convexity()
+                      .assetMetadata(Address(hex: address))
+                      .then(
+                        (value) => setState(() {
+                          isLoading = false;
+                          assetMetadata = value;
+                        }),
+                      );
+                },
+        ),
+        if (assetMetadata != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 28),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 160,
+                  child: TokenRenderer(token: assetMetadata),
+                ),
+                ElevatedButton(
+                  child: Text('Follow'),
+                  onPressed: () {
+                    var appState = context.read<AppState>();
+
+                    var following =
+                        Set<AssetMetadata>.from(appState.model.following)
+                          ..add(assetMetadata);
+
+                    appState.setFollowing(
+                      following,
+                      isPersistent: true,
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
