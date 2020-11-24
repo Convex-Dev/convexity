@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:convex_wallet/convexity.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,8 @@ import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'convex.dart';
+import 'preferences.dart' as p;
+import 'route.dart' as route;
 
 enum AssetType {
   fungible,
@@ -191,8 +192,6 @@ class Model {
 class AppState with ChangeNotifier {
   Model model;
 
-  String _prefFollowing = 'following';
-
   AppState({this.model});
 
   Convexity convexity() {
@@ -205,23 +204,13 @@ class AppState with ChangeNotifier {
   void setState(Model f(Model m)) {
     model = f(model);
 
-    log(
-      '*STATE*\n'
-      '-------\n'
-      '$model\n'
-      '---------------------------------\n',
-    );
-
     notifyListeners();
   }
 
   void setFollowing(Set<AAsset> following, {bool isPersistent = false}) {
     if (isPersistent) {
-      var followingEncoded = jsonEncode(following.toList());
-
       SharedPreferences.getInstance().then(
-        (preferences) =>
-            preferences.setString(_prefFollowing, followingEncoded),
+        (preferences) => p.writeFollowing(preferences, following),
       );
     }
 
@@ -254,9 +243,13 @@ class AppState with ChangeNotifier {
   }
 
   /// Reset app state.
-  void reset() {
-    setState(
-      (m) => Model(),
-    );
+  void reset(BuildContext context) {
+    SharedPreferences.getInstance().then((preferences) {
+      preferences.clear();
+
+      setState((m) => Model(convexServerUri: convexWorldUri));
+
+      Navigator.popUntil(context, ModalRoute.withName(route.dev));
+    });
   }
 }

@@ -29,7 +29,7 @@ class SettingsScreenBody extends StatelessWidget {
                 (preferences) {
                   preferences.clear();
 
-                  context.read<AppState>().reset();
+                  context.read<AppState>().reset(context);
                 },
               );
             },
