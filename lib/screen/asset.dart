@@ -12,12 +12,14 @@ class AssetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Metadata can be passed directly to the constructor,
     // or via the Navigator arguments.
-    AAsset _metadata =
+    AAsset _aasset =
         aasset ?? ModalRoute.of(context).settings.arguments as AAsset;
 
+    var fungible = _aasset.asset as FungibleToken;
+
     return Scaffold(
-      appBar: AppBar(title: Text('Asset')),
-      body: AssetScreenBody(aasset: _metadata),
+      appBar: AppBar(title: Text('${fungible.metadata.symbol}')),
+      body: AssetScreenBody(aasset: _aasset),
     );
   }
 }
@@ -37,12 +39,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   _AssetScreenBodyState({this.aasset});
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Text('Asset');
+    var fungible = aasset.asset as FungibleToken;
+
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Text('${fungible.metadata.symbol}'),
+    );
   }
 }
