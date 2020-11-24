@@ -31,7 +31,12 @@ void pushAssets(BuildContext context) => Navigator.pushNamed(
       route.assets,
     );
 
-void pushNewAsset(BuildContext context) => Navigator.pushNamed(
+void pushAsset(BuildContext context) => Navigator.pushNamed(
       context,
-      route.followAsset,
+      route.asset,
+    );
+
+void pushFollow(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.follow,
     );

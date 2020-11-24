@@ -3,29 +3,24 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
-import '../nav.dart' as nav;
 import '../widget.dart';
 
-class AssetsScreen extends StatelessWidget {
+class AssetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Assets')),
-      body: AssetsScreenBody(),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => nav.pushFollow(context),
-      ),
+      appBar: AppBar(title: Text('Asset')),
+      body: AssetScreenBody(),
     );
   }
 }
 
-class AssetsScreenBody extends StatefulWidget {
+class AssetScreenBody extends StatefulWidget {
   @override
-  _AssetsScreenBodyState createState() => _AssetsScreenBodyState();
+  _AssetScreenBodyState createState() => _AssetScreenBodyState();
 }
 
-class _AssetsScreenBodyState extends State<AssetsScreenBody> {
+class _AssetScreenBodyState extends State<AssetScreenBody> {
   var isLoading = false;
   var assets = [];
 

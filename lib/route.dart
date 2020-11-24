@@ -6,6 +6,7 @@ import 'screen/wallet.dart';
 import 'screen/account.dart';
 import 'screen/settings.dart';
 import 'screen/assets.dart';
+import 'screen/asset.dart';
 import 'screen/follow.dart';
 import 'screen/transfer.dart';
 import 'screen/dev.dart';
@@ -18,7 +19,8 @@ const String account = '/account';
 const String transfer = '/transfer';
 const String settings = '/settings';
 const String assets = '/assets';
-const String followAsset = '/assets/follow';
+const String asset = '/asset';
+const String follow = '/follow';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -29,5 +31,6 @@ Map<String, WidgetBuilder> routes() => {
       transfer: (context) => TransferScreen(),
       settings: (context) => SettingsScreen(),
       assets: (context) => AssetsScreen(),
-      followAsset: (context) => FollowAssetScreen(),
+      asset: (context) => AssetScreen(),
+      follow: (context) => FollowAssetScreen(),
     };
