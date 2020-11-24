@@ -1,28 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
 import '../model.dart';
-import '../widget.dart';
 
 class AssetScreen extends StatelessWidget {
+  final AssetMetadata metadata;
+
+  const AssetScreen({Key key, this.metadata}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    // Metadata can be passed directly to the constructor,
+    // or via the Navigator arguments.
+    AssetMetadata _metadata =
+        metadata ?? ModalRoute.of(context).settings.arguments as AssetMetadata;
+
     return Scaffold(
       appBar: AppBar(title: Text('Asset')),
-      body: AssetScreenBody(),
+      body: AssetScreenBody(metadata: _metadata),
     );
   }
 }
 
 class AssetScreenBody extends StatefulWidget {
+  final AssetMetadata metadata;
+
+  const AssetScreenBody({Key key, this.metadata}) : super(key: key);
+
   @override
-  _AssetScreenBodyState createState() => _AssetScreenBodyState();
+  _AssetScreenBodyState createState() =>
+      _AssetScreenBodyState(metadata: metadata);
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  var isLoading = false;
-  var assets = [];
+  final AssetMetadata metadata;
+
+  _AssetScreenBodyState({this.metadata});
 
   @override
   void initState() {
@@ -31,19 +44,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    var following = context.watch<AppState>().model.following;
-
-    return GridView.count(
-      padding: const EdgeInsets.all(8),
-      crossAxisCount: 2,
-      children: following
-          .map(
-            (token) => Container(
-              padding: const EdgeInsets.all(8),
-              child: TokenRenderer(token: token),
-            ),
-          )
-          .toList(),
-    );
+    return Text('Asset');
   }
 }

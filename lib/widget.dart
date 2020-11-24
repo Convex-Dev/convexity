@@ -68,38 +68,41 @@ class IdenticonDropdown extends StatelessWidget {
   }
 }
 
-class TokenRenderer extends StatelessWidget {
-  final AssetMetadata token;
+class AssetMetadataRenderer extends StatelessWidget {
+  final AssetMetadata metadata;
   final void Function(AssetMetadata) onTap;
 
-  const TokenRenderer({
+  const AssetMetadataRenderer({
     Key key,
-    @required this.token,
+    @required this.metadata,
     this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (token is FungibleTokenMetadata) {
+    if (metadata is FungibleTokenMetadata) {
       return FungibleTokenRenderer(
-        token: token,
+        metadata: metadata,
         onTap: onTap,
       );
     }
 
     return NonFungibleTokenRenderer(
-      token: token,
+      metadata: metadata,
       onTap: onTap,
     );
   }
 }
 
 class FungibleTokenRenderer extends StatelessWidget {
-  final FungibleTokenMetadata token;
+  final FungibleTokenMetadata metadata;
   final void Function(AssetMetadata) onTap;
 
-  const FungibleTokenRenderer({Key key, @required this.token, this.onTap})
-      : super(key: key);
+  const FungibleTokenRenderer({
+    Key key,
+    @required this.metadata,
+    this.onTap,
+  }) : super(key: key);
 
   String symbolToCountryCode(String symbol) {
     switch (symbol) {
@@ -147,16 +150,16 @@ class FungibleTokenRenderer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flag(symbolToCountryCode(token.symbol), height: 20),
+              Flag(symbolToCountryCode(metadata.symbol), height: 20),
               Gap(10),
               Text(
-                token.symbol,
+                metadata.symbol,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.caption,
               ),
               Gap(10),
               Text(
-                token.name,
+                metadata.name,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
@@ -166,7 +169,7 @@ class FungibleTokenRenderer extends StatelessWidget {
       ),
       onTap: () {
         if (onTap != null) {
-          onTap(token);
+          onTap(metadata);
         }
       },
     );
@@ -174,11 +177,14 @@ class FungibleTokenRenderer extends StatelessWidget {
 }
 
 class NonFungibleTokenRenderer extends StatelessWidget {
-  final NonFungibleTokenMetadata token;
+  final NonFungibleTokenMetadata metadata;
   final void Function(AssetMetadata) onTap;
 
-  const NonFungibleTokenRenderer({Key key, @required this.token, this.onTap})
-      : super(key: key);
+  const NonFungibleTokenRenderer({
+    Key key,
+    @required this.metadata,
+    this.onTap,
+  }) : super(key: key);
 
   Widget tokenIdenticon() => SvgPicture.string(
         Jdenticon.toSvg('A'),
@@ -194,7 +200,7 @@ class NonFungibleTokenRenderer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(token.name),
+            Text(metadata.name),
             Gap(10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

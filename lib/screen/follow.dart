@@ -146,8 +146,8 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (token) => Stack(
                 children: [
-                  TokenRenderer(
-                    token: token,
+                  AssetMetadataRenderer(
+                    metadata: token,
                     onTap: (metadata) {
                       var followingCopy = Set<AssetMetadata>.from(following);
 
@@ -304,7 +304,7 @@ class _AssetIDState extends State<_AssetID> {
           children: [
             SizedBox(
               width: 160,
-              child: TokenRenderer(token: assetMetadata),
+              child: AssetMetadataRenderer(metadata: assetMetadata),
             ),
             ElevatedButton(
               child: Text('Follow'),

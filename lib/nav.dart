@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'convex.dart' as convex;
+import 'model.dart';
 import 'route.dart' as route;
 
 void pushLauncher(BuildContext context) => Navigator.pushNamed(
@@ -31,9 +32,11 @@ void pushAssets(BuildContext context) => Navigator.pushNamed(
       route.assets,
     );
 
-void pushAsset(BuildContext context) => Navigator.pushNamed(
+void pushAsset(BuildContext context, AssetMetadata metadata) =>
+    Navigator.pushNamed(
       context,
       route.asset,
+      arguments: metadata,
     );
 
 void pushFollow(BuildContext context) => Navigator.pushNamed(
