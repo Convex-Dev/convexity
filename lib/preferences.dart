@@ -11,8 +11,8 @@ Set<AAsset> readFollowing(SharedPreferences preferences) {
 
   if (encoded != null) {
     var l = jsonDecode(encoded) as List;
-    var t = l.map((m) {});
-    return t.toSet();
+
+    return l.map((m) => AAsset.fromJson(m)).toSet();
   }
 
   return Set<AAsset>.identity();
@@ -22,8 +22,6 @@ Set<AAsset> readFollowing(SharedPreferences preferences) {
 ///
 /// `following` will be persisted as a JSON encoded string.
 void writeFollowing(SharedPreferences preferences, Set<AAsset> following) {
-  // Converts to list before encoding because the encoder
-  // doesn't seem to know how to handle sets - lists are fine though.
   var encoded = jsonEncode(following.toList());
 
   preferences.setString(PREF_FOLLOWING, encoded);

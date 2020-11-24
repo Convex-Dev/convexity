@@ -26,7 +26,7 @@ class Address {
     sodium.KeyPair keyPair,
   ) : hex = sodium.Sodium.bin2hex(keyPair.pk);
 
-  Map<String, dynamic> toMap() => {'hex': hex};
+  Map<String, dynamic> toJson() => {'hex': hex};
 
   @override
   String toString() => '0x$hex';

@@ -13,7 +13,7 @@ class Convexity {
     @required this.actorAddress,
   });
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
         'convexServerUri': convexServerUri,
         'actorAddress': actorAddress,
       };
@@ -85,7 +85,7 @@ class Convexity {
         if (metadataMap['type'] == 'fungible') {
           var asset = FungibleToken(
             address: convex.Address(hex: addressString),
-            metadata: FungibleTokenMetadata.fromMap(metadataMap),
+            metadata: FungibleTokenMetadata.fromJson(metadataMap),
           );
 
           return AAsset(

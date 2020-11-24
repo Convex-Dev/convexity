@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:convex_wallet/convexity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -43,20 +41,18 @@ class AAsset {
   @override
   int get hashCode => asset.hashCode;
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
         'type': type.toString(),
-        'asset': asset.toMap(),
+        'asset': asset.toJson(),
       };
 
-  String toJson() => jsonEncode(toMap());
-
-  static AAsset fromMap(Map<String, dynamic> m) {
-    var type = assetType(m['type']);
+  static AAsset fromJson(Map<String, dynamic> json) {
+    var type = assetType(json['type']);
 
     var asset;
 
     if (type == AssetType.fungible) {
-      asset = FungibleToken.fromMap(m['asset']);
+      asset = FungibleToken.fromJson(json['asset']);
     }
 
     return AAsset(
@@ -76,13 +72,13 @@ class FungibleToken {
     @required this.metadata,
   });
 
-  FungibleToken.fromMap(Map<String, dynamic> m)
-      : address = Address.fromMap(m['address']),
-        metadata = FungibleTokenMetadata.fromMap(m['metadata']);
+  FungibleToken.fromJson(Map<String, dynamic> json)
+      : address = Address.fromMap(json['address']),
+        metadata = FungibleTokenMetadata.fromJson(json['metadata']);
 
-  Map<String, dynamic> toMap() => {
-        'address': address.toMap(),
-        'metadata': metadata.toMap(),
+  Map<String, dynamic> toJson() => {
+        'address': address.toJson(),
+        'metadata': metadata.toJson(),
       };
 
   @override
@@ -93,7 +89,7 @@ class FungibleToken {
 
   @override
   String toString() {
-    return toMap().toString();
+    return toJson().toString();
   }
 }
 
@@ -111,13 +107,13 @@ class FungibleTokenMetadata {
     @required this.decimals,
   });
 
-  FungibleTokenMetadata.fromMap(Map<String, dynamic> m)
-      : name = m['name'],
-        description = m['description'],
-        symbol = m['symbol'],
-        decimals = m['decimals'];
+  FungibleTokenMetadata.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        description = json['description'],
+        symbol = json['symbol'],
+        decimals = json['decimals'];
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
         'symbol': symbol,
@@ -126,7 +122,7 @@ class FungibleTokenMetadata {
 
   @override
   String toString() {
-    return toMap().toString();
+    return toJson().toString();
   }
 }
 
