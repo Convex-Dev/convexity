@@ -6,6 +6,9 @@ import 'model.dart';
 
 const PREF_FOLLOWING = 'following';
 
+/// Reads the set of following Assets.
+///
+/// Returns an empty set if there is none.
 Set<AAsset> readFollowing(SharedPreferences preferences) {
   var encoded = preferences.getString(PREF_FOLLOWING);
 
