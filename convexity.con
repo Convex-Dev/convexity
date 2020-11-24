@@ -31,7 +31,7 @@
            :signature [{:params [address metadata]}]
            :description "Registers metadata for a particular Asset. Returns registry.
 
-                         Metadata must have:
+                         Metadata must have (for the Convexity mobile app):
                           - name            : string
                           - description     : string
                           - type            : keyword fungible | non-fungible
