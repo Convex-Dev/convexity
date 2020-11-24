@@ -20,15 +20,13 @@ class Address {
 
   Address({this.hex});
 
-  Address.fromJson(
-    Map<String, dynamic> json,
-  ) : hex = json['hex'] as String;
+  Address.fromMap(Map<String, dynamic> m) : hex = m['hex'] as String;
 
   Address.fromKeyPair(
     sodium.KeyPair keyPair,
   ) : hex = sodium.Sodium.bin2hex(keyPair.pk);
 
-  Map<String, dynamic> toJson() => {'hex': hex};
+  Map<String, dynamic> toMap() => {'hex': hex};
 
   @override
   String toString() => '0x$hex';

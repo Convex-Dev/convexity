@@ -5,8 +5,8 @@ import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../widget.dart';
 import '../model.dart';
+import '../widget.dart';
 
 enum _Option {
   recommended,
@@ -110,12 +110,12 @@ class _Recommended extends StatefulWidget {
 
 class _RecommendedState extends State<_Recommended> {
   var isLoading = true;
-  var assets = <AssetMetadata>[];
+  var assets = <AAsset>{};
 
   void initState() {
     super.initState();
 
-    context.read<AppState>().convexity().allAssets().then((assets) {
+    context.read<AppState>().convexity().aassets().then((assets) {
       // It's important to check if the Widget is mounted
       // because the user might change the selected option
       // while we're still loading the recommended Assets.
@@ -146,10 +146,10 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (token) => Stack(
                 children: [
-                  AssetMetadataRenderer(
-                    metadata: token,
+                  AAssetRenderer(
+                    aasset: token,
                     onTap: (metadata) {
-                      var followingCopy = Set<AssetMetadata>.from(following);
+                      var followingCopy = Set<AAsset>.from(following);
 
                       if (followingCopy.contains(metadata)) {
                         followingCopy.remove(metadata);
@@ -196,7 +196,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
   _ScanQRCodeStatus status = _ScanQRCodeStatus.ready;
 
   Address scannedAddress;
-  AssetMetadata token;
+  AAsset aasset;
 
   void scan() async {
     var r = await BarcodeScanner.scan();
@@ -214,7 +214,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
 
       print('Asset Metadata $scannedAddress');
 
-      var token = await convexity.assetMetadata(scannedAddress);
+      var token = await convexity.aasset(scannedAddress);
 
       setState(() {
         status = _ScanQRCodeStatus.loaded;
@@ -289,7 +289,7 @@ class _AssetIDState extends State<_AssetID> {
   var status = AssetMetadataQueryStatus.ready;
 
   String address;
-  AssetMetadata assetMetadata;
+  AAsset aasset;
 
   Widget body() {
     switch (status) {
@@ -304,14 +304,12 @@ class _AssetIDState extends State<_AssetID> {
           children: [
             SizedBox(
               width: 160,
-              child: AssetMetadataRenderer(metadata: assetMetadata),
+              child: AAssetRenderer(aasset: aasset),
             ),
             ElevatedButton(
               child: Text('Follow'),
               onPressed: () {
-                context
-                    .read<AppState>()
-                    .followAsset(assetMetadata, isPersistent: true);
+                context.read<AppState>().follow(aasset, isPersistent: true);
 
                 Navigator.pop(context);
               },
@@ -364,7 +362,7 @@ class _AssetIDState extends State<_AssetID> {
                   context
                       .read<AppState>()
                       .convexity()
-                      .assetMetadata(Address(hex: address))
+                      .aasset(Address(hex: address))
                       .then(
                     (_assetMetadata) {
                       // It's important to check wether the Widget is mounted,
@@ -376,7 +374,7 @@ class _AssetIDState extends State<_AssetID> {
                               ? AssetMetadataQueryStatus.missingMetadata
                               : AssetMetadataQueryStatus.done;
 
-                          assetMetadata = _assetMetadata;
+                          aasset = _assetMetadata;
                         });
                       }
                     },

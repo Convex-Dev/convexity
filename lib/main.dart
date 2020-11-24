@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model.dart';
 import 'route.dart' as route;
 import 'wallet.dart' as wallet;
-import 'asset_manager.dart' as asset_manager;
+import 'preferences.dart' as asset_manager;
 import 'config.dart' as config;
 
 void main() {
@@ -31,7 +31,7 @@ class _AppState extends State<App> {
 
     var allKeyPairs = wallet.allKeyPairs(preferences);
     var activeKeyPair = wallet.activeKeyPair(preferences);
-    var following = asset_manager.following(preferences);
+    var following = asset_manager.readFollowing(preferences);
 
     context.read<AppState>().setState(
           (_) => Model(

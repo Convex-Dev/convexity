@@ -68,39 +68,36 @@ class IdenticonDropdown extends StatelessWidget {
   }
 }
 
-class AssetMetadataRenderer extends StatelessWidget {
-  final AssetMetadata metadata;
-  final void Function(AssetMetadata) onTap;
+class AAssetRenderer extends StatelessWidget {
+  final AAsset aasset;
+  final void Function(AAsset) onTap;
 
-  const AssetMetadataRenderer({
+  const AAssetRenderer({
     Key key,
-    @required this.metadata,
+    @required this.aasset,
     this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (metadata is FungibleTokenMetadata) {
+    if (aasset.type == AssetType.fungible) {
       return FungibleTokenRenderer(
-        metadata: metadata,
+        aasset: aasset,
         onTap: onTap,
       );
     }
 
-    return NonFungibleTokenRenderer(
-      metadata: metadata,
-      onTap: onTap,
-    );
+    return null;
   }
 }
 
 class FungibleTokenRenderer extends StatelessWidget {
-  final FungibleTokenMetadata metadata;
-  final void Function(AssetMetadata) onTap;
+  final AAsset aasset;
+  final void Function(AAsset) onTap;
 
   const FungibleTokenRenderer({
     Key key,
-    @required this.metadata,
+    @required this.aasset,
     this.onTap,
   }) : super(key: key);
 
@@ -142,6 +139,8 @@ class FungibleTokenRenderer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var token = aasset.asset as FungibleToken;
+
     return GestureDetector(
       child: Card(
         child: Container(
@@ -150,16 +149,16 @@ class FungibleTokenRenderer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flag(symbolToCountryCode(metadata.symbol), height: 20),
+              Flag(symbolToCountryCode(token.metadata.symbol), height: 20),
               Gap(10),
               Text(
-                metadata.symbol,
+                token.metadata.symbol,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.caption,
               ),
               Gap(10),
               Text(
-                metadata.name,
+                token.metadata.name,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
@@ -169,49 +168,9 @@ class FungibleTokenRenderer extends StatelessWidget {
       ),
       onTap: () {
         if (onTap != null) {
-          onTap(metadata);
+          onTap(aasset);
         }
       },
-    );
-  }
-}
-
-class NonFungibleTokenRenderer extends StatelessWidget {
-  final NonFungibleTokenMetadata metadata;
-  final void Function(AssetMetadata) onTap;
-
-  const NonFungibleTokenRenderer({
-    Key key,
-    @required this.metadata,
-    this.onTap,
-  }) : super(key: key);
-
-  Widget tokenIdenticon() => SvgPicture.string(
-        Jdenticon.toSvg('A'),
-        width: 30,
-        height: 30,
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(metadata.name),
-            Gap(10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                tokenIdenticon(),
-                tokenIdenticon(),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

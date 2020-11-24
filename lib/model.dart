@@ -8,79 +8,125 @@ import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'convex.dart';
-import 'config.dart' as config;
 
-abstract class AssetMetadata {
-  Map<String, dynamic> toJson();
+enum AssetType {
+  fungible,
+  nonFungible,
 }
 
-@immutable
-class FungibleTokenMetadata extends AssetMetadata {
-  final Address address;
-  final String name;
-  final String description;
-  final String symbol;
-  final int decimals;
+/// Returns an (optional) AssetType from string.
+AssetType assetType(String s) {
+  if (AssetType.fungible.toString() == s) {
+    return AssetType.fungible;
+  }
 
-  FungibleTokenMetadata({
-    @required this.address,
-    @required this.name,
-    @required this.description,
-    @required this.symbol,
-    @required this.decimals,
+  if (AssetType.nonFungible.toString() == s) {
+    return AssetType.nonFungible;
+  }
+
+  return null;
+}
+
+class AAsset {
+  final AssetType type;
+  final dynamic asset;
+
+  AAsset({
+    @required this.type,
+    @required this.asset,
   });
 
   @override
-  bool operator ==(o) => o is FungibleTokenMetadata && o.address == address;
+  bool operator ==(o) => o is AAsset && o.type == type && o.asset == asset;
+
+  @override
+  int get hashCode => asset.hashCode;
+
+  Map<String, dynamic> toMap() => {
+        'type': type.toString(),
+        'asset': asset.toMap(),
+      };
+
+  String toJson() => jsonEncode(toMap());
+
+  static AAsset fromMap(Map<String, dynamic> m) {
+    var type = assetType(m['type']);
+
+    var asset;
+
+    if (type == AssetType.fungible) {
+      asset = FungibleToken.fromMap(m['asset']);
+    }
+
+    return AAsset(
+      type: type,
+      asset: asset,
+    );
+  }
+}
+
+@immutable
+class FungibleToken {
+  final Address address;
+  final FungibleTokenMetadata metadata;
+
+  FungibleToken({
+    @required this.address,
+    @required this.metadata,
+  });
+
+  FungibleToken.fromMap(Map<String, dynamic> m)
+      : address = Address.fromMap(m['address']),
+        metadata = FungibleTokenMetadata.fromMap(m['metadata']);
+
+  Map<String, dynamic> toMap() => {
+        'address': address.toMap(),
+        'metadata': metadata.toMap(),
+      };
+
+  @override
+  bool operator ==(o) => o is FungibleToken && o.address == address;
 
   @override
   int get hashCode => address.hex.hashCode;
 
   @override
   String toString() {
-    return '''FungibleToken:
-      address: $address,
-      name: $name, 
-      description: $description,
-      symbol: $symbol,
-      decimals: $decimals''';
+    return toMap().toString();
   }
+}
 
-  @override
-  Map<String, dynamic> toJson() => {
-        'address': address.toJson(),
+@immutable
+class FungibleTokenMetadata {
+  final String name;
+  final String description;
+  final String symbol;
+  final int decimals;
+
+  FungibleTokenMetadata({
+    @required this.name,
+    @required this.description,
+    @required this.symbol,
+    @required this.decimals,
+  });
+
+  FungibleTokenMetadata.fromMap(Map<String, dynamic> m)
+      : name = m['name'],
+        description = m['description'],
+        symbol = m['symbol'],
+        decimals = m['decimals'];
+
+  Map<String, dynamic> toMap() => {
         'name': name,
         'description': description,
         'symbol': symbol,
         'decimals': decimals,
       };
 
-  static FungibleTokenMetadata fromJson(Map<String, dynamic> json) =>
-      FungibleTokenMetadata(
-        address: Address.fromJson(json['address']),
-        name: json['name'],
-        description: json['description'],
-        symbol: json['symbol'],
-        decimals: json['decimals'],
-      );
-}
-
-@immutable
-class NonFungibleTokenMetadata extends AssetMetadata {
-  final Address address;
-  final String name;
-  final String description;
-  final List<Object> coll;
-
-  NonFungibleTokenMetadata({
-    @required this.address,
-    @required this.name,
-    @required this.description,
-    @required this.coll,
-  });
-
   @override
-  Map<String, dynamic> toJson() => {};
+  String toString() {
+    return toMap().toString();
+  }
 }
 
 final convexWorldUri = Uri.parse('https://convex.world');
@@ -91,7 +137,7 @@ class Model {
   final Address convexityAddress;
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
-  final Set<AssetMetadata> following;
+  final Set<AAsset> following;
 
   Model({
     this.convexServerUri,
@@ -117,7 +163,7 @@ class Model {
     Address convexityAddress,
     KeyPair activeKeyPair,
     List<KeyPair> allKeyPairs,
-    Set<AssetMetadata> following,
+    Set<AAsset> following,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -150,14 +196,6 @@ class AppState with ChangeNotifier {
   AppState({this.model});
 
   Convexity convexity() {
-    if (config.isDebug()) {
-      log('''
-        Convexity client: 
-        convexServerUri ${model.convexServerUri}, 
-        actorAddress ${model.convexityAddress}
-      ''');
-    }
-
     return Convexity(
       convexServerUri: model.convexServerUri,
       actorAddress: model.convexityAddress,
@@ -177,7 +215,7 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  void setFollowing(Set<AssetMetadata> following, {bool isPersistent = false}) {
+  void setFollowing(Set<AAsset> following, {bool isPersistent = false}) {
     if (isPersistent) {
       var followingEncoded = jsonEncode(following.toList());
 
@@ -187,11 +225,11 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith(following: Set<AssetMetadata>.from(following)));
+    setState((m) => m.copyWith(following: Set<AAsset>.from(following)));
   }
 
-  void followAsset(AssetMetadata metadata, {bool isPersistent = false}) {
-    var following = Set<AssetMetadata>.from(model.following)..add(metadata);
+  void follow(AAsset aasset, {bool isPersistent = false}) {
+    var following = Set<AAsset>.from(model.following)..add(aasset);
 
     setFollowing(following, isPersistent: isPersistent);
   }

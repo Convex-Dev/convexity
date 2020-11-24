@@ -45,10 +45,9 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
           .map(
             (token) => Container(
               padding: const EdgeInsets.all(8),
-              child: AssetMetadataRenderer(
-                metadata: token,
-                onTap: (AssetMetadata metadata) =>
-                    nav.pushAsset(context, metadata),
+              child: AAssetRenderer(
+                aasset: token,
+                onTap: (AAsset aasset) => nav.pushAsset(context, aasset),
               ),
             ),
           )
