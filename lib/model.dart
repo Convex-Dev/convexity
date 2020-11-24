@@ -41,6 +41,9 @@ class AAsset {
   @override
   int get hashCode => asset.hashCode;
 
+  @override
+  String toString() => toJson().toString();
+
   Map<String, dynamic> toJson() => {
         'type': type.toString(),
         'asset': asset.toJson(),
@@ -219,7 +222,15 @@ class AppState with ChangeNotifier {
     setFollowing(following, isPersistent: isPersistent);
   }
 
-  void setActiveKeyPair(KeyPair active) {
+  /// Set KeyPair `active` as active, and persist it to disk if `isPersistent` is true.
+  ///
+  /// This method is usually called whenever a new Account is created.
+  void setActiveKeyPair(KeyPair active, {bool isPersistent = false}) {
+    if (isPersistent) {
+      SharedPreferences.getInstance()
+          .then((preferences) => p.setActiveKeyPair(preferences, active));
+    }
+
     setState((m) => m.copyWith(activeKeyPair: active));
   }
 
@@ -233,6 +244,11 @@ class AppState with ChangeNotifier {
   ///
   /// This method is usually called whenever a new Account is created.
   void addKeyPair(KeyPair k, {bool isPersistent = false}) {
+    if (isPersistent) {
+      SharedPreferences.getInstance()
+          .then((preferences) => p.addKeyPair(preferences, k));
+    }
+
     setState(
       (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
     );

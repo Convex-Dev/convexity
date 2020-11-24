@@ -70,14 +70,10 @@ class _LauncherScreenState extends State<LauncherScreen> {
     );
 
     if (response.statusCode == 200) {
-      context.read<AppState>().addKeyPair(randomKeyPair);
-      context.read<AppState>().setActiveKeyPair(randomKeyPair);
+      var state = context.read<AppState>();
 
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Your new Convex Account is ready.'),
-        ),
-      );
+      state.addKeyPair(randomKeyPair, isPersistent: true);
+      state.setActiveKeyPair(randomKeyPair, isPersistent: true);
     }
   }
 

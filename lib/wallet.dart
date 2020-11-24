@@ -31,19 +31,3 @@ Future<bool> setActiveKeyPair(KeyPair keyPair) async {
 
   return preferences.setString(_activeKeyPair, encodeKeyPair(keyPair));
 }
-
-List<KeyPair> allKeyPairs(SharedPreferences preferences) {
-  List<String> wallet = preferences.getStringList(_allKeyPairs) ?? [];
-
-  return wallet.map(decodeKeyPair).toList();
-}
-
-KeyPair activeKeyPair(SharedPreferences preferences) {
-  var s = preferences.getString(_activeKeyPair);
-
-  if (s != null) {
-    return decodeKeyPair(s);
-  }
-
-  return null;
-}

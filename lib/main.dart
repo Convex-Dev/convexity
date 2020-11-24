@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logger/logger.dart';
 
 import 'model.dart';
 import 'route.dart' as route;
-import 'wallet.dart' as wallet;
-import 'preferences.dart' as asset_manager;
+import 'preferences.dart' as p;
 import 'config.dart' as config;
+
+var logger = Logger(
+  printer: PrettyPrinter(),
+);
 
 void main() {
   sodium.Sodium.init();
@@ -29,9 +33,17 @@ class _AppState extends State<App> {
   void bootstrap() async {
     var preferences = await SharedPreferences.getInstance();
 
-    var allKeyPairs = wallet.allKeyPairs(preferences);
-    var activeKeyPair = wallet.activeKeyPair(preferences);
-    var following = asset_manager.readFollowing(preferences);
+    var allKeyPairs = p.allKeyPairs(preferences);
+    var activeKeyPair = p.activeKeyPair(preferences);
+    var following = p.readFollowing(preferences);
+
+    logger.d(
+      'BOOTSTRAP:\n'
+      'Server $convexWorldUri\n'
+      'All KeyPairs $allKeyPairs\n'
+      'Active KeyPair $activeKeyPair\n'
+      'Following $following',
+    );
 
     context.read<AppState>().setState(
           (_) => Model(
