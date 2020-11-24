@@ -1,12 +1,14 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:provider/provider.dart';
 
 import './home.dart';
 import './wallet.dart';
 import './account.dart';
 import '../nav.dart' as nav;
+import '../convex.dart' as convex;
 
 enum _PopupChoice {
   settings,
@@ -22,14 +24,6 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-
-    // if (appState.model.allKeyPairs.isNotEmpty)
-    //         IdenticonDropdown(
-    //           activeKeyPair: appState.model.activeKeyPairOrDefault(),
-    //           allKeyPairs: appState.model.allKeyPairs,
-    //         ),
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Convexity'),
@@ -45,7 +39,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
           )
         ],
       ),
-      body: body(appState),
+      body: body(context),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         items: [
@@ -67,7 +61,40 @@ class _LauncherScreenState extends State<LauncherScreen> {
     );
   }
 
-  Widget body(AppState appState) {
+  void _createAccount(BuildContext context) async {
+    var randomKeyPair = CryptoSign.randomKeys();
+
+    var response = await convex.faucet(
+      address: Sodium.bin2hex(randomKeyPair.pk),
+      amount: 1000000,
+    );
+
+    if (response.statusCode == 200) {
+      context.read<AppState>().addKeyPair(randomKeyPair);
+      context.read<AppState>().setActiveKeyPair(randomKeyPair);
+
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Your new Convex Account is ready.'),
+        ),
+      );
+    }
+  }
+
+  Widget body(BuildContext context) {
+    var appState = context.watch<AppState>();
+
+    if (appState.model.activeKeyPair == null) {
+      return Center(
+        child: ElevatedButton(
+          child: Text('Create Account'),
+          onPressed: () {
+            _createAccount(context);
+          },
+        ),
+      );
+    }
+
     switch (currentIndex) {
       case 0:
         return HomeScreenBody();

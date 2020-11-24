@@ -206,12 +206,16 @@ class AppState with ChangeNotifier {
     );
   }
 
-  void addKeyPair(KeyPair k) {
+  /// Add a new KeyPair `k`, and persist it to disk if `isPersistent` is true.
+  ///
+  /// This method is usually called whenever a new Account is created.
+  void addKeyPair(KeyPair k, {bool isPersistent = false}) {
     setState(
       (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
     );
   }
 
+  /// Reset app state.
   void reset() {
     setState(
       (m) => Model(),

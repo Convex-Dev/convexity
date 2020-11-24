@@ -185,7 +185,6 @@ enum _ScanQRCodeStatus {
   ready,
   loading,
   loaded,
-  error,
 }
 
 class _ScanQRCode extends StatefulWidget {
