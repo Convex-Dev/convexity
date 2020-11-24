@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../convex.dart' as convex;
 import '../nav.dart' as nav;
 import '../widget.dart';
-import '../wallet.dart' as wallet;
 
 void _createAccount(BuildContext context) {
   var randomKeyPair = CryptoSign.randomKeys();
@@ -21,16 +20,10 @@ void _createAccount(BuildContext context) {
       .then(
     (response) {
       if (response.statusCode == 200) {
-        context.read<AppState>().addKeyPair(randomKeyPair);
+        var state = context.read<AppState>();
 
-        wallet.setActiveKeyPair(randomKeyPair);
-        wallet.addKeyPair(randomKeyPair);
-
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Your new Convex Account is ready.'),
-          ),
-        );
+        state.addKeyPair(randomKeyPair, isPersistent: true);
+        state.setActiveKeyPair(randomKeyPair, isPersistent: true);
       }
     },
   );
