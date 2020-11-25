@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gap/gap.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../model.dart';
 
@@ -43,8 +45,43 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
     var fungible = aasset.asset as FungibleToken;
 
     return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Text('${fungible.metadata.symbol}'),
-    );
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          fungible.metadata.name,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Gap(4),
+                        Text(
+                          fungible.metadata.description,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ],
+                    ),
+                    QrImage(
+                      data: fungible.address.hex,
+                      version: QrVersions.auto,
+                      size: 80,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }
