@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../model.dart';
+import '../nav.dart' as nav;
 
 class AssetScreen extends StatelessWidget {
   final AAsset aasset;
@@ -12,7 +13,7 @@ class AssetScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Metadata can be passed directly to the constructor,
+    // AAsset can be passed directly to the constructor,
     // or via the Navigator arguments.
     AAsset _aasset =
         aasset ?? ModalRoute.of(context).settings.arguments as AAsset;
@@ -79,6 +80,39 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     ),
                   ],
                 ),
+              ),
+            ),
+            Gap(20),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Balance',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      Gap(4),
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    child: Text('TRANSFER'),
+                    onPressed: () =>
+                        nav.pushFungibleTransfer(context, fungible),
+                  ),
+                ],
               ),
             ),
           ],

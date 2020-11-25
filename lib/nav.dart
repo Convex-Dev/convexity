@@ -42,3 +42,10 @@ void pushFollow(BuildContext context) => Navigator.pushNamed(
       context,
       route.follow,
     );
+
+void pushFungibleTransfer(BuildContext context, FungibleToken token) =>
+    Navigator.pushNamed(
+      context,
+      route.fungibleTransfer,
+      arguments: token,
+    );

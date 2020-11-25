@@ -10,6 +10,7 @@ import 'screen/asset.dart';
 import 'screen/follow.dart';
 import 'screen/transfer.dart';
 import 'screen/dev.dart';
+import 'screen/fungible_transfer.dart';
 
 const String dev = '/dev';
 const String launcher = '/launcher';
@@ -21,6 +22,7 @@ const String settings = '/settings';
 const String assets = '/assets';
 const String asset = '/asset';
 const String follow = '/follow';
+const String fungibleTransfer = '/fungibleTransfer';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -33,4 +35,5 @@ Map<String, WidgetBuilder> routes() => {
       assets: (context) => AssetsScreen(),
       asset: (context) => AssetScreen(),
       follow: (context) => FollowAssetScreen(),
+      fungibleTransfer: (context) => FungibleTransferScreen(),
     };
