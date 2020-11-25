@@ -140,8 +140,8 @@ class FungibleTokenRenderer extends StatelessWidget {
   Widget build(BuildContext context) {
     var token = aasset.asset as FungibleToken;
 
-    return GestureDetector(
-      child: Card(
+    return Card(
+      child: InkWell(
         child: Container(
           padding: EdgeInsets.all(12),
           child: Column(
@@ -164,12 +164,12 @@ class FungibleTokenRenderer extends StatelessWidget {
             ],
           ),
         ),
+        onTap: () {
+          if (onTap != null) {
+            onTap(aasset);
+          }
+        },
       ),
-      onTap: () {
-        if (onTap != null) {
-          onTap(aasset);
-        }
-      },
     );
   }
 }
