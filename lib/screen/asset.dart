@@ -39,6 +39,8 @@ class AssetScreenBody extends StatefulWidget {
 class _AssetScreenBodyState extends State<AssetScreenBody> {
   final AAsset aasset;
 
+  int amount = 0;
+
   _AssetScreenBodyState({this.aasset});
 
   @override
@@ -112,6 +114,95 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     onPressed: () =>
                         nav.pushFungibleTransfer(context, fungible),
                   ),
+                ],
+              ),
+            ),
+            Gap(20),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Draggable<int>(
+                    data: amount,
+                    feedback: Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.amber),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(Icons.money),
+                            Text(
+                              amount.toString(),
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    child: Container(
+                      height: 120,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.amber),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Amount',
+                        ),
+                        onChanged: (String s) {
+                          setState(() {
+                            amount = int.tryParse(s) ?? 0;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  DragTarget<int>(
+                    builder: (context, candidateData, rejectedData) {
+                      return Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blue),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(child: Text('To...')),
+                      );
+                    },
+                    onWillAccept: (data) => data > 0,
+                    onAccept: (data) {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: 200,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const Text('Modal BottomSheet'),
+                                  ElevatedButton(
+                                    child: const Text('Close BottomSheet'),
+                                    onPressed: () => Navigator.pop(context),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  )
                 ],
               ),
             ),
