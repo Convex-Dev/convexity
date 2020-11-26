@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 import 'model.dart';
 import 'convex.dart' as convex;
-import 'convexity.dart' as convexity;
 
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
@@ -143,30 +142,21 @@ class FungibleTokenRenderer extends StatelessWidget {
     return null;
   }
 
-  void queryBalance(
-    Uri convexServerUri,
-    convex.Address tokenAddress,
-    convex.Address holderAddress,
-  ) async {
-    var balance = await convexity.fungibleBalance(
-        convexServerUri: convexServerUri,
-        tokenAddress: tokenAddress,
-        holderAddress: holderAddress);
-
-    print('Balance $balance');
-  }
-
   @override
   Widget build(BuildContext context) {
     var token = aasset.asset as FungibleToken;
 
-    var model = context.watch<AppState>().model;
+    var appState = context.watch<AppState>();
 
-    queryBalance(
-      model.convexServerUri,
-      token.address,
-      model.activeAddress,
-    );
+    appState
+        .fungibleClient()
+        .balance(
+          token: token.address,
+          holder: appState.model.activeAddress,
+        )
+        .then(
+          (balance) => print('Balance $balance'),
+        );
 
     return Card(
       child: InkWell(

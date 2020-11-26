@@ -8,7 +8,6 @@ import './home.dart';
 import './wallet.dart';
 import './account.dart';
 import '../nav.dart' as nav;
-import '../convex.dart' as convex;
 
 enum _PopupChoice {
   settings,
@@ -64,16 +63,18 @@ class _LauncherScreenState extends State<LauncherScreen> {
   void _createAccount(BuildContext context) async {
     var randomKeyPair = CryptoSign.randomKeys();
 
-    var response = await convex.faucet(
-      address: Sodium.bin2hex(randomKeyPair.pk),
-      amount: 1000000,
-    );
+    var appState = context.read<AppState>();
 
-    if (response.statusCode == 200) {
-      var state = context.read<AppState>();
+    var b = await appState.convexClient().requestForFaucet(
+          address: Address(hex: Sodium.bin2hex(randomKeyPair.pk)),
+          amount: 1000000,
+        );
 
-      state.addKeyPair(randomKeyPair, isPersistent: true);
-      state.setActiveKeyPair(randomKeyPair, isPersistent: true);
+    if (b) {
+      appState.addKeyPair(randomKeyPair, isPersistent: true);
+      appState.setActiveKeyPair(randomKeyPair, isPersistent: true);
+    } else {
+      logger.e('Failed to create Account.');
     }
   }
 

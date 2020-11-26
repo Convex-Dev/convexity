@@ -3,10 +3,14 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
+import 'package:logger/logger.dart';
+import 'package:meta/meta.dart';
 
 import 'config.dart' as config;
 
 const CONVEX_WORLD_HOST = 'convex.world';
+
+var logger = Logger();
 
 // -- Types
 
@@ -372,4 +376,89 @@ Future<http.Response> faucet({
   }
 
   return client.post(uri, body: body);
+}
+
+class ConvexClient {
+  final Uri serverUri;
+
+  ConvexClient({@required this.serverUri});
+
+  /// Requests for Faucet for Address.
+  ///
+  /// Returns true if the request was successful, false otherwise.
+  Future<bool> requestForFaucet({
+    @required Address address,
+    @required int amount,
+  }) async {
+    var response = await faucet(
+      scheme: serverUri.scheme,
+      host: serverUri.host,
+      port: serverUri.port,
+      address: address.hex,
+      amount: amount,
+    );
+
+    return response.statusCode == 200;
+  }
+
+  Future<Result> query({
+    @required String source,
+    Address address,
+    Lang lang = Lang.convexLisp,
+  }) async {
+    var response = await queryRaw(
+      scheme: serverUri.scheme,
+      host: serverUri.host,
+      port: serverUri.port,
+      source: source,
+      address: address?.hex,
+      lang: lang,
+    );
+
+    var bodyDecoded = convert.jsonDecode(response.body);
+
+    if (config.isDebug()) {
+      logger.d(
+        '[QUERY] Source: $source, Address: $address, Lang: $lang, Result: $bodyDecoded',
+      );
+    }
+
+    var resultValue = bodyDecoded['value'];
+    var resultErrorCode = bodyDecoded['error-code'];
+
+    if (resultErrorCode != null) {
+      logger.w('Query returned an error code: $resultErrorCode');
+
+      return Result(
+        value: resultValue,
+        errorCode: resultErrorCode,
+      );
+    } else {
+      return Result(
+        value: resultValue,
+      );
+    }
+  }
+}
+
+class FungibleClient {
+  final ConvexClient convexClient;
+
+  FungibleClient({@required this.convexClient});
+
+  Future<int> balance({
+    @required Address token,
+    @required Address holder,
+  }) async {
+    var source = '(import convex.fungible :as fungible)'
+        '(fungible/balance (address "${token.hex}") (address "${holder.hex}"))';
+
+    var result = await convexClient.query(source: source);
+
+    if (result.errorCode != null) {
+      return null;
+    }
+
+    return result.value;
+  }
 }

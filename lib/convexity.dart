@@ -1,28 +1,7 @@
 import 'package:meta/meta.dart';
 
 import 'convex.dart' as convex;
-
 import 'model.dart';
-
-Future<int> fungibleBalance({
-  @required Uri convexServerUri,
-  @required convex.Address tokenAddress,
-  @required convex.Address holderAddress,
-}) async {
-  var source = '(import convex.fungible :as fungible)'
-      '(fungible/balance (address "${tokenAddress.hex}") (address "${holderAddress.hex}"))';
-
-  var result = await convex.query(
-    uri: convexServerUri,
-    source: source,
-  );
-
-  if (result.errorCode != null) {
-    return null;
-  }
-
-  return int.tryParse(result.value);
-}
 
 class Convexity {
   final Uri convexServerUri;

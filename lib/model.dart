@@ -194,12 +194,15 @@ class AppState with ChangeNotifier {
 
   AppState({this.model});
 
-  Convexity convexity() {
-    return Convexity(
-      convexServerUri: model.convexServerUri,
-      actorAddress: model.convexityAddress,
-    );
-  }
+  ConvexClient convexClient() => ConvexClient(serverUri: model.convexServerUri);
+
+  FungibleClient fungibleClient() =>
+      FungibleClient(convexClient: convexClient());
+
+  Convexity convexity() => Convexity(
+        convexServerUri: model.convexServerUri,
+        actorAddress: model.convexityAddress,
+      );
 
   void setState(Model f(Model m)) {
     model = f(model);
