@@ -40,9 +40,9 @@ class FungibleTransferScreen extends StatelessWidget {
                     return CircularProgressIndicator();
                   }
 
-                  var formattedBalance = formatFungible(
+                  var formattedBalance = formatFungibleCurrency(
                     metadata: _token.metadata,
-                    balance: snapshot.data as int,
+                    number: snapshot.data as int,
                   );
 
                   return Text(
@@ -139,9 +139,9 @@ class _FungibleTransferScreenBodyState
                                   return CircularProgressIndicator();
                                 }
 
-                                var formattedAmount = formatFungible(
+                                var formattedAmount = formatFungibleCurrency(
                                   metadata: widget.token.metadata,
-                                  balance: amount,
+                                  number: amount,
                                 );
 
                                 return Column(

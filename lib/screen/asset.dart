@@ -125,9 +125,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                     ),
                                   )
                                 : Text(
-                                    formatFungible(
+                                    formatFungibleCurrency(
                                       metadata: fungible.metadata,
-                                      balance: snapshot.data,
+                                      number: snapshot.data,
                                     ),
                                   ),
                       ),

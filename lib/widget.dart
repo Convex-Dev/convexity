@@ -207,9 +207,9 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
                             child: CircularProgressIndicator(),
                           )
                         : Text(
-                            formatFungible(
+                            formatFungibleCurrency(
                               metadata: fungible.metadata,
-                              balance: snapshot.data,
+                              number: snapshot.data,
                             ),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText1,
