@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
@@ -33,19 +34,30 @@ class AssetScreenBody extends StatefulWidget {
   const AssetScreenBody({Key key, this.aasset}) : super(key: key);
 
   @override
-  _AssetScreenBodyState createState() => _AssetScreenBodyState(aasset: aasset);
+  _AssetScreenBodyState createState() => _AssetScreenBodyState();
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  final AAsset aasset;
+  Future<int> balance;
 
-  int amount = 0;
+  @override
+  void initState() {
+    super.initState();
 
-  _AssetScreenBodyState({this.aasset});
+    var appState = context.read<AppState>();
+
+    var fungible = widget.aasset.asset as FungibleToken;
+
+    // Check the user's balance for this Token.
+    balance = appState.fungibleClient().balance(
+          token: fungible.address,
+          holder: appState.model.activeAddress,
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
-    var fungible = aasset.asset as FungibleToken;
+    var fungible = widget.aasset.asset as FungibleToken;
 
     return Padding(
         padding: const EdgeInsets.all(12),
@@ -100,109 +112,29 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       Gap(4),
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
+                      FutureBuilder(
+                        future: balance,
+                        builder: (context, snapshot) =>
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(snapshot.data.toString()),
                       ),
                     ],
                   ),
-                  TextButton(
-                    child: Text('TRANSFER'),
-                    onPressed: () =>
-                        nav.pushFungibleTransfer(context, fungible),
-                  ),
-                ],
-              ),
-            ),
-            Gap(20),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Draggable<int>(
-                    data: amount,
-                    feedback: Container(
-                      height: 80,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.amber),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.all(12),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Icon(Icons.money),
-                            Text(
-                              amount.toString(),
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    child: Container(
-                      height: 120,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.amber),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.all(12),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Amount',
-                        ),
-                        onChanged: (String s) {
-                          setState(() {
-                            amount = int.tryParse(s) ?? 0;
-                          });
-                        },
-                      ),
+                  SizedBox(
+                    height: 60,
+                    child: ElevatedButton(
+                      child: Text('TRANSFER'),
+                      onPressed: () =>
+                          nav.pushFungibleTransfer(context, fungible),
                     ),
                   ),
-                  DragTarget<int>(
-                    builder: (context, candidateData, rejectedData) {
-                      return Container(
-                        height: 120,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Center(child: Text('To...')),
-                      );
-                    },
-                    onWillAccept: (data) => data > 0,
-                    onAccept: (data) {
-                      showModalBottomSheet<void>(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 200,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  const Text('Modal BottomSheet'),
-                                  ElevatedButton(
-                                    child: const Text('Close BottomSheet'),
-                                    onPressed: () => Navigator.pop(context),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  )
                 ],
               ),
             ),
