@@ -3,10 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
+import '../format.dart';
 
 class AssetScreen extends StatelessWidget {
   final AAsset aasset;
@@ -125,10 +125,10 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                     ),
                                   )
                                 : Text(
-                                    NumberFormat.simpleCurrency(
-                                      name: fungible.metadata.symbol,
-                                      decimalDigits: fungible.metadata.decimals,
-                                    ).format(snapshot.data),
+                                    formatFungible(
+                                      metadata: fungible.metadata,
+                                      balance: snapshot.data,
+                                    ),
                                   ),
                       ),
                     ],

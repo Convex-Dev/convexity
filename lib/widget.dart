@@ -5,10 +5,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import 'model.dart';
 import 'convex.dart' as convex;
+import 'format.dart';
 
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
@@ -207,10 +207,10 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
                             child: CircularProgressIndicator(),
                           )
                         : Text(
-                            NumberFormat.simpleCurrency(
-                              name: fungible.metadata.symbol,
-                              decimalDigits: fungible.metadata.decimals,
-                            ).format(snapshot.data),
+                            formatFungible(
+                              metadata: fungible.metadata,
+                              balance: snapshot.data,
+                            ),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
