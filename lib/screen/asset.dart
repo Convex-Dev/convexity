@@ -138,7 +138,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     child: ElevatedButton(
                       child: Text('TRANSFER'),
                       onPressed: () =>
-                          nav.pushFungibleTransfer(context, fungible),
+                          nav.pushFungibleTransfer(context, fungible, balance),
                     ),
                   ),
                 ],

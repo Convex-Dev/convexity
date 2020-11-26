@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 
 import '../model.dart';
+import '../format.dart';
 
 class FungibleTransferScreen extends StatelessWidget {
   final FungibleToken token;
@@ -11,13 +12,47 @@ class FungibleTransferScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var arguments = ModalRoute.of(context).settings.arguments as List;
+
     // Token can be passed directly to the constructor,
     // or via the Navigator arguments.
-    var _token =
-        token ?? ModalRoute.of(context).settings.arguments as FungibleToken;
+    var _token = token ?? arguments.first as FungibleToken;
+    var _balance = arguments.last as Future<int>;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Transfer ${_token.metadata.symbol}')),
+      appBar: AppBar(
+        title: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Transfer ${_token.metadata.symbol}',
+              ),
+              FutureBuilder(
+                future: _balance,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+
+                  var v = formatCurrency(
+                    symbol: _token.metadata.symbol,
+                    number: snapshot.data as int,
+                    decimals: _token.metadata.decimals,
+                  );
+
+                  return Text(
+                    'Balance $v',
+                    style: TextStyle(fontSize: 14),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ),
       body: FungibleTransferScreenBody(token: _token),
     );
   }
@@ -35,64 +70,38 @@ class FungibleTransferScreenBody extends StatefulWidget {
 
 class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
-  var inputOption = AddressInputOption.scan;
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          TextField(
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: 'Amount',
+            ),
+          ),
+          Gap(30),
+          Column(
             children: [
-              Card(
-                elevation: 2,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      inputOption = AddressInputOption.scan;
-                    });
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    child: Icon(
-                      Icons.qr_code,
-                      size: 60,
-                      color: inputOption == AddressInputOption.scan
-                          ? Colors.black
-                          : Colors.black12,
-                    ),
-                  ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Destination Address',
                 ),
               ),
               Gap(20),
-              Card(
-                elevation: 2,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      inputOption = AddressInputOption.textField;
-                    });
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    child: Center(
-                      child: Icon(
-                        Icons.text_fields,
-                        size: 60,
-                        color: inputOption == AddressInputOption.textField
-                            ? Colors.black
-                            : Colors.black12,
-                      ),
-                    ),
-                  ),
+              SizedBox(
+                height: 60,
+                width: 100,
+                child: ElevatedButton(
+                  child: Text('SEND'),
+                  onPressed: () {},
                 ),
               ),
             ],
-          ),
+          )
         ],
       ),
     );
