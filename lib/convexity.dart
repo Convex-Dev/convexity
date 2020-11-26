@@ -4,6 +4,25 @@ import 'convex.dart' as convex;
 
 import 'model.dart';
 
+Future<int> fungibleBalance(
+  Uri convexServerUri,
+  convex.Address tokenAddress,
+) async {
+  var source = '(import convex.fungible :as fungible)'
+      '(fungible/balance "${tokenAddress.hex}" )';
+
+  var result = await convex.query(
+    uri: convexServerUri,
+    source: source,
+  );
+
+  if (result.errorCode != null) {
+    return null;
+  }
+
+  return int.tryParse(result.value);
+}
+
 class Convexity {
   final Uri convexServerUri;
   final convex.Address actorAddress;
@@ -21,9 +40,9 @@ class Convexity {
   /// Query Asset by its Address.
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
-  Future<AAsset> aasset(convex.Address aaddresss) async {
+  Future<AAsset> aasset(convex.Address aaddress) async {
     var source =
-        '(call "${this.actorAddress.hex}" (asset-metadata (address "${aaddresss.hex}")))';
+        '(call "${this.actorAddress.hex}" (asset-metadata (address "${aaddress.hex}")))';
 
     var result = await convex.query(
       uri: convexServerUri,
@@ -51,7 +70,7 @@ class Convexity {
       return AAsset(
         type: AssetType.fungible,
         asset: FungibleToken(
-          address: aaddresss,
+          address: aaddress,
           metadata: metadata,
         ),
       );
