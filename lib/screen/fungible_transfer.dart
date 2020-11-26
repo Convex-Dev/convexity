@@ -1,9 +1,12 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../format.dart';
+import '../route.dart' as route;
 
 class FungibleTransferScreen extends StatelessWidget {
   final FungibleToken token;
@@ -37,13 +40,13 @@ class FungibleTransferScreen extends StatelessWidget {
                     return CircularProgressIndicator();
                   }
 
-                  var v = formatFungible(
+                  var formattedBalance = formatFungible(
                     metadata: _token.metadata,
                     balance: snapshot.data as int,
                   );
 
                   return Text(
-                    'Balance $v',
+                    'Balance $formattedBalance',
                     style: TextStyle(fontSize: 14),
                   );
                 },
@@ -69,6 +72,9 @@ class FungibleTransferScreenBody extends StatefulWidget {
 
 class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
+  String receiver;
+  int amount;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -81,6 +87,11 @@ class _FungibleTransferScreenBodyState
             decoration: InputDecoration(
               labelText: 'Amount',
             ),
+            onChanged: (value) {
+              setState(() {
+                amount = int.tryParse(value);
+              });
+            },
           ),
           Gap(30),
           Column(
@@ -89,6 +100,11 @@ class _FungibleTransferScreenBodyState
                 decoration: InputDecoration(
                   labelText: 'Destination Address',
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    receiver = Address.trim0x(value);
+                  });
+                },
               ),
               Gap(20),
               SizedBox(
@@ -96,7 +112,66 @@ class _FungibleTransferScreenBodyState
                 width: 100,
                 child: ElevatedButton(
                   child: Text('SEND'),
-                  onPressed: () {},
+                  onPressed: () {
+                    var appState = context.read<AppState>();
+
+                    var transferInProgress = appState.fungibleClient().transfer(
+                          token: widget.token.address,
+                          holder: appState.model.activeAddress,
+                          holderSecretKey: appState.model.activeKeyPair.sk,
+                          receiver: Address(hex: Address.trim0x(receiver)),
+                          amount: amount,
+                        );
+
+                    showModalBottomSheet(
+                      context: context,
+                      isDismissible: false,
+                      enableDrag: false,
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: 200,
+                          child: Center(
+                            child: FutureBuilder(
+                              future: transferInProgress,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                }
+
+                                var formattedAmount = formatFungible(
+                                  metadata: widget.token.metadata,
+                                  balance: amount,
+                                );
+
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                          'Transfered $formattedAmount to $receiver.'),
+                                    ),
+                                    Gap(10),
+                                    ElevatedButton(
+                                      child: const Text('Done'),
+                                      onPressed: () {
+                                        Navigator.popUntil(
+                                          context,
+                                          ModalRoute.withName(route.asset),
+                                        );
+                                      },
+                                    )
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],

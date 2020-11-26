@@ -51,7 +51,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
       isTransfering = true;
     });
 
-    var result = await convex.transact(
+    var result = await convex.transact2(
       address: targetAddress,
       source: '(transfer "$targetAddress" $amount)',
       secretKey: signerSecretKey,

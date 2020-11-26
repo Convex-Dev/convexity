@@ -207,7 +207,7 @@ class Result {
   }
 }
 
-Future<Result> transact({
+Future<Result> transact2({
   http.Client client,
   String scheme = 'https',
   String host = CONVEX_WORLD_HOST,
@@ -339,7 +339,7 @@ class ConvexClient {
 
   ConvexClient({@required this.server});
 
-  /// Requests for Faucet.
+  /// **Requests for Faucet.**
   ///
   /// Returns true if the request was successful, false otherwise.
   Future<bool> requestForFaucet({
@@ -357,10 +357,10 @@ class ConvexClient {
     return response.statusCode == 200;
   }
 
-  /// Executes code on the Convex Network just to compute the result.
+  /// **Executes code on the Convex Network just to compute the result.**
   Future<Result> query({
     @required String source,
-    Address address,
+    Address caller,
     Lang lang = Lang.convexLisp,
   }) async {
     var response = await queryRaw(
@@ -368,7 +368,7 @@ class ConvexClient {
       host: server.host,
       port: server.port,
       source: source,
-      address: address?.hex,
+      address: caller?.hex,
       lang: lang,
     );
 
@@ -376,7 +376,7 @@ class ConvexClient {
 
     if (config.isDebug()) {
       logger.d(
-        '[QUERY] Source: $source, Address: $address, Lang: $lang, Result: $bodyDecoded',
+        '[QUERY] Source: $source, Address: $caller, Lang: $lang, Result: $bodyDecoded',
       );
     }
 
@@ -392,6 +392,21 @@ class ConvexClient {
       errorCode: resultErrorCode,
     );
   }
+
+  Future<Result> transact({
+    @required Address caller,
+    @required Uint8List secretKey,
+    @required String source,
+    Lang lang = Lang.convexLisp,
+  }) =>
+      transact2(
+        scheme: server.scheme,
+        host: server.host,
+        port: server.port,
+        source: source,
+        address: caller.hex,
+        secretKey: secretKey,
+      );
 }
 
 class FungibleClient {
@@ -415,11 +430,30 @@ class FungibleClient {
     return result.value;
   }
 
-  Future<int> transfer({
+  /// **Executes a Fungible transfer Transaction on the Convex Network.**
+  ///
+  /// The interface is a bit complicated since a Transaction is executed in two phases:
+  ///
+  /// **1. Prepare**
+  ///
+  /// It's the process of sending 'what' we want to execute on the Convex Network.
+  /// It returns a hash which uniquely identifies our Transaction.
+  ///
+  /// **2. Submit**
+  ///
+  /// It's the process of signing the data with a private key and generated hash in the prepare step,
+  /// and sending the code one more time to 'commit' the Transaction.
+  Future<Result> transfer({
     @required Address token,
-    @required Address source,
-    @required Address destination,
-  }) {
-    return null;
-  }
+    @required Address holder,
+    @required Uint8List holderSecretKey,
+    @required Address receiver,
+    @required int amount,
+  }) =>
+      convexClient.transact(
+        caller: holder,
+        secretKey: holderSecretKey,
+        source: '(import convex.fungible :as fungible)'
+            '(fungible/transfer (address "${token.hex}")  (address "${receiver.hex}") $amount)',
+      );
 }
