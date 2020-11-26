@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gap/gap.dart';
 
 import '../model.dart';
 
@@ -29,19 +30,71 @@ class FungibleTransferScreenBody extends StatefulWidget {
 
   @override
   _FungibleTransferScreenBodyState createState() =>
-      _FungibleTransferScreenBodyState(token: token);
+      _FungibleTransferScreenBodyState();
 }
 
 class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
-  final FungibleToken token;
-
-  _FungibleTransferScreenBodyState({this.token});
+  var inputOption = AddressInputOption.scan;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('...'),
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Card(
+                elevation: 2,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      inputOption = AddressInputOption.scan;
+                    });
+                  },
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    child: Icon(
+                      Icons.qr_code,
+                      size: 60,
+                      color: inputOption == AddressInputOption.scan
+                          ? Colors.black
+                          : Colors.black12,
+                    ),
+                  ),
+                ),
+              ),
+              Gap(20),
+              Card(
+                elevation: 2,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      inputOption = AddressInputOption.textField;
+                    });
+                  },
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    child: Center(
+                      child: Icon(
+                        Icons.text_fields,
+                        size: 60,
+                        color: inputOption == AddressInputOption.textField
+                            ? Colors.black
+                            : Colors.black12,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -96,6 +96,11 @@ class FungibleToken {
   }
 }
 
+enum AddressInputOption {
+  textField,
+  scan,
+}
+
 @immutable
 class FungibleTokenMetadata {
   final String name;
