@@ -4,30 +4,22 @@ import 'convex.dart' as convex;
 import 'model.dart';
 
 class Convexity {
-  final Uri convexServerUri;
-  final convex.Address actorAddress;
+  final convex.ConvexClient convexClient;
+  final convex.Address actor;
 
   Convexity({
-    @required this.convexServerUri,
-    @required this.actorAddress,
+    @required this.convexClient,
+    @required this.actor,
   });
-
-  Map<String, dynamic> toJson() => {
-        'convexServerUri': convexServerUri,
-        'actorAddress': actorAddress,
-      };
 
   /// Query Asset by its Address.
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
   Future<AAsset> aasset(convex.Address aaddress) async {
     var source =
-        '(call "${this.actorAddress.hex}" (asset-metadata (address "${aaddress.hex}")))';
+        '(call "${this.actor.hex}" (asset-metadata (address "${aaddress.hex}")))';
 
-    var result = await convex.query(
-      uri: convexServerUri,
-      source: source,
-    );
+    var result = await convexClient.query(source: source);
 
     if (result.errorCode != null) {
       return null;
@@ -61,12 +53,9 @@ class Convexity {
 
   /// Query all Assets in the registry.
   Future<Set<AAsset>> aassets() async {
-    var source = '(call "${this.actorAddress.hex}" (all-assets))';
+    var source = '(call "${this.actor.hex}" (all-assets))';
 
-    var result = await convex.query(
-      uri: convexServerUri,
-      source: source,
-    );
+    var result = await convexClient.query(source: source);
 
     if (result.errorCode != null) {
       return null;

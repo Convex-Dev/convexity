@@ -1,5 +1,4 @@
 import 'dart:convert' as convert;
-import 'dart:developer';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
@@ -124,49 +123,6 @@ Future<http.Response> queryRaw({
   }
 
   return client.post(uri, body: body);
-}
-
-/// Executes a query on the Convex Network.
-Future<Result> query({
-  Uri uri,
-  String source,
-  String address,
-  Lang lang = Lang.convexLisp,
-}) async {
-  if (config.isDebug()) {
-    log('[QUERY] Source: $source, Address: $address, Lang: $lang');
-  }
-
-  var response = await queryRaw(
-    scheme: uri?.scheme ?? 'https',
-    host: uri?.host ?? CONVEX_WORLD_HOST,
-    port: uri?.port ?? 443,
-    source: source,
-    address: address,
-    lang: lang,
-  );
-
-  var bodyDecoded = convert.jsonDecode(response.body);
-
-  if (config.isDebug()) {
-    log('[QUERY] Source: $source, Address: $address, Lang: $lang, Result: $bodyDecoded');
-  }
-
-  var resultValue = bodyDecoded['value'];
-  var resultErrorCode = bodyDecoded['error-code'];
-
-  if (resultErrorCode != null) {
-    log('Query returned an error code: $resultErrorCode');
-
-    return Result(
-      value: resultValue,
-      errorCode: resultErrorCode,
-    );
-  } else {
-    return Result(
-      value: resultValue,
-    );
-  }
 }
 
 Future<http.Response> prepareTransaction({
@@ -401,6 +357,7 @@ class ConvexClient {
     return response.statusCode == 200;
   }
 
+  /// Executes code on the Convex Network just to compute the result.
   Future<Result> query({
     @required String source,
     Address address,
@@ -427,17 +384,13 @@ class ConvexClient {
     var resultErrorCode = bodyDecoded['error-code'];
 
     if (resultErrorCode != null) {
-      logger.w('Query returned an error code: $resultErrorCode');
-
-      return Result(
-        value: resultValue,
-        errorCode: resultErrorCode,
-      );
-    } else {
-      return Result(
-        value: resultValue,
-      );
+      logger.w('Query Result has an error: $resultErrorCode');
     }
+
+    return Result(
+      value: resultValue,
+      errorCode: resultErrorCode,
+    );
   }
 }
 
