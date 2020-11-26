@@ -1,3 +1,4 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -93,21 +94,8 @@ class HomeScreenBody extends StatelessWidget {
                   ListTile(
                     leading: Identicon(keyPair: activeKeyPair),
                     title: Text('100,000,000'),
-                    subtitle: Text('Bar'),
+                    subtitle: Text(Address.fromKeyPair(activeKeyPair).hex),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        child: Text('ACTION'),
-                        onPressed: () {},
-                      ),
-                      TextButton(
-                        child: Text('ACTION'),
-                        onPressed: () {},
-                      )
-                    ],
-                  )
                 ],
               ),
             ),
