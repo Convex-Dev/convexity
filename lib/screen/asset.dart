@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
@@ -123,7 +124,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : Text(snapshot.data.toString()),
+                                : Text(
+                                    NumberFormat.simpleCurrency(
+                                      name: fungible.metadata.symbol,
+                                      decimalDigits: fungible.metadata.decimals,
+                                    ).format(snapshot.data),
+                                  ),
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'model.dart';
 import 'convex.dart' as convex;
@@ -166,7 +167,7 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
 
   @override
   Widget build(BuildContext context) {
-    var token = widget.aasset.asset as FungibleToken;
+    var fungible = widget.aasset.asset as FungibleToken;
 
     return Card(
       child: InkWell(
@@ -176,16 +177,16 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flag(symbolToCountryCode(token.metadata.symbol), height: 20),
+              Flag(symbolToCountryCode(fungible.metadata.symbol), height: 20),
               Gap(10),
               Text(
-                token.metadata.symbol,
+                fungible.metadata.symbol,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.caption,
               ),
               Gap(4),
               Text(
-                token.metadata.name,
+                fungible.metadata.name,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
@@ -206,7 +207,10 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
                             child: CircularProgressIndicator(),
                           )
                         : Text(
-                            snapshot.data.toString(),
+                            NumberFormat.simpleCurrency(
+                              name: fungible.metadata.symbol,
+                              decimalDigits: fungible.metadata.decimals,
+                            ).format(snapshot.data),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
