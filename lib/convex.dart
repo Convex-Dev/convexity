@@ -414,4 +414,12 @@ class FungibleClient {
 
     return result.value;
   }
+
+  Future<int> transfer({
+    @required Address token,
+    @required Address source,
+    @required Address destination,
+  }) {
+    return null;
+  }
 }

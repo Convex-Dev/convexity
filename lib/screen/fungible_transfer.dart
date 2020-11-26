@@ -37,10 +37,9 @@ class FungibleTransferScreen extends StatelessWidget {
                     return CircularProgressIndicator();
                   }
 
-                  var v = formatCurrency(
-                    symbol: _token.metadata.symbol,
-                    number: snapshot.data as int,
-                    decimals: _token.metadata.decimals,
+                  var v = formatFungible(
+                    metadata: _token.metadata,
+                    balance: snapshot.data as int,
                   );
 
                   return Text(
