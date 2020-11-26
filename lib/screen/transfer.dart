@@ -86,7 +86,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 ),
                 Expanded(
                   child: Text(
-                    appState.model.activeAddress,
+                    appState.model.activeAddress?.hex,
                     overflow: TextOverflow.ellipsis,
                   ),
                 )
@@ -150,7 +150,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                         transfer(
                           context: context,
                           signerSecretKey: appState.model.activeKeyPair.sk,
-                          targetAddress: appState.model.activeAddress,
+                          targetAddress: appState.model.activeAddress?.hex,
                           amount: int.parse(amountController.text),
                         );
                       }

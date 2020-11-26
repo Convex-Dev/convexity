@@ -1,10 +1,10 @@
-import 'package:convex_wallet/convexity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'convex.dart';
+import 'convexity.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
 
@@ -147,8 +147,9 @@ class Model {
     this.following = const {},
   });
 
-  String get activeAddress =>
-      activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null;
+  Address get activeAddress => activeKeyPair != null
+      ? Address(hex: Sodium.bin2hex(activeKeyPair.pk))
+      : null;
 
   KeyPair activeKeyPairOrDefault() {
     if (activeKeyPair != null) {

@@ -7,6 +7,8 @@ import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
 
 import 'model.dart';
+import 'convex.dart' as convex;
+import 'convexity.dart' as convexity;
 
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
@@ -68,11 +70,13 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 class AAssetRenderer extends StatelessWidget {
+  final convex.Address userAddress;
   final AAsset aasset;
   final void Function(AAsset) onTap;
 
   const AAssetRenderer({
     Key key,
+    @required this.userAddress,
     @required this.aasset,
     this.onTap,
   }) : super(key: key);
@@ -81,6 +85,7 @@ class AAssetRenderer extends StatelessWidget {
   Widget build(BuildContext context) {
     if (aasset.type == AssetType.fungible) {
       return FungibleTokenRenderer(
+        userAddress: userAddress,
         aasset: aasset,
         onTap: onTap,
       );
@@ -91,11 +96,13 @@ class AAssetRenderer extends StatelessWidget {
 }
 
 class FungibleTokenRenderer extends StatelessWidget {
+  final convex.Address userAddress;
   final AAsset aasset;
   final void Function(AAsset) onTap;
 
   const FungibleTokenRenderer({
     Key key,
+    @required this.userAddress,
     @required this.aasset,
     this.onTap,
   }) : super(key: key);
@@ -136,9 +143,19 @@ class FungibleTokenRenderer extends StatelessWidget {
     return null;
   }
 
+  void queryBalance(Uri convexServerUri, convex.Address address) async {
+    var balance = await convexity.fungibleBalance(convexServerUri, address);
+
+    print('Balance $balance');
+  }
+
   @override
   Widget build(BuildContext context) {
     var token = aasset.asset as FungibleToken;
+
+    var model = context.watch<AppState>().model;
+
+    queryBalance(model.convexServerUri, token.address);
 
     return Card(
       child: InkWell(

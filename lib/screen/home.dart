@@ -114,7 +114,7 @@ class HomeScreenBody extends StatelessWidget {
             Gap(40),
             Center(
               child: QrImage(
-                data: model.activeAddress,
+                data: model.activeAddress?.hex,
                 version: QrVersions.auto,
                 size: 160,
               ),

@@ -26,26 +26,19 @@ class AssetsScreenBody extends StatefulWidget {
 }
 
 class _AssetsScreenBodyState extends State<AssetsScreenBody> {
-  var isLoading = false;
-  var assets = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    var following = context.watch<AppState>().model.following;
+    var model = context.watch<AppState>().model;
 
     return GridView.count(
       padding: const EdgeInsets.all(8),
       crossAxisCount: 2,
-      children: following
+      children: model.following
           .map(
             (token) => Container(
               padding: const EdgeInsets.all(8),
               child: AAssetRenderer(
+                userAddress: model.activeAddress,
                 aasset: token,
                 onTap: (AAsset aasset) => nav.pushAsset(context, aasset),
               ),

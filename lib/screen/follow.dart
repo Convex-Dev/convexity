@@ -132,7 +132,7 @@ class _RecommendedState extends State<_Recommended> {
 
   @override
   Widget build(BuildContext context) {
-    var following = context.watch<AppState>().model.following;
+    var model = context.watch<AppState>().model;
 
     if (isLoading) {
       return Center(
@@ -147,9 +147,10 @@ class _RecommendedState extends State<_Recommended> {
               (token) => Stack(
                 children: [
                   AAssetRenderer(
+                    userAddress: model.activeAddress,
                     aasset: token,
                     onTap: (metadata) {
-                      var followingCopy = Set<AAsset>.from(following);
+                      var followingCopy = Set<AAsset>.from(model.following);
 
                       if (followingCopy.contains(metadata)) {
                         followingCopy.remove(metadata);
@@ -163,7 +164,7 @@ class _RecommendedState extends State<_Recommended> {
                           );
                     },
                   ),
-                  if (following.contains(token))
+                  if (model.following.contains(token))
                     Container(
                       padding: const EdgeInsets.all(8),
                       alignment: Alignment.topRight,
