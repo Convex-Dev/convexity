@@ -194,7 +194,7 @@ class AppState with ChangeNotifier {
 
   AppState({this.model});
 
-  ConvexClient convexClient() => ConvexClient(serverUri: model.convexServerUri);
+  ConvexClient convexClient() => ConvexClient(server: model.convexServerUri);
 
   FungibleClient fungibleClient() =>
       FungibleClient(convexClient: convexClient());

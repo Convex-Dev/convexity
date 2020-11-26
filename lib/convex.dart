@@ -335,11 +335,11 @@ Future<http.Response> faucet({
 }
 
 class ConvexClient {
-  final Uri serverUri;
+  final Uri server;
 
-  ConvexClient({@required this.serverUri});
+  ConvexClient({@required this.server});
 
-  /// Requests for Faucet for Address.
+  /// Requests for Faucet.
   ///
   /// Returns true if the request was successful, false otherwise.
   Future<bool> requestForFaucet({
@@ -347,9 +347,9 @@ class ConvexClient {
     @required int amount,
   }) async {
     var response = await faucet(
-      scheme: serverUri.scheme,
-      host: serverUri.host,
-      port: serverUri.port,
+      scheme: server.scheme,
+      host: server.host,
+      port: server.port,
       address: address.hex,
       amount: amount,
     );
@@ -364,9 +364,9 @@ class ConvexClient {
     Lang lang = Lang.convexLisp,
   }) async {
     var response = await queryRaw(
-      scheme: serverUri.scheme,
-      host: serverUri.host,
-      port: serverUri.port,
+      scheme: server.scheme,
+      host: server.host,
+      port: server.port,
       source: source,
       address: address?.hex,
       lang: lang,

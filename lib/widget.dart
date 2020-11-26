@@ -94,7 +94,7 @@ class AAssetRenderer extends StatelessWidget {
   }
 }
 
-class FungibleTokenRenderer extends StatelessWidget {
+class FungibleTokenRenderer extends StatefulWidget {
   final convex.Address userAddress;
   final AAsset aasset;
   final void Function(AAsset) onTap;
@@ -105,6 +105,28 @@ class FungibleTokenRenderer extends StatelessWidget {
     @required this.aasset,
     this.onTap,
   }) : super(key: key);
+
+  @override
+  _FungibleTokenRendererState createState() => _FungibleTokenRendererState();
+}
+
+class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
+  Future<int> balance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    var token = widget.aasset.asset as FungibleToken;
+
+    var appState = context.read<AppState>();
+
+    // Check the user's balance for this Token.
+    balance = appState.fungibleClient().balance(
+          token: token.address,
+          holder: appState.model.activeAddress,
+        );
+  }
 
   String symbolToCountryCode(String symbol) {
     switch (symbol) {
@@ -144,19 +166,7 @@ class FungibleTokenRenderer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var token = aasset.asset as FungibleToken;
-
-    var appState = context.watch<AppState>();
-
-    appState
-        .fungibleClient()
-        .balance(
-          token: token.address,
-          holder: appState.model.activeAddress,
-        )
-        .then(
-          (balance) => print('Balance $balance'),
-        );
+    var token = widget.aasset.asset as FungibleToken;
 
     return Card(
       child: InkWell(
@@ -173,18 +183,40 @@ class FungibleTokenRenderer extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.caption,
               ),
-              Gap(10),
+              Gap(4),
               Text(
                 token.metadata.name,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
+              Gap(10),
+              Text(
+                'Balance',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Gap(4),
+              FutureBuilder(
+                future: balance,
+                builder: (context, snapshot) =>
+                    snapshot.connectionState == ConnectionState.waiting
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text(
+                            snapshot.data.toString(),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+              )
             ],
           ),
         ),
         onTap: () {
-          if (onTap != null) {
-            onTap(aasset);
+          if (widget.onTap != null) {
+            widget.onTap(widget.aasset);
           }
         },
       ),
