@@ -4,12 +4,13 @@ import 'convex.dart' as convex;
 
 import 'model.dart';
 
-Future<int> fungibleBalance(
-  Uri convexServerUri,
-  convex.Address tokenAddress,
-) async {
+Future<int> fungibleBalance({
+  @required Uri convexServerUri,
+  @required convex.Address tokenAddress,
+  @required convex.Address holderAddress,
+}) async {
   var source = '(import convex.fungible :as fungible)'
-      '(fungible/balance "${tokenAddress.hex}" )';
+      '(fungible/balance (address "${tokenAddress.hex}") (address "${holderAddress.hex}"))';
 
   var result = await convex.query(
     uri: convexServerUri,

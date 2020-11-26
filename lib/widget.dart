@@ -143,8 +143,15 @@ class FungibleTokenRenderer extends StatelessWidget {
     return null;
   }
 
-  void queryBalance(Uri convexServerUri, convex.Address address) async {
-    var balance = await convexity.fungibleBalance(convexServerUri, address);
+  void queryBalance(
+    Uri convexServerUri,
+    convex.Address tokenAddress,
+    convex.Address holderAddress,
+  ) async {
+    var balance = await convexity.fungibleBalance(
+        convexServerUri: convexServerUri,
+        tokenAddress: tokenAddress,
+        holderAddress: holderAddress);
 
     print('Balance $balance');
   }
@@ -155,7 +162,11 @@ class FungibleTokenRenderer extends StatelessWidget {
 
     var model = context.watch<AppState>().model;
 
-    queryBalance(model.convexServerUri, token.address);
+    queryBalance(
+      model.convexServerUri,
+      token.address,
+      model.activeAddress,
+    );
 
     return Card(
       child: InkWell(
