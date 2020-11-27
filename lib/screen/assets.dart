@@ -38,7 +38,6 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
             (token) => Container(
               padding: const EdgeInsets.all(8),
               child: AAssetRenderer(
-                userAddress: model.activeAddress,
                 aasset: token,
                 onTap: (AAsset aasset) => nav.pushAsset(context, aasset),
               ),

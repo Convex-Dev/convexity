@@ -98,13 +98,11 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 class AAssetRenderer extends StatelessWidget {
-  final convex.Address userAddress;
   final AAsset aasset;
   final void Function(AAsset) onTap;
 
   const AAssetRenderer({
     Key key,
-    @required this.userAddress,
     @required this.aasset,
     this.onTap,
   }) : super(key: key);
@@ -113,7 +111,6 @@ class AAssetRenderer extends StatelessWidget {
   Widget build(BuildContext context) {
     if (aasset.type == AssetType.fungible) {
       return FungibleTokenRenderer(
-        userAddress: userAddress,
         aasset: aasset,
         onTap: onTap,
       );
@@ -124,13 +121,11 @@ class AAssetRenderer extends StatelessWidget {
 }
 
 class FungibleTokenRenderer extends StatefulWidget {
-  final convex.Address userAddress;
   final AAsset aasset;
   final void Function(AAsset) onTap;
 
   const FungibleTokenRenderer({
     Key key,
-    @required this.userAddress,
     @required this.aasset,
     this.onTap,
   }) : super(key: key);

@@ -147,7 +147,6 @@ class _RecommendedState extends State<_Recommended> {
               (token) => Stack(
                 children: [
                   AAssetRenderer(
-                    userAddress: model.activeAddress,
                     aasset: token,
                     onTap: (metadata) {
                       var followingCopy = Set<AAsset>.from(model.following);
