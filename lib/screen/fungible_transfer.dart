@@ -129,14 +129,49 @@ class _FungibleTransferScreenBodyState
                       enableDrag: false,
                       builder: (BuildContext context) {
                         return Container(
-                          height: 200,
+                          height: 300,
                           child: Center(
                             child: FutureBuilder(
                               future: transferInProgress,
-                              builder: (context, snapshot) {
+                              builder: (
+                                BuildContext context,
+                                AsyncSnapshot<Result> snapshot,
+                              ) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return CircularProgressIndicator();
+                                }
+
+                                if (snapshot.data?.errorCode != null) {
+                                  logger.e(
+                                    'Fungible transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                                  );
+
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.error,
+                                        size: 80,
+                                        color: Colors.black12,
+                                      ),
+                                      Gap(10),
+                                      Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Text(
+                                          'Sorry. Your transfer could not be completed.',
+                                        ),
+                                      ),
+                                      Gap(10),
+                                      ElevatedButton(
+                                        child: const Text('Okay'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      )
+                                    ],
+                                  );
                                 }
 
                                 var formattedAmount = formatFungibleCurrency(
@@ -148,10 +183,17 @@ class _FungibleTransferScreenBodyState
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
+                                    Icon(
+                                      Icons.check,
+                                      size: 80,
+                                      color: Colors.black12,
+                                    ),
+                                    Gap(10),
                                     Padding(
                                       padding: const EdgeInsets.all(20),
                                       child: Text(
-                                          'Transfered $formattedAmount to $receiver.'),
+                                        'Transfered $formattedAmount to $receiver.',
+                                      ),
                                     ),
                                     Gap(10),
                                     ElevatedButton(
