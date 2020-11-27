@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -84,10 +85,10 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 );
               },
             ),
-            QrImage(
-              data: 'Convexity',
-              version: QrVersions.auto,
-              size: 160,
+            Gap(20),
+            Icon(
+              Icons.qr_code,
+              size: 80,
             ),
             TextButton(
               child: Text('Scan Convexity QR Code'),
@@ -95,6 +96,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 scan();
               },
             ),
+            Gap(40),
             ElevatedButton(
               child: Text('Start'),
               onPressed: () {

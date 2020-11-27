@@ -86,44 +86,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         );
 
     return Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          fungible.metadata.name,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        Gap(4),
-                        Text(
-                          fungible.metadata.description,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText2,
-                        ),
-                      ],
-                    ),
-                    QrImage(
-                      data: fungible.address.hex,
-                      version: QrVersions.auto,
-                      size: 80,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Gap(20),
-            Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Card(
+            child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,171 +101,203 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Balance',
+                        fungible.metadata.name,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       Gap(4),
-                      FutureBuilder(
-                        future: balance,
-                        builder: (context, snapshot) =>
-                            snapshot.connectionState == ConnectionState.waiting
-                                ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(
-                                    formatFungibleCurrency(
-                                      metadata: fungible.metadata,
-                                      number: snapshot.data,
-                                    ),
-                                  ),
+                      Text(
+                        fungible.metadata.description,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyText2,
                       ),
                     ],
                   ),
-                  Row(
+                  QrImage(
+                    data: fungible.address.hex,
+                    version: QrVersions.auto,
+                    size: 80,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Balance',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Gap(4),
+                    FutureBuilder(
+                      future: balance,
+                      builder: (context, snapshot) =>
+                          snapshot.connectionState == ConnectionState.waiting
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  formatFungibleCurrency(
+                                    metadata: fungible.metadata,
+                                    number: snapshot.data,
+                                  ),
+                                ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    action(
+                      context,
+                      label: 'Buy',
+                      onPressed: () => nav.pushFungibleTransfer(
+                        context,
+                        fungible,
+                        balance,
+                      ),
+                    ),
+                    Gap(30),
+                    action(
+                      context,
+                      label: 'Sell',
+                      onPressed: () => nav.pushFungibleTransfer(
+                        context,
+                        fungible,
+                        balance,
+                      ),
+                    ),
+                    Gap(30),
+                    action(
+                      context,
+                      label: 'Transfer',
+                      onPressed: () => nav.pushFungibleTransfer(
+                        context,
+                        fungible,
+                        balance,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Gap(20),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      action(
-                        context,
-                        label: 'Buy',
-                        onPressed: () => nav.pushFungibleTransfer(
-                          context,
-                          fungible,
-                          balance,
-                        ),
+                      Text(
+                        'Recent activity',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyText1,
                       ),
-                      Gap(30),
-                      action(
-                        context,
-                        label: 'Sell',
-                        onPressed: () => nav.pushFungibleTransfer(
-                          context,
-                          fungible,
-                          balance,
-                        ),
+                      Gap(20),
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Identicon2(
+                            address: Address(hex: ''),
+                            size: 40,
+                          ),
+                          Gap(10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Transfer'),
+                              Gap(4),
+                              Text(
+                                '0x1C12041962F2A419e0...',
+                                style: TextStyle(color: Colors.black38),
+                              ),
+                              Gap(4),
+                              Text(
+                                'Amount: \$500',
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      Gap(30),
-                      action(
-                        context,
-                        label: 'Transfer',
-                        onPressed: () => nav.pushFungibleTransfer(
-                          context,
-                          fungible,
-                          balance,
-                        ),
+                      Gap(20),
+                      Row(
+                        children: [
+                          Identicon2(
+                            address: Address(hex: '0x1C12041962F2A419e0'),
+                            size: 40,
+                          ),
+                          Gap(10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Transfer'),
+                              Gap(4),
+                              Text(
+                                '0x1C12041962F2A419e0...',
+                                style: TextStyle(color: Colors.black38),
+                              ),
+                              Gap(4),
+                              Text(
+                                'Amount: \$200',
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Gap(20),
+                      Row(
+                        children: [
+                          Identicon2(
+                            address: Address(
+                                hex: '7ca01811AD52666AE256aE983E89Cc54c18157'),
+                            size: 40,
+                          ),
+                          Gap(10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Transfer'),
+                              Gap(4),
+                              Text(
+                                '0x1C12041962F2A419e0...',
+                                style: TextStyle(color: Colors.black38),
+                              ),
+                              Gap(4),
+                              Text(
+                                'Amount: \$100',
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            Gap(20),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Recent activity',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        Gap(20),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Identicon2(
-                              address: Address(hex: ''),
-                              size: 40,
-                            ),
-                            Gap(10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Transfer'),
-                                Gap(4),
-                                Text(
-                                  '0x1C12041962F2A419e0...',
-                                  style: TextStyle(color: Colors.black38),
-                                ),
-                                Gap(4),
-                                Text(
-                                  'Amount: \$500',
-                                  style: TextStyle(color: Colors.black87),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Gap(20),
-                        Row(
-                          children: [
-                            Identicon2(
-                              address: Address(hex: '0x1C12041962F2A419e0'),
-                              size: 40,
-                            ),
-                            Gap(10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Transfer'),
-                                Gap(4),
-                                Text(
-                                  '0x1C12041962F2A419e0...',
-                                  style: TextStyle(color: Colors.black38),
-                                ),
-                                Gap(4),
-                                Text(
-                                  'Amount: \$200',
-                                  style: TextStyle(color: Colors.black87),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Gap(20),
-                        Row(
-                          children: [
-                            Identicon2(
-                              address: Address(
-                                  hex:
-                                      '7ca01811AD52666AE256aE983E89Cc54c18157'),
-                              size: 40,
-                            ),
-                            Gap(10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Transfer'),
-                                Gap(4),
-                                Text(
-                                  '0x1C12041962F2A419e0...',
-                                  style: TextStyle(color: Colors.black38),
-                                ),
-                                Gap(4),
-                                Text(
-                                  'Amount: \$200',
-                                  style: TextStyle(color: Colors.black87),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ));
+          )
+        ],
+      ),
+    );
   }
 }
