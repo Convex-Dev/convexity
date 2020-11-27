@@ -1,5 +1,6 @@
 import 'dart:convert' as convert;
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:logger/logger.dart';
@@ -406,6 +407,16 @@ class ConvexClient {
         source: source,
         address: caller.hex,
         secretKey: secretKey,
+      );
+
+  Future<Account> account({
+    @required Address address,
+  }) =>
+      getAccount(
+        scheme: server.scheme,
+        host: server.host,
+        port: server.port,
+        address: address,
       );
 }
 
