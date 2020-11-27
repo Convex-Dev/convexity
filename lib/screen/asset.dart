@@ -62,6 +62,29 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Widget build(BuildContext context) {
     var fungible = widget.aasset.asset as FungibleToken;
 
+    Widget action(
+      BuildContext context, {
+      @required String label,
+      @required void Function() onPressed,
+    }) =>
+        Column(
+          children: [
+            Ink(
+              decoration: const ShapeDecoration(
+                color: Colors.lightBlue,
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                icon: Icon(Icons.money),
+                color: Colors.white,
+                onPressed: onPressed,
+              ),
+            ),
+            Gap(6),
+            Text(label)
+          ],
+        );
+
     return Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -137,25 +160,34 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   ),
                   Row(
                     children: [
-                      TextButton(
-                        child: Text('Buy'),
+                      action(
+                        context,
+                        label: 'Buy',
                         onPressed: () => nav.pushFungibleTransfer(
                           context,
                           fungible,
                           balance,
                         ),
                       ),
-                      Gap(6),
-                      TextButton(
-                        child: Text('Sell'),
+                      Gap(30),
+                      action(
+                        context,
+                        label: 'Sell',
                         onPressed: () => nav.pushFungibleTransfer(
-                            context, fungible, balance),
+                          context,
+                          fungible,
+                          balance,
+                        ),
                       ),
-                      Gap(6),
-                      TextButton(
-                        child: Text('Transfer'),
+                      Gap(30),
+                      action(
+                        context,
+                        label: 'Transfer',
                         onPressed: () => nav.pushFungibleTransfer(
-                            context, fungible, balance),
+                          context,
+                          fungible,
+                          balance,
+                        ),
                       ),
                     ],
                   ),
