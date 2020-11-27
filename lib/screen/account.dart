@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
 
@@ -58,22 +59,38 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               var account = snapshot.data;
 
               return Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(12),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.string(
-                      Jdenticon.toSvg(account.address.hex, size: 88),
-                      fit: BoxFit.contain,
+                    Text(
+                      'Address',
+                      style: Theme.of(context).textTheme.caption,
                     ),
-                    Text('Address'),
                     Text(account.address.hex),
-                    Text('Type'),
+                    Gap(10),
+                    Text(
+                      'Type',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     Text(account.type.toString()),
-                    Text('Balance'),
+                    Gap(10),
+                    Text(
+                      'Balance',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     Text(account.balance.toString()),
-                    Text('Memory Size'),
+                    Gap(10),
+                    Text(
+                      'Memory Size',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     Text(account.memorySize.toString()),
-                    Text('Memory Allowance'),
+                    Gap(10),
+                    Text(
+                      'Memory Allowance',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     Text(account.memoryAllowance.toString()),
                   ],
                 ),
