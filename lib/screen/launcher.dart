@@ -23,40 +23,48 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
+    var isSignedIn = appState.model.activeKeyPair != null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Convexity'),
-        actions: [
-          PopupMenuButton<_PopupChoice>(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: Text('Settings'),
-                value: _PopupChoice.settings,
-              )
-            ],
-            onSelected: (s) => nav.pushSettings(context),
-          )
-        ],
+        actions: isSignedIn
+            ? [
+                PopupMenuButton<_PopupChoice>(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: Text('Settings'),
+                      value: _PopupChoice.settings,
+                    )
+                  ],
+                  onSelected: (s) => nav.pushSettings(context),
+                )
+              ]
+            : null,
       ),
       body: body(context),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Wallet',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
-        ],
-        onTap: (index) => setState(() => currentIndex = index),
-      ),
+      bottomNavigationBar: isSignedIn
+          ? BottomNavigationBar(
+              currentIndex: currentIndex,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.account_balance_wallet),
+                  label: 'Wallet',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.account_circle),
+                  label: 'Account',
+                ),
+              ],
+              onTap: (index) => setState(() => currentIndex = index),
+            )
+          : null,
     );
   }
 
