@@ -1,3 +1,5 @@
+import 'package:convex_wallet/convex.dart';
+import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -133,17 +135,136 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 60,
-                    child: ElevatedButton(
-                      child: Text('TRANSFER'),
-                      onPressed: () =>
-                          nav.pushFungibleTransfer(context, fungible, balance),
-                    ),
+                  Row(
+                    children: [
+                      TextButton(
+                        child: Text('Buy'),
+                        onPressed: () => nav.pushFungibleTransfer(
+                          context,
+                          fungible,
+                          balance,
+                        ),
+                      ),
+                      Gap(6),
+                      TextButton(
+                        child: Text('Sell'),
+                        onPressed: () => nav.pushFungibleTransfer(
+                            context, fungible, balance),
+                      ),
+                      Gap(6),
+                      TextButton(
+                        child: Text('Transfer'),
+                        onPressed: () => nav.pushFungibleTransfer(
+                            context, fungible, balance),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            Gap(20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Recent activity',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Gap(20),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Identicon2(
+                              address: Address(hex: ''),
+                              size: 40,
+                            ),
+                            Gap(10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Transfer'),
+                                Gap(4),
+                                Text(
+                                  '0x1C12041962F2A419e0...',
+                                  style: TextStyle(color: Colors.black38),
+                                ),
+                                Gap(4),
+                                Text(
+                                  'Amount: \$500',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Gap(20),
+                        Row(
+                          children: [
+                            Identicon2(
+                              address: Address(hex: '0x1C12041962F2A419e0'),
+                              size: 40,
+                            ),
+                            Gap(10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Transfer'),
+                                Gap(4),
+                                Text(
+                                  '0x1C12041962F2A419e0...',
+                                  style: TextStyle(color: Colors.black38),
+                                ),
+                                Gap(4),
+                                Text(
+                                  'Amount: \$200',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Gap(20),
+                        Row(
+                          children: [
+                            Identicon2(
+                              address: Address(
+                                  hex:
+                                      '7ca01811AD52666AE256aE983E89Cc54c18157'),
+                              size: 40,
+                            ),
+                            Gap(10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Transfer'),
+                                Gap(4),
+                                Text(
+                                  '0x1C12041962F2A419e0...',
+                                  style: TextStyle(color: Colors.black38),
+                                ),
+                                Gap(4),
+                                Text(
+                                  'Amount: \$200',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
           ],
         ));
   }
