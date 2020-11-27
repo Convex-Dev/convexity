@@ -23,21 +23,17 @@ class AccountScreenBody extends StatefulWidget {
   const AccountScreenBody({Key key, this.address}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _AccountScreenBodyState(address);
+  State<StatefulWidget> createState() => _AccountScreenBodyState();
 }
 
 class _AccountScreenBodyState extends State<AccountScreenBody> {
-  final convex.Address address;
-
   Future<Response> response;
-
-  _AccountScreenBodyState(this.address);
 
   @override
   void initState() {
     super.initState();
 
-    response = convex.getAccountRaw(address: address);
+    response = convex.getAccountRaw(address: widget.address);
   }
 
   @override
