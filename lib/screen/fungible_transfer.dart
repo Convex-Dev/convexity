@@ -1,4 +1,5 @@
 import 'package:convex_wallet/convex.dart';
+import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -191,8 +192,19 @@ class _FungibleTransferScreenBodyState
                                     Gap(10),
                                     Padding(
                                       padding: const EdgeInsets.all(20),
-                                      child: Text(
-                                        'Transfered $formattedAmount to $receiver.',
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Transfered $formattedAmount to ',
+                                          ),
+                                          Identicon2(
+                                            address: Address(hex: receiver),
+                                            isAddressVisible: true,
+                                            size: 30,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     Gap(10),

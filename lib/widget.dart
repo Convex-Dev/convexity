@@ -22,6 +22,34 @@ class Identicon extends StatelessWidget {
       );
 }
 
+class Identicon2 extends StatelessWidget {
+  final convex.Address address;
+  final bool isAddressVisible;
+  final int size;
+
+  const Identicon2({
+    Key key,
+    @required this.address,
+    this.isAddressVisible = false,
+    this.size = 64,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.string(
+            Jdenticon.toSvg(address.hex, size: size),
+            fit: BoxFit.contain,
+          ),
+          if (isAddressVisible)
+            Text(
+              address.hex.substring(0, 15) + '...',
+            ),
+        ],
+      );
+}
+
 class IdenticonDropdown extends StatelessWidget {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
