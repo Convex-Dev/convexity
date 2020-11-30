@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../model.dart';
 import '../nav.dart' as nav;
 import '../convex.dart';
+import '../widget.dart';
 
 class MyTokensScreen extends StatelessWidget {
   @override
@@ -35,12 +36,9 @@ class MyTokensScreenBody extends StatelessWidget {
       children: myTokens.where((aasset) {
         return aasset.type == AssetType.fungible;
       }).map((aasset) {
-        FungibleToken fungible = aasset.asset as FungibleToken;
-
-        return Container(
-          padding: const EdgeInsets.all(8),
-          child: Text(fungible.metadata.name),
-          color: Colors.teal[100],
+        return FungibleTokenRenderer(
+          aasset: aasset,
+          onTap: (aasset) => nav.pushAsset(context, aasset),
         );
       }).toList(),
     );
