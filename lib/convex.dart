@@ -420,6 +420,70 @@ class ConvexClient {
       );
 }
 
+@immutable
+class FungibleTokenMetadata {
+  final String name;
+  final String description;
+  final String symbol;
+  final int decimals;
+
+  FungibleTokenMetadata({
+    @required this.name,
+    @required this.description,
+    @required this.symbol,
+    @required this.decimals,
+  });
+
+  FungibleTokenMetadata.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        description = json['description'],
+        symbol = json['symbol'],
+        decimals = json['decimals'];
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+        'symbol': symbol,
+        'decimals': decimals,
+      };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+@immutable
+class FungibleToken {
+  final Address address;
+  final FungibleTokenMetadata metadata;
+
+  FungibleToken({
+    @required this.address,
+    @required this.metadata,
+  });
+
+  FungibleToken.fromJson(Map<String, dynamic> json)
+      : address = Address.fromMap(json['address']),
+        metadata = FungibleTokenMetadata.fromJson(json['metadata']);
+
+  Map<String, dynamic> toJson() => {
+        'address': address.toJson(),
+        'metadata': metadata.toJson(),
+      };
+
+  @override
+  bool operator ==(o) => o is FungibleToken && o.address == address;
+
+  @override
+  int get hashCode => address.hex.hashCode;
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
 class FungibleClient {
   final ConvexClient convexClient;
 

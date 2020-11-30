@@ -141,7 +141,7 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
   void initState() {
     super.initState();
 
-    var token = widget.aasset.asset as FungibleToken;
+    var token = widget.aasset.asset as convex.FungibleToken;
 
     var appState = context.read<AppState>();
 
@@ -190,7 +190,7 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
 
   @override
   Widget build(BuildContext context) {
-    var fungible = widget.aasset.asset as FungibleToken;
+    var fungible = widget.aasset.asset as convex.FungibleToken;
 
     return Card(
       child: InkWell(

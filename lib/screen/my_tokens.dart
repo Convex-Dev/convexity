@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
+import '../convex.dart';
 
 class MyTokensScreen extends StatelessWidget {
   @override

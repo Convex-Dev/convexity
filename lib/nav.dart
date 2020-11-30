@@ -45,7 +45,7 @@ void pushFollow(BuildContext context) => Navigator.pushNamed(
 
 void pushFungibleTransfer(
   BuildContext context,
-  FungibleToken token,
+  convex.FungibleToken token,
   Future<int> balance,
 ) =>
     Navigator.pushNamed(

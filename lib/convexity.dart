@@ -32,7 +32,7 @@ class Convexity {
     var m = result.value as Map<String, dynamic>;
 
     if (m['type'] == 'fungible') {
-      var metadata = FungibleTokenMetadata(
+      var metadata = convex.FungibleTokenMetadata(
         name: m['name'] as String,
         description: m['description'] as String,
         symbol: m['symbol'] as String,
@@ -41,7 +41,7 @@ class Convexity {
 
       return AAsset(
         type: AssetType.fungible,
-        asset: FungibleToken(
+        asset: convex.FungibleToken(
           address: aaddress,
           metadata: metadata,
         ),
@@ -71,9 +71,9 @@ class Convexity {
         var metadataMap = entry.value as Map<String, dynamic>;
 
         if (metadataMap['type'] == 'fungible') {
-          var asset = FungibleToken(
+          var asset = convex.FungibleToken(
             address: convex.Address(hex: addressString),
-            metadata: FungibleTokenMetadata.fromJson(metadataMap),
+            metadata: convex.FungibleTokenMetadata.fromJson(metadataMap),
           );
 
           return AAsset(
