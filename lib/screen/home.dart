@@ -117,14 +117,18 @@ class HomeScreenBody extends StatelessWidget {
             ),
           ),
           Gap(20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: 20,
+            runSpacing: 20,
             children: [
               action(context, 'Faucet', () => nav.pushTransfer(context)),
-              Gap(12),
               action(context, 'Transfer', () => nav.pushTransfer(context)),
-              Gap(12),
               action(context, 'Assets', () => nav.pushAssets(context)),
+              action(context, 'Exchange', () => nav.pushAssets(context)),
+              action(context, 'Deals', () => nav.pushAssets(context)),
+              action(context, 'Shop', () => nav.pushAssets(context)),
+              action(context, 'My Tokens', () => nav.pushAssets(context)),
             ],
           )
         ],
