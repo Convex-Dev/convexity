@@ -143,6 +143,7 @@ class Model {
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
   final Set<AAsset> following;
+  final Set<AAsset> myTokens;
 
   Model({
     this.convexServerUri,
@@ -150,6 +151,7 @@ class Model {
     this.activeKeyPair,
     this.allKeyPairs = const [],
     this.following = const {},
+    this.myTokens = const {},
   });
 
   Address get activeAddress => activeKeyPair != null
@@ -170,6 +172,7 @@ class Model {
     KeyPair activeKeyPair,
     List<KeyPair> allKeyPairs,
     Set<AAsset> following,
+    Set<AAsset> myTokens,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -177,6 +180,7 @@ class Model {
         activeKeyPair: activeKeyPair ?? this.activeKeyPair,
         allKeyPairs: allKeyPairs ?? this.allKeyPairs,
         following: following ?? this.following,
+        myTokens: myTokens ?? this.myTokens,
       );
 
   String toString() {
@@ -247,6 +251,15 @@ class AppState with ChangeNotifier {
     setState(
       (m) => m.copyWith(allKeyPairs: keyPairs),
     );
+  }
+
+  /// Add a new Token 'My Tokens'.
+  void addMyToken(AAsset myToken) {
+    setState((model) {
+      var myTokens = Set<AAsset>.from(model.myTokens)..add(myToken);
+
+      return model.copyWith(myTokens: myTokens);
+    });
   }
 
   /// Add a new KeyPair `k`, and persist it to disk if `isPersistent` is true.
