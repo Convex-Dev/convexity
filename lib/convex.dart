@@ -531,4 +531,19 @@ class FungibleClient {
         source: '(import convex.fungible :as fungible)'
             '(fungible/transfer (address "${token.hex}")  (address "${receiver.hex}") $amount)',
       );
+
+  /// **Creates (deploys) a Fungible Token on the Convex Network.**
+  ///
+  /// Returns the Address of the deployed Token.
+  Future<Result> createToken({
+    @required Address holder,
+    @required Uint8List holderSecretKey,
+    @required int supply,
+  }) =>
+      convexClient.transact(
+        caller: holder,
+        secretKey: holderSecretKey,
+        source: '(import convex.fungible :as fungible)'
+            '(deploy (fungible/build-token {:supply $supply}))',
+      );
 }
