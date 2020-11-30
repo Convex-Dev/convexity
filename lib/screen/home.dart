@@ -128,7 +128,7 @@ class HomeScreenBody extends StatelessWidget {
               action(context, 'Exchange', () => nav.pushAssets(context)),
               action(context, 'Deals', () => nav.pushAssets(context)),
               action(context, 'Shop', () => nav.pushAssets(context)),
-              action(context, 'My Tokens', () => nav.pushAssets(context)),
+              action(context, 'My Tokens', () => nav.pushMyTokens(context)),
             ],
           )
         ],

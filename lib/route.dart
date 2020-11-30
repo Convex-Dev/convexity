@@ -11,6 +11,8 @@ import 'screen/follow.dart';
 import 'screen/transfer.dart';
 import 'screen/dev.dart';
 import 'screen/fungible_transfer.dart';
+import 'screen/my_tokens.dart';
+import 'screen/new_token.dart';
 
 const String dev = '/dev';
 const String launcher = '/launcher';
@@ -23,6 +25,8 @@ const String assets = '/assets';
 const String asset = '/asset';
 const String follow = '/follow';
 const String fungibleTransfer = '/fungibleTransfer';
+const String myTokens = '/myTokens';
+const String newToken = '/newToken';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -36,4 +40,6 @@ Map<String, WidgetBuilder> routes() => {
       asset: (context) => AssetScreen(),
       follow: (context) => FollowAssetScreen(),
       fungibleTransfer: (context) => FungibleTransferScreen(),
+      myTokens: (context) => MyTokensScreen(),
+      newToken: (context) => NewTokenScreen(),
     };

@@ -53,3 +53,13 @@ void pushFungibleTransfer(
       route.fungibleTransfer,
       arguments: [token, balance],
     );
+
+void pushMyTokens(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.myTokens,
+    );
+
+void pushNewToken(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.newToken,
+    );
