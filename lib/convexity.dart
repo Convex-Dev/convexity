@@ -3,11 +3,11 @@ import 'package:meta/meta.dart';
 import 'convex.dart' as convex;
 import 'model.dart';
 
-class Convexity {
+class ConvexityClient {
   final convex.ConvexClient convexClient;
   final convex.Address actor;
 
-  Convexity({
+  ConvexityClient({
     @required this.convexClient,
     @required this.actor,
   });

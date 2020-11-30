@@ -144,7 +144,7 @@ class AppState with ChangeNotifier {
   FungibleClient fungibleClient() =>
       FungibleClient(convexClient: convexClient());
 
-  Convexity convexity() => Convexity(
+  ConvexityClient convexityClient() => ConvexityClient(
         convexClient: convexClient(),
         actor: model.convexityAddress,
       );

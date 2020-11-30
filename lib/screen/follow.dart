@@ -115,7 +115,7 @@ class _RecommendedState extends State<_Recommended> {
   void initState() {
     super.initState();
 
-    context.read<AppState>().convexity().aassets().then((assets) {
+    context.read<AppState>().convexityClient().aassets().then((assets) {
       // It's important to check if the Widget is mounted
       // because the user might change the selected option
       // while we're still loading the recommended Assets.
@@ -210,7 +210,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
         this.status = _ScanQRCodeStatus.loading;
       });
 
-      var convexity = context.read<AppState>().convexity();
+      var convexity = context.read<AppState>().convexityClient();
 
       print('Asset Metadata $scannedAddress');
 
@@ -361,7 +361,7 @@ class _AssetIDState extends State<_AssetID> {
 
                   context
                       .read<AppState>()
-                      .convexity()
+                      .convexityClient()
                       .aasset(Address(hex: address))
                       .then(
                     (_assetMetadata) {
