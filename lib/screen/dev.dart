@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:convex_wallet/convex.dart';
@@ -45,6 +46,9 @@ class _DevScreenBodyState extends State<DevScreenBody> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
+    var devUriStr =
+        Platform.isAndroid ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+
     return Container(
       padding: EdgeInsets.all(12),
       child: SingleChildScrollView(
@@ -62,8 +66,8 @@ class _DevScreenBodyState extends State<DevScreenBody> {
             ),
             RadioListTile<Uri>(
               title: Text('dev'),
-              subtitle: Text('http://localhost:8080'),
-              value: Uri.parse('http://localhost:8080'),
+              subtitle: Text(devUriStr),
+              value: Uri.parse(devUriStr),
               groupValue: appState.model.convexServerUri,
               onChanged: (value) {
                 appState.setState((m) => m.copyWith(convexServerUri: value));
