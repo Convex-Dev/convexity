@@ -6,6 +6,14 @@ import 'package:provider/provider.dart';
 
 import '../route.dart' as route;
 
+enum _NewTokenStatus {
+  creatingToken,
+  creatingTokenError,
+  registeringToken,
+  registeringTokenError,
+  success,
+}
+
 class NewTokenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,6 +23,190 @@ class NewTokenScreen extends StatelessWidget {
       ),
       body: NewTokenScreenBody(),
     );
+  }
+}
+
+class _CreateToken extends StatefulWidget {
+  final String name;
+  final String description;
+  final String symbol;
+  final int decimals;
+  final int supply;
+
+  const _CreateToken({
+    Key key,
+    this.name,
+    this.description,
+    this.symbol,
+    this.decimals,
+    this.supply,
+  }) : super(key: key);
+
+  @override
+  _CreateTokenState createState() => _CreateTokenState();
+}
+
+class _CreateTokenState extends State<_CreateToken> {
+  var _newTokenStatus = _NewTokenStatus.creatingToken;
+
+  void createToken() async {
+    // The process of creating a new user-defined Token on the Convex Network is divided in 2 steps:
+    // 1. Deploy/create the Token;
+    // 2. Register its metadata with the Convexity registry.
+
+    var appState = context.read<AppState>();
+
+    // Step 1 - deploy.
+    var myTokenResult = await appState.fungibleClient().createToken(
+          holder: appState.model.activeAddress,
+          holderSecretKey: appState.model.activeKeyPair.sk,
+          supply: widget.supply,
+        );
+
+    if (myTokenResult.errorCode != null) {
+      setState(() {
+        _newTokenStatus = _NewTokenStatus.creatingTokenError;
+      });
+
+      return;
+    }
+
+    // Step 2 - register metadata.
+    var metadata = FungibleTokenMetadata(
+      name: widget.name,
+      description: widget.description,
+      symbol: widget.symbol,
+      decimals: widget.decimals,
+    );
+
+    var fungible = FungibleToken(
+      address: Address(hex: myTokenResult.value as String),
+      metadata: metadata,
+    );
+
+    var aasset = AAsset(type: AssetType.fungible, asset: fungible);
+
+    setState(() {
+      _newTokenStatus = _NewTokenStatus.registeringToken;
+    });
+
+    var registerResult = await appState.convexityClient().requestToRegister(
+          holder: appState.model.activeAddress,
+          holderSecretKey: appState.model.activeKeyPair.sk,
+          aasset: aasset,
+        );
+
+    if (registerResult.errorCode != null) {
+      setState(() {
+        _newTokenStatus = _NewTokenStatus.registeringTokenError;
+      });
+
+      return;
+    }
+
+    appState.addMyToken(
+      AAsset(
+        type: AssetType.fungible,
+        asset: fungible,
+      ),
+    );
+
+    setState(() {
+      _newTokenStatus = _NewTokenStatus.success;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    createToken();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    switch (_newTokenStatus) {
+      case _NewTokenStatus.creatingToken:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            const Text('Creating Token...'),
+          ],
+        );
+      case _NewTokenStatus.creatingTokenError:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Icon(
+              Icons.error,
+              size: 80,
+              color: Colors.black12,
+            ),
+            const Text('Sorry. It was not possible to create your Token.'),
+            ElevatedButton(
+              child: const Text('Okay'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      case _NewTokenStatus.registeringToken:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            const Text('Registering Token...'),
+          ],
+        );
+      case _NewTokenStatus.registeringTokenError:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Icon(
+              Icons.error,
+              size: 80,
+              color: Colors.black12,
+            ),
+            const Text('Sorry. It was not possible to register your Token.'),
+            ElevatedButton(
+              child: const Text('Okay'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      case _NewTokenStatus.success:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Icon(
+              Icons.check,
+              size: 80,
+              color: Colors.black12,
+            ),
+            const Text('Your Token is ready.'),
+            ElevatedButton(
+              child: const Text('Done'),
+              onPressed: () => Navigator.popUntil(
+                context,
+                ModalRoute.withName(route.myTokens),
+              ),
+            ),
+          ],
+        );
+      default:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            CircularProgressIndicator(),
+          ],
+        );
+    }
   }
 }
 
@@ -29,89 +221,6 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
   String _symbol;
   int _decimals;
   int _supply;
-
-  void createToken() async {
-    // The process of creating a new user-defined Token on the Convex Network is divided in 2 steps:
-    // 1. Deploy/create the Token;
-    // 2. Register its metadata with the Convexity registry.
-
-    var appState = context.read<AppState>();
-
-    // Step 1 - deploy.
-    var myTokenResult = await appState.fungibleClient().createToken(
-          holder: appState.model.activeAddress,
-          holderSecretKey: appState.model.activeKeyPair.sk,
-          supply: _supply,
-        );
-
-    if (myTokenResult.errorCode != null) {
-      return;
-    }
-
-    // Step 2 - register metadata.
-    var metadata = FungibleTokenMetadata(
-      name: _name,
-      description: _description,
-      symbol: _symbol,
-      decimals: _decimals,
-    );
-
-    var fungible = FungibleToken(
-      address: Address(hex: myTokenResult.value as String),
-      metadata: metadata,
-    );
-
-    var aasset = AAsset(type: AssetType.fungible, asset: fungible);
-
-    var registerResult = await appState.convexityClient().requestToRegister(
-          holder: appState.model.activeAddress,
-          holderSecretKey: appState.model.activeKeyPair.sk,
-          aasset: aasset,
-        );
-
-    if (registerResult.errorCode != null) {
-      return;
-    }
-
-    appState.addMyToken(
-      AAsset(
-        type: AssetType.fungible,
-        asset: fungible,
-      ),
-    );
-
-    showModalBottomSheet(
-      isDismissible: false,
-      enableDrag: false,
-      context: context,
-      builder: (context) {
-        return Container(
-          height: 300,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Icon(
-                  Icons.check,
-                  size: 80,
-                  color: Colors.black12,
-                ),
-                const Text('Your Token is ready.'),
-                ElevatedButton(
-                  child: const Text('Done'),
-                  onPressed: () => Navigator.popUntil(
-                    context,
-                    ModalRoute.withName(route.myTokens),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +280,25 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
           child: ElevatedButton(
             child: Text('Create Token'),
             onPressed: () {
-              createToken();
+              showModalBottomSheet(
+                isDismissible: false,
+                enableDrag: false,
+                context: context,
+                builder: (context) {
+                  return Container(
+                    height: 300,
+                    child: Center(
+                      child: _CreateToken(
+                        name: _name,
+                        description: _description,
+                        symbol: _symbol,
+                        decimals: _decimals,
+                        supply: _supply,
+                      ),
+                    ),
+                  );
+                },
+              );
             },
           ),
         ),

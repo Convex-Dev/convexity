@@ -411,7 +411,7 @@ class ConvexClient {
 
     if (config.isDebug()) {
       logger.d(
-        '[TRANSACT] Source: $source, Address: $caller, Lang: $lang, Result: $result',
+        '[TRANSACT] Source: $source, Address: $caller, Lang: $lang',
       );
     }
 
