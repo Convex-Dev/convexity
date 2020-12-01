@@ -26,6 +26,7 @@ AssetType assetType(String s) {
   return null;
 }
 
+@immutable
 class AAsset {
   final AssetType type;
   final dynamic asset;
