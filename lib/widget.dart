@@ -197,7 +197,7 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
         child: Container(
           padding: EdgeInsets.all(12),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flag(symbolToCountryCode(fungible.metadata.symbol), height: 20),
@@ -225,9 +225,9 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
                 builder: (context, snapshot) =>
                     snapshot.connectionState == ConnectionState.waiting
                         ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(),
+                            width: 17,
+                            height: 17,
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(
                             formatFungibleCurrency(
