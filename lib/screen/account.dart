@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
 
 import '../convex.dart';
