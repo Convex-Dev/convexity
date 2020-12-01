@@ -399,15 +399,24 @@ class ConvexClient {
     @required Uint8List secretKey,
     @required String source,
     Lang lang = Lang.convexLisp,
-  }) =>
-      transact2(
-        scheme: server.scheme,
-        host: server.host,
-        port: server.port,
-        source: source,
-        address: caller.hex,
-        secretKey: secretKey,
+  }) {
+    var result = transact2(
+      scheme: server.scheme,
+      host: server.host,
+      port: server.port,
+      source: source,
+      address: caller.hex,
+      secretKey: secretKey,
+    );
+
+    if (config.isDebug()) {
+      logger.d(
+        '[TRANSACT] Source: $source, Address: $caller, Lang: $lang, Result: $result',
       );
+    }
+
+    return result;
+  }
 
   Future<Account> account({
     @required Address address,

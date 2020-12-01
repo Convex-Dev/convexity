@@ -123,7 +123,7 @@ class _RecommendedState extends State<_Recommended> {
         setState(
           () {
             this.isLoading = false;
-            this.assets = assets;
+            this.assets = assets ?? <AAsset>{};
           },
         );
       }

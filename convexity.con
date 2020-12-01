@@ -42,6 +42,15 @@
           (def registry (assoc registry address metadata))
           (fail :unauthorized "You're not authorized to modify the registry.")))
 
+      ;; TODO
+      (defn request-registry
+        ^{:doc
+          {:type :function
+           :signature [{:params [address metadata]}]
+           :description "Requests to register metadata for a particular Asset."}}
+        [address metadata]
+        (def registry (assoc registry address metadata)))
+
       (defn unregister-asset
         ^{:doc
           {:type :function
@@ -52,4 +61,4 @@
           (def registry (dissoc registry address))
           (fail :unauthorized "You're not authorized to modify the registry.")))
 
-      (export all-assets asset-metadata register-asset unregister-asset))))
+      (export all-assets asset-metadata register-asset request-registry unregister-asset))))

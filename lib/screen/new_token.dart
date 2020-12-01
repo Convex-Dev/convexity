@@ -61,6 +61,18 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       metadata: metadata,
     );
 
+    var aasset = AAsset(type: AssetType.fungible, asset: fungible);
+
+    var registerResult = await appState.convexityClient().requestToRegister(
+          holder: appState.model.activeAddress,
+          holderSecretKey: appState.model.activeKeyPair.sk,
+          aasset: aasset,
+        );
+
+    if (registerResult.errorCode != null) {
+      return;
+    }
+
     appState.addMyToken(
       AAsset(
         type: AssetType.fungible,

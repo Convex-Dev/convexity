@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'dart:typed_data';
+
 import 'package:meta/meta.dart';
 
 import 'convex.dart' as convex;
@@ -85,5 +88,30 @@ class ConvexityClient {
     ).toSet();
 
     return tokens;
+  }
+
+  Future<convex.Result> requestToRegister({
+    convex.Address holder,
+    Uint8List holderSecretKey,
+    AAsset aasset,
+  }) {
+    var fungible = aasset.asset as convex.FungibleToken;
+
+    var metadataStr = '{'
+        ':name "${fungible.metadata.name}",'
+        ':description "${fungible.metadata.description}",'
+        ':type :fungible,'
+        ':symbol "${fungible.metadata.symbol}",'
+        ':decimals ${fungible.metadata.decimals}'
+        '}';
+
+    var source =
+        '(call 0x${this.actor.hex} (request-registry 0x${fungible.address.hex} $metadataStr))';
+
+    return convexClient.transact(
+      caller: holder,
+      secretKey: holderSecretKey,
+      source: source,
+    );
   }
 }
