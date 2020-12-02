@@ -200,7 +200,11 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flag(symbolToCountryCode(fungible.metadata.symbol), height: 20),
+              Icon(
+                Icons.attach_money,
+                size: 40,
+                color: Colors.orangeAccent,
+              ),
               Gap(10),
               Text(
                 fungible.metadata.symbol,
