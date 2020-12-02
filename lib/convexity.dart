@@ -38,6 +38,7 @@ class ConvexityClient {
         name: m['name'] as String,
         description: m['description'] as String,
         symbol: m['symbol'] as String,
+        currencySymbol: m['currency-symbol'] as String,
         decimals: 2,
       );
 
@@ -101,6 +102,7 @@ class ConvexityClient {
         ':description "${fungible.metadata.description}",'
         ':type :fungible,'
         ':symbol "${fungible.metadata.symbol}",'
+        ':currency-symbol "${fungible.metadata.currencySymbol}",'
         ':decimals ${fungible.metadata.decimals}'
         '}';
 

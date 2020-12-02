@@ -30,16 +30,18 @@ class _CreateToken extends StatefulWidget {
   final String name;
   final String description;
   final String symbol;
+  final String currencySymbol;
   final int decimals;
   final int supply;
 
   const _CreateToken({
     Key key,
-    this.name,
-    this.description,
-    this.symbol,
-    this.decimals,
-    this.supply,
+    @required this.name,
+    @required this.description,
+    @required this.symbol,
+    @required this.currencySymbol,
+    @required this.decimals,
+    @required this.supply,
   }) : super(key: key);
 
   @override
@@ -56,12 +58,24 @@ class _CreateTokenState extends State<_CreateToken> {
 
     var appState = context.read<AppState>();
 
+    Result myTokenResult;
+
     // Step 1 - deploy.
-    var myTokenResult = await appState.fungibleClient().createToken(
-          holder: appState.model.activeAddress,
-          holderSecretKey: appState.model.activeKeyPair.sk,
-          supply: widget.supply,
-        );
+    try {
+      myTokenResult = await appState.fungibleClient().createToken(
+            holder: appState.model.activeAddress,
+            holderSecretKey: appState.model.activeKeyPair.sk,
+            supply: widget.supply,
+          );
+    } on Exception catch (e) {
+      print('Failed to create Token: $e');
+
+      setState(() {
+        _newTokenStatus = _NewTokenStatus.creatingTokenError;
+      });
+
+      return;
+    }
 
     if (myTokenResult.errorCode != null) {
       setState(() {
@@ -76,6 +90,7 @@ class _CreateTokenState extends State<_CreateToken> {
       name: widget.name,
       description: widget.description,
       symbol: widget.symbol,
+      currencySymbol: widget.currencySymbol,
       decimals: widget.decimals,
     );
 
@@ -90,11 +105,23 @@ class _CreateTokenState extends State<_CreateToken> {
       _newTokenStatus = _NewTokenStatus.registeringToken;
     });
 
-    var registerResult = await appState.convexityClient().requestToRegister(
-          holder: appState.model.activeAddress,
-          holderSecretKey: appState.model.activeKeyPair.sk,
-          aasset: aasset,
-        );
+    Result registerResult;
+
+    try {
+      registerResult = await appState.convexityClient().requestToRegister(
+            holder: appState.model.activeAddress,
+            holderSecretKey: appState.model.activeKeyPair.sk,
+            aasset: aasset,
+          );
+    } on Exception catch (e) {
+      print('Failed to register Token: $e');
+
+      setState(() {
+        _newTokenStatus = _NewTokenStatus.registeringTokenError;
+      });
+
+      return;
+    }
 
     if (registerResult.errorCode != null) {
       setState(() {
@@ -216,93 +243,164 @@ class NewTokenScreenBody extends StatefulWidget {
 }
 
 class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
+  var _formKey = GlobalKey<FormState>();
+
   String _name;
   String _description;
   String _symbol;
+  String _currencySymbol;
   int _decimals;
   int _supply;
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        ListTile(
-          title: TextField(
-            autofocus: true,
-            onChanged: (value) {
-              _name = value;
-            },
+    return Form(
+      key: _formKey,
+      child: ListView(
+        children: [
+          ListTile(
+            title: TextFormField(
+              autofocus: true,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _name = value;
+                });
+              },
+            ),
+            subtitle: Text('Name'),
           ),
-          subtitle: Text('Name'),
-        ),
-        ListTile(
-          title: TextField(
-            onChanged: (value) {
-              _description = value;
-            },
+          ListTile(
+            title: TextFormField(
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _description = value;
+                });
+              },
+            ),
+            subtitle: Text('Description'),
           ),
-          subtitle: Text('Description'),
-        ),
-        ListTile(
-          title: TextField(
-            onChanged: (value) {
-              _symbol = value;
-            },
+          ListTile(
+            title: TextFormField(
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _symbol = value;
+                });
+              },
+            ),
+            subtitle: Text('Symbol'),
           ),
-          subtitle: Text('Symbol'),
-        ),
-        ListTile(
-          title: TextField(
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            onChanged: (value) {
-              _decimals = int.tryParse(value);
-            },
+          ListTile(
+            title: TextFormField(
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _currencySymbol = value;
+                });
+              },
+            ),
+            subtitle: Text('Currency Symbol'),
           ),
-          subtitle: Text('Decimals'),
-        ),
-        ListTile(
-          title: TextField(
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            onChanged: (value) {
-              _supply = int.tryParse(value);
-            },
+          ListTile(
+            title: TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _decimals = int.tryParse(value);
+                });
+              },
+            ),
+            subtitle: Text('Decimals'),
           ),
-          subtitle: Text('Supply'),
-        ),
-        Container(
-          padding: EdgeInsets.all(15),
-          child: ElevatedButton(
-            child: Text('Create Token'),
-            onPressed: () {
-              showModalBottomSheet(
-                isDismissible: false,
-                enableDrag: false,
-                context: context,
-                builder: (context) {
-                  return Container(
-                    height: 300,
-                    child: Center(
-                      child: _CreateToken(
-                        name: _name,
-                        description: _description,
-                        symbol: _symbol,
-                        decimals: _decimals,
-                        supply: _supply,
-                      ),
-                    ),
+          ListTile(
+            title: TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  _supply = int.tryParse(value);
+                });
+              },
+            ),
+            subtitle: Text('Supply'),
+          ),
+          Container(
+            padding: EdgeInsets.all(15),
+            child: ElevatedButton(
+              child: Text('Create Token'),
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  showModalBottomSheet(
+                    isDismissible: false,
+                    enableDrag: false,
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                        height: 300,
+                        child: Center(
+                          child: _CreateToken(
+                            name: _name,
+                            description: _description,
+                            symbol: _symbol,
+                            currencySymbol: _currencySymbol,
+                            decimals: _decimals,
+                            supply: _supply,
+                          ),
+                        ),
+                      );
+                    },
                   );
-                },
-              );
-            },
+                }
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

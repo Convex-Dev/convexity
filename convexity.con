@@ -36,6 +36,7 @@
                           - description     : string
                           - type            : keyword fungible | non-fungible
                           - symbol          : string
+                          - currency-symbol : string
                           - decimals        : number"}}
         [address metadata]
         (if (trust/trusted? trust-monitor *caller*)

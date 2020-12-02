@@ -434,12 +434,14 @@ class FungibleTokenMetadata {
   final String name;
   final String description;
   final String symbol;
+  final String currencySymbol;
   final int decimals;
 
   FungibleTokenMetadata({
     @required this.name,
     @required this.description,
     @required this.symbol,
+    @required this.currencySymbol,
     @required this.decimals,
   });
 
@@ -447,12 +449,14 @@ class FungibleTokenMetadata {
       : name = json['name'],
         description = json['description'],
         symbol = json['symbol'],
+        currencySymbol = json['currencySymbol'],
         decimals = json['decimals'];
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
         'symbol': symbol,
+        'currencySymbol': currencySymbol,
         'decimals': decimals,
       };
 
