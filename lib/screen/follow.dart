@@ -115,19 +115,25 @@ class _RecommendedState extends State<_Recommended> {
   void initState() {
     super.initState();
 
-    context.read<AppState>().convexityClient().aassets().then((assets) {
-      // It's important to check if the Widget is mounted
-      // because the user might change the selected option
-      // while we're still loading the recommended Assets.
-      if (mounted) {
-        setState(
-          () {
-            this.isLoading = false;
-            this.assets = assets ?? <AAsset>{};
-          },
-        );
-      }
-    });
+    var convexityClient = context.read<AppState>().convexityClient();
+
+    if (convexityClient != null) {
+      convexityClient.aassets().then((assets) {
+        // It's important to check if the Widget is mounted
+        // because the user might change the selected option
+        // while we're still loading the recommended Assets.
+        if (mounted) {
+          setState(
+            () {
+              this.isLoading = false;
+              this.assets = assets ?? <AAsset>{};
+            },
+          );
+        }
+      });
+    } else {
+      this.isLoading = false;
+    }
   }
 
   @override
@@ -355,6 +361,18 @@ class _AssetIDState extends State<_AssetID> {
           onPressed: (AssetMetadataQueryStatus.inProgress == status)
               ? null
               : () {
+                  if (context.read<AppState>().convexityClient() == null) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Can't verify because Convexity Address is not set.",
+                        ),
+                      ),
+                    );
+
+                    return;
+                  }
+
                   setState(() {
                     status = AssetMetadataQueryStatus.inProgress;
                   });

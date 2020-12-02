@@ -145,10 +145,12 @@ class AppState with ChangeNotifier {
   FungibleClient fungibleClient() =>
       FungibleClient(convexClient: convexClient());
 
-  ConvexityClient convexityClient() => ConvexityClient(
-        convexClient: convexClient(),
-        actor: model.convexityAddress,
-      );
+  ConvexityClient convexityClient() => model.convexityAddress != null
+      ? ConvexityClient(
+          convexClient: convexClient(),
+          actor: model.convexityAddress,
+        )
+      : null;
 
   void setState(Model f(Model m)) {
     model = f(model);
