@@ -1,3 +1,4 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -36,13 +37,18 @@ class _AssetsScreenBodyState extends State<AssetsScreenBody> {
       children: appState.model.following.map((token) {
         return Container(
           padding: const EdgeInsets.all(8),
-          child: FungibleTokenRenderer(
-            aasset: token,
+          child: fungibleTokenRenderer(
+            fungible: token.asset as FungibleToken,
             balance: appState.fungibleClient().balance(
                   token: token.asset.address,
                   holder: appState.model.activeAddress,
                 ),
-            onTap: (AAsset aasset) => nav.pushAsset(context, aasset),
+            onTap: (fungible) => nav.pushAsset(
+                context,
+                AAsset(
+                  type: AssetType.fungible,
+                  asset: fungible,
+                )),
           ),
         );
       }).toList(),

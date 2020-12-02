@@ -153,19 +153,22 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (token) => Stack(
                 children: [
-                  FungibleTokenRenderer(
-                    aasset: token,
+                  fungibleTokenRenderer(
+                    fungible: token.asset as FungibleToken,
                     balance: appState.fungibleClient().balance(
                           token: token.asset.address,
                           holder: appState.model.activeAddress,
                         ),
-                    onTap: (metadata) {
+                    onTap: (fungible) {
+                      var aasset =
+                          AAsset(type: AssetType.fungible, asset: fungible);
+
                       var followingCopy = Set<AAsset>.from(model.following);
 
-                      if (followingCopy.contains(metadata)) {
-                        followingCopy.remove(metadata);
+                      if (followingCopy.contains(aasset)) {
+                        followingCopy.remove(fungible);
                       } else {
-                        followingCopy.add(metadata);
+                        followingCopy.add(aasset);
                       }
 
                       context.read<AppState>().setFollowing(
@@ -316,7 +319,7 @@ class _AssetIDState extends State<_AssetID> {
             SizedBox(
               width: 160,
               child: aasset.type == AssetType.fungible
-                  ? FungibleTokenRenderer(aasset: null, balance: null)
+                  ? fungibleTokenRenderer(fungible: null, balance: null)
                   : nonFungibleTokenRenderer(),
             ),
             ElevatedButton(

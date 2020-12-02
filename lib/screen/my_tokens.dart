@@ -1,3 +1,4 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,18 +41,26 @@ class _MyTokensScreenBodyState extends State<MyTokensScreenBody> {
       children: appState.model.myTokens.where((aasset) {
         return aasset.type == AssetType.fungible;
       }).map((aasset) {
-        return FungibleTokenRenderer(
-          aasset: aasset,
+        return fungibleTokenRenderer(
+          fungible: aasset.asset as FungibleToken,
           balance: appState.fungibleClient().balance(
                 token: aasset.asset.address,
                 holder: appState.model.activeAddress,
               ),
-          onTap: (aasset) {
+          onTap: (fungible) {
             // This seems a little bit odd, but once the route pops,
             // we call `setState` to ask Flutter to rebuild this Widget,
             // which will then create new Future objects
             // for each Token & balance.
-            nav.pushAsset(context, aasset).then((value) => setState(() {}));
+            nav
+                .pushAsset(
+                  context,
+                  AAsset(
+                    type: AssetType.fungible,
+                    asset: fungible,
+                  ),
+                )
+                .then((value) => setState(() {}));
           },
         );
       }).toList(),
