@@ -43,19 +43,24 @@ class AssetScreenBody extends StatefulWidget {
 class _AssetScreenBodyState extends State<AssetScreenBody> {
   Future<int> balance;
 
-  @override
-  void initState() {
-    super.initState();
-
+  /// Check the user's balance for this Token.
+  Future<int> queryBalance(BuildContext context) {
     var appState = context.read<AppState>();
 
     var fungible = widget.aasset.asset as FungibleToken;
 
     // Check the user's balance for this Token.
-    balance = appState.fungibleClient().balance(
+    return appState.fungibleClient().balance(
           token: fungible.address,
           holder: appState.model.activeAddress,
         );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    balance = queryBalance(context);
   }
 
   @override
@@ -183,11 +188,22 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     action(
                       context,
                       label: 'Transfer',
-                      onPressed: () => nav.pushFungibleTransfer(
-                        context,
-                        fungible,
-                        balance,
-                      ),
+                      onPressed: () {
+                        var fnull = nav.pushFungibleTransfer(
+                          context,
+                          fungible,
+                          balance,
+                        );
+
+                        fnull.then(
+                          (_) {
+                            // Query the potentially updated balance.
+                            setState(() {
+                              balance = queryBalance(context);
+                            });
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),
