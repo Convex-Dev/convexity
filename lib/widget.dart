@@ -152,42 +152,6 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
         );
   }
 
-  String symbolToCountryCode(String symbol) {
-    switch (symbol) {
-      // Kuwait Dinar
-      case 'KWD':
-        return 'kw';
-      // Bahrain Dinar
-      case 'BHD':
-        return 'bh';
-      // Oman Rial
-      case 'OMR':
-        return 'om';
-      // Jordan Dinar
-      case 'JOD':
-        return 'jo';
-      // British Pound Sterling
-      case 'GBP':
-        return 'gb';
-      // European Euro
-      case 'EUR':
-        return 'eu';
-      // Swiss Franc
-      case 'CHF':
-        return 'ch';
-      // US Dollar
-      case 'USD':
-        return 'us';
-      case 'KYD':
-        return 'ky';
-      // Canadian Dollar
-      case 'CAD':
-        return 'ca';
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     var fungible = widget.aasset.asset as convex.FungibleToken;
