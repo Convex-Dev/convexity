@@ -21,10 +21,15 @@ class MyTokensScreen extends StatelessWidget {
   }
 }
 
-class MyTokensScreenBody extends StatelessWidget {
+class MyTokensScreenBody extends StatefulWidget {
+  @override
+  _MyTokensScreenBodyState createState() => _MyTokensScreenBodyState();
+}
+
+class _MyTokensScreenBodyState extends State<MyTokensScreenBody> {
   @override
   Widget build(BuildContext context) {
-    var myTokens = context.watch<AppState>().model.myTokens;
+    var appState = context.watch<AppState>();
 
     return GridView.count(
       primary: false,
@@ -32,12 +37,22 @@ class MyTokensScreenBody extends StatelessWidget {
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
       crossAxisCount: 2,
-      children: myTokens.where((aasset) {
+      children: appState.model.myTokens.where((aasset) {
         return aasset.type == AssetType.fungible;
       }).map((aasset) {
         return FungibleTokenRenderer(
           aasset: aasset,
-          onTap: (aasset) => nav.pushAsset(context, aasset),
+          balance: appState.fungibleClient().balance(
+                token: aasset.asset.address,
+                holder: appState.model.activeAddress,
+              ),
+          onTap: (aasset) {
+            // This seems a little bit odd, but once the route pops,
+            // we call `setState` to ask Flutter to rebuild this Widget,
+            // which will then create new Future objects
+            // for each Token & balance.
+            nav.pushAsset(context, aasset).then((value) => setState(() {}));
+          },
         );
       }).toList(),
     );

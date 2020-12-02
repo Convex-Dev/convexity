@@ -138,6 +138,7 @@ class _RecommendedState extends State<_Recommended> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
     var model = context.watch<AppState>().model;
 
     if (isLoading) {
@@ -152,8 +153,12 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (token) => Stack(
                 children: [
-                  AAssetRenderer(
+                  FungibleTokenRenderer(
                     aasset: token,
+                    balance: appState.fungibleClient().balance(
+                          token: token.asset.address,
+                          holder: appState.model.activeAddress,
+                        ),
                     onTap: (metadata) {
                       var followingCopy = Set<AAsset>.from(model.following);
 
@@ -310,7 +315,9 @@ class _AssetIDState extends State<_AssetID> {
           children: [
             SizedBox(
               width: 160,
-              child: AAssetRenderer(aasset: aasset),
+              child: aasset.type == AssetType.fungible
+                  ? FungibleTokenRenderer(aasset: null, balance: null)
+                  : nonFungibleTokenRenderer(),
             ),
             ElevatedButton(
               child: Text('Follow'),

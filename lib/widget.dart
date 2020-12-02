@@ -10,6 +10,15 @@ import 'model.dart';
 import 'convex.dart' as convex;
 import 'format.dart';
 
+class PureWidget extends StatelessWidget {
+  final Widget Function(BuildContext) builder;
+
+  const PureWidget({Key key, @required this.builder}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => builder(context);
+}
+
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
 
@@ -97,36 +106,15 @@ class IdenticonDropdown extends StatelessWidget {
   }
 }
 
-class AAssetRenderer extends StatelessWidget {
-  final AAsset aasset;
-  final void Function(AAsset) onTap;
-
-  const AAssetRenderer({
-    Key key,
-    @required this.aasset,
-    this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (aasset.type == AssetType.fungible) {
-      return FungibleTokenRenderer(
-        aasset: aasset,
-        onTap: onTap,
-      );
-    }
-
-    return null;
-  }
-}
-
 class FungibleTokenRenderer extends StatefulWidget {
   final AAsset aasset;
+  final Future<int> balance;
   final void Function(AAsset) onTap;
 
   const FungibleTokenRenderer({
     Key key,
     @required this.aasset,
+    @required this.balance,
     this.onTap,
   }) : super(key: key);
 
@@ -135,23 +123,6 @@ class FungibleTokenRenderer extends StatefulWidget {
 }
 
 class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
-  Future<int> balance;
-
-  @override
-  void initState() {
-    super.initState();
-
-    var token = widget.aasset.asset as convex.FungibleToken;
-
-    var appState = context.read<AppState>();
-
-    // Check the user's balance for this Token.
-    balance = appState.fungibleClient().balance(
-          token: token.address,
-          holder: appState.model.activeAddress,
-        );
-  }
-
   @override
   Widget build(BuildContext context) {
     var fungible = widget.aasset.asset as convex.FungibleToken;
@@ -189,7 +160,7 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
               ),
               Gap(4),
               FutureBuilder(
-                future: balance,
+                future: widget.balance,
                 builder: (context, snapshot) =>
                     snapshot.connectionState == ConnectionState.waiting
                         ? SizedBox(
@@ -218,3 +189,6 @@ class _FungibleTokenRendererState extends State<FungibleTokenRenderer> {
     );
   }
 }
+
+Widget nonFungibleTokenRenderer() =>
+    PureWidget(builder: (context) => Text('Non Fungible Token'));

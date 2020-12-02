@@ -32,7 +32,8 @@ void pushAssets(BuildContext context) => Navigator.pushNamed(
       route.assets,
     );
 
-void pushAsset(BuildContext context, AAsset aasset) => Navigator.pushNamed(
+Future<dynamic> pushAsset(BuildContext context, AAsset aasset) =>
+    Navigator.pushNamed(
       context,
       route.asset,
       arguments: aasset,
