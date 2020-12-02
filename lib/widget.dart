@@ -13,9 +13,9 @@ import 'format.dart';
 class StatelessWidgetBuilder extends StatelessWidget {
   final Widget Function(BuildContext) builder;
 
-  const StatelessWidgetBuilder({
+  const StatelessWidgetBuilder(
+    this.builder, {
     Key key,
-    @required this.builder,
   }) : super(key: key);
 
   @override
@@ -115,69 +115,67 @@ Widget fungibleTokenRenderer({
   @required Future<int> balance,
   void Function(convex.FungibleToken) onTap,
 }) =>
-    StatelessWidgetBuilder(
-      builder: (context) => Card(
-        child: InkWell(
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.attach_money,
-                  size: 40,
-                  color: Colors.orangeAccent,
-                ),
-                Gap(10),
-                Text(
-                  fungible.metadata.symbol,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                Gap(4),
-                Text(
-                  fungible.metadata.name,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                Gap(10),
-                Text(
-                  'Balance',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                Gap(4),
-                FutureBuilder(
-                  future: balance,
-                  builder: (context, snapshot) =>
-                      snapshot.connectionState == ConnectionState.waiting
-                          ? SizedBox(
-                              width: 17,
-                              height: 17,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(
-                              formatFungibleCurrency(
-                                metadata: fungible.metadata,
-                                number: snapshot.data,
-                              ),
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyText1,
+    StatelessWidgetBuilder((context) => Card(
+          child: InkWell(
+            child: Container(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.attach_money,
+                    size: 40,
+                    color: Colors.orangeAccent,
+                  ),
+                  Gap(10),
+                  Text(
+                    fungible.metadata.symbol,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  Gap(4),
+                  Text(
+                    fungible.metadata.name,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Gap(10),
+                  Text(
+                    'Balance',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  Gap(4),
+                  FutureBuilder(
+                    future: balance,
+                    builder: (context, snapshot) => snapshot.connectionState ==
+                            ConnectionState.waiting
+                        ? SizedBox(
+                            width: 17,
+                            height: 17,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            formatFungibleCurrency(
+                              metadata: fungible.metadata,
+                              number: snapshot.data,
                             ),
-                )
-              ],
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                  )
+                ],
+              ),
             ),
+            onTap: () {
+              if (onTap != null) {
+                onTap(fungible);
+              }
+            },
           ),
-          onTap: () {
-            if (onTap != null) {
-              onTap(fungible);
-            }
-          },
-        ),
-      ),
-    );
+        ));
 
 /// Returns a Non-Fungible Token renderer Widget.
 Widget nonFungibleTokenRenderer() =>
-    StatelessWidgetBuilder(builder: (context) => Text('Non Fungible Token'));
+    StatelessWidgetBuilder((context) => Text('Non Fungible Token'));
