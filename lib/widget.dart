@@ -1,4 +1,3 @@
-import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'model.dart';
 import 'convex.dart' as convex;
 import 'format.dart';
+import 'nav.dart' as nav;
 
 class StatelessWidgetBuilder extends StatelessWidget {
   final Widget Function(BuildContext) builder;
@@ -179,3 +179,55 @@ Widget fungibleTokenRenderer({
 /// Returns a Non-Fungible Token renderer Widget.
 Widget nonFungibleTokenRenderer() =>
     StatelessWidgetBuilder((context) => Text('Non Fungible Token'));
+
+class AssetsCollection extends StatefulWidget {
+  final Set<AAsset> assets;
+
+  const AssetsCollection({Key key, @required this.assets}) : super(key: key);
+
+  @override
+  _AssetsCollectionState createState() => _AssetsCollectionState();
+}
+
+class _AssetsCollectionState extends State<AssetsCollection> {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<AppState>();
+
+    return GridView.count(
+      primary: false,
+      padding: const EdgeInsets.all(20),
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      crossAxisCount: 2,
+      children: widget.assets.map((aasset) {
+        if (aasset.type == AssetType.fungible) {
+          return fungibleTokenRenderer(
+            fungible: aasset.asset as convex.FungibleToken,
+            balance: appState.fungibleClient().balance(
+                  token: aasset.asset.address,
+                  holder: appState.model.activeAddress,
+                ),
+            onTap: (fungible) {
+              // This seems a little bit odd, but once the route pops,
+              // we call `setState` to ask Flutter to rebuild this Widget,
+              // which will then create new Future objects
+              // for each Token & balance.
+              nav
+                  .pushAsset(
+                    context,
+                    AAsset(
+                      type: AssetType.fungible,
+                      asset: fungible,
+                    ),
+                  )
+                  .then((value) => setState(() {}));
+            },
+          );
+        }
+
+        return nonFungibleTokenRenderer();
+      }).toList(),
+    );
+  }
+}
