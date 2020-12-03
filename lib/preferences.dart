@@ -8,6 +8,7 @@ import 'model.dart';
 const PREF_FOLLOWING = 'following';
 const PREF_ALL_KEYPAIRS = 'allKeyPairs';
 const PREF_ACTIVE_KEYPAIR = 'activeKeyPair';
+const PREF_MY_TOKENS = 'MyTokens';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -72,9 +73,36 @@ Set<AAsset> readFollowing(SharedPreferences preferences) {
 
 /// Persists the set of following Assets.
 ///
-/// `following` will be persisted as a JSON encoded string.
+/// [following] will be persisted as a JSON encoded string.
 void writeFollowing(SharedPreferences preferences, Set<AAsset> following) {
   var encoded = jsonEncode(following.toList());
 
   preferences.setString(PREF_FOLLOWING, encoded);
+}
+
+/// Persists My Tokens.
+///
+/// [myTokens] will be persisted as a JSON encoded string.
+Future<bool> writeMyTokens(
+  SharedPreferences preferences,
+  Iterable<AAsset> myTokens,
+) {
+  var encoded = jsonEncode(myTokens.toList());
+
+  return preferences.setString(PREF_MY_TOKENS, encoded);
+}
+
+/// Reads My Tokens.
+///
+/// Returns an empty set if there is none.
+Set<AAsset> readMyTokens(SharedPreferences preferences) {
+  var encoded = preferences.getString(PREF_MY_TOKENS);
+
+  if (encoded != null) {
+    var l = jsonDecode(encoded) as List;
+
+    return l.map((m) => AAsset.fromJson(m)).toSet();
+  }
+
+  return Set<AAsset>.identity();
 }

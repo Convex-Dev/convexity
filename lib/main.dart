@@ -36,13 +36,15 @@ class _AppState extends State<App> {
     var allKeyPairs = p.allKeyPairs(preferences);
     var activeKeyPair = p.activeKeyPair(preferences);
     var following = p.readFollowing(preferences);
+    var myTokens = p.readMyTokens(preferences);
 
     logger.d(
       'BOOTSTRAP:\n'
       'Server $convexWorldUri\n'
       'All KeyPairs $allKeyPairs\n'
       'Active KeyPair $activeKeyPair\n'
-      'Following $following',
+      'Following $following\n'
+      'My Tokens $myTokens',
     );
 
     context.read<AppState>().setState(
@@ -51,6 +53,7 @@ class _AppState extends State<App> {
             allKeyPairs: allKeyPairs,
             activeKeyPair: activeKeyPair,
             following: following,
+            myTokens: myTokens,
           ),
         );
   }
@@ -65,7 +68,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Convex Wallet',
+      title: 'Convexity',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         // This makes the visual density adapt to the platform that you run

@@ -73,6 +73,9 @@ enum AddressInputOption {
 
 final convexWorldUri = Uri.parse('https://convex.world');
 
+/// Immutable Model data class.
+///
+/// An instance of this class represents a snapshot of the state of the app.
 @immutable
 class Model {
   final Uri convexServerUri;
@@ -82,7 +85,7 @@ class Model {
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
 
-  Model({
+  const Model({
     this.convexServerUri,
     this.convexityAddress,
     this.activeKeyPair,
@@ -192,13 +195,21 @@ class AppState with ChangeNotifier {
     );
   }
 
-  /// Add a new Token 'My Tokens'.
-  void addMyToken(AAsset myToken) {
-    setState((model) {
-      var myTokens = Set<AAsset>.from(model.myTokens)..add(myToken);
+  /// Add a new Token to 'My Tokens'.
+  void addMyToken(AAsset myToken, {bool isPersistent = false}) {
+    var myTokens = Set<AAsset>.from(model.myTokens)..add(myToken);
 
-      return model.copyWith(myTokens: myTokens);
-    });
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeMyTokens(preferences, myTokens),
+      );
+    }
+
+    setState(
+      (model) => model.copyWith(
+        myTokens: myTokens,
+      ),
+    );
   }
 
   /// Add a new KeyPair `k`, and persist it to disk if `isPersistent` is true.

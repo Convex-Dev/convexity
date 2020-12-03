@@ -136,6 +136,7 @@ class _CreateTokenState extends State<_CreateToken> {
         type: AssetType.fungible,
         asset: fungible,
       ),
+      isPersistent: true,
     );
 
     setState(() {
