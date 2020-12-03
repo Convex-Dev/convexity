@@ -8,6 +8,7 @@ import './home.dart';
 import './wallet.dart';
 import './account.dart';
 import '../nav.dart' as nav;
+import '../logger.dart';
 
 enum _PopupChoice {
   settings,

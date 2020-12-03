@@ -3,14 +3,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
-import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 import 'config.dart' as config;
+import 'logger.dart';
 
 const CONVEX_WORLD_HOST = 'convex.world';
-
-var logger = Logger();
 
 // -- Types
 
@@ -512,6 +510,8 @@ class FungibleClient {
     var result = await convexClient.query(source: source);
 
     if (result.errorCode != null) {
+      logger.e('Failed to query balance: ${result.value}');
+
       return null;
     }
 

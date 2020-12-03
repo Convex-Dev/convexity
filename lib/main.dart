@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:logger/logger.dart';
 
 import 'model.dart';
 import 'route.dart' as route;
 import 'preferences.dart' as p;
 import 'config.dart' as config;
-
-var logger = Logger(
-  printer: PrettyPrinter(),
-);
+import 'logger.dart';
 
 void main() {
   sodium.Sodium.init();

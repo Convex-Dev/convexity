@@ -9,6 +9,7 @@ import 'package:tuple/tuple.dart';
 import '../model.dart';
 import '../format.dart';
 import '../route.dart' as route;
+import '../logger.dart';
 
 class FungibleTransferScreen extends StatelessWidget {
   final FungibleToken token;

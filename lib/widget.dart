@@ -157,10 +157,12 @@ Widget fungibleTokenRenderer({
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(
-                            formatFungibleCurrency(
-                              metadata: fungible.metadata,
-                              number: snapshot.data,
-                            ),
+                            snapshot.data != null
+                                ? formatFungibleCurrency(
+                                    metadata: fungible.metadata,
+                                    number: snapshot.data,
+                                  )
+                                : '-',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
