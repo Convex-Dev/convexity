@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 import '../model.dart';
 import '../format.dart';
@@ -16,12 +17,13 @@ class FungibleTransferScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var arguments = ModalRoute.of(context).settings.arguments as List;
+    var arguments = ModalRoute.of(context).settings.arguments
+        as Tuple2<FungibleToken, Future<int>>;
 
     // Token can be passed directly to the constructor,
     // or via the Navigator arguments.
-    var _token = token ?? arguments.first as FungibleToken;
-    var _balance = arguments.last as Future<int>;
+    var _token = token ?? arguments.item1;
+    var _balance = arguments.item2;
 
     return Scaffold(
       appBar: AppBar(

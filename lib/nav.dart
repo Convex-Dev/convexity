@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tuple/tuple.dart';
 
 import 'convex.dart' as convex;
 import 'model.dart';
@@ -52,7 +53,7 @@ Future<dynamic> pushFungibleTransfer(
     Navigator.pushNamed(
       context,
       route.fungibleTransfer,
-      arguments: [token, balance],
+      arguments: Tuple2(token, balance),
     );
 
 void pushMyTokens(BuildContext context) => Navigator.pushNamed(
