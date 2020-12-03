@@ -76,7 +76,7 @@ class FungibleTransferScreenBody extends StatefulWidget {
 
 class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
-  String receiver;
+  Address receiver;
   int amount;
 
   @override
@@ -86,10 +86,28 @@ class _FungibleTransferScreenBodyState
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          IconButton(
+            color: Colors.black26,
+            iconSize: 120,
+            icon: Icon(
+              Icons.account_circle_outlined,
+            ),
+            onPressed: () {
+              showModalBottomSheet<Address>(
+                context: context,
+                builder: (context) => SelectAccountModal(),
+              ).then((selectedAddress) {
+                setState(() {
+                  receiver = selectedAddress;
+                });
+              });
+            },
+          ),
+          Gap(20),
           TextField(
-            autofocus: true,
             decoration: InputDecoration(
               labelText: 'Amount',
+              border: const OutlineInputBorder(),
             ),
             onChanged: (value) {
               setState(() {
@@ -100,16 +118,6 @@ class _FungibleTransferScreenBodyState
           Gap(30),
           Column(
             children: [
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Destination Address',
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    receiver = Address.trim0x(value);
-                  });
-                },
-              ),
               Gap(20),
               SizedBox(
                 height: 60,
@@ -123,7 +131,7 @@ class _FungibleTransferScreenBodyState
                           token: widget.token.address,
                           holder: appState.model.activeAddress,
                           holderSecretKey: appState.model.activeKeyPair.sk,
-                          receiver: Address(hex: Address.trim0x(receiver)),
+                          receiver: receiver,
                           amount: amount,
                         );
 
@@ -203,7 +211,7 @@ class _FungibleTransferScreenBodyState
                                             'Transfered $formattedAmount to ',
                                           ),
                                           Identicon2(
-                                            address: Address(hex: receiver),
+                                            address: receiver,
                                             isAddressVisible: true,
                                             size: 30,
                                           ),

@@ -233,3 +233,75 @@ class _AssetsCollectionState extends State<AssetsCollection> {
     );
   }
 }
+
+/// Interface to select an Account.
+///
+/// Note: This Widget must be used with a ModalBottomSheet builder.
+class SelectAccountModal extends StatefulWidget {
+  @override
+  _SelectAccountModalState createState() => _SelectAccountModalState();
+}
+
+class _SelectAccountModalState extends State<SelectAccountModal> {
+  String _addressHex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: ListView.separated(
+        itemCount: 2,
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.qr_code,
+                  size: 80,
+                ),
+                TextButton(
+                  child: Text('Scan QR Code'),
+                  onPressed: () {},
+                ),
+              ],
+            );
+          } else if (index == 1) {
+            return Column(
+              children: [
+                TextField(
+                  decoration: InputDecoration(
+                    helperText: 'Input the Address of the destination Account.',
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _addressHex = value;
+                    });
+                  },
+                ),
+                Gap(10),
+                ElevatedButton(
+                  child: Text('Use Address'),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      convex.Address(
+                        hex: convex.Address.trim0x(_addressHex),
+                      ),
+                    );
+                  },
+                )
+              ],
+            );
+          } else {
+            return ListTile(
+              leading: Text('Bla'),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
