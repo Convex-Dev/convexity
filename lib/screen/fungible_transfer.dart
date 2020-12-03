@@ -1,15 +1,15 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
+import '../convex.dart';
+import '../widget.dart';
 import '../model.dart';
 import '../format.dart';
-import '../route.dart' as route;
 import '../logger.dart';
+import '../route.dart' as route;
 
 class FungibleTransferScreen extends StatelessWidget {
   final FungibleToken token;
