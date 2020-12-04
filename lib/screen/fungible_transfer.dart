@@ -103,6 +103,10 @@ class _FungibleTransferScreenBodyState
               });
             },
           ),
+          if (receiver != null)
+            Text(
+              receiver.hex.substring(0, 32) + '...',
+            ),
           Gap(20),
           TextField(
             decoration: InputDecoration(
