@@ -11,22 +11,37 @@ import '../model.dart';
 import '../nav.dart' as nav;
 import '../format.dart';
 
-Widget fungibleTransferRenderer(FungibleTransferActivity activity) {
+Widget fungibleTransferActivityView(FungibleTransferActivity activity) {
   return StatelessWidgetBuilder((context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Transfer'),
+        Text(
+          'Transfer',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         Gap(4),
-        Identicon2(
-          address: activity.to,
-          isAddressVisible: true,
-          size: 40,
+        Row(
+          children: [
+            Identicon2(
+              address: activity.from,
+              isAddressVisible: true,
+              size: 30,
+            ),
+            Icon(Icons.arrow_right_alt),
+            Identicon2(
+              address: activity.to,
+              isAddressVisible: true,
+              size: 30,
+            ),
+          ],
         ),
         Gap(4),
         Text(
           'Amount: ${formatFungibleCurrency(metadata: activity.token.metadata, number: activity.amount)}',
-          style: TextStyle(color: Colors.black87),
+          style: TextStyle(
+            color: Colors.black87,
+          ),
         ),
       ],
     );
@@ -257,7 +272,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                         ),
                         ...activities
                             .map(
-                              (e) => fungibleTransferRenderer(
+                              (e) => fungibleTransferActivityView(
                                 e.payload as FungibleTransferActivity,
                               ),
                             )
