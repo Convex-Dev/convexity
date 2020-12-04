@@ -505,7 +505,7 @@ class FungibleClient {
     @required Address holder,
   }) async {
     var source = '(import convex.fungible :as fungible)'
-        '(fungible/balance (address "${token.hex}") (address "${holder.hex}"))';
+        '(fungible/balance 0x${token.hex} 0x${holder.hex})';
 
     var result = await convexClient.query(source: source);
 
@@ -542,7 +542,7 @@ class FungibleClient {
         caller: holder,
         secretKey: holderSecretKey,
         source: '(import convex.fungible :as fungible)'
-            '(fungible/transfer (address "${token.hex}")  (address "${receiver.hex}") $amount)',
+            '(fungible/transfer 0x${token.hex}  0x${receiver.hex} $amount)',
       );
 
   /// **Creates (deploys) a Fungible Token on the Convex Network.**
