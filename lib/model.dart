@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:convex_wallet/logger.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +9,83 @@ import 'convex.dart';
 import 'convexity.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
+
+enum ActivityType {
+  transfer,
+}
+
+/// Immutable data class to encode an 'Activity'.
+///
+/// You can know the concrete type of [payload] using the [type] enum,
+/// and then cast to the particular type e.g. `activity.payload as FungibleTransferActivity`.
+@immutable
+class Activity {
+  final ActivityType type;
+  final dynamic payload;
+
+  Activity({
+    @required this.type,
+    @required this.payload,
+  });
+
+  Activity.fromJson(Map<String, dynamic> json)
+      : type = _decodeType(json),
+        payload = _decodePayload(json);
+
+  Map<String, dynamic> toJson() => {
+        'type': type.toString(),
+        'payload': payload.toJson(),
+      };
+
+  static ActivityType _decodeType(Map<String, dynamic> json) {
+    if (ActivityType.transfer.toString() == json['type']) {
+      return ActivityType.transfer;
+    }
+
+    return null;
+  }
+
+  static dynamic _decodePayload(Map<String, dynamic> json) {
+    if (_decodeType(json) == ActivityType.transfer) {
+      return FungibleTransferActivity.fromJson(json['payload']);
+    }
+
+    return null;
+  }
+}
+
+/// Immutable data class to encode a 'Transfer Activity' - a Fungible Token transfer in particular.
+@immutable
+class FungibleTransferActivity {
+  final Address from;
+  final Address to;
+  final Address token;
+  final int amount;
+  final DateTime timestamp;
+
+  FungibleTransferActivity({
+    @required this.from,
+    @required this.to,
+    @required this.token,
+    @required this.amount,
+    @required this.timestamp,
+  });
+
+  FungibleTransferActivity.fromJson(Map<String, dynamic> json)
+      : from = Address.fromJson(json['from']),
+        to = Address.fromJson(json['to']),
+        token = Address.fromJson(json['token']),
+        amount = json['amount'] as int,
+        timestamp = DateTime.parse(json['timestamp']);
+
+  Map<String, dynamic> toJson() => {
+        'from': from.toJson(),
+        'to': to.toJson(),
+        'token': token.toJson(),
+        'amount': amount,
+        'timestamp': timestamp.toIso8601String(),
+      };
+}
 
 enum AssetType {
   fungible,
@@ -84,6 +163,7 @@ class Model {
   final List<KeyPair> allKeyPairs;
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
+  final List<Activity> activities;
 
   const Model({
     this.convexServerUri,
@@ -92,6 +172,7 @@ class Model {
     this.allKeyPairs = const [],
     this.following = const {},
     this.myTokens = const {},
+    this.activities = const [],
   });
 
   Address get activeAddress => activeKeyPair != null
@@ -113,6 +194,7 @@ class Model {
     List<KeyPair> allKeyPairs,
     Set<AAsset> following,
     Set<AAsset> myTokens,
+    List<Activity> activities,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -121,6 +203,7 @@ class Model {
         allKeyPairs: allKeyPairs ?? this.allKeyPairs,
         following: following ?? this.following,
         myTokens: myTokens ?? this.myTokens,
+        activities: activities ?? this.activities,
       );
 
   String toString() {
@@ -208,6 +291,23 @@ class AppState with ChangeNotifier {
     setState(
       (model) => model.copyWith(
         myTokens: myTokens,
+      ),
+    );
+  }
+
+  /// Add a new Activity.
+  void addActivity(Activity activity, {bool isPersistent = false}) {
+    var activities = List<Activity>.from(model.activities)..add(activity);
+
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeActivities(preferences, activities),
+      );
+    }
+
+    setState(
+      (model) => model.copyWith(
+        activities: activities,
       ),
     );
   }

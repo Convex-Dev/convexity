@@ -1,14 +1,16 @@
 import 'dart:convert';
 
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model.dart';
 
-const PREF_FOLLOWING = 'following';
-const PREF_ALL_KEYPAIRS = 'allKeyPairs';
-const PREF_ACTIVE_KEYPAIR = 'activeKeyPair';
-const PREF_MY_TOKENS = 'MyTokens';
+const PREF_FOLLOWING = 'FOLLOWING';
+const PREF_ALL_KEYPAIRS = 'ALL_KEYPAIRS';
+const PREF_ACTIVE_KEYPAIR = 'ACTIVE_KEYPAIR';
+const PREF_MY_TOKENS = 'MY_TOKENS';
+const PREF_ACTIVITIES = 'ACTIVITIES';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -105,4 +107,35 @@ Set<AAsset> readMyTokens(SharedPreferences preferences) {
   }
 
   return Set<AAsset>.identity();
+}
+
+/// Persists Activities.
+///
+/// [activities] will be persisted as a JSON encoded string.
+Future<bool> writeActivities(
+  SharedPreferences preferences,
+  Iterable<Activity> activities,
+) {
+  var encoded = jsonEncode(activities.toList());
+
+  logger.d('Write Activities: $encoded');
+
+  return preferences.setString(PREF_ACTIVITIES, encoded);
+}
+
+/// Reads Activities.
+///
+/// Returns an empty list if there is none.
+List<Activity> readActivities(SharedPreferences preferences) {
+  var encoded = preferences.getString(PREF_ACTIVITIES);
+
+  logger.d('Read Activities: $encoded');
+
+  if (encoded != null) {
+    var l = jsonDecode(encoded) as List;
+
+    return l.map((m) => Activity.fromJson(m)).toList();
+  }
+
+  return List.empty();
 }

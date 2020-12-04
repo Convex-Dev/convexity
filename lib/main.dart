@@ -33,6 +33,7 @@ class _AppState extends State<App> {
     var activeKeyPair = p.activeKeyPair(preferences);
     var following = p.readFollowing(preferences);
     var myTokens = p.readMyTokens(preferences);
+    var activities = p.readActivities(preferences);
 
     logger.d(
       'BOOTSTRAP:\n'
@@ -40,7 +41,8 @@ class _AppState extends State<App> {
       'All KeyPairs $allKeyPairs\n'
       'Active KeyPair $activeKeyPair\n'
       'Following $following\n'
-      'My Tokens $myTokens',
+      'My Tokens $myTokens\n'
+      'Activities $activities',
     );
 
     context.read<AppState>().setState(
@@ -50,6 +52,7 @@ class _AppState extends State<App> {
             activeKeyPair: activeKeyPair,
             following: following,
             myTokens: myTokens,
+            activities: activities,
           ),
         );
   }

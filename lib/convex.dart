@@ -10,8 +10,6 @@ import 'logger.dart';
 
 const CONVEX_WORLD_HOST = 'convex.world';
 
-// -- Types
-
 enum Lang {
   convexLisp,
   convexScript,
@@ -22,7 +20,7 @@ class Address {
 
   Address({this.hex});
 
-  Address.fromMap(Map<String, dynamic> m) : hex = m['hex'] as String;
+  Address.fromJson(Map<String, dynamic> m) : hex = m['hex'] as String;
 
   Address.fromKeyPair(
     sodium.KeyPair keyPair,
@@ -475,7 +473,7 @@ class FungibleToken {
   });
 
   FungibleToken.fromJson(Map<String, dynamic> json)
-      : address = Address.fromMap(json['address']),
+      : address = Address.fromJson(json['address']),
         metadata = FungibleTokenMetadata.fromJson(json['metadata']);
 
   Map<String, dynamic> toJson() => {

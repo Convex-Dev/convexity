@@ -226,6 +226,24 @@ class _FungibleTransferScreenBodyState
                                     ElevatedButton(
                                       child: const Text('Done'),
                                       onPressed: () {
+                                        var appState = context.read<AppState>();
+
+                                        var activity = Activity(
+                                          type: ActivityType.transfer,
+                                          payload: FungibleTransferActivity(
+                                            from: appState.model.activeAddress,
+                                            to: receiver,
+                                            amount: amount,
+                                            token: widget.token.address,
+                                            timestamp: DateTime.now(),
+                                          ),
+                                        );
+
+                                        appState.addActivity(
+                                          activity,
+                                          isPersistent: true,
+                                        );
+
                                         Navigator.popUntil(
                                           context,
                                           ModalRoute.withName(route.asset),
