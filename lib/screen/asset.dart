@@ -16,9 +16,20 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Transfer',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Transfer',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Gap(20),
+            Text(
+              activity.timestamp.toString(),
+              style: Theme.of(context).textTheme.caption,
+            )
+          ],
         ),
         Gap(4),
         Row(
