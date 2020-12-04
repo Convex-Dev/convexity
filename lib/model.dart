@@ -1,4 +1,3 @@
-import 'package:convex_wallet/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -59,7 +58,7 @@ class Activity {
 class FungibleTransferActivity {
   final Address from;
   final Address to;
-  final Address token;
+  final FungibleToken token;
   final int amount;
   final DateTime timestamp;
 
@@ -74,7 +73,7 @@ class FungibleTransferActivity {
   FungibleTransferActivity.fromJson(Map<String, dynamic> json)
       : from = Address.fromJson(json['from']),
         to = Address.fromJson(json['to']),
-        token = Address.fromJson(json['token']),
+        token = FungibleToken.fromJson(json['token']),
         amount = json['amount'] as int,
         timestamp = DateTime.parse(json['timestamp']);
 

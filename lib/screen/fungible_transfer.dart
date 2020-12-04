@@ -234,7 +234,7 @@ class _FungibleTransferScreenBodyState
                                             from: appState.model.activeAddress,
                                             to: receiver,
                                             amount: amount,
-                                            token: widget.token.address,
+                                            token: widget.token,
                                             timestamp: DateTime.now(),
                                           ),
                                         );
