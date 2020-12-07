@@ -245,15 +245,19 @@ class _AssetsCollectionState extends State<AssetsCollection> {
   }
 }
 
-/// Interface to select an Account.
-///
-/// Note: This Widget must be used with a ModalBottomSheet builder.
-class SelectAccountModal extends StatefulWidget {
+/// Shows a Modal Bottom Sheet UI to select an Account.
+Future<convex.Address> selectAccount(BuildContext context) =>
+    showModalBottomSheet<convex.Address>(
+      context: context,
+      builder: (context) => _SelectAccountModal(),
+    );
+
+class _SelectAccountModal extends StatefulWidget {
   @override
   _SelectAccountModalState createState() => _SelectAccountModalState();
 }
 
-class _SelectAccountModalState extends State<SelectAccountModal> {
+class _SelectAccountModalState extends State<_SelectAccountModal> {
   String _addressHex;
 
   @override

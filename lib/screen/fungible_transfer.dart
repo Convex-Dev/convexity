@@ -309,10 +309,7 @@ class _FungibleTransferScreenBodyState
                 return null;
               },
               onTap: () {
-                showModalBottomSheet<Address>(
-                  context: context,
-                  builder: (context) => SelectAccountModal(),
-                ).then((selectedAddress) {
+                selectAccount(context).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
                       receiver = selectedAddress;
