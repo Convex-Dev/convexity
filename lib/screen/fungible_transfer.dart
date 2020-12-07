@@ -285,9 +285,11 @@ class _FungibleTransferScreenBodyState
                 context: context,
                 builder: (context) => SelectAccountModal(),
               ).then((selectedAddress) {
-                setState(() {
-                  receiver = selectedAddress;
-                });
+                if (selectedAddress != null) {
+                  setState(() {
+                    receiver = selectedAddress;
+                  });
+                }
               });
             },
           ),
