@@ -275,13 +275,17 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: activities.length,
-                itemBuilder: (context, index) => Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: fungibleTransferActivityView(
-                      activities[index].payload as FungibleTransferActivity,
+              child: SafeArea(
+                child: Card(
+                  child: ListView.separated(
+                    itemCount: activities.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: fungibleTransferActivityView(
+                        activities[index].payload as FungibleTransferActivity,
+                      ),
                     ),
                   ),
                 ),
