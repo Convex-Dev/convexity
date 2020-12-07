@@ -1,5 +1,4 @@
 import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/logger.dart';
 import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

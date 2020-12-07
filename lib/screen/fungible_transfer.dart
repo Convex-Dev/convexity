@@ -79,9 +79,11 @@ class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
   final _formKey = GlobalKey<FormState>();
   final _receiverTextController = TextEditingController();
+  int _amount;
 
-  Address receiver;
-  int amount;
+  Address get _receiver => _receiverTextController.text.isNotEmpty
+      ? Address.fromHex(_receiverTextController.text)
+      : null;
 
   void send(BuildContext context) async {
     var appState = context.read<AppState>();
@@ -91,7 +93,7 @@ class _FungibleTransferScreenBodyState
       builder: (context) {
         var formattedAmount = formatFungibleCurrency(
           metadata: widget.token.metadata,
-          number: amount,
+          number: _amount,
         );
 
         return Container(
@@ -115,7 +117,9 @@ class _FungibleTransferScreenBodyState
                       'Transfer $formattedAmount to ',
                     ),
                     Identicon2(
-                      address: receiver,
+                      address: Address(
+                        hex: Address.trim0x(_receiverTextController.text),
+                      ),
                       isAddressVisible: true,
                       size: 30,
                     ),
@@ -146,8 +150,8 @@ class _FungibleTransferScreenBodyState
           token: widget.token.address,
           holder: appState.model.activeAddress,
           holderSecretKey: appState.model.activeKeyPair.sk,
-          receiver: receiver,
-          amount: amount,
+          receiver: _receiver,
+          amount: _amount,
         );
 
     showModalBottomSheet(
@@ -202,7 +206,7 @@ class _FungibleTransferScreenBodyState
 
                 var formattedAmount = formatFungibleCurrency(
                   metadata: widget.token.metadata,
-                  number: amount,
+                  number: _amount,
                 );
 
                 return Column(
@@ -224,7 +228,7 @@ class _FungibleTransferScreenBodyState
                             'Transfered $formattedAmount to ',
                           ),
                           Identicon2(
-                            address: receiver,
+                            address: _receiver,
                             isAddressVisible: true,
                             size: 30,
                           ),
@@ -241,8 +245,8 @@ class _FungibleTransferScreenBodyState
                           type: ActivityType.transfer,
                           payload: FungibleTransferActivity(
                             from: appState.model.activeAddress,
-                            to: receiver,
-                            amount: amount,
+                            to: _receiver,
+                            amount: _amount,
                             token: widget.token,
                             timestamp: DateTime.now(),
                           ),
@@ -284,12 +288,12 @@ class _FungibleTransferScreenBodyState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Visibility(
-              visible: receiver != null,
+              visible: _receiver != null,
               replacement: replacement,
-              child: receiver == null
+              child: _receiver == null
                   ? replacement
                   : identicon(
-                      receiver.hex,
+                      _receiver.hex,
                       height: 120,
                       width: 120,
                     ),
@@ -312,7 +316,6 @@ class _FungibleTransferScreenBodyState
                 selectAccount(context).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
-                      receiver = selectedAddress;
                       _receiverTextController.text = selectedAddress.hex;
                     });
                   }
@@ -338,7 +341,7 @@ class _FungibleTransferScreenBodyState
               },
               onChanged: (value) {
                 setState(() {
-                  amount = int.tryParse(value);
+                  _amount = int.tryParse(value);
                 });
               },
             ),

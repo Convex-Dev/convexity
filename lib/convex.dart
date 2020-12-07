@@ -20,6 +20,8 @@ class Address {
 
   Address({this.hex});
 
+  Address.fromHex(String hex) : hex = Address.trim0x(hex);
+
   Address.fromJson(Map<String, dynamic> m) : hex = m['hex'] as String;
 
   Address.fromKeyPair(
