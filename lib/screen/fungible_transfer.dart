@@ -90,7 +90,8 @@ class _FungibleTransferScreenBodyState
           number: amount,
         );
 
-        return SafeArea(
+        return Container(
+          height: 300,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -207,7 +208,7 @@ class _FungibleTransferScreenBodyState
                     Icon(
                       Icons.check,
                       size: 80,
-                      color: Colors.black12,
+                      color: Colors.green,
                     ),
                     Gap(10),
                     Padding(
