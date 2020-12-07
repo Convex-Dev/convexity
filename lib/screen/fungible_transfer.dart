@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -76,6 +77,9 @@ class FungibleTransferScreenBody extends StatefulWidget {
 
 class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
+  final _formKey = GlobalKey<FormState>();
+  final _receiverTextController = TextEditingController();
+
   Address receiver;
   int amount;
 
@@ -267,66 +271,107 @@ class _FungibleTransferScreenBodyState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconButton(
-            color: Colors.black26,
-            iconSize: 120,
-            icon: receiver != null
-                ? identicon(receiver.hex)
-                : Icon(
-                    Icons.account_circle_outlined,
-                  ),
-            onPressed: () {
-              showModalBottomSheet<Address>(
-                context: context,
-                builder: (context) => SelectAccountModal(),
-              ).then((selectedAddress) {
-                if (selectedAddress != null) {
-                  setState(() {
-                    receiver = selectedAddress;
-                  });
-                }
-              });
-            },
-          ),
-          if (receiver != null)
-            Text(
-              receiver.hex.substring(0, 32) + '...',
+    final replacement = SizedBox(
+      width: 120,
+      height: 120,
+    );
+
+    return Form(
+      key: _formKey,
+      child: Container(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Visibility(
+              visible: receiver != null,
+              replacement: replacement,
+              child: receiver == null
+                  ? replacement
+                  : identicon(
+                      receiver.hex,
+                      height: 120,
+                      width: 120,
+                    ),
             ),
-          Gap(20),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Amount',
-              border: const OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                amount = int.tryParse(value);
-              });
-            },
-          ),
-          Gap(30),
-          Column(
-            children: [
-              Gap(20),
-              SizedBox(
-                height: 60,
-                width: 100,
-                child: ElevatedButton(
-                  child: Text('SEND'),
-                  onPressed: () {
-                    send(context);
-                  },
-                ),
+            TextFormField(
+              readOnly: true,
+              controller: _receiverTextController,
+              decoration: InputDecoration(
+                labelText: 'To',
+                border: const OutlineInputBorder(),
               ),
-            ],
-          )
-        ],
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onTap: () {
+                showModalBottomSheet<Address>(
+                  context: context,
+                  builder: (context) => SelectAccountModal(),
+                ).then((selectedAddress) {
+                  if (selectedAddress != null) {
+                    setState(() {
+                      receiver = selectedAddress;
+                      _receiverTextController.text = selectedAddress.hex;
+                    });
+                  }
+                });
+              },
+            ),
+            Gap(20),
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Amount',
+                border: const OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Required';
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  amount = int.tryParse(value);
+                });
+              },
+            ),
+            Gap(30),
+            Column(
+              children: [
+                Gap(20),
+                SizedBox(
+                  height: 60,
+                  width: 100,
+                  child: ElevatedButton(
+                    child: Text('SEND'),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        send(context);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  void dispose() {
+    _receiverTextController.dispose();
+
+    super.dispose();
   }
 }
