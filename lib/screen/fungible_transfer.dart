@@ -79,6 +79,191 @@ class _FungibleTransferScreenBodyState
   Address receiver;
   int amount;
 
+  void send(BuildContext context) async {
+    var appState = context.read<AppState>();
+
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        var formattedAmount = formatFungibleCurrency(
+          metadata: widget.token.metadata,
+          number: amount,
+        );
+
+        return SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Transfer $formattedAmount to ',
+                    ),
+                    Identicon2(
+                      address: receiver,
+                      isAddressVisible: true,
+                      size: 30,
+                    ),
+                    Text(
+                      '?',
+                    )
+                  ],
+                ),
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: const Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmation != true) {
+      return;
+    }
+
+    var transferInProgress = appState.fungibleClient().transfer(
+          token: widget.token.address,
+          holder: appState.model.activeAddress,
+          holderSecretKey: appState.model.activeKeyPair.sk,
+          receiver: receiver,
+          amount: amount,
+        );
+
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          child: Center(
+            child: FutureBuilder(
+              future: transferInProgress,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<Result> snapshot,
+              ) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+
+                if (snapshot.data?.errorCode != null) {
+                  logger.e(
+                    'Fungible transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                  );
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        size: 80,
+                        color: Colors.black12,
+                      ),
+                      Gap(10),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Sorry. Your transfer could not be completed.',
+                        ),
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Okay'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                }
+
+                var formattedAmount = formatFungibleCurrency(
+                  metadata: widget.token.metadata,
+                  number: amount,
+                );
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.check,
+                      size: 80,
+                      color: Colors.black12,
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Transfered $formattedAmount to ',
+                          ),
+                          Identicon2(
+                            address: receiver,
+                            isAddressVisible: true,
+                            size: 30,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        var appState = context.read<AppState>();
+
+                        var activity = Activity(
+                          type: ActivityType.transfer,
+                          payload: FungibleTransferActivity(
+                            from: appState.model.activeAddress,
+                            to: receiver,
+                            amount: amount,
+                            token: widget.token,
+                            timestamp: DateTime.now(),
+                          ),
+                        );
+
+                        appState.addActivity(
+                          activity,
+                          isPersistent: true,
+                        );
+
+                        Navigator.popUntil(
+                          context,
+                          ModalRoute.withName(route.asset),
+                        );
+                      },
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -131,135 +316,7 @@ class _FungibleTransferScreenBodyState
                 child: ElevatedButton(
                   child: Text('SEND'),
                   onPressed: () {
-                    var appState = context.read<AppState>();
-
-                    var transferInProgress = appState.fungibleClient().transfer(
-                          token: widget.token.address,
-                          holder: appState.model.activeAddress,
-                          holderSecretKey: appState.model.activeKeyPair.sk,
-                          receiver: receiver,
-                          amount: amount,
-                        );
-
-                    showModalBottomSheet(
-                      context: context,
-                      isDismissible: false,
-                      enableDrag: false,
-                      builder: (BuildContext context) {
-                        return Container(
-                          height: 300,
-                          child: Center(
-                            child: FutureBuilder(
-                              future: transferInProgress,
-                              builder: (
-                                BuildContext context,
-                                AsyncSnapshot<Result> snapshot,
-                              ) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                }
-
-                                if (snapshot.data?.errorCode != null) {
-                                  logger.e(
-                                    'Fungible transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
-                                  );
-
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.error,
-                                        size: 80,
-                                        color: Colors.black12,
-                                      ),
-                                      Gap(10),
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Text(
-                                          'Sorry. Your transfer could not be completed.',
-                                        ),
-                                      ),
-                                      Gap(10),
-                                      ElevatedButton(
-                                        child: const Text('Okay'),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      )
-                                    ],
-                                  );
-                                }
-
-                                var formattedAmount = formatFungibleCurrency(
-                                  metadata: widget.token.metadata,
-                                  number: amount,
-                                );
-
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.check,
-                                      size: 80,
-                                      color: Colors.black12,
-                                    ),
-                                    Gap(10),
-                                    Padding(
-                                      padding: const EdgeInsets.all(20),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Transfered $formattedAmount to ',
-                                          ),
-                                          Identicon2(
-                                            address: receiver,
-                                            isAddressVisible: true,
-                                            size: 30,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Gap(10),
-                                    ElevatedButton(
-                                      child: const Text('Done'),
-                                      onPressed: () {
-                                        var appState = context.read<AppState>();
-
-                                        var activity = Activity(
-                                          type: ActivityType.transfer,
-                                          payload: FungibleTransferActivity(
-                                            from: appState.model.activeAddress,
-                                            to: receiver,
-                                            amount: amount,
-                                            token: widget.token,
-                                            timestamp: DateTime.now(),
-                                          ),
-                                        );
-
-                                        appState.addActivity(
-                                          activity,
-                                          isPersistent: true,
-                                        );
-
-                                        Navigator.popUntil(
-                                          context,
-                                          ModalRoute.withName(route.asset),
-                                        );
-                                      },
-                                    )
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    );
+                    send(context);
                   },
                 ),
               ),
