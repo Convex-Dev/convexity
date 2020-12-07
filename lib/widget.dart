@@ -309,12 +309,16 @@ class _SelectAccountModalState extends State<SelectAccountModal> {
                 ElevatedButton(
                   child: Text('Use Address'),
                   onPressed: () {
-                    Navigator.pop(
-                      context,
-                      convex.Address(
-                        hex: convex.Address.trim0x(_addressHex),
-                      ),
-                    );
+                    final isNotEmpty = _addressHex?.isNotEmpty ?? false;
+
+                    if (isNotEmpty) {
+                      Navigator.pop(
+                        context,
+                        convex.Address(
+                          hex: convex.Address.trim0x(_addressHex),
+                        ),
+                      );
+                    }
                   },
                 )
               ],
