@@ -116,7 +116,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Widget build(BuildContext context) {
     var fungible = widget.aasset.asset as FungibleToken;
 
-    var activities = context.watch<AppState>().model.activities;
+    var activities =
+        context.watch<AppState>().model.activities.reversed.toList();
 
     Widget action(
       BuildContext context, {
@@ -144,6 +145,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Card(
@@ -264,37 +266,28 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             ),
           ),
           Gap(20),
-          if (activities.isNotEmpty)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      direction: Axis.vertical,
-                      spacing: 20,
-                      children: [
-                        Text(
-                          'Recent activity',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        ...activities
-                            .map(
-                              (e) => fungibleTransferActivityView(
-                                e.payload as FungibleTransferActivity,
-                              ),
-                            )
-                            .toList()
-                            .reversed
-                      ],
+          if (activities.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                'Recent activity',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: activities.length,
+                itemBuilder: (context, index) => Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: fungibleTransferActivityView(
+                      activities[index].payload as FungibleTransferActivity,
                     ),
-                  ],
+                  ),
                 ),
               ),
-            )
+            ),
+          ]
         ],
       ),
     );
