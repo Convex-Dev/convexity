@@ -328,7 +328,10 @@ class _SelectAccountModalState extends State<SelectAccountModal> {
                 width: 40,
                 height: 40,
               ),
-              title: Text('${recent.hex}'),
+              title: Text(
+                '${recent.hex}',
+                overflow: TextOverflow.ellipsis,
+              ),
               onTap: () {
                 Navigator.pop(
                   context,
