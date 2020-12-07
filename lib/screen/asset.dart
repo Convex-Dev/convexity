@@ -118,8 +118,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
     var activities = context.watch<AppState>().model.activities;
 
-    logger.d('Activities $activities');
-
     Widget action(
       BuildContext context, {
       @required String label,

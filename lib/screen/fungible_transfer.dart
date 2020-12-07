@@ -89,9 +89,11 @@ class _FungibleTransferScreenBodyState
           IconButton(
             color: Colors.black26,
             iconSize: 120,
-            icon: Icon(
-              Icons.account_circle_outlined,
-            ),
+            icon: receiver != null
+                ? identicon(receiver.hex)
+                : Icon(
+                    Icons.account_circle_outlined,
+                  ),
             onPressed: () {
               showModalBottomSheet<Address>(
                 context: context,

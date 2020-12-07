@@ -22,6 +22,17 @@ class StatelessWidgetBuilder extends StatelessWidget {
   Widget build(BuildContext context) => builder(context);
 }
 
+Widget identicon(
+  String bytes, {
+  double width,
+  double height,
+}) =>
+    SvgPicture.string(
+      Jdenticon.toSvg(bytes),
+      width: width,
+      height: height,
+    );
+
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
 
@@ -247,10 +258,12 @@ class _SelectAccountModalState extends State<SelectAccountModal> {
 
   @override
   Widget build(BuildContext context) {
+    var activities = context.watch<AppState>().model.activities;
+
     return Container(
       padding: EdgeInsets.all(12),
       child: ListView.separated(
-        itemCount: 2,
+        itemCount: activities.length + 2,
         separatorBuilder: (BuildContext context, int index) => const Divider(),
         itemBuilder: (context, index) {
           if (index == 0) {
@@ -296,8 +309,22 @@ class _SelectAccountModalState extends State<SelectAccountModal> {
               ],
             );
           } else {
+            var activity =
+                activities[index - 2].payload as FungibleTransferActivity;
+
             return ListTile(
-              leading: Text('Bla'),
+              leading: identicon(
+                activity.to.hex,
+                width: 40,
+                height: 40,
+              ),
+              title: Text('${activity.to.hex}'),
+              onTap: () {
+                Navigator.pop(
+                  context,
+                  activity.to,
+                );
+              },
             );
           }
         },
