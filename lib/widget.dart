@@ -258,12 +258,23 @@ class _SelectAccountModalState extends State<SelectAccountModal> {
 
   @override
   Widget build(BuildContext context) {
-    var activities = context.watch<AppState>().model.activities;
+    // List of previous/recent transfers.
+    // Map to Address, and then cast to a Set to remove duplicates.
+    var recentAddresses = context
+        .watch<AppState>()
+        .model
+        .activities
+        .where((activity) => activity.type == ActivityType.transfer)
+        .map((activity) => (activity.payload as FungibleTransferActivity).to)
+        .toSet()
+        .toList(growable: false);
 
     return Container(
       padding: EdgeInsets.all(12),
       child: ListView.separated(
-        itemCount: activities.length + 2,
+        // '+ 2' because there are two Widgets, in the begining of the list,
+        // to select the destination address - Scan QR Code and input text field.
+        itemCount: recentAddresses.length + 2,
         separatorBuilder: (BuildContext context, int index) => const Divider(),
         itemBuilder: (context, index) {
           if (index == 0) {
@@ -309,20 +320,19 @@ class _SelectAccountModalState extends State<SelectAccountModal> {
               ],
             );
           } else {
-            var activity =
-                activities[index - 2].payload as FungibleTransferActivity;
+            var recent = recentAddresses[index - 2];
 
             return ListTile(
               leading: identicon(
-                activity.to.hex,
+                recent.hex,
                 width: 40,
                 height: 40,
               ),
-              title: Text('${activity.to.hex}'),
+              title: Text('${recent.hex}'),
               onTap: () {
                 Navigator.pop(
                   context,
-                  activity.to,
+                  recent,
                 );
               },
             );
