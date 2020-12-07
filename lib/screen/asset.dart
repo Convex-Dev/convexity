@@ -288,6 +288,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                               ),
                             )
                             .toList()
+                            .reversed
                       ],
                     ),
                   ],
