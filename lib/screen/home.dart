@@ -88,7 +88,7 @@ class HomeScreenBody extends StatelessWidget {
         context.watch<AppState>().model.activeKeyPairOrDefault();
 
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -106,14 +106,6 @@ class HomeScreenBody extends StatelessWidget {
                 ],
               ),
             ),
-          Gap(40),
-          Text(
-            'Quick actions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
           Gap(20),
           Expanded(
             child: GridView.count(

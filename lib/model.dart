@@ -11,20 +11,20 @@ import 'route.dart' as route;
 
 @immutable
 class Contact {
-  final String alias;
+  final String name;
   final Address address;
 
   Contact({
-    @required this.alias,
+    @required this.name,
     @required this.address,
   });
 
   Contact.fromJson(Map<String, dynamic> json)
-      : alias = json['alias'],
+      : name = json['name'],
         address = Address.fromJson(json['address']);
 
   Map<String, dynamic> toJson() => {
-        'alias': alias,
+        'name': name,
         'address': address.toJson(),
       };
 
@@ -80,6 +80,9 @@ class Activity {
 
     return null;
   }
+
+  @override
+  String toString() => toJson().toString();
 }
 
 /// Immutable data class to encode a 'Transfer Activity' - a Fungible Token transfer in particular.
@@ -192,6 +195,7 @@ class Model {
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
   final List<Activity> activities;
+  final Set<Contact> contacts;
 
   const Model({
     this.convexServerUri,
@@ -201,6 +205,7 @@ class Model {
     this.following = const {},
     this.myTokens = const {},
     this.activities = const [],
+    this.contacts = const {},
   });
 
   Address get activeAddress => activeKeyPair != null
@@ -223,6 +228,7 @@ class Model {
     Set<AAsset> following,
     Set<AAsset> myTokens,
     List<Activity> activities,
+    Set<Contact> contacts,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -232,6 +238,7 @@ class Model {
         following: following ?? this.following,
         myTokens: myTokens ?? this.myTokens,
         activities: activities ?? this.activities,
+        contacts: contacts ?? this.contacts,
       );
 
   String toString() {
@@ -336,6 +343,19 @@ class AppState with ChangeNotifier {
     setState(
       (model) => model.copyWith(
         activities: activities,
+      ),
+    );
+  }
+
+  /// Add a new Contact.
+  void addContact(Contact contact, {bool isPersistent = false}) {
+    var contacts = Set<Contact>.from(model.contacts)..add(contact);
+
+    if (isPersistent) {}
+
+    setState(
+      (model) => model.copyWith(
+        contacts: contacts,
       ),
     );
   }

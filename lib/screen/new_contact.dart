@@ -1,6 +1,8 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../model.dart';
 import '../widget.dart';
 
 class NewContactScreen extends StatelessWidget {
@@ -22,7 +24,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
   final _formKey = GlobalKey<FormState>();
   final _addressTextController = TextEditingController();
 
-  String _alias;
+  String _name;
 
   Address get _address => _addressTextController.text.isNotEmpty
       ? Address.fromHex(_addressTextController.text)
@@ -46,7 +48,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
               },
               onChanged: (value) {
                 setState(() {
-                  _alias = value;
+                  _name = value;
                 });
               },
             ),
@@ -80,7 +82,16 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
             child: ElevatedButton(
               child: Text('Save'),
               onPressed: () {
-                if (_formKey.currentState.validate()) {}
+                if (_formKey.currentState.validate()) {
+                  context.read<AppState>().addContact(
+                        Contact(
+                          name: _name,
+                          address: _address,
+                        ),
+                      );
+
+                  Navigator.pop(context);
+                }
               },
             ),
           ),
