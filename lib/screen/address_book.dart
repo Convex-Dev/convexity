@@ -1,3 +1,4 @@
+import 'package:convex_wallet/widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,7 @@ class AddressBookScreenBody extends StatelessWidget {
         itemCount: contacts.length,
         itemBuilder: (context, index) => Card(
           child: ListTile(
-            leading: Icon(Icons.account_box),
+            leading: identicon(contacts[index].address.hex),
             title: Text(contacts[index].name),
             subtitle: Text(contacts[index].address.toString()),
           ),
