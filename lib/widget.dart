@@ -337,7 +337,7 @@ class _SelectAccountModalState extends State<_SelectAccountModal> {
                 height: 40,
               ),
               title: Text(
-                '${recent.hex}',
+                '${recent.toString()}',
                 overflow: TextOverflow.ellipsis,
               ),
               onTap: () {
