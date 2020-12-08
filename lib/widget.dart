@@ -354,24 +354,24 @@ class _SelectAccountState extends State<_SelectAccount> {
         appState.model.activities.isNotEmpty) {
       l.add(_HeadingItem('Recent'));
 
-      // List of previous/recent transfers.
       // Map to Address, and then cast to a Set to remove duplicates.
-      l.addAll(appState.model.activities
+      final recent = appState.model.activities
           .where((activity) => activity.type == ActivityType.transfer)
-          .map((activity) {
-            final to = (activity.payload as FungibleTransferActivity).to;
+          .map((activity) => (activity.payload as FungibleTransferActivity).to)
+          .toSet();
 
-            final contact = appState.model.contacts.firstWhere(
-              (contact) => contact.address == to,
-              orElse: () => null,
-            );
+      final items = recent.map((to) {
+        final contact = appState.model.contacts.firstWhere(
+          (contact) => contact.address == to,
+          orElse: () => null,
+        );
 
-            return contact != null ? _ContactItem(contact) : _AddressItem(to);
-          })
-          .toSet()
-          .toList()
-          .reversed
-          .take(5));
+        return contact != null ? _ContactItem(contact) : _AddressItem(to);
+      });
+
+      // TODO: Check for [isContactsVisible], if false then remove [_ContactItem].
+
+      l.addAll(items.toList().reversed.take(5));
     }
 
     // Add contact items - if it's not empty.
