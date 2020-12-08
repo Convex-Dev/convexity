@@ -358,10 +358,19 @@ class _SelectAccountState extends State<_SelectAccount> {
       // Map to Address, and then cast to a Set to remove duplicates.
       l.addAll(appState.model.activities
           .where((activity) => activity.type == ActivityType.transfer)
-          .map((activity) =>
-              _AddressItem((activity.payload as FungibleTransferActivity).to))
+          .map((activity) {
+            final to = (activity.payload as FungibleTransferActivity).to;
+
+            final contact = appState.model.contacts.firstWhere(
+              (contact) => contact.address == to,
+              orElse: () => null,
+            );
+
+            return contact != null ? _ContactItem(contact) : _AddressItem(to);
+          })
           .toSet()
           .toList()
+          .reversed
           .take(5));
     }
 
