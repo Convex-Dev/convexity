@@ -361,11 +361,14 @@ class _SelectAccountState extends State<_SelectAccount> {
           .toSet();
 
       final items = recent.map((to) {
+        // Check if address is saved in the Address Book.
         final contact = appState.model.contacts.firstWhere(
           (contact) => contact.address == to,
           orElse: () => null,
         );
 
+        // Replace an Address item for a Contact item
+        // if address is in the Address Book.
         return contact != null ? _ContactItem(contact) : _AddressItem(to);
       });
 
