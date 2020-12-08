@@ -65,3 +65,13 @@ void pushNewToken(BuildContext context) => Navigator.pushNamed(
       context,
       route.newToken,
     );
+
+Future<dynamic> pushAddressBook(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.addressBook,
+    );
+
+Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.newContact,
+    );

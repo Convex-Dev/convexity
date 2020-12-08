@@ -3,7 +3,6 @@ import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../route.dart' as route;
 import '../nav.dart' as nav;
@@ -127,7 +126,7 @@ class HomeScreenBody extends StatelessWidget {
                 action(
                   context,
                   'Address Book',
-                  () => nav.pushTransfer(context),
+                  () => nav.pushAddressBook(context),
                 ),
                 action(
                   context,

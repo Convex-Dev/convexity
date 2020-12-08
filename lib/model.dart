@@ -9,6 +9,35 @@ import 'convexity.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
 
+@immutable
+class Contact {
+  final String alias;
+  final Address address;
+
+  Contact({
+    @required this.alias,
+    @required this.address,
+  });
+
+  Contact.fromJson(Map<String, dynamic> json)
+      : alias = json['alias'],
+        address = Address.fromJson(json['address']);
+
+  Map<String, dynamic> toJson() => {
+        'alias': alias,
+        'address': address.toJson(),
+      };
+
+  @override
+  bool operator ==(o) => o is Contact && o.address == address;
+
+  @override
+  int get hashCode => address.hashCode;
+
+  @override
+  String toString() => toJson().toString();
+}
+
 enum ActivityType {
   transfer,
 }
