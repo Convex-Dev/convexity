@@ -36,6 +36,9 @@ class AddressBookScreenBody extends StatelessWidget {
             leading: identicon(contacts[index].address.hex),
             title: Text(contacts[index].name),
             subtitle: Text(contacts[index].address.toString()),
+            onTap: () {
+              nav.pushAccount(context, contacts[index].address);
+            },
           ),
         ),
       ),
