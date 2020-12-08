@@ -71,14 +71,20 @@ class HomeScreenBody extends StatelessWidget {
             ),
           ),
           Gap(6),
-          Text(label)
+          Expanded(
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+            ),
+          )
         ],
       );
 
+  void showTodoSnackBar(BuildContext context) =>
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text('TODO')));
+
   @override
   Widget build(BuildContext context) {
-    var model = context.watch<AppState>().model;
-
     var activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
 
@@ -87,7 +93,7 @@ class HomeScreenBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (activeKeyPair != null) ...[
+          if (activeKeyPair != null)
             Card(
               child: Column(
                 children: [
@@ -101,15 +107,6 @@ class HomeScreenBody extends StatelessWidget {
                 ],
               ),
             ),
-            Gap(40),
-            Center(
-              child: QrImage(
-                data: model.activeAddress?.hex,
-                version: QrVersions.auto,
-                size: 160,
-              ),
-            ),
-          ],
           Gap(40),
           Text(
             'Quick actions',
@@ -119,20 +116,53 @@ class HomeScreenBody extends StatelessWidget {
             ),
           ),
           Gap(20),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 20,
-            runSpacing: 20,
-            children: [
-              action(context, 'Faucet', () => nav.pushTransfer(context)),
-              action(context, 'Transfer', () => nav.pushTransfer(context)),
-              action(context, 'Assets', () => nav.pushAssets(context)),
-              action(context, 'Exchange', () => nav.pushAssets(context)),
-              action(context, 'Deals', () => nav.pushAssets(context)),
-              action(context, 'Shop', () => nav.pushAssets(context)),
-              action(context, 'My Tokens', () => nav.pushMyTokens(context)),
-            ],
-          )
+          Expanded(
+            child: GridView.count(
+              primary: false,
+              padding: const EdgeInsets.all(20),
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 14,
+              crossAxisCount: 4,
+              children: [
+                action(
+                  context,
+                  'Address Book',
+                  () => nav.pushTransfer(context),
+                ),
+                action(
+                  context,
+                  'Faucet',
+                  () => showTodoSnackBar(context),
+                ),
+                action(context, 'Transfer', () => nav.pushTransfer(context)),
+                action(
+                  context,
+                  'Assets',
+                  () => nav.pushAssets(context),
+                ),
+                action(
+                  context,
+                  'Exchange',
+                  () => showTodoSnackBar(context),
+                ),
+                action(
+                  context,
+                  'Deals',
+                  () => showTodoSnackBar(context),
+                ),
+                action(
+                  context,
+                  'Shop',
+                  () => showTodoSnackBar(context),
+                ),
+                action(
+                  context,
+                  'My Tokens',
+                  () => nav.pushMyTokens(context),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
