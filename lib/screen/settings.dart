@@ -23,7 +23,7 @@ class SettingsScreenBody extends StatelessWidget {
       child: Column(
         children: [
           ElevatedButton(
-            child: Text('CLEAR'),
+            child: Text('Reset'),
             onPressed: () {
               SharedPreferences.getInstance().then(
                 (preferences) {

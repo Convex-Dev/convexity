@@ -65,7 +65,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                       'Address',
                       style: Theme.of(context).textTheme.caption,
                     ),
-                    Text(account.address.hex),
+                    Text(account.address.toString()),
                     Gap(10),
                     Text(
                       'Type',

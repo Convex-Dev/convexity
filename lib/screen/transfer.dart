@@ -86,7 +86,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 ),
                 Expanded(
                   child: Text(
-                    appState.model.activeAddress?.hex,
+                    appState.model.activeAddress?.toString(),
                     overflow: TextOverflow.ellipsis,
                   ),
                 )

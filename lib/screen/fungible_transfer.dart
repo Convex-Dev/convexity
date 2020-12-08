@@ -117,9 +117,7 @@ class _FungibleTransferScreenBodyState
                       'Transfer $formattedAmount to ',
                     ),
                     Identicon2(
-                      address: Address(
-                        hex: Address.trim0x(_receiverTextController.text),
-                      ),
+                      address: Address.fromHex(_receiverTextController.text),
                       isAddressVisible: true,
                       size: 30,
                     ),
@@ -316,7 +314,7 @@ class _FungibleTransferScreenBodyState
                 selectAccount(context).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
-                      _receiverTextController.text = selectedAddress.hex;
+                      _receiverTextController.text = selectedAddress.toString();
                     });
                   }
                 });
