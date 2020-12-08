@@ -1,3 +1,4 @@
+import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tuple/tuple.dart';
@@ -71,9 +72,14 @@ Future<dynamic> pushAddressBook(BuildContext context) => Navigator.pushNamed(
       route.addressBook,
     );
 
-Future<dynamic> pushSelectAccount(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushSelectAccount(
+  BuildContext context, {
+  SelectAccountParams params,
+}) =>
+    Navigator.pushNamed(
       context,
       route.selectAccount,
+      arguments: params,
     );
 
 Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(

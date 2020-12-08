@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
+import '../widget.dart';
 
 class NewContactScreen extends StatelessWidget {
   @override
@@ -66,13 +67,24 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
                 return null;
               },
               onTap: () {
-                nav.pushSelectAccount(context).then((selectedAddress) {
-                  if (selectedAddress != null) {
-                    setState(() {
-                      _addressTextController.text = selectedAddress.toString();
-                    });
-                  }
-                });
+                nav
+                    .pushSelectAccount(
+                  context,
+                  params: SelectAccountParams(
+                    isRecentsVisible: true,
+                    isContactsVisible: false,
+                  ),
+                )
+                    .then(
+                  (selectedAddress) {
+                    if (selectedAddress != null) {
+                      setState(() {
+                        _addressTextController.text =
+                            selectedAddress.toString();
+                      });
+                    }
+                  },
+                );
               },
             ),
             subtitle: Text('Address'),

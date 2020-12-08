@@ -303,14 +303,39 @@ Future<convex.Address> selectAccountModal(BuildContext context) =>
       builder: (context) => _SelectAccount(),
     );
 
-Widget selectAccountScreen() => StatelessWidgetBuilder((context) {
+@immutable
+class SelectAccountParams {
+  final bool isContactsVisible;
+  final bool isRecentsVisible;
+
+  SelectAccountParams({
+    this.isContactsVisible = true,
+    this.isRecentsVisible = true,
+  });
+}
+
+Widget selectAccountScreen({SelectAccountParams params}) =>
+    StatelessWidgetBuilder((context) {
+      SelectAccountParams _params =
+          params ?? ModalRoute.of(context).settings.arguments;
+
       return Scaffold(
         appBar: AppBar(title: Text('Select Account')),
-        body: _SelectAccount(),
+        body: _SelectAccount(
+          params: _params ??
+              SelectAccountParams(
+                isContactsVisible: true,
+                isRecentsVisible: true,
+              ),
+        ),
       );
     });
 
 class _SelectAccount extends StatefulWidget {
+  final SelectAccountParams params;
+
+  const _SelectAccount({Key key, this.params}) : super(key: key);
+
   @override
   _SelectAccountState createState() => _SelectAccountState();
 }
@@ -324,8 +349,9 @@ class _SelectAccountState extends State<_SelectAccount> {
 
     final l = <_AWidget>[];
 
-    // Add recent activities - if it's not empty.
-    if (appState.model.activities.isNotEmpty) {
+    // Add recent activities.
+    if (widget.params.isRecentsVisible &&
+        appState.model.activities.isNotEmpty) {
       l.add(_HeadingItem('Recent'));
 
       // List of previous/recent transfers.
@@ -340,7 +366,7 @@ class _SelectAccountState extends State<_SelectAccount> {
     }
 
     // Add contact items - if it's not empty.
-    if (appState.model.contacts.isNotEmpty) {
+    if (widget.params.isContactsVisible && appState.model.contacts.isNotEmpty) {
       l.add(_HeadingItem('Contacts'));
       l.addAll(appState.model.contacts.map((contact) => _ContactItem(contact)));
     }
