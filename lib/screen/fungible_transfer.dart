@@ -11,6 +11,7 @@ import '../model.dart';
 import '../format.dart';
 import '../logger.dart';
 import '../route.dart' as route;
+import '../nav.dart' as nav;
 
 class FungibleTransferScreen extends StatelessWidget {
   final FungibleToken token;
@@ -311,7 +312,7 @@ class _FungibleTransferScreenBodyState
                 return null;
               },
               onTap: () {
-                selectAccountModal(context).then((selectedAddress) {
+                nav.pushSelectAccount(context).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
                       _receiverTextController.text = selectedAddress.toString();

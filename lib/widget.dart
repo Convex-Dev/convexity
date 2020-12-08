@@ -245,6 +245,57 @@ class _AssetsCollectionState extends State<AssetsCollection> {
   }
 }
 
+abstract class _AWidget {
+  Widget build(BuildContext context);
+}
+
+/// A [_AWidget] that contains data to display a heading.
+class _HeadingItem implements _AWidget {
+  final String heading;
+
+  _HeadingItem(this.heading);
+
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        heading,
+        style: Theme.of(context).textTheme.headline5,
+      ),
+    );
+  }
+}
+
+/// A [_AWidget] that contains data to display a [Contact].
+class _ContactItem implements _AWidget {
+  final Contact contact;
+
+  _ContactItem(this.contact);
+
+  Widget build(BuildContext context) => ListTile(
+        leading: identicon(contact.address.hex),
+        title: Text(contact.name),
+        subtitle: Text(contact.address.toString()),
+        onTap: () {
+          Navigator.pop(context, contact.address);
+        },
+      );
+}
+
+/// A [_AWidget] that contains data to display an [Address].
+class _AddressItem implements _AWidget {
+  final convex.Address address;
+
+  _AddressItem(this.address);
+
+  Widget build(BuildContext context) => ListTile(
+        leading: identicon(address.hex),
+        title: Text(address.toString()),
+        onTap: () {
+          Navigator.pop(context, address);
+        },
+      );
+}
+
 /// Shows a Modal Bottom Sheet UI to select an Account.
 Future<convex.Address> selectAccountModal(BuildContext context) =>
     showModalBottomSheet<convex.Address>(
@@ -269,24 +320,37 @@ class _SelectAccountState extends State<_SelectAccount> {
 
   @override
   Widget build(BuildContext context) {
-    // List of previous/recent transfers.
-    // Map to Address, and then cast to a Set to remove duplicates.
-    var recentAddresses = context
-        .watch<AppState>()
-        .model
-        .activities
-        .where((activity) => activity.type == ActivityType.transfer)
-        .map((activity) => (activity.payload as FungibleTransferActivity).to)
-        .toSet()
-        .toList(growable: false);
+    final appState = context.watch<AppState>();
+
+    final l = <_AWidget>[];
+
+    // Add recent activities - if it's not empty.
+    if (appState.model.activities.isNotEmpty) {
+      l.add(_HeadingItem('Recent'));
+
+      // List of previous/recent transfers.
+      // Map to Address, and then cast to a Set to remove duplicates.
+      l.addAll(appState.model.activities
+          .where((activity) => activity.type == ActivityType.transfer)
+          .map((activity) =>
+              _AddressItem((activity.payload as FungibleTransferActivity).to))
+          .toSet()
+          .toList()
+          .take(5));
+    }
+
+    // Add contact items - if it's not empty.
+    if (appState.model.contacts.isNotEmpty) {
+      l.add(_HeadingItem('Contacts'));
+      l.addAll(appState.model.contacts.map((contact) => _ContactItem(contact)));
+    }
 
     return Container(
       padding: EdgeInsets.all(12),
-      child: ListView.separated(
+      child: ListView.builder(
         // '+ 2' because there are two Widgets, in the begining of the list,
         // to select the destination address - Scan QR Code and input text field.
-        itemCount: recentAddresses.length + 2,
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
+        itemCount: l.length + 2,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Column(
@@ -335,25 +399,9 @@ class _SelectAccountState extends State<_SelectAccount> {
               ],
             );
           } else {
-            var recent = recentAddresses[index - 2];
+            final item = l[index - 2];
 
-            return ListTile(
-              leading: identicon(
-                recent.hex,
-                width: 40,
-                height: 40,
-              ),
-              title: Text(
-                '${recent.toString()}',
-                overflow: TextOverflow.ellipsis,
-              ),
-              onTap: () {
-                Navigator.pop(
-                  context,
-                  recent,
-                );
-              },
-            );
+            return item.build(context);
           }
         },
       ),
