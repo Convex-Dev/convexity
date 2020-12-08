@@ -67,15 +67,12 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
                 return null;
               },
               onTap: () {
-                nav
-                    .pushSelectAccount(
-                  context,
-                  params: SelectAccountParams(
-                    isRecentsVisible: true,
-                    isContactsVisible: false,
-                  ),
-                )
-                    .then(
+                final params = SelectAccountParams(
+                  isRecentsVisible: true,
+                  isContactsVisible: false,
+                );
+
+                nav.pushSelectAccount(context, params: params).then(
                   (selectedAddress) {
                     if (selectedAddress != null) {
                       setState(() {
