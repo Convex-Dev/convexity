@@ -1,3 +1,4 @@
+import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 
 import 'screen/launcher.dart';
@@ -31,6 +32,7 @@ const String myTokens = '/myTokens';
 const String newToken = '/newToken';
 const String addressBook = '/addressBook';
 const String newContact = '/newContact';
+const String selectAccount = '/selectAccount';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -48,4 +50,5 @@ Map<String, WidgetBuilder> routes() => {
       newToken: (context) => NewTokenScreen(),
       addressBook: (context) => AddressBookScreen(),
       newContact: (context) => NewContactScreen(),
+      selectAccount: (context) => selectAccountScreen(),
     };

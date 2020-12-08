@@ -246,18 +246,25 @@ class _AssetsCollectionState extends State<AssetsCollection> {
 }
 
 /// Shows a Modal Bottom Sheet UI to select an Account.
-Future<convex.Address> selectAccount(BuildContext context) =>
+Future<convex.Address> selectAccountModal(BuildContext context) =>
     showModalBottomSheet<convex.Address>(
       context: context,
-      builder: (context) => _SelectAccountModal(),
+      builder: (context) => _SelectAccount(),
     );
 
-class _SelectAccountModal extends StatefulWidget {
+Widget selectAccountScreen() => StatelessWidgetBuilder((context) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Select Account')),
+        body: _SelectAccount(),
+      );
+    });
+
+class _SelectAccount extends StatefulWidget {
   @override
-  _SelectAccountModalState createState() => _SelectAccountModalState();
+  _SelectAccountState createState() => _SelectAccountState();
 }
 
-class _SelectAccountModalState extends State<_SelectAccountModal> {
+class _SelectAccountState extends State<_SelectAccount> {
   String _addressHex;
 
   @override

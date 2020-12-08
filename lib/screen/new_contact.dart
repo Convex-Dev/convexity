@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
-import '../widget.dart';
+import '../nav.dart' as nav;
 
 class NewContactScreen extends StatelessWidget {
   @override
@@ -66,7 +66,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
                 return null;
               },
               onTap: () {
-                selectAccount(context).then((selectedAddress) {
+                nav.pushSelectAccount(context).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
                       _addressTextController.text = selectedAddress.toString();

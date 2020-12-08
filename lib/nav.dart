@@ -71,6 +71,11 @@ Future<dynamic> pushAddressBook(BuildContext context) => Navigator.pushNamed(
       route.addressBook,
     );
 
+Future<dynamic> pushSelectAccount(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.selectAccount,
+    );
+
 Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(
       context,
       route.newContact,

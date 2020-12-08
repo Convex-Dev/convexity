@@ -311,7 +311,7 @@ class _FungibleTransferScreenBodyState
                 return null;
               },
               onTap: () {
-                selectAccount(context).then((selectedAddress) {
+                selectAccountModal(context).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
                       _receiverTextController.text = selectedAddress.toString();
