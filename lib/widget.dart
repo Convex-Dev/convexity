@@ -289,7 +289,8 @@ class _AddressItem implements _AWidget {
 
   Widget build(BuildContext context) => ListTile(
         leading: identicon(address.hex),
-        title: Text(address.toString()),
+        title: Text('Not in Address Book'),
+        subtitle: Text(address.toString()),
         onTap: () {
           Navigator.pop(context, address);
         },
