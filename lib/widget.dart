@@ -353,29 +353,39 @@ class _SelectAccountState extends State<_SelectAccount> {
     // Add recent activities.
     if (widget.params.isRecentsVisible &&
         appState.model.activities.isNotEmpty) {
-      l.add(_HeadingItem('Recent'));
-
       // Map to Address, and then cast to a Set to remove duplicates.
       final recent = appState.model.activities
           .where((activity) => activity.type == ActivityType.transfer)
           .map((activity) => (activity.payload as FungibleTransferActivity).to)
           .toSet();
 
-      final items = recent.map((to) {
-        // Check if address is saved in the Address Book.
-        final contact = appState.model.contacts.firstWhere(
-          (contact) => contact.address == to,
-          orElse: () => null,
-        );
+      var items = recent
+          .map((to) {
+            // Check if address is saved in the Address Book.
+            final contact = appState.model.contacts.firstWhere(
+              (contact) => contact.address == to,
+              orElse: () => null,
+            );
 
-        // Replace an Address item for a Contact item
-        // if address is in the Address Book.
-        return contact != null ? _ContactItem(contact) : _AddressItem(to);
-      });
+            // Replace an Address item for a Contact item
+            // if address is in the Address Book.
+            return contact != null ? _ContactItem(contact) : _AddressItem(to);
+          })
+          .toList()
+          .reversed;
 
-      // TODO: Check for [isContactsVisible], if false then remove [_ContactItem].
+      // If [isContactsVisible] is true, we simply take the last 5.
+      // Otherwise, we need to check and remove contacts.
+      if (widget.params.isContactsVisible) {
+        items = items.take(5);
+      } else {
+        items = items.whereType<_AddressItem>().take(5);
+      }
 
-      l.addAll(items.toList().reversed.take(5));
+      if (items.isNotEmpty) {
+        l.add(_HeadingItem('Recent'));
+        l.addAll(items);
+      }
     }
 
     // Add contact items - if it's not empty.
