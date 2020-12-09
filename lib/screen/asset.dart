@@ -12,9 +12,11 @@ import '../format.dart';
 
 Widget fungibleTransferActivityView(FungibleTransferActivity activity) {
   return StatelessWidgetBuilder((context) {
-    final appState = context.watch<AppState>();
+    final contacts = context.select<AppState, Set<Contact>>(
+      (appState) => appState.model.contacts,
+    );
 
-    final toContact = appState.model.contacts.firstWhere(
+    final toContact = contacts.firstWhere(
       (contact) => contact.address == activity.to,
       orElse: () => null,
     );
