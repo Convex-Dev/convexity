@@ -351,7 +351,11 @@ class AppState with ChangeNotifier {
   void addContact(Contact contact, {bool isPersistent = false}) {
     var contacts = Set<Contact>.from(model.contacts)..add(contact);
 
-    if (isPersistent) {}
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeContacts(preferences, contacts),
+      );
+    }
 
     setState(
       (model) => model.copyWith(

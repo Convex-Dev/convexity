@@ -27,22 +27,24 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   void bootstrap() async {
-    var preferences = await SharedPreferences.getInstance();
+    final preferences = await SharedPreferences.getInstance();
 
-    var allKeyPairs = p.allKeyPairs(preferences);
-    var activeKeyPair = p.activeKeyPair(preferences);
-    var following = p.readFollowing(preferences);
-    var myTokens = p.readMyTokens(preferences);
-    var activities = p.readActivities(preferences);
+    final allKeyPairs = p.allKeyPairs(preferences);
+    final activeKeyPair = p.activeKeyPair(preferences);
+    final following = p.readFollowing(preferences);
+    final myTokens = p.readMyTokens(preferences);
+    final activities = p.readActivities(preferences);
+    final contacts = p.readContacts(preferences);
 
     logger.d(
       'BOOTSTRAP:\n'
-      'Server $convexWorldUri\n'
-      'All KeyPairs $allKeyPairs\n'
-      'Active KeyPair $activeKeyPair\n'
-      'Following $following\n'
-      'My Tokens $myTokens\n'
-      'Activities $activities',
+      'Server: $convexWorldUri\n'
+      'All KeyPairs: $allKeyPairs\n'
+      'Active KeyPair: $activeKeyPair\n'
+      'Following: $following\n'
+      'My Tokens: $myTokens\n'
+      'Activities: $activities\n'
+      'Contacts: ${contacts.isEmpty ? 'Empty' : contacts.length}',
     );
 
     context.read<AppState>().setState(
@@ -53,6 +55,7 @@ class _AppState extends State<App> {
             following: following,
             myTokens: myTokens,
             activities: activities,
+            contacts: contacts,
           ),
         );
   }

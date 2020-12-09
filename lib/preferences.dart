@@ -11,6 +11,7 @@ const PREF_ALL_KEYPAIRS = 'ALL_KEYPAIRS';
 const PREF_ACTIVE_KEYPAIR = 'ACTIVE_KEYPAIR';
 const PREF_MY_TOKENS = 'MY_TOKENS';
 const PREF_ACTIVITIES = 'ACTIVITIES';
+const PREF_CONTACTS = 'CONTACTS';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -138,4 +139,33 @@ List<Activity> readActivities(SharedPreferences preferences) {
   }
 
   return List.empty();
+}
+
+/// Reads the set of [Contact].
+///
+/// Returns an empty set if there is none.
+Set<Contact> readContacts(SharedPreferences preferences) {
+  var encoded = preferences.getString(PREF_CONTACTS);
+
+  if (encoded != null) {
+    var l = jsonDecode(encoded) as List;
+
+    return l.map((m) => Contact.fromJson(m)).toSet();
+  }
+
+  return Set<Contact>.identity();
+}
+
+/// Persists [Contact]s.
+///
+/// [contacts] will be persisted as a JSON encoded string.
+Future<bool> writeContacts(
+  SharedPreferences preferences,
+  Iterable<Contact> contacts,
+) {
+  var encoded = jsonEncode(contacts.toList());
+
+  logger.d('Write Contacts: $encoded');
+
+  return preferences.setString(PREF_CONTACTS, encoded);
 }

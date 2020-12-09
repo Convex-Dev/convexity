@@ -97,6 +97,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
                           name: _name,
                           address: _address,
                         ),
+                        isPersistent: true,
                       );
 
                   Navigator.pop(context);
