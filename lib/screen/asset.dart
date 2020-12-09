@@ -12,6 +12,13 @@ import '../format.dart';
 
 Widget fungibleTransferActivityView(FungibleTransferActivity activity) {
   return StatelessWidgetBuilder((context) {
+    final appState = context.watch<AppState>();
+
+    final toContact = appState.model.contacts.firstWhere(
+      (contact) => contact.address == activity.to,
+      orElse: () => null,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,17 +40,53 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) {
         Gap(4),
         Row(
           children: [
-            Identicon2(
-              address: activity.from,
-              isAddressVisible: true,
-              size: 30,
+            identicon(
+              activity.from.hex,
+              height: 30,
+              width: 30,
             ),
+            Gap(10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Own Account',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    activity.from.toString(),
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.caption,
+                  )
+                ],
+              ),
+            ),
+            Gap(10),
             Icon(Icons.arrow_right_alt),
-            Identicon2(
-              address: activity.to,
-              isAddressVisible: true,
-              size: 30,
+            Gap(10),
+            identicon(
+              activity.to.hex,
+              height: 30,
+              width: 30,
             ),
+            Gap(10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    toContact?.name?.toString() ?? 'Not in Address Book',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    activity.to.toString(),
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.caption,
+                  )
+                ],
+              ),
+            )
           ],
         ),
         Gap(4),
