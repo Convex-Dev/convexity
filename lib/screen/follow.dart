@@ -109,39 +109,40 @@ class _Recommended extends StatefulWidget {
 }
 
 class _RecommendedState extends State<_Recommended> {
-  var isLoading = true;
-  var assets = <AAsset>{};
+  var _isLoading = true;
+  var _following = <AAsset>{};
 
   void initState() {
     super.initState();
 
-    var convexityClient = context.read<AppState>().convexityClient();
+    final appState = context.read<AppState>();
+
+    var convexityClient = appState.convexityClient();
 
     if (convexityClient != null) {
-      convexityClient.aassets().then((assets) {
+      convexityClient.aassets().then((Set<AAsset> following) {
         // It's important to check if the Widget is mounted
         // because the user might change the selected option
         // while we're still loading the recommended Assets.
         if (mounted) {
           setState(
             () {
-              this.isLoading = false;
-              this.assets = assets ?? <AAsset>{};
+              this._isLoading = false;
+              this._following = following ?? <AAsset>{};
             },
           );
         }
       });
     } else {
-      this.isLoading = false;
+      this._isLoading = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
-    var model = context.watch<AppState>().model;
 
-    if (isLoading) {
+    if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -149,7 +150,11 @@ class _RecommendedState extends State<_Recommended> {
       return GridView.count(
         padding: const EdgeInsets.all(20),
         crossAxisCount: 2,
-        children: assets
+        children: _following
+            .where(
+              (AAsset aaset) =>
+                  appState.model.following.contains(aaset) == false,
+            )
             .map(
               (token) => fungibleTokenRenderer(
                 fungible: token.asset as FungibleToken,
@@ -157,20 +162,14 @@ class _RecommendedState extends State<_Recommended> {
                       token: token.asset.address,
                       holder: appState.model.activeAddress,
                     ),
-                onTap: (fungible) {
-                  var aasset =
-                      AAsset(type: AssetType.fungible, asset: fungible);
+                onTap: (FungibleToken fungible) {
+                  var aasset = AAsset(
+                    type: AssetType.fungible,
+                    asset: fungible,
+                  );
 
-                  var followingCopy = Set<AAsset>.from(model.following);
-
-                  if (followingCopy.contains(aasset)) {
-                    followingCopy.remove(fungible);
-                  } else {
-                    followingCopy.add(aasset);
-                  }
-
-                  context.read<AppState>().setFollowing(
-                        followingCopy,
+                  context.read<AppState>().follow(
+                        aasset,
                         isPersistent: true,
                       );
                 },
