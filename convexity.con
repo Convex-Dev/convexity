@@ -22,8 +22,8 @@
           {:type :function
            :signature [{:params []}]
            :description "Returns metadata for a particular Asset."}}
-        [address-or-string]
-        (get registry (address address-or-string)))
+        [addr]
+        (get registry (address addr)))
 
       (defn register-asset
         ^{:doc
@@ -38,9 +38,9 @@
                           - symbol          : string
                           - currency-symbol : string
                           - decimals        : number"}}
-        [address metadata]
+        [addr metadata]
         (if (trust/trusted? trust-monitor *caller*)
-          (def registry (assoc registry address metadata))
+          (def registry (assoc registry (address addr) metadata))
           (fail :unauthorized "You're not authorized to modify the registry.")))
 
       ;; TODO
@@ -49,17 +49,17 @@
           {:type :function
            :signature [{:params [address metadata]}]
            :description "Requests to register metadata for a particular Asset."}}
-        [address metadata]
-        (def registry (assoc registry address metadata)))
+        [addr metadata]
+        (def registry (assoc registry (address addr) metadata)))
 
       (defn unregister-asset
         ^{:doc
           {:type :function
            :signature [{:params [address]}]
            :description "Unregisters metadata for a particular Asset."}}
-        [address]
+        [addr]
         (if (trust/trusted? trust-monitor *caller*)
-          (def registry (dissoc registry address))
+          (def registry (dissoc registry (address addr)))
           (fail :unauthorized "You're not authorized to modify the registry.")))
 
       (export all-assets asset-metadata register-asset request-registry unregister-asset))))
