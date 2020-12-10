@@ -56,7 +56,7 @@ class ConvexityClient {
 
   /// Query all Assets in the registry.
   Future<Set<AAsset>> aassets() async {
-    var source = '(call "${this.actor.hex}" (all-assets))';
+    var source = '(call 0x${this.actor.hex} (all-assets))';
 
     var result = await convexClient.query(source: source);
 
@@ -71,12 +71,12 @@ class ConvexityClient {
     var tokens = (result.value as Map<String, dynamic>).entries.map(
       (entry) {
         var addressString = entry.key;
-        var metadataMap = entry.value as Map<String, dynamic>;
+        var metadata = entry.value as Map<String, dynamic>;
 
-        if (metadataMap['type'] == 'fungible') {
+        if (metadata['type'] == 'fungible') {
           var asset = convex.FungibleToken(
-            address: convex.Address(hex: addressString),
-            metadata: convex.FungibleTokenMetadata.fromJson(metadataMap),
+            address: convex.Address.fromHex(addressString),
+            metadata: convex.FungibleTokenMetadata.fromJson(metadata),
           );
 
           return AAsset(

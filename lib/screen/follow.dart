@@ -151,42 +151,29 @@ class _RecommendedState extends State<_Recommended> {
         crossAxisCount: 2,
         children: assets
             .map(
-              (token) => Stack(
-                children: [
-                  fungibleTokenRenderer(
-                    fungible: token.asset as FungibleToken,
-                    balance: appState.fungibleClient().balance(
-                          token: token.asset.address,
-                          holder: appState.model.activeAddress,
-                        ),
-                    onTap: (fungible) {
-                      var aasset =
-                          AAsset(type: AssetType.fungible, asset: fungible);
+              (token) => fungibleTokenRenderer(
+                fungible: token.asset as FungibleToken,
+                balance: appState.fungibleClient().balance(
+                      token: token.asset.address,
+                      holder: appState.model.activeAddress,
+                    ),
+                onTap: (fungible) {
+                  var aasset =
+                      AAsset(type: AssetType.fungible, asset: fungible);
 
-                      var followingCopy = Set<AAsset>.from(model.following);
+                  var followingCopy = Set<AAsset>.from(model.following);
 
-                      if (followingCopy.contains(aasset)) {
-                        followingCopy.remove(fungible);
-                      } else {
-                        followingCopy.add(aasset);
-                      }
+                  if (followingCopy.contains(aasset)) {
+                    followingCopy.remove(fungible);
+                  } else {
+                    followingCopy.add(aasset);
+                  }
 
-                      context.read<AppState>().setFollowing(
-                            followingCopy,
-                            isPersistent: true,
-                          );
-                    },
-                  ),
-                  if (model.following.contains(token))
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      alignment: Alignment.topRight,
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    )
-                ],
+                  context.read<AppState>().setFollowing(
+                        followingCopy,
+                        isPersistent: true,
+                      );
+                },
               ),
             )
             .toList(),
