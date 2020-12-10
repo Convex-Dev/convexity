@@ -214,6 +214,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           fungible.metadata.description,
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
+                        Gap(4),
+                        SelectableText(
+                          fungible.address.toString(),
+                          showCursor: false,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
                       ],
                     ),
                   ),

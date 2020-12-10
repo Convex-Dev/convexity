@@ -122,14 +122,23 @@ class HomeScreenBody extends StatelessWidget {
                 ),
                 action(
                   context,
-                  'Faucet',
-                  () => showTodoSnackBar(context),
+                  'My Tokens',
+                  () => nav.pushMyTokens(context),
                 ),
-                action(context, 'Transfer', () => nav.pushTransfer(context)),
                 action(
                   context,
                   'Assets',
                   () => nav.pushAssets(context),
+                ),
+                action(
+                  context,
+                  'Transfer',
+                  () => nav.pushTransfer(context),
+                ),
+                action(
+                  context,
+                  'Faucet',
+                  () => showTodoSnackBar(context),
                 ),
                 action(
                   context,
@@ -145,11 +154,6 @@ class HomeScreenBody extends StatelessWidget {
                   context,
                   'Shop',
                   () => showTodoSnackBar(context),
-                ),
-                action(
-                  context,
-                  'My Tokens',
-                  () => nav.pushMyTokens(context),
                 ),
               ],
             ),
