@@ -168,6 +168,7 @@ class _RecommendedState extends State<_Recommended> {
                     asset: fungible,
                   );
 
+                  // TODO: Don't follow on tap - better to have a 'Confirm' action.
                   context.read<AppState>().follow(
                         aasset,
                         isPersistent: true,
