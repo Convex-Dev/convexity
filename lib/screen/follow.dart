@@ -305,7 +305,9 @@ class _AssetIDState extends State<_AssetID> {
   String address;
   AAsset aasset;
 
-  Widget body() {
+  Widget body(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     switch (status) {
       case AssetMetadataQueryStatus.ready:
         return Center(child: Text(''));
@@ -319,7 +321,13 @@ class _AssetIDState extends State<_AssetID> {
             SizedBox(
               width: 160,
               child: aasset.type == AssetType.fungible
-                  ? fungibleTokenRenderer(fungible: null, balance: null)
+                  ? fungibleTokenRenderer(
+                      fungible: aasset.asset,
+                      balance: appState.fungibleClient().balance(
+                            token: aasset.asset.address,
+                            holder: appState.model.activeAddress,
+                          ),
+                    )
                   : nonFungibleTokenRenderer(),
             ),
             ElevatedButton(
@@ -411,7 +419,7 @@ class _AssetIDState extends State<_AssetID> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 22),
-          child: body(),
+          child: body(context),
         ),
       ],
     );
