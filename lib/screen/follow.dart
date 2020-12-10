@@ -390,7 +390,7 @@ class _AssetIDState extends State<_AssetID> {
                   context
                       .read<AppState>()
                       .convexityClient()
-                      .aasset(Address(hex: address))
+                      .aasset(Address.fromHex(address))
                       .then(
                     (_assetMetadata) {
                       // It's important to check wether the Widget is mounted,

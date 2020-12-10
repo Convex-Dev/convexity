@@ -19,7 +19,7 @@ class ConvexityClient {
   /// Returns `null` if there is not metadata, or if there was an error.
   Future<AAsset> aasset(convex.Address aaddress) async {
     var source =
-        '(call "${this.actor.hex}" (asset-metadata (address "${aaddress.hex}")))';
+        '(call 0x${this.actor.hex} (asset-metadata 0x${aaddress.hex}))';
 
     var result = await convexClient.query(source: source);
 
