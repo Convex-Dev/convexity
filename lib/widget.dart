@@ -188,7 +188,7 @@ Widget fungibleTokenRenderer({
               ? ClipRect(
                   child: Banner(
                     message: "My Token",
-                    color: Colors.blue,
+                    color: Colors.orange,
                     location: BannerLocation.topEnd,
                     child: container,
                   ),
