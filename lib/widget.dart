@@ -124,70 +124,84 @@ class IdenticonDropdown extends StatelessWidget {
 Widget fungibleTokenRenderer({
   @required convex.FungibleToken fungible,
   @required Future<int> balance,
+  bool isMine = false,
   void Function(convex.FungibleToken) onTap,
 }) =>
-    StatelessWidgetBuilder((context) => Card(
-          child: InkWell(
-            child: Container(
-              padding: EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.attach_money,
-                    size: 40,
-                    color: Colors.orangeAccent,
-                  ),
-                  Gap(10),
-                  Text(
-                    fungible.metadata.symbol,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  Gap(4),
-                  Text(
-                    fungible.metadata.name,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Gap(10),
-                  Text(
-                    'Balance',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  Gap(4),
-                  FutureBuilder(
-                    future: balance,
-                    builder: (context, snapshot) => snapshot.connectionState ==
-                            ConnectionState.waiting
-                        ? SizedBox(
-                            width: 17,
-                            height: 17,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(
-                            snapshot.data != null
-                                ? formatFungibleCurrency(
-                                    metadata: fungible.metadata,
-                                    number: snapshot.data,
-                                  )
-                                : '-',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                  )
-                ],
-              ),
+    StatelessWidgetBuilder((context) {
+      final container = Container(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.attach_money,
+              size: 40,
+              color: Colors.orangeAccent,
             ),
-            onTap: () {
-              if (onTap != null) {
-                onTap(fungible);
-              }
-            },
-          ),
-        ));
+            Gap(10),
+            Text(
+              fungible.metadata.symbol,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            Gap(4),
+            Text(
+              fungible.metadata.name,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            Gap(10),
+            Text(
+              'Balance',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            Gap(4),
+            FutureBuilder(
+              future: balance,
+              builder: (context, snapshot) =>
+                  snapshot.connectionState == ConnectionState.waiting
+                      ? SizedBox(
+                          width: 17,
+                          height: 17,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          snapshot.data != null
+                              ? formatFungibleCurrency(
+                                  metadata: fungible.metadata,
+                                  number: snapshot.data,
+                                )
+                              : '-',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+            )
+          ],
+        ),
+      );
+
+      return Card(
+        child: InkWell(
+          child: isMine
+              ? ClipRect(
+                  child: Banner(
+                    message: "My Token",
+                    color: Colors.blue,
+                    location: BannerLocation.topEnd,
+                    child: container,
+                  ),
+                )
+              : container,
+          onTap: () {
+            if (onTap != null) {
+              onTap(fungible);
+            }
+          },
+        ),
+      );
+    });
 
 /// Returns a Non-Fungible Token renderer Widget.
 Widget nonFungibleTokenRenderer() =>
@@ -215,7 +229,13 @@ class _AssetsCollectionState extends State<AssetsCollection> {
       crossAxisCount: 2,
       children: widget.assets.map((aasset) {
         if (aasset.type == AssetType.fungible) {
+          final mine = appState.model.myTokens.firstWhere(
+            (myToken) => myToken.asset.address == aasset.asset.address,
+            orElse: () => null,
+          );
+
           return fungibleTokenRenderer(
+            isMine: mine != null,
             fungible: aasset.asset as convex.FungibleToken,
             balance: appState.fungibleClient().balance(
                   token: aasset.asset.address,
