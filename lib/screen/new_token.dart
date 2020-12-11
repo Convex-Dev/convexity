@@ -244,14 +244,170 @@ class NewTokenScreenBody extends StatefulWidget {
 }
 
 class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
+  var _assetType = AssetType.fungible;
   var _formKey = GlobalKey<FormState>();
 
   String _name;
+  String _uri;
   String _description;
   String _symbol;
   String _currencySymbol;
   int _decimals;
   int _supply;
+
+  List<Widget> fungibleChildren() {
+    return [
+      ListTile(
+        title: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _name = value;
+            });
+          },
+        ),
+        subtitle: Text('Name'),
+      ),
+      ListTile(
+        title: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _description = value;
+            });
+          },
+        ),
+        subtitle: Text('Description'),
+      ),
+      ListTile(
+        title: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _symbol = value;
+            });
+          },
+        ),
+        subtitle: Text('Symbol'),
+      ),
+      ListTile(
+        title: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _currencySymbol = value;
+            });
+          },
+        ),
+        subtitle: Text('Currency Symbol'),
+      ),
+      ListTile(
+        title: TextFormField(
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _decimals = int.tryParse(value);
+            });
+          },
+        ),
+        subtitle: Text('Decimals'),
+      ),
+      ListTile(
+        title: TextFormField(
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _supply = int.tryParse(value);
+            });
+          },
+        ),
+        subtitle: Text('Supply'),
+      ),
+    ];
+  }
+
+  List<Widget> nonFungibleChildren() {
+    return [
+      ListTile(
+        title: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _name = value;
+            });
+          },
+        ),
+        subtitle: Text('Name'),
+      ),
+      ListTile(
+        title: TextFormField(
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Required';
+            }
+
+            return null;
+          },
+          onChanged: (value) {
+            setState(() {
+              _uri = value;
+            });
+          },
+        ),
+        subtitle: Text('URI'),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,117 +415,30 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       key: _formKey,
       child: ListView(
         children: [
-          ListTile(
-            title: TextFormField(
-              autofocus: true,
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _name = value;
-                });
-              },
-            ),
-            subtitle: Text('Name'),
+          RadioListTile<AssetType>(
+            title: const Text('Fungible'),
+            value: AssetType.fungible,
+            groupValue: _assetType,
+            onChanged: (value) {
+              setState(() {
+                _assetType = value;
+              });
+            },
           ),
-          ListTile(
-            title: TextFormField(
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _description = value;
-                });
-              },
-            ),
-            subtitle: Text('Description'),
+          RadioListTile<AssetType>(
+            title: const Text('Non-Fungible'),
+            value: AssetType.nonFungible,
+            groupValue: _assetType,
+            onChanged: (value) {
+              setState(() {
+                _assetType = value;
+              });
+            },
           ),
-          ListTile(
-            title: TextFormField(
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _symbol = value;
-                });
-              },
-            ),
-            subtitle: Text('Symbol'),
-          ),
-          ListTile(
-            title: TextFormField(
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _currencySymbol = value;
-                });
-              },
-            ),
-            subtitle: Text('Currency Symbol'),
-          ),
-          ListTile(
-            title: TextFormField(
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _decimals = int.tryParse(value);
-                });
-              },
-            ),
-            subtitle: Text('Decimals'),
-          ),
-          ListTile(
-            title: TextFormField(
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _supply = int.tryParse(value);
-                });
-              },
-            ),
-            subtitle: Text('Supply'),
-          ),
+          if (_assetType == AssetType.fungible)
+            ...fungibleChildren()
+          else
+            ...nonFungibleChildren(),
           Container(
             padding: EdgeInsets.all(15),
             child: ElevatedButton(
