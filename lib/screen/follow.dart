@@ -231,10 +231,9 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
       case _ScanQRCodeStatus.ready:
         return Column(
           children: [
-            QrImage(
-              data: 'Convexity',
-              version: QrVersions.auto,
-              size: 160,
+            Icon(
+              Icons.qr_code,
+              size: 80,
             ),
             ElevatedButton(
               child: Text('Scan QR Code'),
