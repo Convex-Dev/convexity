@@ -99,7 +99,7 @@ class HomeScreenBody extends StatelessWidget {
                   ListTile(
                     leading: Identicon(keyPair: activeKeyPair),
                     title: Text('100,000,000'),
-                    subtitle: Text(
+                    subtitle: SelectableText(
                       Address.fromKeyPair(activeKeyPair).toString(),
                     ),
                   ),
