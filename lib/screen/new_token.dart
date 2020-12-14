@@ -446,6 +446,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
             onChanged: (value) {
               setState(() {
                 _assetType = value;
+                _formKey.currentState.reset();
               });
             },
           ),
@@ -456,6 +457,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
             onChanged: (value) {
               setState(() {
                 _assetType = value;
+                _formKey.currentState.reset();
               });
             },
           ),
