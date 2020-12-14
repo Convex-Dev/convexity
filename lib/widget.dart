@@ -121,7 +121,7 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 /// Returns a Fungible Token renderer Widget.
-Widget fungibleTokenRenderer({
+Widget fungibleTokenView({
   @required convex.FungibleToken fungible,
   @required Future<int> balance,
   bool isMine = false,
@@ -234,7 +234,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
             orElse: () => null,
           );
 
-          return fungibleTokenRenderer(
+          return fungibleTokenView(
             isMine: mine != null,
             fungible: aasset.asset as convex.FungibleToken,
             balance: appState.fungibleClient().balance(

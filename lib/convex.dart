@@ -495,6 +495,78 @@ class FungibleToken {
   }
 }
 
+@immutable
+class NonFungibleTokenMetadata {
+  final String name;
+  final String description;
+
+  NonFungibleTokenMetadata({
+    @required this.name,
+    @required this.description,
+  });
+
+  NonFungibleTokenMetadata.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        description = json['description'];
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+      };
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+@immutable
+class NonFungibleToken {
+  final Address address;
+  final NonFungibleTokenMetadata metadata;
+
+  NonFungibleToken({
+    @required this.address,
+    @required this.metadata,
+  });
+
+  NonFungibleToken.fromJson(Map<String, dynamic> json)
+      : address = Address.fromJson(json['address']),
+        metadata = NonFungibleTokenMetadata.fromJson(json['metadata']);
+
+  Map<String, dynamic> toJson() => {
+        'address': address.toJson(),
+        'metadata': metadata.toJson(),
+      };
+
+  @override
+  bool operator ==(o) => o is NonFungibleToken && o.address == address;
+
+  @override
+  int get hashCode => address.hex.hashCode;
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+@immutable
+class NonFungibleItemPolicy {}
+
+@immutable
+class NonFungibleItem {
+  final int id;
+  final Map<String, dynamic> data;
+  final NonFungibleItemPolicy policy;
+
+  NonFungibleItem({
+    this.id,
+    this.data,
+    this.policy,
+  });
+}
+
 class FungibleClient {
   final ConvexClient convexClient;
 

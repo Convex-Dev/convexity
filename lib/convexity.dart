@@ -17,9 +17,8 @@ class ConvexityClient {
   /// Query Asset by its Address.
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
-  Future<AAsset> aasset(convex.Address aaddress) async {
-    var source =
-        '(call 0x${this.actor.hex} (asset-metadata 0x${aaddress.hex}))';
+  Future<AAsset> asset(convex.Address addr) async {
+    var source = '(call 0x${this.actor.hex} (asset-metadata 0x${addr.hex}))';
 
     var result = await convexClient.query(source: source);
 
@@ -31,22 +30,14 @@ class ConvexityClient {
       return null;
     }
 
-    var m = result.value as Map<String, dynamic>;
+    var metadata = result.value as Map<String, dynamic>;
 
-    if (m['type'] == 'fungible') {
-      var metadata = convex.FungibleTokenMetadata(
-        name: m['name'] as String,
-        description: m['description'] as String,
-        symbol: m['symbol'] as String,
-        currencySymbol: m['currency-symbol'] as String,
-        decimals: 2,
-      );
-
+    if (metadata['type'] == 'fungible') {
       return AAsset(
         type: AssetType.fungible,
         asset: convex.FungibleToken(
-          address: aaddress,
-          metadata: metadata,
+          address: addr,
+          metadata: convex.FungibleTokenMetadata.fromJson(metadata),
         ),
       );
     }
@@ -55,7 +46,7 @@ class ConvexityClient {
   }
 
   /// Query all Assets in the registry.
-  Future<Set<AAsset>> aassets() async {
+  Future<Set<AAsset>> assets() async {
     var source = '(call 0x${this.actor.hex} (all-assets))';
 
     var result = await convexClient.query(source: source);
@@ -70,19 +61,33 @@ class ConvexityClient {
 
     var tokens = (result.value as Map<String, dynamic>).entries.map(
       (entry) {
-        var addressString = entry.key;
-        var metadata = entry.value as Map<String, dynamic>;
+        final address = convex.Address.fromHex(entry.key);
+        final metadata = entry.value as Map<String, dynamic>;
+        final tokenType = metadata['type'] == 'fungible'
+            ? AssetType.fungible
+            : AssetType.nonFungible;
 
-        if (metadata['type'] == 'fungible') {
-          var asset = convex.FungibleToken(
-            address: convex.Address.fromHex(addressString),
-            metadata: convex.FungibleTokenMetadata.fromJson(metadata),
-          );
+        switch (tokenType) {
+          case AssetType.fungible:
+            var asset = convex.FungibleToken(
+              address: address,
+              metadata: convex.FungibleTokenMetadata.fromJson(metadata),
+            );
 
-          return AAsset(
-            type: AssetType.fungible,
-            asset: asset,
-          );
+            return AAsset(
+              type: AssetType.fungible,
+              asset: asset,
+            );
+          case AssetType.nonFungible:
+            var asset = convex.NonFungibleToken(
+              address: address,
+              metadata: convex.NonFungibleTokenMetadata.fromJson(metadata),
+            );
+
+            return AAsset(
+              type: AssetType.nonFungible,
+              asset: asset,
+            );
         }
       },
     ).toSet();
