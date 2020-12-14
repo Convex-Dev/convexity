@@ -31,13 +31,18 @@
            :signature [{:params [address metadata]}]
            :description "Registers metadata for a particular Asset. Returns registry.
 
-                         Metadata must have (for the Convexity mobile app):
+                         Metadata is an open map and its keys will be different depending on its type.
+
+                         NOTE: It's very important to *always* set the `type` key.
+
+                         A Fungible Asset might have these keys:
                           - name            : string
                           - description     : string
                           - type            : keyword fungible | non-fungible
                           - symbol          : string
                           - currency-symbol : string
                           - decimals        : number"}}
+
         [addr metadata]
         (if (trust/trusted? trust-monitor *caller*)
           (def registry (assoc registry (address addr) metadata))
