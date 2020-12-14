@@ -111,7 +111,7 @@ class ConvexityClient {
 
     return convexClient.transact(
       caller: holder,
-      secretKey: holderSecretKey,
+      callerSecretKey: holderSecretKey,
       source: source,
     );
   }

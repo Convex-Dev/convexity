@@ -394,7 +394,7 @@ class ConvexClient {
 
   Future<Result> transact({
     @required Address caller,
-    @required Uint8List secretKey,
+    @required Uint8List callerSecretKey,
     @required String source,
     Lang lang = Lang.convexLisp,
   }) {
@@ -404,7 +404,7 @@ class ConvexClient {
       port: server.port,
       source: source,
       address: caller.hex,
-      secretKey: secretKey,
+      secretKey: callerSecretKey,
     );
 
     if (config.isDebug()) {
@@ -540,7 +540,7 @@ class FungibleClient {
   }) =>
       convexClient.transact(
         caller: holder,
-        secretKey: holderSecretKey,
+        callerSecretKey: holderSecretKey,
         source: '(import convex.fungible :as fungible)'
             '(fungible/transfer 0x${token.hex}  0x${receiver.hex} $amount)',
       );
@@ -555,8 +555,49 @@ class FungibleClient {
   }) =>
       convexClient.transact(
         caller: holder,
-        secretKey: holderSecretKey,
+        callerSecretKey: holderSecretKey,
         source: '(import convex.fungible :as fungible)'
             '(deploy (fungible/build-token {:supply $supply}))',
       );
+}
+
+class NonFungibleLibrary {
+  final ConvexClient convexClient;
+
+  NonFungibleLibrary({@required this.convexClient});
+
+  Future<Result> createToken({
+    @required Address caller,
+    @required Uint8List callerSecretKey,
+    Map<String, dynamic> attributes,
+  }) {
+    final _attributes = attributes ?? {};
+
+    final _name = _attributes['name'] as String ?? 'No name';
+    final _uri = _attributes['uri'] as String;
+    final _extra = _attributes.entries.where(
+      (entry) => entry.key != 'name' && entry.key != 'uri',
+    );
+
+    final _data = '{'
+        ':name "$_name",'
+        ':uri "$_uri",'
+        ':extra {}'
+        '}';
+
+    var _source = '(import convex.nft-tokens :as nft)'
+        '(deploy (nft/create-token $_data nil) )';
+
+    return convexClient.transact(
+      caller: caller,
+      callerSecretKey: callerSecretKey,
+      source: _source,
+    );
+  }
+}
+
+class AssetLibrary {
+  final ConvexClient convexClient;
+
+  AssetLibrary({@required this.convexClient});
 }
