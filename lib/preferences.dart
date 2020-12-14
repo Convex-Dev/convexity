@@ -130,8 +130,6 @@ Future<bool> writeActivities(
 List<Activity> readActivities(SharedPreferences preferences) {
   var encoded = preferences.getString(PREF_ACTIVITIES);
 
-  logger.d('Read Activities: $encoded');
-
   if (encoded != null) {
     var l = jsonDecode(encoded) as List;
 
