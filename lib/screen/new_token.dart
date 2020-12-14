@@ -26,7 +26,10 @@ class NewTokenScreen extends StatelessWidget {
   }
 }
 
-class _CreateToken extends StatefulWidget {
+abstract class _NewToken {}
+
+@immutable
+class _NewFungibleToken implements _NewToken {
   final String name;
   final String description;
   final String symbol;
@@ -34,15 +37,31 @@ class _CreateToken extends StatefulWidget {
   final int decimals;
   final int supply;
 
-  const _CreateToken({
-    Key key,
+  _NewFungibleToken({
     @required this.name,
     @required this.description,
     @required this.symbol,
     @required this.currencySymbol,
     @required this.decimals,
     @required this.supply,
-  }) : super(key: key);
+  });
+}
+
+@immutable
+class _NewNonFungibleToken implements _NewToken {
+  final String name;
+  final String uri;
+
+  _NewNonFungibleToken({
+    @required this.name,
+    this.uri,
+  });
+}
+
+class _CreateToken extends StatefulWidget {
+  final _NewToken newToken;
+
+  const _CreateToken(this.newToken, {Key key}) : super(key: key);
 
   @override
   _CreateTokenState createState() => _CreateTokenState();
@@ -58,90 +77,94 @@ class _CreateTokenState extends State<_CreateToken> {
 
     var appState = context.read<AppState>();
 
-    Result myTokenResult;
+    if (widget.newToken is _NewFungibleToken) {
+      final _newFungibleToken = widget.newToken as _NewFungibleToken;
 
-    // Step 1 - deploy.
-    try {
-      myTokenResult = await appState.fungibleClient().createToken(
-            holder: appState.model.activeAddress,
-            holderSecretKey: appState.model.activeKeyPair.sk,
-            supply: widget.supply,
-          );
-    } on Exception catch (e) {
-      print('Failed to create Token: $e');
+      Result myTokenResult;
 
-      setState(() {
-        _newTokenStatus = _NewTokenStatus.creatingTokenError;
-      });
+      // Step 1 - deploy.
+      try {
+        myTokenResult = await appState.fungibleClient().createToken(
+              holder: appState.model.activeAddress,
+              holderSecretKey: appState.model.activeKeyPair.sk,
+              supply: _newFungibleToken.supply,
+            );
+      } on Exception catch (e) {
+        print('Failed to create Token: $e');
 
-      return;
-    }
+        setState(() {
+          _newTokenStatus = _NewTokenStatus.creatingTokenError;
+        });
 
-    if (myTokenResult.errorCode != null) {
-      setState(() {
-        _newTokenStatus = _NewTokenStatus.creatingTokenError;
-      });
+        return;
+      }
 
-      return;
-    }
+      if (myTokenResult.errorCode != null) {
+        setState(() {
+          _newTokenStatus = _NewTokenStatus.creatingTokenError;
+        });
 
-    // Step 2 - register metadata.
-    var metadata = FungibleTokenMetadata(
-      name: widget.name,
-      description: widget.description,
-      symbol: widget.symbol,
-      currencySymbol: widget.currencySymbol,
-      decimals: widget.decimals,
-    );
+        return;
+      }
 
-    var fungible = FungibleToken(
-      address: Address(hex: myTokenResult.value as String),
-      metadata: metadata,
-    );
+      // Step 2 - register metadata.
+      var metadata = FungibleTokenMetadata(
+        name: _newFungibleToken.name,
+        description: _newFungibleToken.description,
+        symbol: _newFungibleToken.symbol,
+        currencySymbol: _newFungibleToken.currencySymbol,
+        decimals: _newFungibleToken.decimals,
+      );
 
-    var aasset = AAsset(type: AssetType.fungible, asset: fungible);
+      var fungible = FungibleToken(
+        address: Address(hex: myTokenResult.value as String),
+        metadata: metadata,
+      );
 
-    setState(() {
-      _newTokenStatus = _NewTokenStatus.registeringToken;
-    });
-
-    Result registerResult;
-
-    try {
-      registerResult = await appState.convexityClient().requestToRegister(
-            holder: appState.model.activeAddress,
-            holderSecretKey: appState.model.activeKeyPair.sk,
-            aasset: aasset,
-          );
-    } on Exception catch (e) {
-      print('Failed to register Token: $e');
-
-      setState(() {
-        _newTokenStatus = _NewTokenStatus.registeringTokenError;
-      });
-
-      return;
-    }
-
-    if (registerResult.errorCode != null) {
-      setState(() {
-        _newTokenStatus = _NewTokenStatus.registeringTokenError;
-      });
-
-      return;
-    }
-
-    appState.addMyToken(
-      AAsset(
+      var aasset = AAsset(
         type: AssetType.fungible,
         asset: fungible,
-      ),
-      isPersistent: true,
-    );
+      );
 
-    setState(() {
-      _newTokenStatus = _NewTokenStatus.success;
-    });
+      setState(() {
+        _newTokenStatus = _NewTokenStatus.registeringToken;
+      });
+
+      Result registerResult;
+
+      try {
+        registerResult = await appState.convexityClient().requestToRegister(
+              holder: appState.model.activeAddress,
+              holderSecretKey: appState.model.activeKeyPair.sk,
+              aasset: aasset,
+            );
+      } on Exception catch (e) {
+        print('Failed to register Token: $e');
+
+        setState(() {
+          _newTokenStatus = _NewTokenStatus.registeringTokenError;
+        });
+
+        return;
+      }
+
+      if (registerResult.errorCode != null) {
+        setState(() {
+          _newTokenStatus = _NewTokenStatus.registeringTokenError;
+        });
+
+        return;
+      }
+
+      appState.addMyToken(
+        aasset,
+        isPersistent: true,
+      );
+
+      setState(() {
+        _newTokenStatus = _NewTokenStatus.success;
+      });
+    }
   }
 
   @override
@@ -244,8 +267,9 @@ class NewTokenScreenBody extends StatefulWidget {
 }
 
 class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
+  final _formKey = GlobalKey<FormState>();
+
   var _assetType = AssetType.fungible;
-  var _formKey = GlobalKey<FormState>();
 
   String _name;
   String _uri;
@@ -445,6 +469,24 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
               child: Text('Create Token'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
+                  var newToken;
+
+                  if (_assetType == AssetType.fungible) {
+                    newToken = _NewFungibleToken(
+                      name: _name,
+                      description: _description,
+                      symbol: _symbol,
+                      currencySymbol: _currencySymbol,
+                      decimals: _decimals,
+                      supply: _supply,
+                    );
+                  } else {
+                    newToken = _NewNonFungibleToken(
+                      name: _name,
+                      uri: "",
+                    );
+                  }
+
                   showModalBottomSheet(
                     isDismissible: false,
                     enableDrag: false,
@@ -453,14 +495,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
                       return Container(
                         height: 300,
                         child: Center(
-                          child: _CreateToken(
-                            name: _name,
-                            description: _description,
-                            symbol: _symbol,
-                            currencySymbol: _currencySymbol,
-                            decimals: _decimals,
-                            supply: _supply,
-                          ),
+                          child: _CreateToken(newToken),
                         ),
                       );
                     },
