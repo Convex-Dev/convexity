@@ -216,7 +216,7 @@ Widget nonFungibleTokenView({
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.attach_money,
+              Icons.videogame_asset,
               size: 40,
               color: Colors.orangeAccent,
             ),
