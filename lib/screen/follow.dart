@@ -2,7 +2,6 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
@@ -138,6 +137,20 @@ class _RecommendedState extends State<_Recommended> {
     }
   }
 
+  void follow(
+    BuildContext context, {
+    AssetType type,
+    Asset asset,
+  }) {
+    var aasset = AAsset(
+      type: type,
+      asset: asset,
+    );
+
+    // TODO: Don't follow on tap - better to have a 'Confirm' action.
+    context.read<AppState>().follow(aasset, isPersistent: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -164,19 +177,23 @@ class _RecommendedState extends State<_Recommended> {
                             holder: appState.model.activeAddress,
                           ),
                       onTap: (FungibleToken fungible) {
-                        var aasset = AAsset(
+                        follow(
+                          context,
                           type: AssetType.fungible,
                           asset: fungible,
                         );
-
-                        // TODO: Don't follow on tap - better to have a 'Confirm' action.
-                        context.read<AppState>().follow(
-                              aasset,
-                              isPersistent: true,
-                            );
                       },
                     )
-                  : nonFungibleTokenRenderer(),
+                  : nonFungibleTokenView(
+                      nonFungible: asset.asset as NonFungibleToken,
+                      onTap: (NonFungibleToken nonFungible) {
+                        follow(
+                          context,
+                          type: AssetType.nonFungible,
+                          asset: nonFungible,
+                        );
+                      },
+                    ),
             )
             .toList(),
       );
@@ -316,7 +333,9 @@ class _AssetIDState extends State<_AssetID> {
                             holder: appState.model.activeAddress,
                           ),
                     )
-                  : nonFungibleTokenRenderer(),
+                  : nonFungibleTokenView(
+                      nonFungible: aasset.asset,
+                    ),
             ),
             ElevatedButton(
               child: Text('Follow'),

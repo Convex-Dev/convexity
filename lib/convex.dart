@@ -523,7 +523,7 @@ class NonFungibleTokenMetadata implements Asset {
 }
 
 @immutable
-class NonFungibleToken {
+class NonFungibleToken implements Asset  {
   final Address address;
   final NonFungibleTokenMetadata metadata;
 

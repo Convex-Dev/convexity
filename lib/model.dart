@@ -161,17 +161,14 @@ class AAsset {
       };
 
   static AAsset fromJson(Map<String, dynamic> json) {
-    var type = assetType(json['type']);
-
-    var asset;
-
-    if (type == AssetType.fungible) {
-      asset = FungibleToken.fromJson(json['asset']);
-    }
+    final type = assetType(json['type']);
+    final asset = json['asset'];
 
     return AAsset(
       type: type,
-      asset: asset,
+      asset: type == AssetType.fungible
+          ? FungibleToken.fromJson(asset)
+          : NonFungibleToken.fromJson(asset),
     );
   }
 }

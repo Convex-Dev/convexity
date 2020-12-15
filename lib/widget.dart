@@ -204,8 +204,49 @@ Widget fungibleTokenView({
     });
 
 /// Returns a Non-Fungible Token renderer Widget.
-Widget nonFungibleTokenRenderer() =>
-    StatelessWidgetBuilder((context) => Text('Non Fungible Token'));
+Widget nonFungibleTokenView({
+  @required convex.NonFungibleToken nonFungible,
+  void Function(convex.NonFungibleToken) onTap,
+}) =>
+    StatelessWidgetBuilder((context) {
+      final container = Container(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.attach_money,
+              size: 40,
+              color: Colors.orangeAccent,
+            ),
+            Gap(10),
+            Text(
+              nonFungible.metadata.name,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            Gap(4),
+            Text(
+              nonFungible.metadata.description,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ],
+        ),
+      );
+
+      return Card(
+        child: InkWell(
+          child: container,
+          onTap: () {
+            if (onTap != null) {
+              onTap(nonFungible);
+            }
+          },
+        ),
+      );
+    });
 
 class AssetsCollection extends StatefulWidget {
   final Set<AAsset> assets;
@@ -259,7 +300,18 @@ class _AssetsCollectionState extends State<AssetsCollection> {
           );
         }
 
-        return nonFungibleTokenRenderer();
+        return nonFungibleTokenView(
+          nonFungible: aasset.asset as convex.NonFungibleToken,
+          onTap: (nonFungible) {
+            nav.pushAsset(
+              context,
+              AAsset(
+                type: AssetType.nonFungible,
+                asset: nonFungible,
+              ),
+            );
+          },
+        );
       }).toList(),
     );
   }
