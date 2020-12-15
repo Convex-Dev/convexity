@@ -672,4 +672,22 @@ class AssetLibrary {
   final ConvexClient convexClient;
 
   AssetLibrary({@required this.convexClient});
+
+  Future<int> balance({
+    @required Address asset,
+    @required Address owner,
+  }) async {
+    var source = '(import convex.asset :as asset)'
+        '(asset/balance 0x${asset.hex} 0x${owner.hex})';
+
+    var result = await convexClient.query(source: source);
+
+    if (result.errorCode != null) {
+      logger.e('Failed to query balance: ${result.value}');
+
+      return null;
+    }
+
+    return result.value;
+  }
 }
