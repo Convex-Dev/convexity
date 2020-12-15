@@ -10,98 +10,97 @@ import '../model.dart';
 import '../nav.dart' as nav;
 import '../format.dart';
 
-Widget fungibleTransferActivityView(FungibleTransferActivity activity) {
-  return StatelessWidgetBuilder((context) {
-    final contacts = context.select(
-      (AppState appState) => appState.model.contacts,
-    );
+Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
+    StatelessWidgetBuilder((context) {
+      final contacts = context.select(
+        (AppState appState) => appState.model.contacts,
+      );
 
-    final toContact = contacts.firstWhere(
-      (contact) => contact.address == activity.to,
-      orElse: () => null,
-    );
+      final toContact = contacts.firstWhere(
+        (contact) => contact.address == activity.to,
+        orElse: () => null,
+      );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Transfer',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Gap(20),
-            Text(
-              activity.timestamp.toString(),
-              style: Theme.of(context).textTheme.caption,
-            )
-          ],
-        ),
-        Gap(4),
-        Row(
-          children: [
-            identicon(
-              activity.from.hex,
-              height: 30,
-              width: 30,
-            ),
-            Gap(10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Own Account',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    activity.from.toString(),
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.caption,
-                  )
-                ],
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Transfer',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-            Gap(10),
-            Icon(Icons.arrow_right_alt),
-            Gap(10),
-            identicon(
-              activity.to.hex,
-              height: 30,
-              width: 30,
-            ),
-            Gap(10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    toContact?.name?.toString() ?? 'Not in Address Book',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    activity.to.toString(),
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.caption,
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
-        Gap(4),
-        Text(
-          'Amount: ${formatFungibleCurrency(metadata: activity.token.metadata, number: activity.amount)}',
-          style: TextStyle(
-            color: Colors.black87,
+              Gap(20),
+              Text(
+                activity.timestamp.toString(),
+                style: Theme.of(context).textTheme.caption,
+              )
+            ],
           ),
-        ),
-      ],
-    );
-  });
-}
+          Gap(4),
+          Row(
+            children: [
+              identicon(
+                activity.from.hex,
+                height: 30,
+                width: 30,
+              ),
+              Gap(10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Own Account',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      activity.from.toString(),
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.caption,
+                    )
+                  ],
+                ),
+              ),
+              Gap(10),
+              Icon(Icons.arrow_right_alt),
+              Gap(10),
+              identicon(
+                activity.to.hex,
+                height: 30,
+                width: 30,
+              ),
+              Gap(10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      toContact?.name?.toString() ?? 'Not in Address Book',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      activity.to.toString(),
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.caption,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+          Gap(4),
+          Text(
+            'Amount: ${formatFungibleCurrency(metadata: activity.token.metadata, number: activity.amount)}',
+            style: TextStyle(
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      );
+    });
 
 class AssetScreen extends StatelessWidget {
   final AAsset aasset;
@@ -115,13 +114,9 @@ class AssetScreen extends StatelessWidget {
     AAsset _aasset =
         aasset ?? ModalRoute.of(context).settings.arguments as AAsset;
 
-    var title;
-
-    if (_aasset.type == AssetType.fungible) {
-      title = (_aasset.asset as FungibleToken).metadata.symbol;
-    } else {
-      title = (_aasset.asset as NonFungibleToken).metadata.name;
-    }
+    final title = _aasset.type == AssetType.fungible
+        ? (_aasset.asset as FungibleToken).metadata.symbol
+        : (_aasset.asset as NonFungibleToken).metadata.name;
 
     return Scaffold(
       appBar: AppBar(title: Text('$title')),
@@ -142,52 +137,7 @@ class AssetScreenBody extends StatefulWidget {
 class _AssetScreenBodyState extends State<AssetScreenBody> {
   Future<int> balance;
 
-  /// Check the user's balance for this Token.
-  Future<int> queryBalance(BuildContext context) {
-    var appState = context.read<AppState>();
-
-    var fungible = widget.aasset.asset as FungibleToken;
-
-    // Check the user's balance for this Token.
-    return appState.fungibleClient().balance(
-          token: fungible.address,
-          holder: appState.model.activeAddress,
-        );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.aasset.type == AssetType.fungible) {
-      balance = queryBalance(context);
-    }
-  }
-
-  Widget action(
-    BuildContext context, {
-    @required String label,
-    @required void Function() onPressed,
-  }) =>
-      Column(
-        children: [
-          Ink(
-            decoration: const ShapeDecoration(
-              color: Colors.lightBlue,
-              shape: CircleBorder(),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.money),
-              color: Colors.white,
-              onPressed: onPressed,
-            ),
-          ),
-          Gap(6),
-          Text(label)
-        ],
-      );
-
-  Widget info() => Card(
+  Widget _info() => StatelessWidgetBuilder((context) => Card(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -226,131 +176,188 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             ],
           ),
         ),
+      ));
+
+  Widget _action({
+    @required String label,
+    @required void Function() onPressed,
+  }) =>
+      StatelessWidgetBuilder(
+        (context) => Column(
+          children: [
+            Ink(
+              decoration: const ShapeDecoration(
+                color: Colors.lightBlue,
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                icon: Icon(Icons.money),
+                color: Colors.white,
+                onPressed: onPressed,
+              ),
+            ),
+            Gap(6),
+            Text(label)
+          ],
+        ),
       );
 
-  @override
-  Widget build(BuildContext context) {
-    final activities =
-        context.watch<AppState>().model.activities.reversed.toList();
+  Widget _fungible() => StatelessWidgetBuilder((context) {
+        final activities =
+            context.watch<AppState>().model.activities.reversed.toList();
 
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          info(),
-          Gap(20),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.aasset.type == AssetType.fungible)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Balance',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      Gap(4),
-                      FutureBuilder(
-                        future: balance,
-                        builder: (context, snapshot) {
-                          return snapshot.connectionState ==
-                                  ConnectionState.waiting
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(
-                                  formatFungibleCurrency(
-                                    metadata: widget.aasset.asset.metadata,
-                                    number: snapshot.data,
-                                  ),
-                                );
-                        },
-                      ),
-                    ],
-                  ),
-                Row(
+        return Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _info(),
+              Gap(20),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    action(
-                      context,
-                      label: 'Buy',
-                      onPressed: () {},
-                    ),
-                    Gap(30),
-                    action(
-                      context,
-                      label: 'Sell',
-                      onPressed: () {},
-                    ),
-                    Gap(30),
-                    action(
-                      context,
-                      label: 'Transfer',
-                      onPressed: () {
-                        if (widget.aasset.type == AssetType.fungible) {
-                          final fungible = widget.aasset.asset as FungibleToken;
-
-                          var fnull = nav.pushFungibleTransfer(
-                            context,
-                            fungible,
-                            balance,
-                          );
-
-                          fnull.then(
-                            (_) {
-                              // Query the potentially updated balance.
-                              setState(() {
-                                balance = queryBalance(context);
-                              });
+                    if (widget.aasset.type == AssetType.fungible)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Balance',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          Gap(4),
+                          FutureBuilder(
+                            future: balance,
+                            builder: (context, snapshot) {
+                              return snapshot.connectionState ==
+                                      ConnectionState.waiting
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(
+                                      formatFungibleCurrency(
+                                        metadata: widget.aasset.asset.metadata,
+                                        number: snapshot.data,
+                                      ),
+                                    );
                             },
-                          );
-                        }
-                      },
+                          ),
+                        ],
+                      ),
+                    Row(
+                      children: [
+                        _action(
+                          label: 'Buy',
+                          onPressed: () {},
+                        ),
+                        Gap(30),
+                        _action(
+                          label: 'Sell',
+                          onPressed: () {},
+                        ),
+                        Gap(30),
+                        _action(
+                          label: 'Transfer',
+                          onPressed: () {
+                            if (widget.aasset.type == AssetType.fungible) {
+                              final fungible =
+                                  widget.aasset.asset as FungibleToken;
+
+                              var fnull = nav.pushFungibleTransfer(
+                                context,
+                                fungible,
+                                balance,
+                              );
+
+                              fnull.then(
+                                (_) {
+                                  // Query the potentially updated balance.
+                                  setState(() {
+                                    balance = queryBalance(context);
+                                  });
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          Gap(20),
-          if (activities.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                'Recent activity',
-                style: Theme.of(context).textTheme.subtitle1,
               ),
-            ),
-            Expanded(
-              child: SafeArea(
-                child: Card(
-                  child: ListView.separated(
-                    itemCount: activities.length,
-                    separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
-                    itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: fungibleTransferActivityView(
-                        activities[index].payload as FungibleTransferActivity,
+              Gap(20),
+              if (activities.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'Recent activity',
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                ),
+                Expanded(
+                  child: SafeArea(
+                    child: Card(
+                      child: ListView.separated(
+                        itemCount: activities.length,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(),
+                        itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: fungibleTransferActivityView(
+                            activities[index].payload
+                                as FungibleTransferActivity,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ]
-        ],
-      ),
-    );
+              ]
+            ],
+          ),
+        );
+      });
+
+  Widget _nonFungible() => StatelessWidgetBuilder((context) => Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            _info(),
+          ],
+        ),
+      ));
+
+  /// Check the user's balance for this Token.
+  Future<int> queryBalance(BuildContext context) {
+    var appState = context.read<AppState>();
+
+    var fungible = widget.aasset.asset as FungibleToken;
+
+    // Check the user's balance for this Token.
+    return appState.fungibleClient().balance(
+          token: fungible.address,
+          holder: appState.model.activeAddress,
+        );
   }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.aasset.type == AssetType.fungible) {
+      balance = queryBalance(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      widget.aasset.type == AssetType.fungible ? _fungible() : _nonFungible();
 }
