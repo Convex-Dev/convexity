@@ -182,24 +182,38 @@ Widget fungibleTokenCard({
         ),
       );
 
-      return Card(
-        child: InkWell(
-          child: isMine
-              ? ClipRect(
-                  child: Banner(
-                    message: "My Token",
-                    color: Colors.orange,
-                    location: BannerLocation.topEnd,
-                    child: container,
-                  ),
-                )
-              : container,
-          onTap: () {
-            if (onTap != null) {
-              onTap(fungible);
-            }
-          },
-        ),
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: Card(
+              child: InkWell(
+                child: isMine
+                    ? ClipRect(
+                        child: Banner(
+                          message: "My Token",
+                          color: Colors.orange,
+                          location: BannerLocation.topEnd,
+                          child: container,
+                        ),
+                      )
+                    : container,
+                onTap: () {
+                  if (onTap != null) {
+                    onTap(fungible);
+                  }
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              'Fungible',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.overline,
+            ),
+          ),
+        ],
       );
     });
 
@@ -209,42 +223,53 @@ Widget nonFungibleTokenCard({
   void Function(convex.NonFungibleToken) onTap,
 }) =>
     StatelessWidgetBuilder((context) {
-      final container = Container(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.videogame_asset,
-              size: 40,
-              color: Colors.orangeAccent,
-            ),
-            Gap(10),
-            Text(
-              nonFungible.metadata.name,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.caption,
-            ),
-            Gap(4),
-            Text(
-              nonFungible.metadata.description,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-          ],
-        ),
+      final container = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.videogame_asset,
+            size: 40,
+            color: Colors.orangeAccent,
+          ),
+          Gap(10),
+          Text(
+            nonFungible.metadata.name,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.caption,
+          ),
+          Gap(4),
+          Text(
+            nonFungible.metadata.description,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+        ],
       );
 
-      return Card(
-        child: InkWell(
-          child: container,
-          onTap: () {
-            if (onTap != null) {
-              onTap(nonFungible);
-            }
-          },
-        ),
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: Card(
+              child: InkWell(
+                child: container,
+                onTap: () {
+                  if (onTap != null) {
+                    onTap(nonFungible);
+                  }
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              'Non-Fungible',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.overline,
+            ),
+          ),
+        ],
       );
     });
 
