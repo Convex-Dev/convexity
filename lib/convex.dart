@@ -427,6 +427,8 @@ class ConvexClient {
       );
 }
 
+abstract class Asset {}
+
 @immutable
 class FungibleTokenMetadata {
   final String name;
@@ -465,7 +467,7 @@ class FungibleTokenMetadata {
 }
 
 @immutable
-class FungibleToken {
+class FungibleToken implements Asset {
   final Address address;
   final FungibleTokenMetadata metadata;
 
@@ -496,7 +498,7 @@ class FungibleToken {
 }
 
 @immutable
-class NonFungibleTokenMetadata {
+class NonFungibleTokenMetadata implements Asset {
   final String name;
   final String description;
 
