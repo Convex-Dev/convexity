@@ -247,39 +247,38 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Balance',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    Gap(4),
-                    FutureBuilder(
-                      future: balance,
-                      builder: (context, snapshot) {
-                        final fungible = widget.aasset.asset as FungibleToken;
-
-                        return snapshot.connectionState ==
-                                ConnectionState.waiting
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                formatFungibleCurrency(
-                                  metadata: fungible.metadata,
-                                  number: snapshot.data,
-                                ),
-                              );
-                      },
-                    ),
-                  ],
-                ),
+                if (widget.aasset.type == AssetType.fungible)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Balance',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      Gap(4),
+                      FutureBuilder(
+                        future: balance,
+                        builder: (context, snapshot) {
+                          return snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  formatFungibleCurrency(
+                                    metadata: widget.aasset.asset.metadata,
+                                    number: snapshot.data,
+                                  ),
+                                );
+                        },
+                      ),
+                    ],
+                  ),
                 Row(
                   children: [
                     action(
