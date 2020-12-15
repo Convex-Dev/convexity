@@ -449,7 +449,7 @@ class FungibleTokenMetadata {
       : name = json['name'],
         description = json['description'],
         symbol = json['symbol'],
-        currencySymbol = json['currency-symbol'],
+        currencySymbol = json['currencySymbol'],
         decimals = json['decimals'];
 
   Map<String, dynamic> toJson() => {
@@ -523,7 +523,7 @@ class NonFungibleTokenMetadata implements Asset {
 }
 
 @immutable
-class NonFungibleToken implements Asset  {
+class NonFungibleToken implements Asset {
   final Address address;
   final NonFungibleTokenMetadata metadata;
 
