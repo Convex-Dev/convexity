@@ -170,7 +170,7 @@ class _RecommendedState extends State<_Recommended> {
             )
             .map(
               (asset) => asset.type == AssetType.fungible
-                  ? fungibleTokenView(
+                  ? fungibleTokenCard(
                       fungible: asset.asset as FungibleToken,
                       balance: appState.fungibleClient().balance(
                             token: asset.asset.address,
@@ -184,7 +184,7 @@ class _RecommendedState extends State<_Recommended> {
                         );
                       },
                     )
-                  : nonFungibleTokenView(
+                  : nonFungibleTokenCard(
                       nonFungible: asset.asset as NonFungibleToken,
                       onTap: (NonFungibleToken nonFungible) {
                         follow(
@@ -326,14 +326,14 @@ class _AssetIDState extends State<_AssetID> {
             SizedBox(
               width: 160,
               child: aasset.type == AssetType.fungible
-                  ? fungibleTokenView(
+                  ? fungibleTokenCard(
                       fungible: aasset.asset,
                       balance: appState.fungibleClient().balance(
                             token: aasset.asset.address,
                             holder: appState.model.activeAddress,
                           ),
                     )
-                  : nonFungibleTokenView(
+                  : nonFungibleTokenCard(
                       nonFungible: aasset.asset,
                     ),
             ),

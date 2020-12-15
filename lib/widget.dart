@@ -121,7 +121,7 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 /// Returns a Fungible Token renderer Widget.
-Widget fungibleTokenView({
+Widget fungibleTokenCard({
   @required convex.FungibleToken fungible,
   @required Future<int> balance,
   bool isMine = false,
@@ -204,7 +204,7 @@ Widget fungibleTokenView({
     });
 
 /// Returns a Non-Fungible Token renderer Widget.
-Widget nonFungibleTokenView({
+Widget nonFungibleTokenCard({
   @required convex.NonFungibleToken nonFungible,
   void Function(convex.NonFungibleToken) onTap,
 }) =>
@@ -275,7 +275,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
             orElse: () => null,
           );
 
-          return fungibleTokenView(
+          return fungibleTokenCard(
             isMine: mine != null,
             fungible: aasset.asset as convex.FungibleToken,
             balance: appState.fungibleClient().balance(
@@ -300,7 +300,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
           );
         }
 
-        return nonFungibleTokenView(
+        return nonFungibleTokenCard(
           nonFungible: aasset.asset as convex.NonFungibleToken,
           onTap: (nonFungible) {
             nav.pushAsset(
