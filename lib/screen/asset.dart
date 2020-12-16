@@ -1,6 +1,3 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/logger.dart';
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -9,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../model.dart';
-import '../nav.dart' as nav;
 import '../format.dart';
+import '../convex.dart';
+import '../widget.dart';
+import '../nav.dart' as nav;
 
 Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
     StatelessWidgetBuilder((context) {
