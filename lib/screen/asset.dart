@@ -435,7 +435,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
                                             return AnimatedSwitcher(
                                               duration: const Duration(
-                                                milliseconds: 500,
+                                                milliseconds: 400,
                                               ),
                                               child: child,
                                             );
