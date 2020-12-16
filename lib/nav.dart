@@ -86,3 +86,13 @@ Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(
       context,
       route.newContact,
     );
+
+Future<dynamic> pushNonFungibleToken(
+  BuildContext context, {
+  convex.NonFungibleToken nonFungibleToken,
+}) =>
+    Navigator.pushNamed(
+      context,
+      route.nonFungibleToken,
+      arguments: Tuple2(nonFungibleToken, null),
+    );

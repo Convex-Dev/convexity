@@ -392,20 +392,31 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       children: [
                                         Positioned.fill(
                                           child: Card(
-                                            child: Center(
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(12),
-                                                margin: const EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.blue,
-                                                ),
-                                                child: Text(
-                                                  entry.value.toString(),
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
+                                            child: InkWell(
+                                              onTap: () {
+                                                nav.pushNonFungibleToken(
+                                                  context,
+                                                  nonFungibleToken:
+                                                      widget.aasset.asset,
+                                                );
+                                              },
+                                              child: Center(
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(12),
+                                                  margin:
+                                                      const EdgeInsets.all(8),
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  child: Text(
+                                                    entry.value.toString(),
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
                                               ),

@@ -16,6 +16,7 @@ import 'screen/my_tokens.dart';
 import 'screen/new_token.dart';
 import 'screen/address_book.dart';
 import 'screen/new_contact.dart';
+import 'screen/non_fungible_token.dart';
 
 const String dev = '/dev';
 const String launcher = '/launcher';
@@ -33,6 +34,7 @@ const String newToken = '/newToken';
 const String addressBook = '/addressBook';
 const String newContact = '/newContact';
 const String selectAccount = '/selectAccount';
+const String nonFungibleToken = '/nonFungibleToken';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -51,4 +53,5 @@ Map<String, WidgetBuilder> routes() => {
       addressBook: (context) => AddressBookScreen(),
       newContact: (context) => NewContactScreen(),
       selectAccount: (context) => selectAccountScreen(),
+      nonFungibleToken: (context) => NonFungibleTokenScreen(),
     };
