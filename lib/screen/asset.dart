@@ -363,20 +363,35 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       return Text("You don't own any Non-Fungible Token.");
                     }
 
+                    final columnCount = 4;
+
                     return Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 4,
-                        children: ids
-                            .map(
-                              (id) => Card(
-                                child: Center(
-                                  child: Text(
-                                    id.toString(),
+                      child: AnimationLimiter(
+                        child: GridView.count(
+                          crossAxisCount: columnCount,
+                          children: ids
+                              .asMap()
+                              .entries
+                              .map(
+                                (entry) => AnimationConfiguration.staggeredGrid(
+                                  position: entry.key,
+                                  duration: const Duration(milliseconds: 375),
+                                  columnCount: columnCount,
+                                  child: ScaleAnimation(
+                                    child: FadeInAnimation(
+                                      child: Card(
+                                        child: Center(
+                                          child: Text(
+                                            entry.value.toString(),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )
-                            .toList(),
+                              )
+                              .toList(),
+                        ),
                       ),
                     );
                   }
