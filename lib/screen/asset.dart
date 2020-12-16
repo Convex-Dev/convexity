@@ -8,7 +8,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
-import '../logger.dart';
 import '../model.dart';
 import '../nav.dart' as nav;
 import '../format.dart';
@@ -365,8 +364,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     }
 
                     final ids = snapshot.data as List;
-
-                    logger.d('Non-Fungible Tokens: $ids');
 
                     if (ids.isEmpty) {
                       return Text("You don't own any Non-Fungible Token.");
