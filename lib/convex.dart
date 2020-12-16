@@ -701,7 +701,24 @@ class AssetLibrary {
     @required Set<int> tokens,
   }) {
     var _source = '(import convex.asset :as asset)'
-        '(asset/transfer 0x${receiver.hex} [ 0x${nft.hex} , #{ ${tokens.join(",")} } ])';
+        '(asset/transfer 0x${receiver.hex} [ 0x${nft.hex}, #{ ${tokens.join(",")} } ])';
+
+    return convexClient.transact(
+      caller: holder,
+      callerSecretKey: holderSecretKey,
+      source: _source,
+    );
+  }
+
+  Future<Result> transferFungible({
+    @required Address holder,
+    @required Uint8List holderSecretKey,
+    @required Address receiver,
+    @required Address token,
+    @required double amount,
+  }) {
+    var _source = '(import convex.asset :as asset)'
+        '(asset/transfer 0x${receiver.hex} [ 0x${token.hex}, $amount ])';
 
     return convexClient.transact(
       caller: holder,
