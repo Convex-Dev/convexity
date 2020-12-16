@@ -380,12 +380,11 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           crossAxisCount: columnCount,
                           children: ids.asMap().entries.map(
                             (entry) {
-                              convexClient
-                                  .query(
-                                    source:
-                                        '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}) )',
-                                  )
-                                  .then((value) => logger.d(value));
+                              final dataSource =
+                                  '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}))';
+
+                              final data =
+                                  convexClient.query(source: dataSource);
 
                               return AnimationConfiguration.staggeredGrid(
                                 position: entry.key,
@@ -393,24 +392,50 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                 columnCount: columnCount,
                                 child: ScaleAnimation(
                                   child: FadeInAnimation(
-                                    child: Card(
-                                      child: Center(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(12),
-                                          margin: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.blue,
-                                          ),
-                                          child: Text(
-                                            entry.value.toString(),
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: Card(
+                                            child: Center(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                margin: const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.blue,
+                                                ),
+                                                child: Text(
+                                                  entry.value.toString(),
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                        FutureBuilder<Result>(
+                                            future: data,
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: Text(
+                                                    snapshot.data.value['name'],
+                                                    textAlign: TextAlign.center,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .overline,
+                                                  ),
+                                                );
+                                              }
+
+                                              return Text('');
+                                            }),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -422,7 +447,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     );
                   }
 
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 },
               )
             ],
