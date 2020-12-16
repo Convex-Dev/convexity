@@ -692,4 +692,21 @@ class AssetLibrary {
 
     return result.value;
   }
+
+  Future<Result> transferNonFungible({
+    @required Address holder,
+    @required Uint8List holderSecretKey,
+    @required Address receiver,
+    @required Address nft,
+    @required Set<int> tokens,
+  }) {
+    var _source = '(import convex.asset :as asset)'
+        '(asset/transfer 0x${receiver.hex} [ 0x${nft.hex} , #{ ${tokens.join(",")} } ])';
+
+    return convexClient.transact(
+      caller: holder,
+      callerSecretKey: holderSecretKey,
+      source: _source,
+    );
+  }
 }
