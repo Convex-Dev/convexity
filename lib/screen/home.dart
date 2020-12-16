@@ -1,6 +1,7 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
 
@@ -58,7 +59,7 @@ class HomeScreenBody extends StatelessWidget {
   ) =>
       Column(
         children: [
-          Ink(
+          Container(
             decoration: const ShapeDecoration(
               color: Colors.lightBlue,
               shape: CircleBorder(),
@@ -86,6 +87,48 @@ class HomeScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     var activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
+    var actionList = [
+      action(
+        context,
+        'Address Book',
+        () => nav.pushAddressBook(context),
+      ),
+      action(
+        context,
+        'My Tokens',
+        () => nav.pushMyTokens(context),
+      ),
+      action(
+        context,
+        'Assets',
+        () => nav.pushAssets(context),
+      ),
+      action(
+        context,
+        'Transfer',
+        () => nav.pushTransfer(context),
+      ),
+      action(
+        context,
+        'Faucet',
+        () => showTodoSnackBar(context),
+      ),
+      action(
+        context,
+        'Exchange',
+        () => showTodoSnackBar(context),
+      ),
+      action(
+        context,
+        'Deals',
+        () => showTodoSnackBar(context),
+      ),
+      action(
+        context,
+        'Shop',
+        () => showTodoSnackBar(context),
+      ),
+    ];
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -108,54 +151,27 @@ class HomeScreenBody extends StatelessWidget {
             ),
           Gap(20),
           Expanded(
-            child: GridView.count(
-              primary: false,
-              padding: const EdgeInsets.all(20),
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 14,
-              crossAxisCount: 4,
-              children: [
-                action(
-                  context,
-                  'Address Book',
-                  () => nav.pushAddressBook(context),
-                ),
-                action(
-                  context,
-                  'My Tokens',
-                  () => nav.pushMyTokens(context),
-                ),
-                action(
-                  context,
-                  'Assets',
-                  () => nav.pushAssets(context),
-                ),
-                action(
-                  context,
-                  'Transfer',
-                  () => nav.pushTransfer(context),
-                ),
-                action(
-                  context,
-                  'Faucet',
-                  () => showTodoSnackBar(context),
-                ),
-                action(
-                  context,
-                  'Exchange',
-                  () => showTodoSnackBar(context),
-                ),
-                action(
-                  context,
-                  'Deals',
-                  () => showTodoSnackBar(context),
-                ),
-                action(
-                  context,
-                  'Shop',
-                  () => showTodoSnackBar(context),
-                ),
-              ],
+            child: AnimationLimiter(
+              child: GridView.count(
+                primary: false,
+                padding: const EdgeInsets.all(20),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 14,
+                crossAxisCount: 4,
+                children: actionList
+                    .asMap()
+                    .entries
+                    .map(
+                      (e) => AnimationConfiguration.staggeredGrid(
+                        position: e.key,
+                        columnCount: 4,
+                        child: ScaleAnimation(
+                          child: FadeInAnimation(child: e.value),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ),
         ],
