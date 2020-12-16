@@ -263,6 +263,8 @@ class AppState with ChangeNotifier {
   FungibleClient fungibleClient() =>
       FungibleClient(convexClient: convexClient());
 
+  AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
+
   ConvexityClient convexityClient() => model.convexityAddress != null
       ? ConvexityClient(
           convexClient: convexClient(),

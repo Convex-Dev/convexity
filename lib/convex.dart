@@ -675,7 +675,7 @@ class AssetLibrary {
 
   AssetLibrary({@required this.convexClient});
 
-  Future<int> balance({
+  Future<dynamic> balance({
     @required Address asset,
     @required Address owner,
   }) async {

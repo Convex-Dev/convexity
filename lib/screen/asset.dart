@@ -1,4 +1,5 @@
 import 'package:convex_wallet/convex.dart';
+import 'package:convex_wallet/logger.dart';
 import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -326,14 +327,51 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         );
       });
 
-  Widget _nonFungible() => StatelessWidgetBuilder((context) => Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            _info(),
-          ],
-        ),
-      ));
+  Widget _nonFungible() => StatelessWidgetBuilder((context) {
+        final appState = context.watch<AppState>();
+
+        // Balance for NonFungible is a set of IDs.
+        final balance = appState.assetLibrary().balance(
+              asset: widget.aasset.asset.address as Address,
+              owner: appState.model.activeAddress,
+            );
+
+        return Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              _info(),
+              Gap(20),
+              FutureBuilder(
+                future: balance,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final data = snapshot.data;
+
+                    if (data == null) {
+                      return Text(
+                        'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                      );
+                    }
+
+                    final ids = snapshot.data as List;
+
+                    logger.d('Non-Fungible Tokens: $ids');
+
+                    if (ids.isEmpty) {
+                      return Text("You don't own any Non-Fungible Token.");
+                    }
+
+                    return Text(ids.toString());
+                  }
+
+                  return CircularProgressIndicator();
+                },
+              )
+            ],
+          ),
+        );
+      });
 
   /// Check the user's balance for this Token.
   Future<int> queryBalance(BuildContext context) {
