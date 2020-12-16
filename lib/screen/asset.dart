@@ -417,24 +417,34 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                           ),
                                         ),
                                         FutureBuilder<Result>(
-                                            future: data,
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8),
-                                                  child: Text(
-                                                    snapshot.data.value['name'],
-                                                    textAlign: TextAlign.center,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .overline,
-                                                  ),
-                                                );
-                                              }
+                                          future: data,
+                                          builder: (context, snapshot) {
+                                            var child;
 
-                                              return Text('');
-                                            }),
+                                            if (snapshot.hasData) {
+                                              child = Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: Text(
+                                                  snapshot.data.value['name'],
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .overline,
+                                                ),
+                                              );
+                                            } else {
+                                              child = Text('');
+                                            }
+
+                                            return AnimatedSwitcher(
+                                              duration: const Duration(
+                                                milliseconds: 500,
+                                              ),
+                                              child: child,
+                                            );
+                                          },
+                                        ),
                                       ],
                                     ),
                                   ),
