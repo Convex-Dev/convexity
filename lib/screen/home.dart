@@ -156,7 +156,7 @@ class HomeScreenBody extends StatelessWidget {
                 primary: false,
                 padding: const EdgeInsets.all(20),
                 crossAxisSpacing: 10,
-                mainAxisSpacing: 14,
+                mainAxisSpacing: 24,
                 crossAxisCount: 4,
                 children: actionList
                     .asMap()
