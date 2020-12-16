@@ -362,7 +362,22 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       return Text("You don't own any Non-Fungible Token.");
                     }
 
-                    return Text(ids.toString());
+                    return Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 4,
+                        children: ids
+                            .map(
+                              (id) => Card(
+                                child: Center(
+                                  child: Text(
+                                    id.toString(),
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    );
                   }
 
                   return CircularProgressIndicator();
