@@ -1,6 +1,3 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/logger.dart';
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -9,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../model.dart';
-import '../nav.dart' as nav;
 import '../format.dart';
+import '../convex.dart';
+import '../widget.dart';
+import '../nav.dart' as nav;
 
 Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
     StatelessWidgetBuilder((context) {
@@ -337,12 +336,20 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               owner: appState.model.activeAddress,
             );
 
+        final convexClient = appState.convexClient();
+
         return Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _info(),
               Gap(20),
+              Text(
+                'Tokens',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              Gap(10),
               FutureBuilder(
                 future: balance,
                 builder: (context, snapshot) {
@@ -357,8 +364,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
                     final ids = snapshot.data as List;
 
-                    logger.d('Non-Fungible Tokens: $ids');
-
                     if (ids.isEmpty) {
                       return Text("You don't own any Non-Fungible Token.");
                     }
@@ -369,34 +374,86 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       child: AnimationLimiter(
                         child: GridView.count(
                           crossAxisCount: columnCount,
-                          children: ids
-                              .asMap()
-                              .entries
-                              .map(
-                                (entry) => AnimationConfiguration.staggeredGrid(
-                                  position: entry.key,
-                                  duration: const Duration(milliseconds: 375),
-                                  columnCount: columnCount,
-                                  child: ScaleAnimation(
-                                    child: FadeInAnimation(
-                                      child: Card(
-                                        child: Center(
-                                          child: Text(
-                                            entry.value.toString(),
+                          children: ids.asMap().entries.map(
+                            (entry) {
+                              final dataSource =
+                                  '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}))';
+
+                              final data =
+                                  convexClient.query(source: dataSource);
+
+                              return AnimationConfiguration.staggeredGrid(
+                                position: entry.key,
+                                duration: const Duration(milliseconds: 375),
+                                columnCount: columnCount,
+                                child: ScaleAnimation(
+                                  child: FadeInAnimation(
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: Card(
+                                            child: Center(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(12),
+                                                margin: const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.blue,
+                                                ),
+                                                child: Text(
+                                                  entry.value.toString(),
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        FutureBuilder<Result>(
+                                          future: data,
+                                          builder: (context, snapshot) {
+                                            var child;
+
+                                            if (snapshot.hasData) {
+                                              child = Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: Text(
+                                                  snapshot.data.value['name'],
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .overline,
+                                                ),
+                                              );
+                                            } else {
+                                              child = Text('');
+                                            }
+
+                                            return AnimatedSwitcher(
+                                              duration: const Duration(
+                                                milliseconds: 500,
+                                              ),
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              )
-                              .toList(),
+                              );
+                            },
+                          ).toList(),
                         ),
                       ),
                     );
                   }
 
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 },
               )
             ],
