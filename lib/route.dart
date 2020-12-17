@@ -56,5 +56,5 @@ Map<String, WidgetBuilder> routes() => {
       newContact: (context) => NewContactScreen(),
       selectAccount: (context) => selectAccountScreen(),
       nonFungibleToken: (context) => NonFungibleTokenScreen(),
-      nonFungibleTransfer: (context) => nonFungibleTransferScreen(),
+      nonFungibleTransfer: (context) => NonFungibleTransferScreen(),
     };
