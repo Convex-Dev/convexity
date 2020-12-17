@@ -268,25 +268,23 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                         _action(
                           label: 'Transfer',
                           onPressed: () {
-                            if (widget.aasset.type == AssetType.fungible) {
-                              final fungible =
-                                  widget.aasset.asset as FungibleToken;
+                            final fungible =
+                                widget.aasset.asset as FungibleToken;
 
-                              var fnull = nav.pushFungibleTransfer(
-                                context,
-                                fungible,
-                                balance,
-                              );
+                            var f = nav.pushFungibleTransfer(
+                              context,
+                              fungible,
+                              balance,
+                            );
 
-                              fnull.then(
-                                (_) {
-                                  // Query the potentially updated balance.
-                                  setState(() {
-                                    balance = queryBalance(context);
-                                  });
-                                },
-                              );
-                            }
+                            f.then(
+                              (_) {
+                                // Query the potentially updated balance.
+                                setState(() {
+                                  balance = queryBalance(context);
+                                });
+                              },
+                            );
                           },
                         ),
                       ],
