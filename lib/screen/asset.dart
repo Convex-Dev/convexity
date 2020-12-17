@@ -208,7 +208,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             context.watch<AppState>().model.activities.reversed.toList();
 
         return Padding(
-          padding: const EdgeInsets.all(12),
+          padding: defaultScreenPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -339,7 +339,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         final convexClient = appState.convexClient();
 
         return Padding(
-          padding: const EdgeInsets.all(12),
+          padding: defaultScreenPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

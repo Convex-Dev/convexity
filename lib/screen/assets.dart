@@ -17,7 +17,10 @@ class AssetsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Assets')),
-      body: AssetsCollection(assets: assets),
+      body: Container(
+        padding: defaultScreenPadding,
+        child: AssetsCollection(assets: assets),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => nav.pushFollow(context),

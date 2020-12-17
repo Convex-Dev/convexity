@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 
+import '../widget.dart';
 import '../convex.dart';
 
 class NonFungibleTokenScreen extends StatelessWidget {
@@ -31,5 +32,8 @@ class NonFungibleTokenScreenBody extends StatefulWidget {
 class _NonFungibleTokenScreenBodyState
     extends State<NonFungibleTokenScreenBody> {
   @override
-  Widget build(BuildContext context) => Text('NFT');
+  Widget build(BuildContext context) => Container(
+        padding: defaultScreenPadding,
+        child: Text('NFT'),
+      );
 }

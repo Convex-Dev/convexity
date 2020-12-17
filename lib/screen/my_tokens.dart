@@ -14,7 +14,10 @@ class MyTokensScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('My Tokens'),
       ),
-      body: AssetsCollection(assets: appState.model.myTokens),
+      body: Container(
+        padding: defaultScreenPadding,
+        child: AssetsCollection(assets: appState.model.myTokens),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => nav.pushNewToken(context),

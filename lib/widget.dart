@@ -10,6 +10,8 @@ import 'convex.dart' as convex;
 import 'format.dart';
 import 'nav.dart' as nav;
 
+const defaultScreenPadding = EdgeInsets.all(12);
+
 class StatelessWidgetBuilder extends StatelessWidget {
   final Widget Function(BuildContext) builder;
 
@@ -289,7 +291,6 @@ class _AssetsCollectionState extends State<AssetsCollection> {
 
     return GridView.count(
       primary: false,
-      padding: const EdgeInsets.all(20),
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
       crossAxisCount: 2,
