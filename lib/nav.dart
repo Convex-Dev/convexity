@@ -102,3 +102,17 @@ Future<dynamic> pushNonFungibleToken(
         data,
       ),
     );
+
+Future<dynamic> pushNonFungibleTransfer(
+  BuildContext context, {
+  convex.NonFungibleToken nonFungibleToken,
+  int tokenId,
+}) =>
+    Navigator.pushNamed(
+      context,
+      route.nonFungibleTransfer,
+      arguments: Tuple2(
+        nonFungibleToken,
+        tokenId,
+      ),
+    );

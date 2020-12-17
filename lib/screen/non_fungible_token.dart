@@ -3,6 +3,7 @@ import 'package:tuple/tuple.dart';
 
 import '../widget.dart';
 import '../convex.dart';
+import '../nav.dart';
 
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
@@ -73,8 +74,14 @@ class _NonFungibleTokenScreenBodyState
               },
             ),
             ElevatedButton(
-              onPressed: () {},
               child: Text('Transfer'),
+              onPressed: () {
+                pushNonFungibleTransfer(
+                  context,
+                  nonFungibleToken: widget.nonFungibleToken,
+                  tokenId: widget.tokenId,
+                );
+              },
             ),
           ],
         ),
