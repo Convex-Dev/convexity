@@ -9,9 +9,9 @@ import '../widget.dart';
 class AssetsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
+    final appState = context.watch<AppState>();
 
-    var assets = <AAsset>{}
+    final assets = <AAsset>{}
       ..addAll(appState.model.myTokens)
       ..addAll(appState.model.following);
 

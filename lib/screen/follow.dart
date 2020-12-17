@@ -116,7 +116,7 @@ class _RecommendedState extends State<_Recommended> {
 
     final appState = context.read<AppState>();
 
-    var convexityClient = appState.convexityClient();
+    final convexityClient = appState.convexityClient();
 
     if (convexityClient != null) {
       convexityClient.assets().then((Set<AAsset> assets) {

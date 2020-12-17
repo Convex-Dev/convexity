@@ -14,7 +14,7 @@ class DevScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Welcome')),
+      appBar: AppBar(title: Text('Dev')),
       body: DevScreenBody(),
     );
   }

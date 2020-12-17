@@ -449,14 +449,14 @@ class FungibleTokenMetadata {
       : name = json['name'],
         description = json['description'],
         symbol = json['symbol'],
-        currencySymbol = json['currencySymbol'],
+        currencySymbol = json['currency-symbol'],
         decimals = json['decimals'];
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
         'symbol': symbol,
-        'currencySymbol': currencySymbol,
+        'currency-symbol': currencySymbol,
         'decimals': decimals,
       };
 
