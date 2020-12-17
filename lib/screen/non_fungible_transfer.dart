@@ -1,11 +1,14 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:tuple/tuple.dart';
+import 'package:provider/provider.dart';
 
+import '../logger.dart';
+import '../model.dart';
 import '../widget.dart';
 import '../nav.dart';
+import '../convex.dart';
+import '../route.dart' as route;
 
 class NonFungibleTransferScreen extends StatelessWidget {
   final NonFungibleToken nonFungibleToken;
@@ -66,6 +69,169 @@ class _NonFungibleTransferScreenBodyState
       ? Address.fromHex(_receiverTextController.text)
       : null;
 
+  void _send(BuildContext context) async {
+    var appState = context.read<AppState>();
+
+    // Modal to ask for confirmation.
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Transfer Token ID ${widget.tokenId} to ',
+                    ),
+                    Identicon2(
+                      address: Address.fromHex(_receiverTextController.text),
+                      isAddressVisible: true,
+                      size: 30,
+                    ),
+                    Text(
+                      '?',
+                    )
+                  ],
+                ),
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: const Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmation != true) {
+      return;
+    }
+
+    // Asset transfer.
+    var transferInProgress = appState.assetLibrary().transferNonFungible(
+      holder: appState.model.activeAddress,
+      holderSecretKey: appState.model.activeKeyPair.sk,
+      receiver: _receiver,
+      nft: widget.nonFungibleToken.address,
+      tokens: {
+        widget.tokenId,
+      },
+    );
+
+    // Modal to show transfer result.
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          child: Center(
+            child: FutureBuilder(
+              future: transferInProgress,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<Result> snapshot,
+              ) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+
+                if (snapshot.data?.errorCode != null) {
+                  logger.e(
+                    'Non-Fungible transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                  );
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        size: 80,
+                        color: Colors.black12,
+                      ),
+                      Gap(10),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Sorry. Your transfer could not be completed.',
+                        ),
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Okay'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                }
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.check,
+                      size: 80,
+                      color: Colors.green,
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Transfered Token ID ${widget.tokenId} to ',
+                          ),
+                          Identicon2(
+                            address: _receiver,
+                            isAddressVisible: true,
+                            size: 30,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        Navigator.popUntil(
+                          context,
+                          ModalRoute.withName(route.asset),
+                        );
+                      },
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final replacement = SizedBox(
@@ -125,7 +291,9 @@ class _NonFungibleTransferScreenBodyState
                   child: ElevatedButton(
                     child: Text('SEND'),
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {}
+                      if (_formKey.currentState.validate()) {
+                        _send(context);
+                      }
                     },
                   ),
                 ),
