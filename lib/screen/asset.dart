@@ -343,9 +343,15 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             children: [
               _info(),
               Gap(20),
-              Text(
-                'Tokens',
-                style: Theme.of(context).textTheme.subtitle1,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tokens',
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                  IconButton(icon: Icon(Icons.refresh), onPressed: () {}),
+                ],
               ),
               Gap(10),
               FutureBuilder(
