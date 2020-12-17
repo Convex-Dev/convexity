@@ -64,7 +64,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 );
               }
 
-              final children = [
+              final tiles = [
                 // -- Address
                 ListTile(
                   title: SelectableText(
@@ -96,7 +96,9 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   title: Text(account.memoryAllowance.toString()),
                   subtitle: Text('Memory Allowance'),
                 ),
-              ]
+              ];
+
+              final animated = tiles
                   .asMap()
                   .entries
                   .map(
@@ -117,7 +119,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 padding: const EdgeInsets.all(12),
                 child: AnimationLimiter(
                   child: ListView(
-                    children: children,
+                    children: animated,
                   ),
                 ),
               );
