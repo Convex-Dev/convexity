@@ -675,6 +675,9 @@ class AssetLibrary {
 
   AssetLibrary({@required this.convexClient});
 
+  /// Balance is based on the type of Asset.
+  /// It returns a number for Fungible Tokens,
+  /// but a set of numbers (IDs) for Non-Fungible Tokens.
   Future<dynamic> balance({
     @required Address asset,
     @required Address owner,

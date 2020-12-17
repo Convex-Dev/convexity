@@ -398,6 +398,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                                   context,
                                                   nonFungibleToken:
                                                       widget.aasset.asset,
+                                                  tokenId: entry.value,
+                                                  data: data,
                                                 );
                                               },
                                               child: Center(

@@ -7,22 +7,31 @@ import '../convex.dart';
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Tuple2<NonFungibleToken, dynamic> t =
+    // Tuple of NFT + ID + Data.
+    final Tuple3<NonFungibleToken, int, Future<Result>> t =
         ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(title: Text('Non-Fungible Token')),
-      body: NonFungibleTokenScreenBody(t.item1),
+      body: NonFungibleTokenScreenBody(
+        nonFungibleToken: t.item1,
+        tokenId: t.item2,
+        data: t.item3,
+      ),
     );
   }
 }
 
 class NonFungibleTokenScreenBody extends StatefulWidget {
   final NonFungibleToken nonFungibleToken;
+  final int tokenId;
+  final Future<Result> data;
 
-  const NonFungibleTokenScreenBody(
-    this.nonFungibleToken, {
+  const NonFungibleTokenScreenBody({
     Key key,
+    @required this.nonFungibleToken,
+    @required this.tokenId,
+    @required this.data,
   }) : super(key: key);
 
   @override
@@ -34,6 +43,40 @@ class _NonFungibleTokenScreenBodyState
   @override
   Widget build(BuildContext context) => Container(
         padding: defaultScreenPadding,
-        child: Text('NFT'),
+        child: ListView(
+          children: [
+            ListTile(
+              title: Text(widget.tokenId.toString()),
+              subtitle: Text('Token ID'),
+            ),
+            FutureBuilder<Result>(
+              future: widget.data,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  // Result value is a map of attribute name to value - unless there's an error.
+                  if (snapshot.data.errorCode != null) {
+                    return ListTile(
+                      leading: Icon(Icons.error),
+                      title: Text(
+                        'Sorry. It was not possible to query data for this token.',
+                      ),
+                    );
+                  }
+
+                  return ListTile(
+                    title: Text(snapshot.data.value['name']),
+                    subtitle: Text('Name'),
+                  );
+                }
+
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text('Transfer'),
+            ),
+          ],
+        ),
       );
 }
