@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../convex.dart';
 import '../model.dart';
@@ -42,7 +42,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   @override
   Widget build(BuildContext context) => FutureBuilder(
         future: account,
-        // ignore: missing_return
         builder: (BuildContext context, AsyncSnapshot<Account> snapshot) {
           var progressIndicator = Center(child: CircularProgressIndicator());
 
@@ -56,51 +55,71 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
             case ConnectionState.done:
               var account = snapshot.data;
 
-              return Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Address',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    Text(account.address.toString()),
-                    Gap(10),
-                    Text(
-                      'Type',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    Text(account.type.toString()),
-                    Gap(10),
-                    Text(
-                      'Balance',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    Text(account.balance.toString()),
-                    Gap(10),
-                    Text(
-                      'Memory Size',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    Text(account.memorySize.toString()),
-                    Gap(10),
-                    Text(
-                      'Memory Allowance',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    Text(account.memoryAllowance.toString()),
-                  ],
+              final children = [
+                // -- Address
+                ListTile(
+                  title: SelectableText(
+                    account.address.toString(),
+                  ),
+                  subtitle: Text('Address'),
                 ),
-              );
+
+                // -- Type
+                ListTile(
+                  title: Text(account.type.toString()),
+                  subtitle: Text('Type'),
+                ),
+
+                // -- Balance
+                ListTile(
+                  title: Text(account.balance.toString()),
+                  subtitle: Text('Balance'),
+                ),
+
+                // -- Memory Size
+                ListTile(
+                  title: Text(account.memorySize.toString()),
+                  subtitle: Text('Memory Size'),
+                ),
+
+                // -- Memory Allowance
+                ListTile(
+                  title: Text(account.memoryAllowance.toString()),
+                  subtitle: Text('Memory Allowance'),
+                ),
+              ]
+                  .asMap()
+                  .entries
+                  .map(
+                    (e) => AnimationConfiguration.staggeredList(
+                      position: e.key,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: e.value,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList();
 
               return Padding(
-                padding: const EdgeInsets.all(8),
-                child: Center(
-                  child: Text('Account not found.'),
+                padding: const EdgeInsets.all(12),
+                child: AnimationLimiter(
+                  child: ListView(
+                    children: children,
+                  ),
                 ),
               );
           }
+
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: Center(
+              child: Text('Account not found.'),
+            ),
+          );
         },
       );
 }

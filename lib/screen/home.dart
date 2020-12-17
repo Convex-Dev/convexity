@@ -87,7 +87,7 @@ class HomeScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     var activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
-    var actionList = [
+    final actions = [
       action(
         context,
         'Address Book',
@@ -158,7 +158,7 @@ class HomeScreenBody extends StatelessWidget {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 24,
                 crossAxisCount: 4,
-                children: actionList
+                children: actions
                     .asMap()
                     .entries
                     .map(
