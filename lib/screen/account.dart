@@ -55,6 +55,15 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
             case ConnectionState.done:
               var account = snapshot.data;
 
+              if (account == null) {
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Center(
+                    child: Text('Account not found.'),
+                  ),
+                );
+              }
+
               final children = [
                 // -- Address
                 ListTile(
