@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:tuple/tuple.dart';
 
 import '../widget.dart';
@@ -76,8 +77,9 @@ class _NonFungibleTokenScreenBodyState
                 return Center(child: CircularProgressIndicator());
               },
             ),
-            Image.network(
-              demoImage,
+            FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage,
+              image: demoImage,
             ),
             ElevatedButton(
               child: Text('Transfer'),
