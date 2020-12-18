@@ -14,6 +14,7 @@ import 'screen/dev.dart';
 import 'screen/fungible_transfer.dart';
 import 'screen/my_tokens.dart';
 import 'screen/new_token.dart';
+import 'screen/new_nft_token.dart';
 import 'screen/address_book.dart';
 import 'screen/new_contact.dart';
 import 'screen/non_fungible_token.dart';
@@ -32,6 +33,7 @@ const String follow = '/follow';
 const String fungibleTransfer = '/fungibleTransfer';
 const String myTokens = '/myTokens';
 const String newToken = '/newToken';
+const String newNonFungibleToken = '/newNonFungibleToken';
 const String addressBook = '/addressBook';
 const String newContact = '/newContact';
 const String selectAccount = '/selectAccount';
@@ -52,6 +54,7 @@ Map<String, WidgetBuilder> routes() => {
       fungibleTransfer: (context) => FungibleTransferScreen(),
       myTokens: (context) => MyTokensScreen(),
       newToken: (context) => NewTokenScreen(),
+      newNonFungibleToken: (context) => NewNonFungibleTokenScreen(),
       addressBook: (context) => AddressBookScreen(),
       newContact: (context) => NewContactScreen(),
       selectAccount: (context) => selectAccountScreen(),

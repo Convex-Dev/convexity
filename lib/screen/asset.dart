@@ -123,6 +123,12 @@ class AssetScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('$title')),
       body: AssetScreenBody(aasset: _aasset),
+      floatingActionButton: _aasset.type == AssetType.nonFungible
+          ? FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => nav.pushNewNonFungibleToken(context),
+            )
+          : null,
     );
   }
 }

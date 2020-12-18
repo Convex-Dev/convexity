@@ -62,9 +62,15 @@ void pushMyTokens(BuildContext context) => Navigator.pushNamed(
       route.myTokens,
     );
 
-void pushNewToken(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushNewToken(BuildContext context) => Navigator.pushNamed(
       context,
       route.newToken,
+    );
+
+Future<dynamic> pushNewNonFungibleToken(BuildContext context) =>
+    Navigator.pushNamed(
+      context,
+      route.newNonFungibleToken,
     );
 
 Future<dynamic> pushAddressBook(BuildContext context) => Navigator.pushNamed(
