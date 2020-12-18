@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../model.dart';
 import '../format.dart';
@@ -422,25 +423,10 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                                   },
                                                 );
                                               },
-                                              child: Center(
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(12),
-                                                  margin:
-                                                      const EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.blue,
-                                                  ),
-                                                  child: Text(
-                                                    entry.value.toString(),
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
+                                              child: FadeInImage.memoryNetwork(
+                                                placeholder: kTransparentImage,
+                                                image:
+                                                    'https://vejasp.abril.com.br/wp-content/uploads/2016/11/13442__retirantes_-1944-de-candido-portinari-jpg.jpeg?quality=70&strip=info&w=1024',
                                               ),
                                             ),
                                           ),
@@ -455,11 +441,13 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                                 padding:
                                                     const EdgeInsets.all(8),
                                                 child: Text(
-                                                  snapshot.data.value['name'],
+                                                  '#${entry.value} ${snapshot.data.value['name']}',
                                                   textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .overline,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               );
                                             } else {
