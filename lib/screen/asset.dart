@@ -358,6 +358,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               FutureBuilder(
                 future: balance,
                 builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
                   if (snapshot.hasData) {
                     final data = snapshot.data;
 
