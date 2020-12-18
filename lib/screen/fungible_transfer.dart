@@ -21,7 +21,7 @@ class FungibleTransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var arguments = ModalRoute.of(context).settings.arguments
-        as Tuple2<FungibleToken, Future<int>>;
+        as Tuple2<FungibleToken, Future<dynamic>>;
 
     // Token can be passed directly to the constructor,
     // or via the Navigator arguments.
