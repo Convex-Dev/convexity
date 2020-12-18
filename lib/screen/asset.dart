@@ -344,7 +344,14 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     'Tokens',
                     style: Theme.of(context).textTheme.subtitle1,
                   ),
-                  IconButton(icon: Icon(Icons.refresh), onPressed: () {}),
+                  IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: () {
+                      setState(() {
+                        balance = queryBalance(context);
+                      });
+                    },
+                  ),
                 ],
               ),
               Gap(10),
@@ -392,12 +399,23 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                           child: Card(
                                             child: InkWell(
                                               onTap: () {
-                                                nav.pushNonFungibleToken(
+                                                final f =
+                                                    nav.pushNonFungibleToken(
                                                   context,
                                                   nonFungibleToken:
                                                       widget.aasset.asset,
                                                   tokenId: entry.value,
                                                   data: data,
+                                                );
+
+                                                f.then(
+                                                  (_) {
+                                                    // Query the potentially updated balance.
+                                                    setState(() {
+                                                      balance =
+                                                          queryBalance(context);
+                                                    });
+                                                  },
                                                 );
                                               },
                                               child: Center(
