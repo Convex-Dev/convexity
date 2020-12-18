@@ -491,7 +491,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                               duration: const Duration(
                                                 milliseconds: 400,
                                               ),
-                                              child: child,
+                                              child: Center(
+                                                child: child,
+                                              ),
                                             );
                                           },
                                         ),
