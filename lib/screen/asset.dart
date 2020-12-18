@@ -364,15 +364,13 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     );
                   }
 
+                  if (snapshot.hasError) {
+                    return Text(
+                      'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                    );
+                  }
+
                   if (snapshot.hasData) {
-                    final data = snapshot.data;
-
-                    if (data == null) {
-                      return Text(
-                        'Sorry. It was not possible to check for Non-Fungible Tokens.',
-                      );
-                    }
-
                     final ids = snapshot.data as List;
 
                     if (ids.isEmpty) {
@@ -488,7 +486,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     );
                   }
 
-                  return Center(child: CircularProgressIndicator());
+                  return Text(
+                    'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                  );
                 },
               )
             ],
