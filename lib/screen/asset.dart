@@ -217,79 +217,83 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               Gap(20),
               Padding(
                 padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (widget.aasset.type == AssetType.fungible)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.aasset.type == AssetType.fungible)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Balance',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            Gap(4),
+                            FutureBuilder(
+                              future: balance,
+                              builder: (context, snapshot) {
+                                return snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        formatFungibleCurrency(
+                                          metadata:
+                                              widget.aasset.asset.metadata,
+                                          number: snapshot.data,
+                                        ),
+                                      );
+                              },
+                            ),
+                          ],
+                        ),
+                      Row(
                         children: [
-                          Text(
-                            'Balance',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyText1,
+                          _action(
+                            label: 'Buy',
+                            onPressed: () {},
                           ),
-                          Gap(4),
-                          FutureBuilder(
-                            future: balance,
-                            builder: (context, snapshot) {
-                              return snapshot.connectionState ==
-                                      ConnectionState.waiting
-                                  ? SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Text(
-                                      formatFungibleCurrency(
-                                        metadata: widget.aasset.asset.metadata,
-                                        number: snapshot.data,
-                                      ),
-                                    );
+                          Gap(30),
+                          _action(
+                            label: 'Sell',
+                            onPressed: () {},
+                          ),
+                          Gap(30),
+                          _action(
+                            label: 'Transfer',
+                            onPressed: () {
+                              final fungible =
+                                  widget.aasset.asset as FungibleToken;
+
+                              var f = nav.pushFungibleTransfer(
+                                context,
+                                fungible,
+                                balance,
+                              );
+
+                              f.then(
+                                (_) {
+                                  // Query the potentially updated balance.
+                                  setState(() {
+                                    balance = queryBalance(context);
+                                  });
+                                },
+                              );
                             },
                           ),
                         ],
                       ),
-                    Row(
-                      children: [
-                        _action(
-                          label: 'Buy',
-                          onPressed: () {},
-                        ),
-                        Gap(30),
-                        _action(
-                          label: 'Sell',
-                          onPressed: () {},
-                        ),
-                        Gap(30),
-                        _action(
-                          label: 'Transfer',
-                          onPressed: () {
-                            final fungible =
-                                widget.aasset.asset as FungibleToken;
-
-                            var f = nav.pushFungibleTransfer(
-                              context,
-                              fungible,
-                              balance,
-                            );
-
-                            f.then(
-                              (_) {
-                                // Query the potentially updated balance.
-                                setState(() {
-                                  balance = queryBalance(context);
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Gap(20),
