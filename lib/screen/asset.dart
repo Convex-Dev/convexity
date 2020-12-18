@@ -403,6 +403,33 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                         Positioned.fill(
                                           child: Card(
                                             child: InkWell(
+                                              child: FutureBuilder<Result>(
+                                                future: data,
+                                                builder: (context, snapshot) {
+                                                  final imageTransparent =
+                                                      Image.memory(
+                                                          kTransparentImage);
+
+                                                  if (snapshot.hasData) {
+                                                    if (snapshot
+                                                            .data.errorCode !=
+                                                        null) {
+                                                      return imageTransparent;
+                                                    }
+
+                                                    return FadeInImage
+                                                        .memoryNetwork(
+                                                      placeholder:
+                                                          kTransparentImage,
+                                                      image: snapshot.data
+                                                              .value['uri'] ??
+                                                          'https://vejasp.abril.com.br/wp-content/uploads/2016/11/13442__retirantes_-1944-de-candido-portinari-jpg.jpeg?quality=70&strip=info&w=1024',
+                                                    );
+                                                  }
+
+                                                  return imageTransparent;
+                                                },
+                                              ),
                                               onTap: () {
                                                 final f =
                                                     nav.pushNonFungibleToken(
@@ -423,11 +450,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                                   },
                                                 );
                                               },
-                                              child: FadeInImage.memoryNetwork(
-                                                placeholder: kTransparentImage,
-                                                image:
-                                                    'https://vejasp.abril.com.br/wp-content/uploads/2016/11/13442__retirantes_-1944-de-candido-portinari-jpg.jpeg?quality=70&strip=info&w=1024',
-                                              ),
                                             ),
                                           ),
                                         ),
