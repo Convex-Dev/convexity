@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 import 'convex.dart';
+
+String showDecimals(int num, int decimals) {
+  if ((decimals < 1) || (decimals > 12)) throw ("Decimals out of range");
+
+  if (num < 0) throw ("Negative number");
+
+  int divisor = 10 ^ decimals;
+  int x = num ~/ divisor;
+  int y = num % divisor;
+
+  return x.toString() +
+      '.' +
+      NumberFormat("000000000000".substring(0, decimals), null).format(y);
+}
 
 String formatFungibleCurrency({
   @required FungibleTokenMetadata metadata,
   @required int number,
 }) =>
-    '${metadata.currencySymbol}${number.toStringAsFixed(metadata.decimals)}';
+    metadata.currencySymbol + showDecimals(number, metadata.decimals);
