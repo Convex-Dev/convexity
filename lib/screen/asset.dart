@@ -126,7 +126,10 @@ class AssetScreen extends StatelessWidget {
       floatingActionButton: _aasset.type == AssetType.nonFungible
           ? FloatingActionButton(
               child: Icon(Icons.add),
-              onPressed: () => nav.pushNewNonFungibleToken(context),
+              onPressed: () => nav.pushNewNonFungibleToken(
+                context,
+                nonFungibleToken: _aasset.asset as NonFungibleToken,
+              ),
             )
           : null,
     );

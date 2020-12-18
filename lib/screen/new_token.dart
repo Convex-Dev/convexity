@@ -89,8 +89,8 @@ class _CreateTokenState extends State<_CreateToken> {
               holderSecretKey: appState.model.activeKeyPair.sk,
               supply: _newFungibleToken.supply,
             );
-      } on Exception catch (e) {
-        print('Failed to create Token: $e');
+      } on Exception catch (e, s) {
+        print('Failed to create Token: $e $s');
 
         setState(() {
           _newTokenStatus = _NewTokenStatus.creatingTokenError;
@@ -100,6 +100,8 @@ class _CreateTokenState extends State<_CreateToken> {
       }
 
       if (myTokenResult.errorCode != null) {
+        print('Failed to create Token: ${myTokenResult.value}');
+
         setState(() {
           _newTokenStatus = _NewTokenStatus.creatingTokenError;
         });
