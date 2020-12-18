@@ -77,9 +77,24 @@ class _NonFungibleTokenScreenBodyState
                 return Center(child: CircularProgressIndicator());
               },
             ),
-            FadeInImage.memoryNetwork(
-              placeholder: kTransparentImage,
-              image: demoImage,
+            FutureBuilder<Result>(
+              future: widget.data,
+              builder: (context, snapshot) {
+                final imageTransparent = Image.memory(kTransparentImage);
+
+                if (snapshot.hasData) {
+                  if (snapshot.data.errorCode != null) {
+                    return imageTransparent;
+                  }
+
+                  return FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: snapshot.data.value['uri'] ?? demoImage,
+                  );
+                }
+
+                return imageTransparent;
+              },
             ),
             ElevatedButton(
               child: Text('Transfer'),
