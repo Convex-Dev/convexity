@@ -136,7 +136,7 @@ class AssetScreenBody extends StatefulWidget {
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  Future<int> balance;
+  Future<dynamic> balance;
 
   Widget _info() => StatelessWidgetBuilder((context) => Card(
         child: Padding(
@@ -328,12 +328,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Widget _nonFungible() => StatelessWidgetBuilder((context) {
         final appState = context.watch<AppState>();
 
-        // Balance for NonFungible is a set of IDs.
-        final balance = appState.assetLibrary().balance(
-              asset: widget.aasset.asset.address as Address,
-              owner: appState.model.activeAddress,
-            );
-
         final convexClient = appState.convexClient();
 
         return Padding(
@@ -479,15 +473,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
       });
 
   /// Check the user's balance for this Token.
-  Future<int> queryBalance(BuildContext context) {
+  Future<dynamic> queryBalance(BuildContext context) {
     var appState = context.read<AppState>();
 
-    var fungible = widget.aasset.asset as FungibleToken;
-
-    // Check the user's balance for this Token.
-    return appState.fungibleClient().balance(
-          token: fungible.address,
-          holder: appState.model.activeAddress,
+    return appState.assetLibrary().balance(
+          asset: widget.aasset.asset.address,
+          owner: appState.model.activeAddress,
         );
   }
 
@@ -495,9 +486,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   void initState() {
     super.initState();
 
-    if (widget.aasset.type == AssetType.fungible) {
-      balance = queryBalance(context);
-    }
+    balance = queryBalance(context);
   }
 
   @override
