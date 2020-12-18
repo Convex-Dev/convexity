@@ -402,6 +402,14 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       children: [
                                         Positioned.fill(
                                           child: Card(
+                                            semanticContainer: true,
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            elevation: 5,
                                             child: InkWell(
                                               child: FutureBuilder<Result>(
                                                 future: data,
