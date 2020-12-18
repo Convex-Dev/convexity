@@ -463,7 +463,18 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                                 ),
                                               );
                                             } else {
-                                              child = Text('');
+                                              child = Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                  ),
+                                                ),
+                                              );
                                             }
 
                                             return AnimatedSwitcher(
