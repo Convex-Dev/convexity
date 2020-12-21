@@ -151,6 +151,7 @@ Widget fungibleTokenCard({
             Text(
               fungible.metadata.name,
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyText1,
             ),
             Gap(10),
