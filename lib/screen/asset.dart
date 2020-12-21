@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -387,11 +389,13 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       return Text("You don't own any Non-Fungible Token.");
                     }
 
-                    final columnCount = 4;
+                    final columnCount = 2;
 
                     return Expanded(
                       child: AnimationLimiter(
                         child: GridView.count(
+                          crossAxisSpacing: 6,
+                          mainAxisSpacing: 6,
                           crossAxisCount: columnCount,
                           children: ids.asMap().entries.map(
                             (entry) {
@@ -407,59 +411,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                 columnCount: columnCount,
                                 child: ScaleAnimation(
                                   child: FadeInAnimation(
-                                    child: Stack(
-                                      children: [
-                                        Positioned.fill(
-                                          child: _nonFungibleTokenCard(
-                                            tokenId: entry.value as int,
-                                            data: data,
-                                          ),
-                                        ),
-                                        FutureBuilder<Result>(
-                                          future: data,
-                                          builder: (context, snapshot) {
-                                            var child;
-
-                                            if (snapshot.hasData) {
-                                              child = Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                child: Text(
-                                                  '#${entry.value} ${snapshot.data.value['name']}',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              );
-                                            } else {
-                                              child = Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                child: SizedBox(
-                                                  width: 20,
-                                                  height: 20,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                  ),
-                                                ),
-                                              );
-                                            }
-
-                                            return AnimatedSwitcher(
-                                              duration: const Duration(
-                                                milliseconds: 400,
-                                              ),
-                                              child: Center(
-                                                child: child,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
+                                    child: _nonFungibleToken(
+                                      tokenId: entry.value as int,
+                                      data: data,
                                     ),
                                   ),
                                 ),
@@ -481,41 +435,53 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         );
       });
 
-  Widget _nonFungibleTokenCard({
+  Widget _nonFungibleToken({
     int tokenId,
     Future<Result> data,
   }) =>
-      StatelessWidgetBuilder(
-        (context) => Card(
-          semanticContainer: true,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          elevation: 5,
-          child: InkWell(
-            child: FutureBuilder<Result>(
-              future: data,
-              builder: (context, snapshot) {
-                final imageTransparent = Image.memory(kTransparentImage);
+      FutureBuilder<Result>(
+        future: data,
+        builder: (context, snapshot) {
+          final subtitle = AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            child: snapshot.connectionState == ConnectionState.waiting
+                ? Text('')
+                : (snapshot.data.errorCode != null
+                    ? Text('')
+                    : Text(snapshot.data.value['name'])),
+          );
 
-                if (snapshot.hasData) {
-                  if (snapshot.data.errorCode != null) {
-                    return imageTransparent;
-                  }
+          final child = AnimatedSwitcher(
+            duration: Duration(milliseconds: 500),
+            child: snapshot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  )
+                : (snapshot.data.value['uri'] == null
+                    ? Icon(
+                        Icons.image,
+                        size: 40,
+                      )
+                    : FadeInImage.memoryNetwork(
+                        placeholder: kTransparentImage,
+                        image: snapshot.data.value['uri'],
+                      )),
+          );
 
-                  if (snapshot.data.value['uri'] == null) {
-                    return imageTransparent;
-                  }
-
-                  return FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: snapshot.data.value['uri'],
-                  );
-                }
-
-                return imageTransparent;
-              },
+          return InkWell(
+            child: GridTile(
+              footer: GridTileBar(
+                title: Text('#$tokenId'),
+                subtitle: subtitle,
+                backgroundColor: Colors.black45,
+              ),
+              child: child,
             ),
             onTap: () {
               final f = nav.pushNonFungibleToken(
@@ -534,8 +500,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 },
               );
             },
-          ),
-        ),
+          );
+        },
       );
 
   /// Check the user's balance for this Token.
