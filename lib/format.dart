@@ -21,4 +21,7 @@ String formatFungibleCurrency({
   @required FungibleTokenMetadata metadata,
   @required int number,
 }) =>
-    metadata.currencySymbol + showDecimals(number, metadata.decimals);
+    metadata.currencySymbol +
+    (metadata.decimals == 0
+        ? number.toString()
+        : showDecimals(number, metadata.decimals));
