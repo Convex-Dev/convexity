@@ -42,9 +42,6 @@ class NonFungibleTokenScreenBody extends StatefulWidget {
 
 class _NonFungibleTokenScreenBodyState
     extends State<NonFungibleTokenScreenBody> {
-  final demoImage =
-      'https://vejasp.abril.com.br/wp-content/uploads/2016/11/13442__retirantes_-1944-de-candido-portinari-jpg.jpeg?quality=70&strip=info&w=1024';
-
   @override
   Widget build(BuildContext context) => Container(
         padding: defaultScreenPadding,
@@ -87,9 +84,13 @@ class _NonFungibleTokenScreenBodyState
                     return imageTransparent;
                   }
 
+                  if (snapshot.data.value['uri'] == null) {
+                    return imageTransparent;
+                  }
+
                   return FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
-                    image: snapshot.data.value['uri'] ?? demoImage,
+                    image: snapshot.data.value['uri'],
                   );
                 }
 
