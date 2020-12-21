@@ -344,6 +344,16 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
               return 'Required';
             }
 
+            final d = int.tryParse(value);
+
+            if (d.isNegative) {
+              return 'Can not be negative';
+            }
+
+            if (d > 12) {
+              return 'Must be between 0 and 12';
+            }
+
             return null;
           },
           onChanged: (value) {
