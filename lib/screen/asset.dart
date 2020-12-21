@@ -410,64 +410,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                     child: Stack(
                                       children: [
                                         Positioned.fill(
-                                          child: Card(
-                                            semanticContainer: true,
-                                            clipBehavior:
-                                                Clip.antiAliasWithSaveLayer,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                            ),
-                                            elevation: 5,
-                                            child: InkWell(
-                                              child: FutureBuilder<Result>(
-                                                future: data,
-                                                builder: (context, snapshot) {
-                                                  final imageTransparent =
-                                                      Image.memory(
-                                                          kTransparentImage);
-
-                                                  if (snapshot.hasData) {
-                                                    if (snapshot
-                                                            .data.errorCode !=
-                                                        null) {
-                                                      return imageTransparent;
-                                                    }
-
-                                                    return FadeInImage
-                                                        .memoryNetwork(
-                                                      placeholder:
-                                                          kTransparentImage,
-                                                      image: snapshot.data
-                                                              .value['uri'] ??
-                                                          'https://vejasp.abril.com.br/wp-content/uploads/2016/11/13442__retirantes_-1944-de-candido-portinari-jpg.jpeg?quality=70&strip=info&w=1024',
-                                                    );
-                                                  }
-
-                                                  return imageTransparent;
-                                                },
-                                              ),
-                                              onTap: () {
-                                                final f =
-                                                    nav.pushNonFungibleToken(
-                                                  context,
-                                                  nonFungibleToken:
-                                                      widget.aasset.asset,
-                                                  tokenId: entry.value,
-                                                  data: data,
-                                                );
-
-                                                f.then(
-                                                  (_) {
-                                                    // Query the potentially updated balance.
-                                                    setState(() {
-                                                      balance =
-                                                          queryBalance(context);
-                                                    });
-                                                  },
-                                                );
-                                              },
-                                            ),
+                                          child: _nonFungibleTokenCard(
+                                            tokenId: entry.value as int,
+                                            data: data,
                                           ),
                                         ),
                                         FutureBuilder<Result>(
@@ -535,6 +480,63 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
           ),
         );
       });
+
+  Widget _nonFungibleTokenCard({
+    int tokenId,
+    Future<Result> data,
+  }) =>
+      StatelessWidgetBuilder(
+        (context) => Card(
+          semanticContainer: true,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          elevation: 5,
+          child: InkWell(
+            child: FutureBuilder<Result>(
+              future: data,
+              builder: (context, snapshot) {
+                final imageTransparent = Image.memory(kTransparentImage);
+
+                if (snapshot.hasData) {
+                  if (snapshot.data.errorCode != null) {
+                    return imageTransparent;
+                  }
+
+                  if (snapshot.data.value['uri'] == null) {
+                    return imageTransparent;
+                  }
+
+                  return FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: snapshot.data.value['uri'],
+                  );
+                }
+
+                return imageTransparent;
+              },
+            ),
+            onTap: () {
+              final f = nav.pushNonFungibleToken(
+                context,
+                nonFungibleToken: widget.aasset.asset,
+                tokenId: tokenId,
+                data: data,
+              );
+
+              f.then(
+                (_) {
+                  // Query the potentially updated balance.
+                  setState(() {
+                    balance = queryBalance(context);
+                  });
+                },
+              );
+            },
+          ),
+        ),
+      );
 
   /// Check the user's balance for this Token.
   Future<dynamic> queryBalance(BuildContext context) {
