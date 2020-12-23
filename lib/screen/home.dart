@@ -144,9 +144,34 @@ class HomeScreenBody extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: Identicon(keyPair: activeKeyPair),
-                    title: Text('100,000,000'),
+                    title: FutureBuilder<Result>(
+                      future: appState.convexClient().query(
+                          source:
+                              '(balance ${appState.model.activeAddress.toString()})'),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (snapshot.data.errorCode != null) {
+                          return Text('-');
+                        }
+
+                        return Text(snapshot.data.value.toString());
+                      },
+                    ),
                     subtitle: Text(
-                      appState.model.activeAddress.toString(),
+                      'Balance',
                       overflow: TextOverflow.ellipsis,
                     ),
                     trailing: InkWell(
