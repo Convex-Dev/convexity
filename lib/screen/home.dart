@@ -145,59 +145,82 @@ class HomeScreenBody extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: Identicon(keyPair: activeKeyPair),
-                    title: FutureBuilder<Result>(
-                      future: appState.convexClient().query(
-                          source:
-                              '(balance ${appState.model.activeAddress.toString()})'),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Align(
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
+                    title: Text(
+                      appState.model.activeAddress.toString(),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      'Address',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.copy),
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: appState.model.activeAddress.toString(),
+                          ),
+                        );
+
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Copied ${appState.model.activeAddress.toString()}',
+                              overflow: TextOverflow.clip,
                             ),
-                          );
-                        }
-
-                        if (snapshot.data.errorCode != null) {
-                          return Text('-');
-                        }
-
-                        return Text(
-                          NumberFormat().format(snapshot.data.value),
+                          ),
                         );
                       },
                     ),
-                    subtitle: Text(
-                      'Balance',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: InkWell(
-                      child: IconButton(
-                        icon: Icon(Icons.copy),
-                        onPressed: () {
-                          Clipboard.setData(
-                            ClipboardData(
-                              text: appState.model.activeAddress.toString(),
-                            ),
-                          );
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ListTile(
+                          title: FutureBuilder<Account>(
+                            future: appState
+                                .convexClient()
+                                .account(address: appState.model.activeAddress),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                );
+                              }
 
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Copied ${appState.model.activeAddress.toString()}',
-                                overflow: TextOverflow.clip,
-                              ),
-                            ),
-                          );
-                        },
+                              if (snapshot.data == null) {
+                                return Text('-');
+                              }
+
+                              return Text(
+                                NumberFormat().format(snapshot.data.balance),
+                              );
+                            },
+                          ),
+                          subtitle: Text('Balance'),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: ListTile(
+                          title: Text('1103'),
+                          subtitle: Text('Memory Size'),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListTile(
+                          title: Text('10'),
+                          subtitle: Text('Sequence'),
+                        ),
+                      )
+                    ],
                   ),
                 ],
               ),
