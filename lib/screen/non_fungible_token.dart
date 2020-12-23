@@ -13,13 +13,20 @@ class NonFungibleTokenScreen extends StatelessWidget {
     final Tuple3<NonFungibleToken, int, Future<Result>> t =
         ModalRoute.of(context).settings.arguments;
 
-    return Scaffold(
-      appBar: AppBar(title: Text('Non-Fungible Token')),
-      body: NonFungibleTokenScreenBody(
-        nonFungibleToken: t.item1,
-        tokenId: t.item2,
-        data: t.item3,
+    return WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(title: Text('Non-Fungible Token')),
+        body: NonFungibleTokenScreenBody(
+          nonFungibleToken: t.item1,
+          tokenId: t.item2,
+          data: t.item3,
+        ),
       ),
+      onWillPop: () async {
+        Navigator.of(context).pop(true);
+
+        return false;
+      },
     );
   }
 }

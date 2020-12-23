@@ -492,11 +492,14 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               );
 
               f.then(
-                (_) {
-                  // Query the potentially updated balance.
-                  setState(() {
-                    balance = queryBalance(context);
-                  });
+                (result) {
+                  // Query balance when 'returning' from a Transfer (result is null).
+                  if (result == null) {
+                    // Query the potentially updated balance.
+                    setState(() {
+                      balance = queryBalance(context);
+                    });
+                  }
                 },
               );
             },
