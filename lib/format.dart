@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +10,7 @@ String showDecimals(int num, int decimals) {
 
   if (num < 0) throw ("Negative number");
 
-  int divisor = 10 ^ decimals;
+  int divisor = pow(10, decimals);
   int x = num ~/ divisor;
   int y = num % divisor;
 
