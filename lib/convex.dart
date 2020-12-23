@@ -55,6 +55,7 @@ enum AccountType {
 }
 
 class Account {
+  final int sequence;
   final Address address;
   final AccountType type;
   final int balance;
@@ -62,6 +63,7 @@ class Account {
   final int memoryAllowance;
 
   Account({
+    this.sequence,
     this.address,
     this.balance,
     this.type,
@@ -73,6 +75,7 @@ class Account {
     var m = convert.jsonDecode(json);
 
     return Account(
+      sequence: m['sequence'],
       address: Address(hex: m['address']),
       balance: m['balance'],
       type: AccountType.user,
@@ -301,6 +304,12 @@ Future<Account> getAccount({
 
   if (response.statusCode != 200) {
     return null;
+  }
+
+  if (config.isDebug()) {
+    logger.d(
+      '[ACCOUNT] ${response.body}',
+    );
   }
 
   return Account.fromJson(response.body);

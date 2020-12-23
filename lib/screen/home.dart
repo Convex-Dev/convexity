@@ -173,54 +173,67 @@ class HomeScreenBody extends StatelessWidget {
                       },
                     ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ListTile(
-                          title: FutureBuilder<Account>(
-                            future: appState
-                                .convexClient()
-                                .account(address: appState.model.activeAddress),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                );
-                              }
+                  FutureBuilder<Account>(
+                    future: appState
+                        .convexClient()
+                        .account(address: appState.model.activeAddress),
+                    builder: (context, snapshot) {
+                      var balance;
+                      var memorySize;
+                      var sequence;
 
-                              if (snapshot.data == null) {
-                                return Text('-');
-                              }
-
-                              return Text(
-                                NumberFormat().format(snapshot.data.balance),
-                              );
-                            },
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        final progress = Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
                           ),
-                          subtitle: Text('Balance'),
-                        ),
-                      ),
-                      Expanded(
-                        child: ListTile(
-                          title: Text('1103'),
-                          subtitle: Text('Memory Size'),
-                        ),
-                      ),
-                      Expanded(
-                        child: ListTile(
-                          title: Text('10'),
-                          subtitle: Text('Sequence'),
-                        ),
-                      )
-                    ],
+                        );
+
+                        balance = progress;
+                        memorySize = progress;
+                        sequence = progress;
+                      } else {
+                        balance = Text(
+                          snapshot.data?.balance == null
+                              ? '-'
+                              : NumberFormat().format(snapshot.data.balance),
+                        );
+
+                        memorySize =
+                            Text(snapshot.data?.memorySize?.toString() ?? '-');
+
+                        sequence =
+                            Text(snapshot.data?.sequence?.toString() ?? '-');
+                      }
+
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: ListTile(
+                              title: balance,
+                              subtitle: Text('Balance'),
+                            ),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              title: memorySize,
+                              subtitle: Text('Memory Size'),
+                            ),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              title: sequence,
+                              subtitle: Text('Sequence'),
+                            ),
+                          )
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
