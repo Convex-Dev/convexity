@@ -1,6 +1,7 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
@@ -85,8 +86,9 @@ class HomeScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeKeyPair =
-        context.watch<AppState>().model.activeKeyPairOrDefault();
+    final appState = context.watch<AppState>();
+
+    final activeKeyPair = appState.model.activeKeyPairOrDefault();
 
     final actions = [
       action(
@@ -143,8 +145,30 @@ class HomeScreenBody extends StatelessWidget {
                   ListTile(
                     leading: Identicon(keyPair: activeKeyPair),
                     title: Text('100,000,000'),
-                    subtitle: SelectableText(
-                      Address.fromKeyPair(activeKeyPair).toString(),
+                    subtitle: Text(
+                      appState.model.activeAddress.toString(),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: InkWell(
+                      child: IconButton(
+                        icon: Icon(Icons.copy),
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: appState.model.activeAddress.toString(),
+                            ),
+                          );
+
+                          Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Copied ${appState.model.activeAddress.toString()}',
+                                overflow: TextOverflow.clip,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],
