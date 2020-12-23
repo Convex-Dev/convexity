@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 
 import '../route.dart' as route;
 import '../nav.dart' as nav;
@@ -167,7 +168,9 @@ class HomeScreenBody extends StatelessWidget {
                           return Text('-');
                         }
 
-                        return Text(snapshot.data.value.toString());
+                        return Text(
+                          NumberFormat().format(snapshot.data.value),
+                        );
                       },
                     ),
                     subtitle: Text(
