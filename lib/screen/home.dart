@@ -85,8 +85,9 @@ class HomeScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var activeKeyPair =
+    final activeKeyPair =
         context.watch<AppState>().model.activeKeyPairOrDefault();
+
     final actions = [
       action(
         context,
@@ -108,26 +109,26 @@ class HomeScreenBody extends StatelessWidget {
         'Transfer',
         () => nav.pushTransfer(context),
       ),
-      action(
-        context,
-        'Faucet',
-        () => showTodoSnackBar(context),
-      ),
-      action(
-        context,
-        'Exchange',
-        () => showTodoSnackBar(context),
-      ),
-      action(
-        context,
-        'Deals',
-        () => showTodoSnackBar(context),
-      ),
-      action(
-        context,
-        'Shop',
-        () => showTodoSnackBar(context),
-      ),
+      // action(
+      //   context,
+      //   'Faucet',
+      //   () => showTodoSnackBar(context),
+      // ),
+      // action(
+      //   context,
+      //   'Exchange',
+      //   () => showTodoSnackBar(context),
+      // ),
+      // action(
+      //   context,
+      //   'Deals',
+      //   () => showTodoSnackBar(context),
+      // ),
+      // action(
+      //   context,
+      //   'Shop',
+      //   () => showTodoSnackBar(context),
+      // ),
     ];
 
     return Padding(
