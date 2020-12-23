@@ -88,7 +88,10 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
     );
   }
 
-  Widget _buildContent({@required String account, @required String label}) {
+  Widget _field({
+    @required String label,
+    @required String value,
+  }) {
     return StatelessWidgetBuilder(
       (context) => Card(
         margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -104,7 +107,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      account,
+                      value,
                       style: TextStyle(fontSize: 16.0),
                     ),
                     Text(
@@ -147,27 +150,27 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               );
             }
 
-            final tiles = [
+            final fields = [
               _addressInfo(account.address.toString()),
-              _buildContent(
-                account: account.type.toString(),
+              _field(
                 label: "Type",
+                value: account.type.toString(),
               ),
-              _buildContent(
-                account: account.balance.toString(),
+              _field(
                 label: "Balance",
+                value: account.balance.toString(),
               ),
-              _buildContent(
-                account: account.memorySize.toString(),
+              _field(
                 label: "Memory Size",
+                value: account.memorySize.toString(),
               ),
-              _buildContent(
-                account: account.memoryAllowance.toString(),
+              _field(
                 label: "Memory Allowance",
+                value: account.memoryAllowance.toString(),
               ),
             ];
 
-            final animated = tiles
+            final animated = fields
                 .asMap()
                 .entries
                 .map(
