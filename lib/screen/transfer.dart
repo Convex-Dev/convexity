@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 
 import '../model.dart';
+import '../nav.dart';
 import '../widget.dart';
 import '../convex.dart' as convex;
 
@@ -99,6 +100,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               },
             ),
             TextFormField(
+              readOnly: true,
               autofocus: false,
               controller: targetController,
               decoration: InputDecoration(
@@ -111,6 +113,15 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 }
 
                 return null;
+              },
+              onTap: () {
+                pushSelectAccount(context).then((selectedAddress) {
+                  if (selectedAddress != null) {
+                    setState(() {
+                      targetController.text = selectedAddress.toString();
+                    });
+                  }
+                });
               },
             ),
             TextFormField(
