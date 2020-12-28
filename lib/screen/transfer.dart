@@ -44,7 +44,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   void transfer({
     BuildContext context,
     Uint8List signerSecretKey,
-    String targetAddress,
+    convex.Address targetAddress,
     int amount,
   }) async {
     setState(() {
@@ -52,8 +52,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     });
 
     var result = await convex.transact2(
-      address: targetAddress,
-      source: '(transfer "$targetAddress" $amount)',
+      address: targetAddress.hex,
+      source: '(transfer 0x${targetAddress.hex} $amount)',
       secretKey: signerSecretKey,
     );
 
@@ -150,7 +150,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                         transfer(
                           context: context,
                           signerSecretKey: appState.model.activeKeyPair.sk,
-                          targetAddress: appState.model.activeAddress?.hex,
+                          targetAddress: appState.model.activeAddress,
                           amount: int.parse(amountController.text),
                         );
                       }
