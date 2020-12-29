@@ -89,6 +89,11 @@ class _FungibleTransferScreenBodyState
   void send(BuildContext context) async {
     var appState = context.read<AppState>();
 
+    final contact = appState.model.contacts.firstWhere(
+      (contact) => contact.address == _receiver,
+      orElse: () => null,
+    );
+
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -117,11 +122,13 @@ class _FungibleTransferScreenBodyState
                     Text(
                       'Transfer $formattedAmount to ',
                     ),
-                    Identicon2(
-                      address: Address.fromHex(_receiverTextController.text),
-                      isAddressVisible: true,
-                      size: 30,
-                    ),
+                    if (contact == null)
+                      Identicon2(
+                        address: Address.fromHex(_receiverTextController.text),
+                        isAddressVisible: true,
+                        size: 30,
+                      ),
+                    Text(contact.name),
                     Text(
                       '?',
                     )
@@ -226,11 +233,13 @@ class _FungibleTransferScreenBodyState
                           Text(
                             'Transfered $formattedAmount to ',
                           ),
-                          Identicon2(
-                            address: _receiver,
-                            isAddressVisible: true,
-                            size: 30,
-                          ),
+                          if (contact == null)
+                            Identicon2(
+                              address: _receiver,
+                              isAddressVisible: true,
+                              size: 30,
+                            ),
+                          Text(contact.name),
                         ],
                       ),
                     ),
