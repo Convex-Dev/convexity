@@ -274,6 +274,13 @@ class _FungibleTransferScreenBodyState
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    final contact = appState.model.contacts.firstWhere(
+      (contact) => contact.address == _receiver,
+      orElse: () => null,
+    );
+
     final replacement = SizedBox(
       width: 120,
       height: 120,
@@ -286,17 +293,18 @@ class _FungibleTransferScreenBodyState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Visibility(
-              visible: _receiver != null,
-              replacement: replacement,
-              child: _receiver == null
-                  ? replacement
-                  : identicon(
-                      _receiver.hex,
-                      height: 120,
-                      width: 120,
-                    ),
-            ),
+            _receiver == null
+                ? replacement
+                : identicon(
+                    _receiver.hex,
+                    height: 120,
+                    width: 120,
+                  ),
+            if (contact != null)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(contact.name),
+              ),
             TextFormField(
               readOnly: true,
               controller: _receiverTextController,
