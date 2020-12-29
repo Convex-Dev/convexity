@@ -2,8 +2,10 @@ import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../widget.dart';
 import './home.dart';
 import './wallet.dart';
 import './account.dart';
@@ -20,6 +22,8 @@ class LauncherScreen extends StatefulWidget {
 }
 
 class _LauncherScreenState extends State<LauncherScreen> {
+  var isCreatingAccount = false;
+
   var currentIndex = 0;
 
   @override
@@ -45,7 +49,10 @@ class _LauncherScreenState extends State<LauncherScreen> {
               ]
             : null,
       ),
-      body: body(context),
+      body: Container(
+        padding: defaultScreenPadding,
+        child: body(context),
+      ),
       bottomNavigationBar: isSignedIn
           ? BottomNavigationBar(
               currentIndex: currentIndex,
@@ -70,20 +77,30 @@ class _LauncherScreenState extends State<LauncherScreen> {
   }
 
   void _createAccount(BuildContext context) async {
-    var randomKeyPair = CryptoSign.randomKeys();
+    try {
+      setState(() {
+        isCreatingAccount = true;
+      });
 
-    var appState = context.read<AppState>();
+      var randomKeyPair = CryptoSign.randomKeys();
 
-    var b = await appState.convexClient().requestForFaucet(
-          address: Address(hex: Sodium.bin2hex(randomKeyPair.pk)),
-          amount: 1000000,
-        );
+      var appState = context.read<AppState>();
 
-    if (b) {
-      appState.addKeyPair(randomKeyPair, isPersistent: true);
-      appState.setActiveKeyPair(randomKeyPair, isPersistent: true);
-    } else {
-      logger.e('Failed to create Account.');
+      var b = await appState.convexClient().requestForFaucet(
+            address: Address(hex: Sodium.bin2hex(randomKeyPair.pk)),
+            amount: 1000000,
+          );
+
+      if (b) {
+        appState.addKeyPair(randomKeyPair, isPersistent: true);
+        appState.setActiveKeyPair(randomKeyPair, isPersistent: true);
+      } else {
+        logger.e('Failed to create Account.');
+      }
+    } finally {
+      setState(() {
+        isCreatingAccount = false;
+      });
     }
   }
 
@@ -92,11 +109,29 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
     if (appState.model.activeKeyPair == null) {
       return Center(
-        child: ElevatedButton(
-          child: Text('Create Account'),
-          onPressed: () {
-            _createAccount(context);
-          },
+        child: Column(
+          children: [
+            Text(
+              'Welcome to Convex',
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            Gap(40),
+            Text(
+              'Convex is an open technology platform for the Internet of Value.\n\n'
+              'Create your own digital assets and powerful decentralised applications for the Digital Economy of tomorrow.',
+              style: TextStyle(color: Colors.black87),
+            ),
+            Gap(20),
+            if (isCreatingAccount)
+              CircularProgressIndicator()
+            else
+              TextButton(
+                child: Text('CREATE ACCOUNT'),
+                onPressed: () {
+                  _createAccount(context);
+                },
+              ),
+          ],
         ),
       );
     }
