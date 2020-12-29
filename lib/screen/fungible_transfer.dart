@@ -281,11 +281,6 @@ class _FungibleTransferScreenBodyState
       orElse: () => null,
     );
 
-    final replacement = SizedBox(
-      width: 120,
-      height: 120,
-    );
-
     return Form(
       key: _formKey,
       child: Container(
@@ -294,7 +289,10 @@ class _FungibleTransferScreenBodyState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _receiver == null
-                ? replacement
+                ? SizedBox(
+                    width: 120,
+                    height: 120,
+                  )
                 : identicon(
                     _receiver.hex,
                     height: 120,
