@@ -290,6 +290,29 @@ class _AssetsCollectionState extends State<AssetsCollection> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
+    if (widget.assets.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info,
+              size: 80,
+              color: Colors.black12,
+            ),
+            Gap(10),
+            Text(
+              'Nothing to show.',
+              style: TextStyle(
+                color: Colors.black45,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return GridView.count(
       primary: false,
       crossAxisSpacing: 10,
