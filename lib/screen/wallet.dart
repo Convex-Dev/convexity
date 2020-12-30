@@ -3,6 +3,7 @@ import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -72,8 +73,6 @@ class WalletScreen extends StatelessWidget {
 
 class WalletScreenBody extends StatelessWidget {
   Widget keyPairCard(BuildContext context, KeyPair keyPair) {
-    final appState = context.watch<AppState>();
-
     return Card(
       child: Column(
         children: [
@@ -117,44 +116,48 @@ class WalletScreenBody extends StatelessWidget {
               future: convex.getAccount(
                   address: convex.Address(hex: Sodium.bin2hex(keyPair.pk))),
               builder: (context, snapshot) {
-                var animatedBalance;
+                var animatedChild;
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  animatedBalance = Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'loading...',
-                          style: TextStyle(color: Colors.red),
-                        ),
+                  animatedChild = SizedBox(
+                    height: 63,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'loading...',
+                        style: TextStyle(color: Colors.black26),
                       ),
                     ),
                   );
                 } else {
-                  animatedBalance = Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      snapshot.data?.balance == null
-                          ? '-'
-                          : NumberFormat().format(snapshot.data.balance),
+                  animatedChild = Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              snapshot.data?.balance == null
+                                  ? '-'
+                                  : NumberFormat()
+                                      .format(snapshot.data.balance),
+                              textAlign: TextAlign.start,
+                            ),
+                            Gap(4),
+                            Text(
+                              'Balance',
+                              style: Theme.of(context).textTheme.caption,
+                            )
+                          ],
+                        ),
+                      ],
                     ),
                   );
                 }
-                return Row(
-                  children: [
-                    Expanded(
-                      child: ListTile(
-                        title: AnimatedSwitcher(
-                          duration: Duration(milliseconds: 500),
-                          child: animatedBalance,
-                        ),
-                        subtitle: Text('Balance'),
-                      ),
-                    ),
-                  ],
+                return AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+                  child: animatedChild,
                 );
               })
         ],
