@@ -127,8 +127,9 @@ class _FungibleTransferScreenBodyState
                         address: Address.fromHex(_receiverTextController.text),
                         isAddressVisible: true,
                         size: 30,
-                      ),
-                    Text(contact.name),
+                      )
+                    else
+                      Text(contact.name),
                     Text(
                       '?',
                     )
@@ -238,8 +239,9 @@ class _FungibleTransferScreenBodyState
                               address: _receiver,
                               isAddressVisible: true,
                               size: 30,
-                            ),
-                          Text(contact.name),
+                            )
+                          else
+                            Text(contact.name),
                         ],
                       ),
                     ),
