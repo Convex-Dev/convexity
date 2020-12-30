@@ -1,5 +1,3 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -7,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
+import '../convex.dart';
+import '../model.dart';
 import '../route.dart' as route;
 import '../nav.dart' as nav;
 import '../widget.dart';
@@ -91,176 +91,167 @@ class HomeScreenBody extends StatelessWidget {
 
     final activeKeyPair = appState.model.activeKeyPairOrDefault();
 
-    final actions = [
-      action(
-        context,
-        'Address Book',
-        () => nav.pushAddressBook(context),
-      ),
-      action(
-        context,
-        'My Tokens',
-        () => nav.pushMyTokens(context),
-      ),
-      action(
-        context,
-        'Assets',
-        () => nav.pushAssets(context),
-      ),
-      action(
-        context,
-        'Transfer',
-        () => nav.pushTransfer(context),
-      ),
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (activeKeyPair != null)
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Identicon(keyPair: activeKeyPair),
-                    title: Text(
-                      appState.model.activeAddress.toString(),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      'Address',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.copy),
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: appState.model.activeAddress.toString(),
-                          ),
-                        );
-
-                        Scaffold.of(context)
-                          ..removeCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Copied ${appState.model.activeAddress.toString()}',
-                                overflow: TextOverflow.clip,
-                              ),
-                            ),
-                          );
-                      },
-                    ),
-                  ),
-                  FutureBuilder<Account>(
-                    future: appState
-                        .convexClient()
-                        .account(address: appState.model.activeAddress),
-                    builder: (context, snapshot) {
-                      var animatedChild;
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        animatedChild = SizedBox(
-                          height: 63,
-                          child: Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Text(
-                              'loading...',
-                              style: TextStyle(color: Colors.black38),
-                            ),
-                          ),
-                        );
-                      } else {
-                        animatedChild = Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    (snapshot.data?.balance == null
-                                        ? '-'
-                                        : NumberFormat()
-                                            .format(snapshot.data.balance)),
-                                    textAlign: TextAlign.start,
-                                  ),
-                                  Text(
-                                    'Balance',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    (snapshot.data?.memorySize?.toString() ??
-                                        '-'),
-                                    textAlign: TextAlign.start,
-                                  ),
-                                  Text(
-                                    'Memory Size',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    snapshot.data?.sequence?.toString() ?? '-',
-                                  ),
-                                  Text(
-                                    'Sequence',
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        );
-                      }
-
-                      return AnimatedSwitcher(
-                        duration: Duration(milliseconds: 500),
-                        child: animatedChild,
-                      );
-                    },
-                  ),
-                ],
+    final widgets = [
+      Card(
+        child: Column(
+          children: [
+            ListTile(
+              leading: Identicon(keyPair: activeKeyPair),
+              title: Text(
+                appState.model.activeAddress.toString(),
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          Gap(20),
-          Expanded(
-            child: AnimationLimiter(
-              child: GridView.count(
-                primary: false,
-                padding: const EdgeInsets.all(20),
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 24,
-                crossAxisCount: 4,
-                children: actions
-                    .asMap()
-                    .entries
-                    .map(
-                      (e) => AnimationConfiguration.staggeredGrid(
-                        position: e.key,
-                        columnCount: 4,
-                        child: ScaleAnimation(
-                          child: FadeInAnimation(child: e.value),
+              subtitle: Text(
+                'Address',
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: appState.model.activeAddress.toString(),
+                    ),
+                  );
+
+                  Scaffold.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Copied ${appState.model.activeAddress.toString()}',
+                          overflow: TextOverflow.clip,
                         ),
                       ),
-                    )
-                    .toList(),
+                    );
+                },
+              ),
+            ),
+            FutureBuilder<Account>(
+              future: appState
+                  .convexClient()
+                  .account(address: appState.model.activeAddress),
+              builder: (context, snapshot) {
+                var animatedChild;
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  animatedChild = SizedBox(
+                    height: 63,
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        'loading...',
+                        style: TextStyle(color: Colors.black38),
+                      ),
+                    ),
+                  );
+                } else {
+                  animatedChild = Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (snapshot.data?.balance == null
+                                  ? '-'
+                                  : NumberFormat()
+                                      .format(snapshot.data.balance)),
+                              textAlign: TextAlign.start,
+                            ),
+                            Text(
+                              'Balance',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              (snapshot.data?.memorySize?.toString() ?? '-'),
+                              textAlign: TextAlign.start,
+                            ),
+                            Text(
+                              'Memory Size',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              snapshot.data?.sequence?.toString() ?? '-',
+                            ),
+                            Text(
+                              'Sequence',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                }
+
+                return AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+                  child: animatedChild,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      ListTile(
+        leading: Icon(Icons.contacts),
+        title: Text('Address Book'),
+        subtitle: Text('View and create Contacts.'),
+        onTap: () => nav.pushAddressBook(context),
+      ),
+      ListTile(
+        leading: Icon(Icons.money),
+        title: Text('My Tokens'),
+        subtitle: Text('View and create Fungible Tokens.'),
+        onTap: () => nav.pushMyTokens(context),
+      ),
+      ListTile(
+        leading: Icon(Icons.videogame_asset_rounded),
+        title: Text('Assets'),
+        subtitle: Text('Follow Assets you are interested.'),
+        onTap: () => nav.pushAssets(context),
+      ),
+      ListTile(
+        leading: Icon(Icons.send),
+        title: Text('Transfer'),
+        subtitle: Text('Transfer Convex coins.'),
+        onTap: () => nav.pushTransfer(context),
+      )
+    ];
+
+    final animated = widgets
+        .asMap()
+        .entries
+        .map(
+          (e) => AnimationConfiguration.staggeredList(
+            position: e.key,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: e.value,
               ),
             ),
           ),
-        ],
+        )
+        .toList();
+
+    return AnimationLimiter(
+      child: ListView(
+        children: animated,
       ),
     );
   }
