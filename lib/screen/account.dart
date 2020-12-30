@@ -57,15 +57,9 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name',
+                      'Address',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    Gap(4),
-                    Text(
-                      'description',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyText2,
                     ),
                     Gap(4),
                     SelectableText(
