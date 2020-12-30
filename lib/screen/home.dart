@@ -112,26 +112,6 @@ class HomeScreenBody extends StatelessWidget {
         'Transfer',
         () => nav.pushTransfer(context),
       ),
-      // action(
-      //   context,
-      //   'Faucet',
-      //   () => showTodoSnackBar(context),
-      // ),
-      // action(
-      //   context,
-      //   'Exchange',
-      //   () => showTodoSnackBar(context),
-      // ),
-      // action(
-      //   context,
-      //   'Deals',
-      //   () => showTodoSnackBar(context),
-      // ),
-      // action(
-      //   context,
-      //   'Shop',
-      //   () => showTodoSnackBar(context),
-      // ),
     ];
 
     return Padding(
@@ -178,60 +158,74 @@ class HomeScreenBody extends StatelessWidget {
                         .convexClient()
                         .account(address: appState.model.activeAddress),
                     builder: (context, snapshot) {
-                      var balance;
-                      var memorySize;
-                      var sequence;
+                      var animatedChild;
 
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        final progress = Align(
-                          alignment: Alignment.centerLeft,
-                          child: SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
+                        animatedChild = SizedBox(
+                          height: 63,
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              'loading...',
+                              style: TextStyle(color: Colors.black38),
                             ),
                           ),
                         );
-
-                        balance = progress;
-                        memorySize = progress;
-                        sequence = progress;
                       } else {
-                        balance = Text(
-                          snapshot.data?.balance == null
-                              ? '-'
-                              : NumberFormat().format(snapshot.data.balance),
+                        animatedChild = Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    (snapshot.data?.balance == null
+                                        ? '-'
+                                        : NumberFormat()
+                                            .format(snapshot.data.balance)),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  Text(
+                                    'Balance',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    (snapshot.data?.memorySize?.toString() ??
+                                        '-'),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  Text(
+                                    'Memory Size',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(snapshot.data?.sequence?.toString() ??
+                                      '-'),
+                                  Text(
+                                    'Sequence',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
                         );
-
-                        memorySize =
-                            Text(snapshot.data?.memorySize?.toString() ?? '-');
-
-                        sequence =
-                            Text(snapshot.data?.sequence?.toString() ?? '-');
                       }
 
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: ListTile(
-                              title: balance,
-                              subtitle: Text('Balance'),
-                            ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: memorySize,
-                              subtitle: Text('Memory Size'),
-                            ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: sequence,
-                              subtitle: Text('Sequence'),
-                            ),
-                          )
-                        ],
+                      return AnimatedSwitcher(
+                        duration: Duration(milliseconds: 500),
+                        child: animatedChild,
                       );
                     },
                   ),
