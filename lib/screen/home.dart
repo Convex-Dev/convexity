@@ -210,8 +210,9 @@ class HomeScreenBody extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(snapshot.data?.sequence?.toString() ??
-                                      '-'),
+                                  Text(
+                                    snapshot.data?.sequence?.toString() ?? '-',
+                                  ),
                                   Text(
                                     'Sequence',
                                     style: Theme.of(context).textTheme.caption,
