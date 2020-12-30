@@ -142,14 +142,16 @@ class HomeScreenBody extends StatelessWidget {
                           ),
                         );
 
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Copied ${appState.model.activeAddress.toString()}',
-                              overflow: TextOverflow.clip,
+                        Scaffold.of(context)
+                          ..removeCurrentSnackBar()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Copied ${appState.model.activeAddress.toString()}',
+                                overflow: TextOverflow.clip,
+                              ),
                             ),
-                          ),
-                        );
+                          );
                       },
                     ),
                   ),
