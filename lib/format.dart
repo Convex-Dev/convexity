@@ -26,4 +26,4 @@ String formatFungibleCurrency({
     metadata.currencySymbol +
     (metadata.decimals == 0
         ? number.toString()
-        : showDecimals(number, metadata.decimals));
+        : showDecimals(number * pow(10, metadata.decimals), metadata.decimals));

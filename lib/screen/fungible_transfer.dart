@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -94,14 +96,14 @@ class _FungibleTransferScreenBodyState
       orElse: () => null,
     );
 
+    var formattedAmount = formatFungibleCurrency(
+      metadata: widget.token.metadata,
+      number: _amount,
+    );
+
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
-        var formattedAmount = formatFungibleCurrency(
-          metadata: widget.token.metadata,
-          number: _amount,
-        );
-
         return Container(
           height: 300,
           child: Column(
@@ -210,11 +212,6 @@ class _FungibleTransferScreenBodyState
                     ],
                   );
                 }
-
-                var formattedAmount = formatFungibleCurrency(
-                  metadata: widget.token.metadata,
-                  number: _amount,
-                );
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
