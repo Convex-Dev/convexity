@@ -6,7 +6,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../convex.dart';
-import '../logger.dart';
 import '../model.dart';
 
 class AccountScreen extends StatelessWidget {
