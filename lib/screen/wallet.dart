@@ -1,5 +1,7 @@
+import 'package:convex_wallet/logger.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -86,43 +88,69 @@ class WalletScreenBody extends StatelessWidget {
               convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
               overflow: TextOverflow.ellipsis,
             ),
+            subtitle: Text('address'),
             onTap: () => nav.pushAccount(
               context,
               convex.Address(
                 hex: Sodium.bin2hex(keyPair.pk),
               ),
             ),
+            trailing: IconButton(
+              icon: Icon(Icons.copy),
+              onPressed: () {
+                Clipboard.setData(
+                  ClipboardData(
+                    text: convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
+                  ),
+                );
+
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'Copied ${convex.prefix0x(Sodium.bin2hex(keyPair.pk))}'),
+                  ),
+                );
+              },
+            ),
           ),
           FutureBuilder(
-              future: appState
-                  .convexClient()
-                  .account(address: appState.model.activeAddress),
+              future: convex.getAccount(
+                  address: convex.Address(hex: Sodium.bin2hex(keyPair.pk))),
               builder: (context, snapshot) {
-                var balance;
+                var animatedBalance;
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  final progress = Align(
+                  animatedBalance = Align(
                     alignment: Alignment.centerLeft,
                     child: SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'loading...',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                     ),
                   );
-                  balance = progress;
                 } else {
-                  balance = Text(
-                    snapshot.data?.balance == null
-                        ? '-'
-                        : NumberFormat().format(snapshot.data.balance),
+                  animatedBalance = Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      snapshot.data?.balance == null
+                          ? '-'
+                          : NumberFormat().format(snapshot.data.balance),
+                    ),
                   );
                 }
                 return Row(
                   children: [
                     Expanded(
                       child: ListTile(
-                        title: balance,
+                        title: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 500),
+                          child: animatedBalance,
+                        ),
                         subtitle: Text('Balance'),
                       ),
                     ),
