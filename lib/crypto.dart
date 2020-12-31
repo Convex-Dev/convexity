@@ -43,4 +43,14 @@ String encodePrivateKeyPEM(Uint8List privateKey) {
   return '-----BEGIN PRIVATE KEY-----\n$encoded\n-----END PRIVATE KEY-----';
 }
 
-Uint8List decodeSecretKeyPEM(String pem) {}
+Uint8List decodePrivateKeyPEM(String pem) {
+  final encoded = pem.split('\n')[1];
+
+  final decoded = base64.decode(encoded);
+
+  final privateKeySequence = ASN1Parser(decoded).nextObject() as ASN1Sequence;
+
+  final privateKeyBitString = privateKeySequence.elements[1] as ASN1BitString;
+
+  return Uint8List.fromList(privateKeyBitString.stringValue);
+}

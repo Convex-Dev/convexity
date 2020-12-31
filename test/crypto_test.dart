@@ -13,5 +13,12 @@ void main() {
 
       expect(decodedPublicKey, randomKeyPair.pk);
     });
+
+    test('Private Key', () {
+      final pem = crypto.encodePrivateKeyPEM(randomKeyPair.sk);
+      final decodedSecretKey = crypto.decodePrivateKeyPEM(pem);
+
+      expect(decodedSecretKey, randomKeyPair.sk);
+    });
   });
 }
