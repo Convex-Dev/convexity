@@ -1,0 +1,17 @@
+import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../lib/crypto.dart' as crypto;
+
+void main() {
+  group('PEM encode & decode', () {
+    final randomKeyPair = CryptoSign.randomKeys();
+
+    test('Public Key', () {
+      final pem = crypto.encodePublicKeyPEM(randomKeyPair.pk);
+      final decodedPublicKey = crypto.decodePublicKeyPEM(pem);
+
+      expect(decodedPublicKey, randomKeyPair.pk);
+    });
+  });
+}

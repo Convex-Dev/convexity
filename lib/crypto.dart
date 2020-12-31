@@ -30,7 +30,7 @@ Uint8List decodePublicKeyPEM(String pem) {
   return Uint8List.fromList(publicKeyBitString.stringValue);
 }
 
-String encodeSecretKeyPEM(Uint8List privateKey) {
+String encodePrivateKeyPEM(Uint8List privateKey) {
   final privateKeySequence = ASN1Sequence()
     ..add(ASN1Integer(BigInt.from(1)))
     ..add(ASN1BitString(privateKey))
