@@ -3,14 +3,14 @@ import 'dart:typed_data';
 
 import 'package:asn1lib/asn1lib.dart';
 
-String encodePublicKeyPEM(Uint8List pk) {
+String encodePublicKeyPEM(Uint8List publicKey) {
   final algorithm = ASN1ObjectIdentifier([1, 3, 101, 100]);
 
   final algorithmIdentifier = ASN1Sequence()..add(algorithm);
 
   final subjectPublicKeyInfo = ASN1Sequence()
     ..add(algorithmIdentifier)
-    ..add(ASN1BitString(pk));
+    ..add(ASN1BitString(publicKey));
 
   final encoded = base64.encode(subjectPublicKeyInfo.encodedBytes);
 
@@ -29,3 +29,16 @@ Uint8List decodePublicKeyPEM(String pem) {
 
   return Uint8List.fromList(publicKeyBitString.stringValue);
 }
+
+String encodeSecretKeyPEM(Uint8List privateKey) {
+  final privateKeySequence = ASN1Sequence()
+    ..add(ASN1Integer(BigInt.from(1)))
+    ..add(ASN1BitString(privateKey))
+    ..add(ASN1ObjectIdentifier([1, 3, 101, 100]));
+
+  final encoded = base64.encode(privateKeySequence.encodedBytes);
+
+  return '-----BEGIN PRIVATE KEY-----\n$encoded\n-----END PRIVATE KEY-----';
+}
+
+Uint8List decodeSecretKeyPEM(String pem) {}
