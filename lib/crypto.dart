@@ -16,3 +16,16 @@ String encodePublicKeyPEM(Uint8List pk) {
 
   return '-----BEGIN PUBLIC KEY-----\n$encoded\n-----END PUBLIC KEY-----';
 }
+
+Uint8List decodePublicKeyPEM(String pem) {
+  final encoded = pem.split('\n')[1];
+
+  final decoded = base64.decode(encoded);
+
+  final subjectPublicKeyInfo = ASN1Parser(decoded).nextObject() as ASN1Sequence;
+
+  final publicKeyBitString =
+      subjectPublicKeyInfo.elements.last as ASN1BitString;
+
+  return Uint8List.fromList(publicKeyBitString.stringValue);
+}
