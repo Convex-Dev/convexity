@@ -12,6 +12,9 @@ void main() {
       final decodedPublicKey = crypto.decodePublicKeyPEM(pem);
 
       expect(decodedPublicKey, randomKeyPair.pk);
+
+      // Encoded PEM must be the same if we encode from the decoded key.
+      expect(pem, crypto.encodePublicKeyPEM(decodedPublicKey));
     });
 
     test('Private Key', () {
@@ -19,6 +22,9 @@ void main() {
       final decodedSecretKey = crypto.decodePrivateKeyPEM(pem);
 
       expect(decodedSecretKey, randomKeyPair.sk);
+
+      // Encoded PEM must be the same if we encode from the decoded key.
+      expect(pem, crypto.encodePrivateKeyPEM(decodedSecretKey));
     });
   });
 }
