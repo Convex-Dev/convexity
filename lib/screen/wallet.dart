@@ -87,7 +87,7 @@ class WalletScreenBody extends StatelessWidget {
               convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
               overflow: TextOverflow.ellipsis,
             ),
-            subtitle: Text('address'),
+            subtitle: Text('Address'),
             onTap: () => nav.pushAccount(
               context,
               convex.Address(
@@ -144,7 +144,6 @@ class WalletScreenBody extends StatelessWidget {
                                       .format(snapshot.data.balance),
                               textAlign: TextAlign.start,
                             ),
-                            Gap(4),
                             Text(
                               'Balance',
                               style: Theme.of(context).textTheme.caption,
@@ -181,7 +180,6 @@ class WalletScreenBody extends StatelessWidget {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(8),
       children: allKeyPairs
           .map((_keypair) => keyPairCard(context, _keypair))
           .toList(),
