@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +78,8 @@ class _CreateTokenState extends State<_CreateToken> {
       _result = await appState.fungibleClient().createToken(
             holder: appState.model.activeAddress,
             holderSecretKey: appState.model.activeKeyPair.sk,
-            supply: _newFungibleToken.supply,
+            supply:
+                _newFungibleToken.supply * pow(10, _newFungibleToken.decimals),
           );
     } on Exception catch (e, s) {
       logger.e('Failed to create Token: $e $s');

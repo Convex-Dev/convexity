@@ -355,7 +355,8 @@ class _FungibleTransferScreenBodyState
               },
               onChanged: (value) {
                 setState(() {
-                  _amount = int.tryParse(value);
+                  _amount = num.tryParse(value) *
+                      pow(10, widget.token.metadata.decimals);
                 });
               },
             ),
