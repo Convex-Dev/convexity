@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../logger.dart';
 import '../route.dart' as route;
 
 enum _NewTokenStatus {
@@ -57,6 +58,8 @@ class _CreateToken extends StatefulWidget {
 class _CreateTokenState extends State<_CreateToken> {
   var _newTokenStatus = _NewTokenStatus.creatingToken;
 
+  Result _newTokenResult;
+
   void createToken() async {
     // The process of creating a new user-defined Token on the Convex Network is divided in 2 steps:
     // 1. Deploy/create the Token;
@@ -66,30 +69,34 @@ class _CreateTokenState extends State<_CreateToken> {
 
     final _newFungibleToken = widget.newToken;
 
-    Result myTokenResult;
+    Result _result;
 
     // Step 1 - deploy.
     try {
-      myTokenResult = await appState.fungibleClient().createToken(
+      _result = await appState.fungibleClient().createToken(
             holder: appState.model.activeAddress,
             holderSecretKey: appState.model.activeKeyPair.sk,
             supply: _newFungibleToken.supply,
           );
     } on Exception catch (e, s) {
-      print('Failed to create Token: $e $s');
+      logger.e('Failed to create Token: $e $s');
 
       setState(() {
         _newTokenStatus = _NewTokenStatus.creatingTokenError;
+        _newTokenResult = _result;
       });
 
       return;
     }
 
-    if (myTokenResult.errorCode != null) {
-      print('Failed to create Token: ${myTokenResult.value}');
+    if (_result.errorCode != null) {
+      logger.e(
+        'Failed to create Token: (${_result.errorCode}) ${_result.value}',
+      );
 
       setState(() {
         _newTokenStatus = _NewTokenStatus.creatingTokenError;
+        _newTokenResult = _result;
       });
 
       return;
@@ -105,7 +112,7 @@ class _CreateTokenState extends State<_CreateToken> {
     );
 
     var fungible = FungibleToken(
-      address: Address(hex: myTokenResult.value as String),
+      address: Address(hex: _result.value as String),
       metadata: metadata,
     );
 
@@ -131,6 +138,7 @@ class _CreateTokenState extends State<_CreateToken> {
 
       setState(() {
         _newTokenStatus = _NewTokenStatus.registeringTokenError;
+        _newTokenResult = _result;
       });
 
       return;
@@ -139,6 +147,7 @@ class _CreateTokenState extends State<_CreateToken> {
     if (registerResult.errorCode != null) {
       setState(() {
         _newTokenStatus = _NewTokenStatus.registeringTokenError;
+        _newTokenResult = _result;
       });
 
       return;
@@ -151,6 +160,7 @@ class _CreateTokenState extends State<_CreateToken> {
 
     setState(() {
       _newTokenStatus = _NewTokenStatus.success;
+      _newTokenResult = _result;
     });
   }
 
@@ -183,7 +193,13 @@ class _CreateTokenState extends State<_CreateToken> {
               size: 80,
               color: Colors.black12,
             ),
-            const Text('Sorry. It was not possible to create your Token.'),
+            const Text(
+              'Sorry. It was not possible to create your Token.',
+            ),
+            if (_newTokenResult != null)
+              Text(
+                '${_newTokenResult.errorCode}: ${_newTokenResult.value}',
+              ),
             ElevatedButton(
               child: const Text('Okay'),
               onPressed: () => Navigator.pop(context),
