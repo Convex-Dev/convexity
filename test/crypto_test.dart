@@ -9,6 +9,9 @@ void main() {
 
     test('Public Key', () {
       final pem = crypto.encodePublicKeyPEM(randomKeyPair.pk);
+
+      print(pem);
+
       final decodedPublicKey = crypto.decodePublicKeyPEM(pem);
 
       expect(decodedPublicKey, randomKeyPair.pk);
@@ -19,6 +22,9 @@ void main() {
 
     test('Private Key', () {
       final pem = crypto.encodePrivateKeyPEM(randomKeyPair.sk);
+
+      print(pem);
+
       final decodedSecretKey = crypto.decodePrivateKeyPEM(pem);
 
       expect(decodedSecretKey, randomKeyPair.sk);
