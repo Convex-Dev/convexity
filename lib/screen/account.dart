@@ -100,11 +100,11 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      value,
+                      label,
                       style: TextStyle(fontSize: 16.0),
                     ),
                     Text(
-                      label,
+                      value,
                       style: TextStyle(fontSize: 16.0),
                     ),
                   ],
@@ -145,10 +145,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
 
             final fields = [
               _addressInfo(account.address.toString()),
-              _field(
-                label: "Type",
-                value: account.type.toString(),
-              ),
               _field(
                 label: "Balance",
                 value: account.balance.toString(),
