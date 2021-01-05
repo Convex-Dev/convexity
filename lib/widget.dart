@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
+import 'convex.dart';
 import 'model.dart';
 import 'convex.dart' as convex;
 import 'format.dart';
@@ -575,6 +578,127 @@ class _SelectAccountState extends State<_SelectAccount> {
             return item.build(context);
           }
         },
+      ),
+    );
+  }
+}
+
+class ActiveAccount extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            leading: Identicon(keyPair: appState.model.activeKeyPair),
+            title: Text(
+              appState.model.activeAddress.toString(),
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              'Address',
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.copy),
+              onPressed: () {
+                Clipboard.setData(
+                  ClipboardData(
+                    text: appState.model.activeAddress.toString(),
+                  ),
+                );
+
+                Scaffold.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Copied ${appState.model.activeAddress.toString()}',
+                        overflow: TextOverflow.clip,
+                      ),
+                    ),
+                  );
+              },
+            ),
+          ),
+          FutureBuilder<Account>(
+            future: appState
+                .convexClient()
+                .account(address: appState.model.activeAddress),
+            builder: (context, snapshot) {
+              var animatedChild;
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                animatedChild = SizedBox(
+                  height: 63,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'loading...',
+                      style: TextStyle(color: Colors.black38),
+                    ),
+                  ),
+                );
+              } else {
+                animatedChild = Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            (snapshot.data?.balance == null
+                                ? '-'
+                                : NumberFormat().format(snapshot.data.balance)),
+                            textAlign: TextAlign.start,
+                          ),
+                          Text(
+                            'Balance',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            (snapshot.data?.memorySize?.toString() ?? '-'),
+                            textAlign: TextAlign.start,
+                          ),
+                          Text(
+                            'Memory Size',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            snapshot.data?.sequence?.toString() ?? '-',
+                          ),
+                          Text(
+                            'Sequence',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              }
+
+              return AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: animatedChild,
+              );
+            },
+          ),
+        ],
       ),
     );
   }

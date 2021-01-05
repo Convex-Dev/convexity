@@ -14,7 +14,10 @@ class TransferScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Transfer')),
-      body: TransferScreenBody(),
+      body: Container(
+        padding: defaultScreenPadding,
+        child: TransferScreenBody(),
+      ),
     );
   }
 }
@@ -70,28 +73,13 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Form(
         key: formKey,
         child: Column(
           children: [
-            Row(
-              children: [
-                IdenticonDropdown(
-                  activeKeyPair: appState.model.activeKeyPair,
-                  allKeyPairs: appState.model.allKeyPairs,
-                ),
-                Expanded(
-                  child: Text(
-                    appState.model.activeAddress?.toString(),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )
-              ],
-            ),
+            ActiveAccount(),
             TextFormField(
               readOnly: true,
               autofocus: false,
