@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../logger.dart';
 import '../model.dart';
 import '../format.dart';
 import '../convex.dart';
@@ -435,6 +436,28 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         );
       });
 
+  Widget _nonFungibleImage(String uri) {
+    final fallback = Icon(
+      Icons.image,
+      size: 40,
+    );
+
+    try {
+      if (Uri.parse(uri).isAbsolute == false) {
+        return fallback;
+      }
+
+      return FadeInImage.memoryNetwork(
+        placeholder: kTransparentImage,
+        image: uri,
+      );
+    } catch (e) {
+      logger.e('Failed to load image: $e');
+
+      return fallback;
+    }
+  }
+
   Widget _nonFungibleToken({
     int tokenId,
     Future<Result> data,
@@ -468,10 +491,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                         Icons.image,
                         size: 40,
                       )
-                    : FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage,
-                        image: snapshot.data.value['uri'],
-                      )),
+                    : _nonFungibleImage(snapshot.data.value['uri'])),
           );
 
           return InkWell(
