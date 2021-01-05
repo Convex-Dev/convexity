@@ -32,8 +32,6 @@ class TransferScreenBody extends StatefulWidget {
 }
 
 class _TransferScreenBodyState extends State<TransferScreenBody> {
-  var isTransfering = false;
-
   var formKey = GlobalKey<FormState>();
 
   var fromController = TextEditingController();
@@ -287,13 +285,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               },
             ),
             ElevatedButton(
-              child: isTransfering
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(),
-                    )
-                  : Text('Transfer'),
+              child: Text('Transfer'),
               onPressed: () {
                 if (formKey.currentState.validate()) {
                   transfer(
