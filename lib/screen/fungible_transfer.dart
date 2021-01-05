@@ -345,7 +345,7 @@ class _FungibleTransferScreenBodyState
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(
-                  RegExp(r"^\d+(?:[.,]\d{0,12})?"),
+                  RegExp(r"^\d?\.?\d{0,12}"),
                   replacementString: '',
                 ),
               ],
