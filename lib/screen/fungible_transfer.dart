@@ -344,7 +344,9 @@ class _FungibleTransferScreenBodyState
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
+                FilteringTextInputFormatter.allow(
+                  RegExp(r"\d(?:[.,]\d{0,12})?"),
+                ),
               ],
               validator: (value) {
                 if (value.isEmpty) {
@@ -354,9 +356,13 @@ class _FungibleTransferScreenBodyState
                 return null;
               },
               onChanged: (value) {
+                final amount = num.tryParse(value) *
+                    pow(10, widget.token.metadata.decimals);
+
+                logger.d('Set amount ${amount.toInt()}');
+
                 setState(() {
-                  _amount = num.tryParse(value) *
-                      pow(10, widget.token.metadata.decimals);
+                  _amount = amount.toInt();
                 });
               },
             ),
