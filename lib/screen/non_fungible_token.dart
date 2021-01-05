@@ -57,7 +57,7 @@ class _NonFungibleTokenScreenBodyState
         children: [
           ListTile(
             title: Text(widget.tokenId.toString()),
-            subtitle: Text('Token ID'),
+            subtitle: Text('ID'),
           ),
           FutureBuilder<Result>(
             future: widget.data,
