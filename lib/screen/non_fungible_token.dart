@@ -16,10 +16,13 @@ class NonFungibleTokenScreen extends StatelessWidget {
     return WillPopScope(
       child: Scaffold(
         appBar: AppBar(title: Text('Non-Fungible Token')),
-        body: NonFungibleTokenScreenBody(
-          nonFungibleToken: t.item1,
-          tokenId: t.item2,
-          data: t.item3,
+        body: Container(
+          padding: defaultScreenPadding,
+          child: NonFungibleTokenScreenBody(
+            nonFungibleToken: t.item1,
+            tokenId: t.item2,
+            data: t.item3,
+          ),
         ),
       ),
       onWillPop: () async {
@@ -50,71 +53,68 @@ class NonFungibleTokenScreenBody extends StatefulWidget {
 class _NonFungibleTokenScreenBodyState
     extends State<NonFungibleTokenScreenBody> {
   @override
-  Widget build(BuildContext context) => Container(
-        padding: defaultScreenPadding,
-        child: ListView(
-          children: [
-            ListTile(
-              title: Text(widget.tokenId.toString()),
-              subtitle: Text('Token ID'),
-            ),
-            FutureBuilder<Result>(
-              future: widget.data,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  // Result value is a map of attribute name to value - unless there's an error.
-                  if (snapshot.data.errorCode != null) {
-                    return ListTile(
-                      leading: Icon(Icons.error),
-                      title: Text(
-                        'Sorry. It was not possible to query data for this token.',
-                      ),
-                    );
-                  }
-
+  Widget build(BuildContext context) => ListView(
+        children: [
+          ListTile(
+            title: Text(widget.tokenId.toString()),
+            subtitle: Text('Token ID'),
+          ),
+          FutureBuilder<Result>(
+            future: widget.data,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                // Result value is a map of attribute name to value - unless there's an error.
+                if (snapshot.data.errorCode != null) {
                   return ListTile(
-                    title: Text(snapshot.data.value['name']),
-                    subtitle: Text('Name'),
+                    leading: Icon(Icons.error),
+                    title: Text(
+                      'Sorry. It was not possible to query data for this token.',
+                    ),
                   );
                 }
 
-                return Center(child: CircularProgressIndicator());
-              },
-            ),
-            FutureBuilder<Result>(
-              future: widget.data,
-              builder: (context, snapshot) {
-                final imageTransparent = Image.memory(kTransparentImage);
-
-                if (snapshot.hasData) {
-                  if (snapshot.data.errorCode != null) {
-                    return imageTransparent;
-                  }
-
-                  if (snapshot.data.value['uri'] == null) {
-                    return imageTransparent;
-                  }
-
-                  return FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: snapshot.data.value['uri'],
-                  );
-                }
-
-                return imageTransparent;
-              },
-            ),
-            ElevatedButton(
-              child: Text('Transfer'),
-              onPressed: () {
-                pushNonFungibleTransfer(
-                  context,
-                  nonFungibleToken: widget.nonFungibleToken,
-                  tokenId: widget.tokenId,
+                return ListTile(
+                  title: Text(snapshot.data.value['name']),
+                  subtitle: Text('Name'),
                 );
-              },
-            ),
-          ],
-        ),
+              }
+
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+          FutureBuilder<Result>(
+            future: widget.data,
+            builder: (context, snapshot) {
+              final imageTransparent = Image.memory(kTransparentImage);
+
+              if (snapshot.hasData) {
+                if (snapshot.data.errorCode != null) {
+                  return imageTransparent;
+                }
+
+                if (snapshot.data.value['uri'] == null) {
+                  return imageTransparent;
+                }
+
+                return FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: snapshot.data.value['uri'],
+                );
+              }
+
+              return imageTransparent;
+            },
+          ),
+          ElevatedButton(
+            child: Text('Transfer'),
+            onPressed: () {
+              pushNonFungibleTransfer(
+                context,
+                nonFungibleToken: widget.nonFungibleToken,
+                tokenId: widget.tokenId,
+              );
+            },
+          ),
+        ],
       );
 }
