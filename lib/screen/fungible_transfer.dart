@@ -306,12 +306,16 @@ class _FungibleTransferScreenBodyState
                     height: 120,
                     width: 120,
                   ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                contact == null ? 'Not in Address Book' : contact.name,
-              ),
-            ),
+            _receiver == null
+                ? SizedBox(
+                    height: 33,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      contact == null ? 'Not in Address Book' : contact.name,
+                    ),
+                  ),
             TextFormField(
               readOnly: true,
               controller: _receiverTextController,
