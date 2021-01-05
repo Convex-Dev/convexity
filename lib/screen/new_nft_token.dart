@@ -155,11 +155,14 @@ class _CreateTokenState extends State<_CreateToken> {
     Result myTokenResult;
 
     try {
+      final _uri =
+          widget.newToken.uri == null ? 'nil' : '"${widget.newToken.uri}"';
+
       myTokenResult = await appState.convexClient().transact(
             caller: appState.model.activeAddress,
             callerSecretKey: appState.model.activeKeyPair.sk,
             source: '(call 0x${widget.nonFungibleToken.address.hex} '
-                '(create-token {:name "${widget.newToken.name}", :uri "${widget.newToken.uri}"} nil) )',
+                '(create-token {:name "${widget.newToken.name}", :uri $_uri} nil) )',
           );
     } catch (e, s) {
       print('Failed to create Token: $e $s');
