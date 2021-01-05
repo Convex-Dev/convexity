@@ -195,7 +195,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                               size: 30,
                             )
                           else
-                            Text(contact.name),
+                            Text(contact.name + '.'),
                         ],
                       ),
                     ),
