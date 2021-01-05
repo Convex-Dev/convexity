@@ -96,6 +96,10 @@ class _NonFungibleTokenScreenBodyState
                   return imageTransparent;
                 }
 
+                if (Uri.parse(snapshot.data.value['uri']).isAbsolute == false) {
+                  return imageTransparent;
+                }
+
                 return FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
                   image: snapshot.data.value['uri'],
