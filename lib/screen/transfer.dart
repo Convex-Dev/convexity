@@ -1,12 +1,16 @@
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 
+import '../convex.dart';
+import '../logger.dart';
 import '../model.dart';
 import '../nav.dart';
 import '../widget.dart';
+import '../route.dart' as route;
 import '../convex.dart' as convex;
 
 class TransferScreen extends StatelessWidget {
@@ -48,27 +52,170 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     convex.Address to,
     int amount,
   }) async {
-    setState(() {
-      isTransfering = true;
-    });
-
     final appState = context.read<AppState>();
 
-    final result = await appState.convexClient().transact(
+    final contact = appState.model.contacts.firstWhere(
+      (contact) => contact.address == to,
+      orElse: () => null,
+    );
+
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Transfer $amount to ',
+                    ),
+                    if (contact == null)
+                      Identicon2(
+                        address: to,
+                        isAddressVisible: true,
+                        size: 30,
+                      )
+                    else
+                      Text(contact.name),
+                    Text(
+                      '?',
+                    )
+                  ],
+                ),
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: const Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmation != true) {
+      return;
+    }
+
+    final transferInProgress = appState.convexClient().transact(
           caller: appState.model.activeAddress,
           callerSecretKey: appState.model.activeKeyPair.sk,
           source: '(transfer 0x${to.hex} $amount)',
         );
 
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${result.value}'),
-      ),
-    );
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          child: Center(
+            child: FutureBuilder(
+              future: transferInProgress,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<Result> snapshot,
+              ) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
 
-    setState(() {
-      isTransfering = false;
-    });
+                if (snapshot.data?.errorCode != null) {
+                  logger.e(
+                    'Transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                  );
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        size: 80,
+                        color: Colors.black12,
+                      ),
+                      Gap(10),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Sorry. Your transfer could not be completed.',
+                        ),
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Okay'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                }
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.check,
+                      size: 80,
+                      color: Colors.green,
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Transfered $amount to ',
+                          ),
+                          if (contact == null)
+                            Identicon2(
+                              address: to,
+                              isAddressVisible: true,
+                              size: 30,
+                            )
+                          else
+                            Text(contact.name),
+                        ],
+                      ),
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        Navigator.popUntil(
+                          context,
+                          ModalRoute.withName(route.launcher),
+                        );
+                      },
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
