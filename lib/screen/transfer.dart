@@ -36,6 +36,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   var formKey = GlobalKey<FormState>();
 
+  var fromController = TextEditingController();
   var targetController = TextEditingController();
   var amountController = TextEditingController();
 
@@ -220,19 +221,30 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    fromController.text = appState.model.activeAddress.toString();
+
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Form(
         key: formKey,
         child: Column(
           children: [
-            ActiveAccount(),
+            TextField(
+              readOnly: true,
+              autofocus: false,
+              controller: fromController,
+              decoration: InputDecoration(
+                labelText: 'From',
+              ),
+            ),
             TextFormField(
               readOnly: true,
               autofocus: false,
               controller: targetController,
               decoration: InputDecoration(
-                labelText: 'Destination',
+                labelText: 'To',
                 hintText: 'Address of payee',
               ),
               validator: (value) {
@@ -282,17 +294,15 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                       child: CircularProgressIndicator(),
                     )
                   : Text('Transfer'),
-              onPressed: isTransfering
-                  ? null
-                  : () {
-                      if (formKey.currentState.validate()) {
-                        transfer(
-                          context: context,
-                          to: convex.Address.fromHex(targetController.text),
-                          amount: int.parse(amountController.text),
-                        );
-                      }
-                    },
+              onPressed: () {
+                if (formKey.currentState.validate()) {
+                  transfer(
+                    context: context,
+                    to: convex.Address.fromHex(targetController.text),
+                    amount: int.parse(amountController.text),
+                  );
+                }
+              },
             )
           ],
         ),
@@ -302,6 +312,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   @override
   void dispose() {
+    fromController.dispose();
     targetController.dispose();
     amountController.dispose();
 
