@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,19 +42,20 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   void transfer({
     BuildContext context,
-    Uint8List signerSecretKey,
-    convex.Address targetAddress,
+    convex.Address to,
     int amount,
   }) async {
     setState(() {
       isTransfering = true;
     });
 
-    var result = await convex.transact2(
-      address: targetAddress.hex,
-      source: '(transfer 0x${targetAddress.hex} $amount)',
-      secretKey: signerSecretKey,
-    );
+    final appState = context.read<AppState>();
+
+    final result = await appState.convexClient().transact(
+          caller: appState.model.activeAddress,
+          callerSecretKey: appState.model.activeKeyPair.sk,
+          source: '(transfer 0x${to.hex} $amount)',
+        );
 
     Scaffold.of(context).showSnackBar(
       SnackBar(
@@ -92,12 +91,6 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                   ),
                 )
               ],
-            ),
-            ElevatedButton(
-              child: Text('Scan QR Code'),
-              onPressed: () {
-                scan();
-              },
             ),
             TextFormField(
               readOnly: true,
@@ -160,8 +153,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                       if (formKey.currentState.validate()) {
                         transfer(
                           context: context,
-                          signerSecretKey: appState.model.activeKeyPair.sk,
-                          targetAddress: appState.model.activeAddress,
+                          to: convex.Address.fromHex(targetController.text),
                           amount: int.parse(amountController.text),
                         );
                       }
