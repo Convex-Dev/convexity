@@ -126,15 +126,6 @@ class AssetScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('$title')),
       body: AssetScreenBody(aasset: _aasset),
-      floatingActionButton: _aasset.type == AssetType.nonFungible
-          ? FloatingActionButton(
-              child: Icon(Icons.add),
-              onPressed: () => nav.pushNewNonFungibleToken(
-                context,
-                nonFungibleToken: _aasset.asset as NonFungibleToken,
-              ),
-            )
-          : null,
     );
   }
 }
@@ -345,93 +336,120 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
         return Padding(
           padding: defaultScreenPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _info(),
-              Gap(20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Tokens',
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.refresh),
-                    onPressed: () {
-                      setState(() {
-                        balance = queryBalance(context);
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Gap(10),
-              FutureBuilder(
-                future: balance,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _info(),
+                Gap(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Tokens',
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.refresh),
+                      onPressed: () {
+                        setState(() {
+                          balance = queryBalance(context);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Gap(10),
+                FutureBuilder(
+                  future: balance,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Expanded(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
 
-                  if (snapshot.hasError) {
+                    if (snapshot.hasError) {
+                      return Text(
+                        'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                      );
+                    }
+
+                    if (snapshot.hasData) {
+                      final ids = snapshot.data as List;
+
+                      if (ids.isEmpty) {
+                        return Text("You don't own any Non-Fungible Token.");
+                      }
+
+                      final columnCount = 2;
+
+                      return Expanded(
+                        child: AnimationLimiter(
+                          child: GridView.count(
+                            crossAxisSpacing: 6,
+                            mainAxisSpacing: 6,
+                            crossAxisCount: columnCount,
+                            children: ids.asMap().entries.map(
+                              (entry) {
+                                final dataSource =
+                                    '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}))';
+
+                                final data =
+                                    convexClient.query(source: dataSource);
+
+                                return AnimationConfiguration.staggeredGrid(
+                                  position: entry.key,
+                                  duration: const Duration(milliseconds: 375),
+                                  columnCount: columnCount,
+                                  child: ScaleAnimation(
+                                    child: FadeInAnimation(
+                                      child: _nonFungibleToken(
+                                        tokenId: entry.value as int,
+                                        data: data,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ).toList(),
+                          ),
+                        ),
+                      );
+                    }
+
                     return Text(
                       'Sorry. It was not possible to check for Non-Fungible Tokens.',
                     );
-                  }
+                  },
+                ),
+                Gap(10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        child: Text('New Token'),
+                        onPressed: () {
+                          final result = nav.pushNewNonFungibleToken(
+                            context,
+                            nonFungibleToken:
+                                widget.aasset.asset as NonFungibleToken,
+                          );
 
-                  if (snapshot.hasData) {
-                    final ids = snapshot.data as List;
-
-                    if (ids.isEmpty) {
-                      return Text("You don't own any Non-Fungible Token.");
-                    }
-
-                    final columnCount = 2;
-
-                    return Expanded(
-                      child: AnimationLimiter(
-                        child: GridView.count(
-                          crossAxisSpacing: 6,
-                          mainAxisSpacing: 6,
-                          crossAxisCount: columnCount,
-                          children: ids.asMap().entries.map(
-                            (entry) {
-                              final dataSource =
-                                  '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}))';
-
-                              final data =
-                                  convexClient.query(source: dataSource);
-
-                              return AnimationConfiguration.staggeredGrid(
-                                position: entry.key,
-                                duration: const Duration(milliseconds: 375),
-                                columnCount: columnCount,
-                                child: ScaleAnimation(
-                                  child: FadeInAnimation(
-                                    child: _nonFungibleToken(
-                                      tokenId: entry.value as int,
-                                      data: data,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ).toList(),
-                        ),
+                          result.then(
+                            (value) => setState(() {
+                              balance = queryBalance(context);
+                            }),
+                          );
+                        },
                       ),
-                    );
-                  }
-
-                  return Text(
-                    'Sorry. It was not possible to check for Non-Fungible Tokens.',
-                  );
-                },
-              )
-            ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       });
