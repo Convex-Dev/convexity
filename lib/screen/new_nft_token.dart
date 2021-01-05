@@ -68,10 +68,6 @@ class _NewNonFungibleTokenScreenBodyState
           ListTile(
             title: TextFormField(
               validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-
                 return null;
               },
               onChanged: (value) {
