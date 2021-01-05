@@ -88,7 +88,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
       var b = await appState.convexClient().requestForFaucet(
             address: Address(hex: Sodium.bin2hex(randomKeyPair.pk)),
-            amount: 1000000,
+            amount: 10000000,
           );
 
       if (b) {
