@@ -91,7 +91,7 @@ class HomeScreenBody extends StatelessWidget {
       ActiveAccount(),
       ListTile(
         leading: Icon(Icons.videogame_asset_rounded),
-        title: Text('Follow Assets'),
+        title: Text('Digital Assets'),
         subtitle: Text('View and follow Digital Assets'),
         onTap: () => nav.pushAssets(context),
       ),
