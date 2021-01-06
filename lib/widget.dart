@@ -561,7 +561,7 @@ class _SelectAccountState extends State<_SelectAccount> {
                 ),
                 Gap(10),
                 ElevatedButton(
-                  child: Text('Use Address'),
+                  child: Text('Confirm'),
                   onPressed: () {
                     final isNotEmpty = _addressHex?.isNotEmpty ?? false;
 
