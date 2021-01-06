@@ -284,17 +284,21 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 return null;
               },
             ),
-            ElevatedButton(
-              child: Text('Transfer'),
-              onPressed: () {
-                if (formKey.currentState.validate()) {
-                  transfer(
-                    context: context,
-                    to: convex.Address.fromHex(targetController.text),
-                    amount: int.parse(amountController.text),
-                  );
-                }
-              },
+            Gap(20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                child: Text('Transfer'),
+                onPressed: () {
+                  if (formKey.currentState.validate()) {
+                    transfer(
+                      context: context,
+                      to: convex.Address.fromHex(targetController.text),
+                      amount: int.parse(amountController.text),
+                    );
+                  }
+                },
+              ),
             )
           ],
         ),
