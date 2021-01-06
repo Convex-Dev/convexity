@@ -91,13 +91,12 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
-  var _balance = <Address, Future<int>>{};
+  var _balanceCache = <Address, Future<int>>{};
 
   void initState() {
     super.initState();
 
     final appState = context.read<AppState>();
-
     final convexityClient = appState.convexityClient();
     final fungibleClient = appState.fungibleClient();
 
@@ -127,7 +126,7 @@ class _RecommendedState extends State<_Recommended> {
             () {
               _isLoading = false;
               _assets = xs;
-              _balance = Map<Address, Future<int>>.fromEntries(fungibles);
+              _balanceCache = Map<Address, Future<int>>.fromEntries(fungibles);
             },
           );
         }
@@ -172,7 +171,7 @@ class _RecommendedState extends State<_Recommended> {
               (asset) => asset.type == AssetType.fungible
                   ? fungibleTokenCard(
                       fungible: asset.asset as FungibleToken,
-                      balance: _balance[asset.asset.address],
+                      balance: _balanceCache[asset.asset.address],
                       onTap: (FungibleToken fungible) {
                         follow(
                           context,
