@@ -146,8 +146,18 @@ class _RecommendedState extends State<_Recommended> {
       asset: asset,
     );
 
-    // TODO: Don't follow on tap - better to have a 'Confirm' action.
     context.read<AppState>().follow(aasset, isPersistent: true);
+
+    Scaffold.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            'You are following ${aasset.asset.metadata.name}',
+            overflow: TextOverflow.clip,
+          ),
+        ),
+      );
   }
 
   @override
