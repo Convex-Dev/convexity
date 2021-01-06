@@ -294,6 +294,12 @@ class AppState with ChangeNotifier {
     setFollowing(following, isPersistent: isPersistent);
   }
 
+  void unfollow(AAsset aasset, {bool isPersistent = false}) {
+    var following = model.following.where((e) => e != aasset).toSet();
+
+    setFollowing(following, isPersistent: isPersistent);
+  }
+
   /// Set KeyPair `active` as active, and persist it to disk if `isPersistent` is true.
   ///
   /// This method is usually called whenever a new Account is created.

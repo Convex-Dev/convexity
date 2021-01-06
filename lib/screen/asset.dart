@@ -208,8 +208,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
       );
 
   Widget _fungible() => StatelessWidgetBuilder((context) {
-        final activities =
-            context.watch<AppState>().model.activities.reversed.toList();
+        final appState = context.watch<AppState>();
+
+        final activities = appState.model.activities.reversed.toList();
 
         return Padding(
           padding: defaultScreenPadding,
@@ -323,7 +324,28 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     ),
                   ),
                 ),
-              ]
+              ],
+              if (appState.model.following.contains(widget.aasset))
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text('Unfollow'),
+                    onPressed: () {
+                      appState.unfollow(widget.aasset);
+
+                      Scaffold.of(context)
+                        ..removeCurrentSnackBar()
+                        ..showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Unfollowed ${widget.aasset.asset.metadata.name}',
+                              overflow: TextOverflow.clip,
+                            ),
+                          ),
+                        );
+                    },
+                  ),
+                ),
             ],
           ),
         );
