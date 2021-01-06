@@ -20,7 +20,10 @@ class FollowAssetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Follow Asset')),
-      body: FollowAssetScreenBody(),
+      body: Container(
+        padding: defaultScreenPadding,
+        child: FollowAssetScreenBody(),
+      ),
     );
   }
 }
@@ -31,7 +34,7 @@ class FollowAssetScreenBody extends StatefulWidget {
 }
 
 class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
-  var selectedOption = _Option.scanQRCode;
+  var selectedOption = _Option.recommended;
 
   Widget option({
     @required String title,
@@ -50,30 +53,8 @@ class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        children: [
-          option(
-            title: 'Scan QR Code',
-            value: _Option.scanQRCode,
-          ),
-          option(
-            title: 'Recommended',
-            value: _Option.recommended,
-          ),
-          option(
-            title: 'Asset Address',
-            value: _Option.assetId,
-          ),
-          Gap(20),
-          Expanded(
-            child: OptionRenderer(
-              option: selectedOption,
-            ),
-          )
-        ],
-      ),
+    return OptionRenderer(
+      option: selectedOption,
     );
   }
 }
@@ -110,6 +91,7 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
+  var _balance = <Address, Future<int>>{};
 
   void initState() {
     super.initState();
@@ -117,6 +99,7 @@ class _RecommendedState extends State<_Recommended> {
     final appState = context.read<AppState>();
 
     final convexityClient = appState.convexityClient();
+    final fungibleClient = appState.fungibleClient();
 
     if (convexityClient != null) {
       convexityClient.assets().then((Set<AAsset> assets) {
@@ -124,10 +107,27 @@ class _RecommendedState extends State<_Recommended> {
         // because the user might change the selected option
         // while we're still loading the recommended Assets.
         if (mounted) {
+          final xs = assets ?? <AAsset>{};
+
+          final fungibles = xs
+              .where(
+                (aasset) => aasset.type == AssetType.fungible,
+              )
+              .map(
+                (aasset) => MapEntry(
+                  aasset.asset.address as Address,
+                  fungibleClient.balance(
+                    token: aasset.asset.address,
+                    holder: appState.model.activeAddress,
+                  ),
+                ),
+              );
+
           setState(
             () {
-              this._isLoading = false;
-              this._assets = assets ?? <AAsset>{};
+              _isLoading = false;
+              _assets = xs;
+              _balance = Map<Address, Future<int>>.fromEntries(fungibles);
             },
           );
         }
@@ -172,10 +172,7 @@ class _RecommendedState extends State<_Recommended> {
               (asset) => asset.type == AssetType.fungible
                   ? fungibleTokenCard(
                       fungible: asset.asset as FungibleToken,
-                      balance: appState.fungibleClient().balance(
-                            token: asset.asset.address,
-                            holder: appState.model.activeAddress,
-                          ),
+                      balance: _balance[asset.asset.address],
                       onTap: (FungibleToken fungible) {
                         follow(
                           context,
