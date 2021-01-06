@@ -281,8 +281,13 @@ Widget nonFungibleTokenCard({
 
 class AssetsCollection extends StatefulWidget {
   final Set<AAsset> assets;
+  final String empty;
 
-  const AssetsCollection({Key key, @required this.assets}) : super(key: key);
+  const AssetsCollection({
+    Key key,
+    @required this.assets,
+    this.empty,
+  }) : super(key: key);
 
   @override
   _AssetsCollectionState createState() => _AssetsCollectionState();
@@ -305,7 +310,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
             ),
             Gap(10),
             Text(
-              'Nothing to show.',
+              widget.empty ?? 'Nothing to show',
               style: TextStyle(
                 color: Colors.black45,
                 fontSize: 16,
