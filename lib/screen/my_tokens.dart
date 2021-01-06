@@ -16,11 +16,24 @@ class MyTokensScreen extends StatelessWidget {
       ),
       body: Container(
         padding: defaultScreenPadding,
-        child: AssetsCollection(assets: appState.model.myTokens),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => nav.pushNewToken(context),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: AssetsCollection(assets: appState.model.myTokens),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  child: Text('Create Fungible Token'),
+                  onPressed: () {
+                    nav.pushNewToken(context);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
