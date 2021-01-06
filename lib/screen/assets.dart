@@ -19,11 +19,22 @@ class AssetsScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Follow Assets')),
       body: Container(
         padding: defaultScreenPadding,
-        child: AssetsCollection(assets: assets),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => nav.pushFollow(context),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(child: AssetsCollection(assets: assets)),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  child: Text('Follow'),
+                  onPressed: () {
+                    nav.pushFollow(context);
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
