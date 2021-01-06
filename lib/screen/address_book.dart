@@ -40,7 +40,7 @@ class AddressBookScreenBody extends StatelessWidget {
             ),
             Gap(20),
             Text(
-              'Your Address Book is empty.',
+              'Your Address Book is empty',
               style: TextStyle(
                 color: Colors.black45,
                 fontSize: 16,
