@@ -90,27 +90,27 @@ class HomeScreenBody extends StatelessWidget {
     final widgets = [
       ActiveAccount(),
       ListTile(
+        leading: Icon(Icons.videogame_asset_rounded),
+        title: Text('Follow Assets'),
+        subtitle: Text('View and follow Digital Assets'),
+        onTap: () => nav.pushAssets(context),
+      ),
+      ListTile(
         leading: Icon(Icons.contacts),
         title: Text('Address Book'),
-        subtitle: Text('View and create Contacts.'),
+        subtitle: Text('Manage trusted contacts'),
         onTap: () => nav.pushAddressBook(context),
       ),
       ListTile(
         leading: Icon(Icons.money),
-        title: Text('My Tokens'),
-        subtitle: Text('View and create Fungible Tokens.'),
+        title: Text('Personal Tokens'),
+        subtitle: Text('View and create Fungible Tokens'),
         onTap: () => nav.pushMyTokens(context),
-      ),
-      ListTile(
-        leading: Icon(Icons.videogame_asset_rounded),
-        title: Text('Assets'),
-        subtitle: Text('Follow Assets you are interested.'),
-        onTap: () => nav.pushAssets(context),
       ),
       ListTile(
         leading: Icon(Icons.send),
         title: Text('Transfer'),
-        subtitle: Text('Transfer Convex coins.'),
+        subtitle: Text('Transfer Convex coins'),
         onTap: () => nav.pushTransfer(context),
       )
     ];
