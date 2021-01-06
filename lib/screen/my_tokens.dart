@@ -12,7 +12,7 @@ class MyTokensScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Tokens'),
+        title: Text('Personal Tokens'),
       ),
       body: Container(
         padding: defaultScreenPadding,
