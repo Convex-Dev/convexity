@@ -344,8 +344,12 @@ Future<http.Response> faucet({
 
 class ConvexClient {
   final Uri server;
+  final http.Client client;
 
-  ConvexClient({@required this.server});
+  ConvexClient({
+    @required this.server,
+    this.client,
+  });
 
   /// **Requests for Faucet.**
   ///
@@ -355,6 +359,7 @@ class ConvexClient {
     @required int amount,
   }) async {
     var response = await faucet(
+      client: client,
       scheme: server.scheme,
       host: server.host,
       port: server.port,
@@ -372,6 +377,7 @@ class ConvexClient {
     Lang lang = Lang.convexLisp,
   }) async {
     var response = await queryRaw(
+      client: client,
       scheme: server.scheme,
       host: server.host,
       port: server.port,
@@ -408,6 +414,7 @@ class ConvexClient {
     Lang lang = Lang.convexLisp,
   }) {
     var result = transact2(
+      client: client,
       scheme: server.scheme,
       host: server.host,
       port: server.port,
@@ -429,6 +436,7 @@ class ConvexClient {
     @required Address address,
   }) =>
       getAccount(
+        client: client,
         scheme: server.scheme,
         host: server.host,
         port: server.port,
