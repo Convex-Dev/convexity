@@ -207,6 +207,56 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         ),
       );
 
+  Widget _follow(
+    BuildContext context,
+    AppState appState,
+  ) =>
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          child: Text('Follow'),
+          onPressed: () {
+            appState.follow(widget.aasset);
+
+            Scaffold.of(context)
+              ..removeCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'You are following ${widget.aasset.asset.metadata.name}',
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              );
+          },
+        ),
+      );
+
+  Widget _unfollow(
+    BuildContext context,
+    AppState appState,
+  ) =>
+      SizedBox(
+        width: double.infinity,
+        child: OutlineButton(
+          child: Text('Unfollow'),
+          onPressed: () {
+            appState.unfollow(widget.aasset);
+
+            Scaffold.of(context)
+              ..removeCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Unfollowed ${widget.aasset.asset.metadata.name}',
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              );
+          },
+        ),
+      );
+
   Widget _fungible() => StatelessWidgetBuilder((context) {
         final appState = context.watch<AppState>();
 
@@ -326,26 +376,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
               ],
               if (appState.model.following.contains(widget.aasset))
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlineButton(
-                    child: Text('Unfollow'),
-                    onPressed: () {
-                      appState.unfollow(widget.aasset);
-
-                      Scaffold.of(context)
-                        ..removeCurrentSnackBar()
-                        ..showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Unfollowed ${widget.aasset.asset.metadata.name}',
-                              overflow: TextOverflow.clip,
-                            ),
-                          ),
-                        );
-                    },
-                  ),
-                ),
+                _unfollow(context, appState)
+              else
+                _follow(context, appState),
             ],
           ),
         );
@@ -466,26 +499,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   ),
                 ),
                 if (appState.model.following.contains(widget.aasset))
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlineButton(
-                      child: Text('Unfollow'),
-                      onPressed: () {
-                        appState.unfollow(widget.aasset);
-
-                        Scaffold.of(context)
-                          ..removeCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Unfollowed ${widget.aasset.asset.metadata.name}',
-                                overflow: TextOverflow.clip,
-                              ),
-                            ),
-                          );
-                      },
-                    ),
-                  ),
+                  _unfollow(context, appState)
+                else
+                  _follow(context, appState),
               ],
             ),
           ),
