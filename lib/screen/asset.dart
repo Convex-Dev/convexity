@@ -328,7 +328,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               if (appState.model.following.contains(widget.aasset))
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: OutlineButton(
                     child: Text('Unfollow'),
                     onPressed: () {
                       appState.unfollow(widget.aasset);
@@ -386,10 +386,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   future: balance,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Expanded(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                      return Center(
+                        child: CircularProgressIndicator(),
                       );
                     }
 
@@ -448,28 +446,46 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   },
                 ),
                 Gap(10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        child: Text('New Token'),
-                        onPressed: () {
-                          final result = nav.pushNewNonFungibleToken(
-                            context,
-                            nonFungibleToken:
-                                widget.aasset.asset as NonFungibleToken,
-                          );
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text('New Token'),
+                    onPressed: () {
+                      final result = nav.pushNewNonFungibleToken(
+                        context,
+                        nonFungibleToken:
+                            widget.aasset.asset as NonFungibleToken,
+                      );
 
-                          result.then(
-                            (value) => setState(() {
-                              balance = queryBalance(context);
-                            }),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                      result.then(
+                        (value) => setState(() {
+                          balance = queryBalance(context);
+                        }),
+                      );
+                    },
+                  ),
                 ),
+                if (appState.model.following.contains(widget.aasset))
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlineButton(
+                      child: Text('Unfollow'),
+                      onPressed: () {
+                        appState.unfollow(widget.aasset);
+
+                        Scaffold.of(context)
+                          ..removeCurrentSnackBar()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Unfollowed ${widget.aasset.asset.metadata.name}',
+                                overflow: TextOverflow.clip,
+                              ),
+                            ),
+                          );
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
