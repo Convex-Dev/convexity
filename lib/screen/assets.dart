@@ -16,7 +16,7 @@ class AssetsScreen extends StatelessWidget {
       ..addAll(appState.model.following);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Assets')),
+      appBar: AppBar(title: Text('Follow Assets')),
       body: Container(
         padding: defaultScreenPadding,
         child: AssetsCollection(assets: assets),
