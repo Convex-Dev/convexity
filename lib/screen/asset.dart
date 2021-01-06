@@ -260,7 +260,21 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Widget _fungible() => StatelessWidgetBuilder((context) {
         final appState = context.watch<AppState>();
 
-        final activities = appState.model.activities.reversed.toList();
+        final activities = appState.model.activities
+            .where(
+              (activity) {
+                if (activity.type != ActivityType.transfer) {
+                  return false;
+                }
+
+                final a = activity.payload as FungibleTransferActivity;
+
+                return a.token == widget.aasset.asset;
+              },
+            )
+            .toList()
+            .reversed
+            .toList();
 
         return Padding(
           padding: defaultScreenPadding,
