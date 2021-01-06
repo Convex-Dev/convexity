@@ -7,7 +7,7 @@ import 'convex.dart' as convex;
 import 'model.dart';
 import 'route.dart' as route;
 
-void pushLauncher(BuildContext context) => Navigator.pushNamed(
+void pushLauncher(BuildContext context) => Navigator.pushReplacementNamed(
       context,
       route.launcher,
     );
