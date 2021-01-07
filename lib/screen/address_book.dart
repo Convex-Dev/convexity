@@ -57,7 +57,7 @@ class AddressBookScreenBody extends StatelessWidget {
         itemCount: contacts.length,
         itemBuilder: (context, index) => Card(
           child: ListTile(
-            leading: identicon(contacts[index].address.hex),
+            leading: aidenticon(contacts[index].address),
             title: Text(contacts[index].name),
             subtitle: Text(contacts[index].address.toString()),
             onTap: () {

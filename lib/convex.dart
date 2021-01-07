@@ -18,8 +18,6 @@ enum Lang {
 class Address {
   final String hex;
 
-  Address({this.hex});
-
   Address.fromHex(String hex) : hex = Address.trim0x(hex);
 
   Address.fromJson(Map<String, dynamic> m) : hex = m['hex'] as String;
@@ -76,7 +74,7 @@ class Account {
 
     return Account(
       sequence: m['sequence'],
-      address: Address(hex: m['address']),
+      address: Address.fromHex(m['address']),
       balance: m['balance'],
       type: AccountType.user,
       memorySize: m['memory_size'],
@@ -344,8 +342,12 @@ Future<http.Response> faucet({
 
 class ConvexClient {
   final Uri server;
+  final http.Client client;
 
-  ConvexClient({@required this.server});
+  ConvexClient({
+    @required this.server,
+    this.client,
+  });
 
   /// **Requests for Faucet.**
   ///
@@ -355,6 +357,7 @@ class ConvexClient {
     @required int amount,
   }) async {
     var response = await faucet(
+      client: client,
       scheme: server.scheme,
       host: server.host,
       port: server.port,
@@ -372,6 +375,7 @@ class ConvexClient {
     Lang lang = Lang.convexLisp,
   }) async {
     var response = await queryRaw(
+      client: client,
       scheme: server.scheme,
       host: server.host,
       port: server.port,
@@ -408,6 +412,7 @@ class ConvexClient {
     Lang lang = Lang.convexLisp,
   }) {
     var result = transact2(
+      client: client,
       scheme: server.scheme,
       host: server.host,
       port: server.port,
@@ -429,6 +434,7 @@ class ConvexClient {
     @required Address address,
   }) =>
       getAccount(
+        client: client,
         scheme: server.scheme,
         host: server.host,
         port: server.port,
@@ -578,28 +584,10 @@ class NonFungibleItem {
   });
 }
 
-class FungibleClient {
+class FungibleLibrary {
   final ConvexClient convexClient;
 
-  FungibleClient({@required this.convexClient});
-
-  Future<int> balance({
-    @required Address token,
-    @required Address holder,
-  }) async {
-    var source = '(import convex.fungible :as fungible)'
-        '(fungible/balance 0x${token.hex} 0x${holder.hex})';
-
-    var result = await convexClient.query(source: source);
-
-    if (result.errorCode != null) {
-      logger.e('Failed to query balance: ${result.value}');
-
-      return null;
-    }
-
-    return result.value;
-  }
+  FungibleLibrary({@required this.convexClient});
 
   /// **Executes a Fungible transfer Transaction on the Convex Network.**
   ///
@@ -658,9 +646,6 @@ class NonFungibleLibrary {
 
     final _name = _attributes['name'] as String ?? 'No name';
     final _uri = _attributes['uri'] as String;
-    final _extra = _attributes.entries.where(
-      (entry) => entry.key != 'name' && entry.key != 'uri',
-    );
 
     final _data = '{'
         ':name "$_name",'

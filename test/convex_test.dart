@@ -23,7 +23,7 @@ Future<http.Response> _account({
   String address = _TEST_ADDRESS,
 }) =>
     convex.getAccountRaw(
-      address: convex.Address(hex: address),
+      address: convex.Address.fromHex(address),
     );
 
 Future<http.Response> _faucet({
@@ -145,7 +145,7 @@ void main() {
   group('Transaction', () {
     test('Prepare', () async {
       var response = await _prepareTransaction(
-        address: convex.Address(hex: _TEST_ADDRESS),
+        address: convex.Address.fromHex(_TEST_ADDRESS),
         source: '(inc 1)',
       );
 

@@ -75,7 +75,7 @@ class _CreateTokenState extends State<_CreateToken> {
 
     // Step 1 - deploy.
     try {
-      _result = await appState.fungibleClient().createToken(
+      _result = await appState.fungibleLibrary().createToken(
             holder: appState.model.activeAddress,
             holderSecretKey: appState.model.activeKeyPair.sk,
             supply:
@@ -115,7 +115,7 @@ class _CreateTokenState extends State<_CreateToken> {
     );
 
     var fungible = FungibleToken(
-      address: Address(hex: _result.value as String),
+      address: Address.fromHex(_result.value),
       metadata: metadata,
     );
 

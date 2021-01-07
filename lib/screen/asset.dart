@@ -47,8 +47,8 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
           Gap(4),
           Row(
             children: [
-              identicon(
-                activity.from.hex,
+              aidenticon(
+                activity.from,
                 height: 30,
                 width: 30,
               ),
@@ -72,8 +72,8 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
               Gap(10),
               Icon(Icons.arrow_right_alt),
               Gap(10),
-              identicon(
-                activity.to.hex,
+              aidenticon(
+                activity.to,
                 height: 30,
                 width: 30,
               ),
@@ -207,9 +207,74 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         ),
       );
 
+  Widget _follow(
+    BuildContext context,
+    AppState appState,
+  ) =>
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          child: Text('Follow'),
+          onPressed: () {
+            appState.follow(widget.aasset);
+
+            Scaffold.of(context)
+              ..removeCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'You are following ${widget.aasset.asset.metadata.name}',
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              );
+          },
+        ),
+      );
+
+  Widget _unfollow(
+    BuildContext context,
+    AppState appState,
+  ) =>
+      SizedBox(
+        width: double.infinity,
+        child: OutlineButton(
+          child: Text('Unfollow'),
+          onPressed: () {
+            appState.unfollow(widget.aasset);
+
+            Scaffold.of(context)
+              ..removeCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Unfollowed ${widget.aasset.asset.metadata.name}',
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              );
+          },
+        ),
+      );
+
   Widget _fungible() => StatelessWidgetBuilder((context) {
-        final activities =
-            context.watch<AppState>().model.activities.reversed.toList();
+        final appState = context.watch<AppState>();
+
+        final activities = appState.model.activities
+            .where(
+              (activity) {
+                if (activity.type != ActivityType.transfer) {
+                  return false;
+                }
+
+                final a = activity.payload as FungibleTransferActivity;
+
+                return a.token == widget.aasset.asset;
+              },
+            )
+            .toList()
+            .reversed
+            .toList();
 
         return Padding(
           padding: defaultScreenPadding,
@@ -323,7 +388,11 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     ),
                   ),
                 ),
-              ]
+              ],
+              if (appState.model.following.contains(widget.aasset))
+                _unfollow(context, appState)
+              else
+                _follow(context, appState),
             ],
           ),
         );
@@ -364,10 +433,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   future: balance,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Expanded(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                      return Center(
+                        child: CircularProgressIndicator(),
                       );
                     }
 
@@ -426,28 +493,29 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   },
                 ),
                 Gap(10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        child: Text('New Token'),
-                        onPressed: () {
-                          final result = nav.pushNewNonFungibleToken(
-                            context,
-                            nonFungibleToken:
-                                widget.aasset.asset as NonFungibleToken,
-                          );
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text('New Token'),
+                    onPressed: () {
+                      final result = nav.pushNewNonFungibleToken(
+                        context,
+                        nonFungibleToken:
+                            widget.aasset.asset as NonFungibleToken,
+                      );
 
-                          result.then(
-                            (value) => setState(() {
-                              balance = queryBalance(context);
-                            }),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                      result.then(
+                        (value) => setState(() {
+                          balance = queryBalance(context);
+                        }),
+                      );
+                    },
+                  ),
                 ),
+                if (appState.model.following.contains(widget.aasset))
+                  _unfollow(context, appState)
+                else
+                  _follow(context, appState),
               ],
             ),
           ),

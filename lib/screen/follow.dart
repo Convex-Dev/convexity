@@ -1,7 +1,6 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
@@ -91,15 +90,14 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
-  var _balance = <Address, Future<int>>{};
+  var _balanceCache = <Address, Future>{};
 
   void initState() {
     super.initState();
 
     final appState = context.read<AppState>();
-
     final convexityClient = appState.convexityClient();
-    final fungibleClient = appState.fungibleClient();
+    final fungibleClient = appState.fungibleLibrary();
 
     if (convexityClient != null) {
       convexityClient.assets().then((Set<AAsset> assets) {
@@ -116,10 +114,10 @@ class _RecommendedState extends State<_Recommended> {
               .map(
                 (aasset) => MapEntry(
                   aasset.asset.address as Address,
-                  fungibleClient.balance(
-                    token: aasset.asset.address,
-                    holder: appState.model.activeAddress,
-                  ),
+                  appState.assetLibrary().balance(
+                        asset: aasset.asset.address,
+                        owner: appState.model.activeAddress,
+                      ),
                 ),
               );
 
@@ -127,7 +125,7 @@ class _RecommendedState extends State<_Recommended> {
             () {
               _isLoading = false;
               _assets = xs;
-              _balance = Map<Address, Future<int>>.fromEntries(fungibles);
+              _balanceCache = Map<Address, Future>.fromEntries(fungibles);
             },
           );
         }
@@ -147,8 +145,18 @@ class _RecommendedState extends State<_Recommended> {
       asset: asset,
     );
 
-    // TODO: Don't follow on tap - better to have a 'Confirm' action.
     context.read<AppState>().follow(aasset, isPersistent: true);
+
+    Scaffold.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            'You are following ${aasset.asset.metadata.name}',
+            overflow: TextOverflow.clip,
+          ),
+        ),
+      );
   }
 
   @override
@@ -172,7 +180,7 @@ class _RecommendedState extends State<_Recommended> {
               (asset) => asset.type == AssetType.fungible
                   ? fungibleTokenCard(
                       fungible: asset.asset as FungibleToken,
-                      balance: _balance[asset.asset.address],
+                      balance: _balanceCache[asset.asset.address],
                       onTap: (FungibleToken fungible) {
                         follow(
                           context,
@@ -220,7 +228,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
     var rawContent = r.rawContent ?? "";
 
     if (rawContent.isNotEmpty) {
-      var scannedAddress = Address(hex: rawContent);
+      var scannedAddress = Address.fromHex(rawContent);
 
       setState(() {
         this.scannedAddress = scannedAddress;
@@ -325,9 +333,9 @@ class _AssetIDState extends State<_AssetID> {
               child: aasset.type == AssetType.fungible
                   ? fungibleTokenCard(
                       fungible: aasset.asset,
-                      balance: appState.fungibleClient().balance(
-                            token: aasset.asset.address,
-                            holder: appState.model.activeAddress,
+                      balance: appState.assetLibrary().balance(
+                            asset: aasset.asset.address,
+                            owner: appState.model.activeAddress,
                           ),
                     )
                   : nonFungibleTokenCard(

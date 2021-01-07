@@ -38,6 +38,17 @@ Widget identicon(
       height: height,
     );
 
+Widget aidenticon(
+  Address address, {
+  double width,
+  double height,
+}) =>
+    identicon(
+      address.hex.toLowerCase(),
+      width: width,
+      height: height,
+    );
+
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
 
@@ -128,7 +139,7 @@ class IdenticonDropdown extends StatelessWidget {
 /// Returns a Fungible Token renderer Widget.
 Widget fungibleTokenCard({
   @required convex.FungibleToken fungible,
-  @required Future<int> balance,
+  @required Future balance,
   bool isMine = false,
   void Function(convex.FungibleToken) onTap,
 }) =>
@@ -336,9 +347,9 @@ class _AssetsCollectionState extends State<AssetsCollection> {
           return fungibleTokenCard(
             isMine: mine != null,
             fungible: aasset.asset as convex.FungibleToken,
-            balance: appState.fungibleClient().balance(
-                  token: aasset.asset.address,
-                  holder: appState.model.activeAddress,
+            balance: appState.assetLibrary().balance(
+                  asset: aasset.asset.address,
+                  owner: appState.model.activeAddress,
                 ),
             onTap: (fungible) {
               // This seems a little bit odd, but once the route pops,
@@ -402,7 +413,7 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: identicon(contact.address.hex),
+        leading: aidenticon(contact.address),
         title: Text(contact.name),
         subtitle: Text(contact.address.toString()),
         onTap: () {
@@ -418,7 +429,7 @@ class _AddressItem implements _AWidget {
   _AddressItem(this.address);
 
   Widget build(BuildContext context) => ListTile(
-        leading: identicon(address.hex),
+        leading: aidenticon(address),
         title: Text('Not in Address Book'),
         subtitle: Text(address.toString()),
         onTap: () {
@@ -561,16 +572,14 @@ class _SelectAccountState extends State<_SelectAccount> {
                 ),
                 Gap(10),
                 ElevatedButton(
-                  child: Text('Use Address'),
+                  child: Text('Confirm'),
                   onPressed: () {
                     final isNotEmpty = _addressHex?.isNotEmpty ?? false;
 
                     if (isNotEmpty) {
                       Navigator.pop(
                         context,
-                        convex.Address(
-                          hex: convex.Address.trim0x(_addressHex),
-                        ),
+                        convex.Address.fromHex(_addressHex),
                       );
                     }
                   },
@@ -597,7 +606,7 @@ class ActiveAccount extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: Identicon(keyPair: appState.model.activeKeyPair),
+            leading: aidenticon(appState.model.activeAddress),
             title: Text(
               appState.model.activeAddress.toString(),
               overflow: TextOverflow.ellipsis,

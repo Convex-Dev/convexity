@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -206,7 +207,7 @@ class Model {
   });
 
   Address get activeAddress => activeKeyPair != null
-      ? Address(hex: Sodium.bin2hex(activeKeyPair.pk))
+      ? Address.fromHex(Sodium.bin2hex(activeKeyPair.pk))
       : null;
 
   KeyPair activeKeyPairOrDefault() {
@@ -254,14 +255,19 @@ class Model {
 }
 
 class AppState with ChangeNotifier {
+  final client = http.Client();
+
   Model model;
 
   AppState({this.model});
 
-  ConvexClient convexClient() => ConvexClient(server: model.convexServerUri);
+  ConvexClient convexClient() => ConvexClient(
+        client: client,
+        server: model.convexServerUri,
+      );
 
-  FungibleClient fungibleClient() =>
-      FungibleClient(convexClient: convexClient());
+  FungibleLibrary fungibleLibrary() =>
+      FungibleLibrary(convexClient: convexClient());
 
   AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
 
@@ -290,6 +296,12 @@ class AppState with ChangeNotifier {
 
   void follow(AAsset aasset, {bool isPersistent = false}) {
     var following = Set<AAsset>.from(model.following)..add(aasset);
+
+    setFollowing(following, isPersistent: isPersistent);
+  }
+
+  void unfollow(AAsset aasset, {bool isPersistent = false}) {
+    var following = model.following.where((e) => e != aasset).toSet();
 
     setFollowing(following, isPersistent: isPersistent);
   }
