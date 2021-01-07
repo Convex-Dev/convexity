@@ -664,9 +664,6 @@ class NonFungibleLibrary {
 
     final _name = _attributes['name'] as String ?? 'No name';
     final _uri = _attributes['uri'] as String;
-    final _extra = _attributes.entries.where(
-      (entry) => entry.key != 'name' && entry.key != 'uri',
-    );
 
     final _data = '{'
         ':name "$_name",'
