@@ -93,7 +93,6 @@ class WalletScreenBody extends StatelessWidget {
     return Card(
       child: Stack(
         children: [
-
           Positioned(
             right: 7,
             top: 7,
@@ -127,8 +126,8 @@ class WalletScreenBody extends StatelessWidget {
                 subtitle: Text('Address'),
                 onTap: () => nav.pushAccount(
                   context,
-                  convex.Address(
-                    hex: Sodium.bin2hex(keyPair.pk),
+                  convex.Address.fromHex(
+                    Sodium.bin2hex(keyPair.pk),
                   ),
                 ),
                 trailing: IconButton(
@@ -139,28 +138,29 @@ class WalletScreenBody extends StatelessWidget {
                         text: convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
                       ),
                     );
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        'Copied ${convex.prefix0x(Sodium.bin2hex(keyPair.pk))}'),
-                  ),
-                );
-              },
-            ),
-          ),
-          FutureBuilder(
-              future: convex.getAccount(
-                  address: convex.Address.fromHex(Sodium.bin2hex(keyPair.pk))),
-              builder: (context, snapshot) {
-                var animatedChild;
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  animatedChild = SizedBox(
-                    height: 63,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'loading...',
-                        style: TextStyle(color: Colors.black26),
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Copied ${convex.prefix0x(Sodium.bin2hex(keyPair.pk))}'),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              FutureBuilder(
+                future: convex.getAccount(
+                    address:
+                        convex.Address.fromHex(Sodium.bin2hex(keyPair.pk))),
+                builder: (context, snapshot) {
+                  var animatedChild;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    animatedChild = SizedBox(
+                      height: 63,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'loading...',
+                          style: TextStyle(color: Colors.black26),
                         ),
                       ),
                     );
