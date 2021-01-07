@@ -155,7 +155,7 @@ class _FungibleTransferScreenBodyState
       return;
     }
 
-    var transferInProgress = appState.fungibleClient().transfer(
+    var transferInProgress = appState.fungibleLibrary().transfer(
           token: widget.token.address,
           holder: appState.model.activeAddress,
           holderSecretKey: appState.model.activeKeyPair.sk,

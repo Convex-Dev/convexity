@@ -266,8 +266,8 @@ class AppState with ChangeNotifier {
         server: model.convexServerUri,
       );
 
-  FungibleClient fungibleClient() =>
-      FungibleClient(convexClient: convexClient());
+  FungibleLibrary fungibleLibrary() =>
+      FungibleLibrary(convexClient: convexClient());
 
   AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
 

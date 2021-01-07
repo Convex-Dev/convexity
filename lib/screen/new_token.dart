@@ -75,7 +75,7 @@ class _CreateTokenState extends State<_CreateToken> {
 
     // Step 1 - deploy.
     try {
-      _result = await appState.fungibleClient().createToken(
+      _result = await appState.fungibleLibrary().createToken(
             holder: appState.model.activeAddress,
             holderSecretKey: appState.model.activeKeyPair.sk,
             supply:

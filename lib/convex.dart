@@ -584,28 +584,10 @@ class NonFungibleItem {
   });
 }
 
-class FungibleClient {
+class FungibleLibrary {
   final ConvexClient convexClient;
 
-  FungibleClient({@required this.convexClient});
-
-  Future<int> balance({
-    @required Address token,
-    @required Address holder,
-  }) async {
-    var source = '(import convex.fungible :as fungible)'
-        '(fungible/balance 0x${token.hex} 0x${holder.hex})';
-
-    var result = await convexClient.query(source: source);
-
-    if (result.errorCode != null) {
-      logger.e('Failed to query balance: ${result.value}');
-
-      return null;
-    }
-
-    return result.value;
-  }
+  FungibleLibrary({@required this.convexClient});
 
   /// **Executes a Fungible transfer Transaction on the Convex Network.**
   ///

@@ -139,7 +139,7 @@ class IdenticonDropdown extends StatelessWidget {
 /// Returns a Fungible Token renderer Widget.
 Widget fungibleTokenCard({
   @required convex.FungibleToken fungible,
-  @required Future<int> balance,
+  @required Future balance,
   bool isMine = false,
   void Function(convex.FungibleToken) onTap,
 }) =>
@@ -347,9 +347,9 @@ class _AssetsCollectionState extends State<AssetsCollection> {
           return fungibleTokenCard(
             isMine: mine != null,
             fungible: aasset.asset as convex.FungibleToken,
-            balance: appState.fungibleClient().balance(
-                  token: aasset.asset.address,
-                  holder: appState.model.activeAddress,
+            balance: appState.assetLibrary().balance(
+                  asset: aasset.asset.address,
+                  owner: appState.model.activeAddress,
                 ),
             onTap: (fungible) {
               // This seems a little bit odd, but once the route pops,

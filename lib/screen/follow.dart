@@ -90,14 +90,14 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
-  var _balanceCache = <Address, Future<int>>{};
+  var _balanceCache = <Address, Future>{};
 
   void initState() {
     super.initState();
 
     final appState = context.read<AppState>();
     final convexityClient = appState.convexityClient();
-    final fungibleClient = appState.fungibleClient();
+    final fungibleClient = appState.fungibleLibrary();
 
     if (convexityClient != null) {
       convexityClient.assets().then((Set<AAsset> assets) {
@@ -114,10 +114,10 @@ class _RecommendedState extends State<_Recommended> {
               .map(
                 (aasset) => MapEntry(
                   aasset.asset.address as Address,
-                  fungibleClient.balance(
-                    token: aasset.asset.address,
-                    holder: appState.model.activeAddress,
-                  ),
+                  appState.assetLibrary().balance(
+                        asset: aasset.asset.address,
+                        owner: appState.model.activeAddress,
+                      ),
                 ),
               );
 
@@ -125,7 +125,7 @@ class _RecommendedState extends State<_Recommended> {
             () {
               _isLoading = false;
               _assets = xs;
-              _balanceCache = Map<Address, Future<int>>.fromEntries(fungibles);
+              _balanceCache = Map<Address, Future>.fromEntries(fungibles);
             },
           );
         }
@@ -333,9 +333,9 @@ class _AssetIDState extends State<_AssetID> {
               child: aasset.type == AssetType.fungible
                   ? fungibleTokenCard(
                       fungible: aasset.asset,
-                      balance: appState.fungibleClient().balance(
-                            token: aasset.asset.address,
-                            holder: appState.model.activeAddress,
+                      balance: appState.assetLibrary().balance(
+                            asset: aasset.asset.address,
+                            owner: appState.model.activeAddress,
                           ),
                     )
                   : nonFungibleTokenCard(
