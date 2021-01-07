@@ -245,19 +245,16 @@ class Model {
         contacts: contacts ?? this.contacts,
       );
 
-  String toString() {
-    var activeKeyPairStr =
-        'Active KeyPair: ${activeKeyPair != null ? Sodium.bin2hex(activeKeyPair.pk) : null}';
-
-    var allKeyPairsStr =
-        'All KeyPairs: ${allKeyPairs.map((e) => Sodium.bin2hex(e.pk))}';
-
-    return [
-      activeKeyPairStr,
-      allKeyPairsStr,
-      following.toList(),
-    ].join('\n');
-  }
+  String toString() => {
+        'convexServerUri': convexServerUri.toString(),
+        'convexityAddress': convexityAddress.toString(),
+        'activeKeyPair': activeKeyPair.toString(),
+        'allKeyPairs': allKeyPairs.toString(),
+        'following': following.toString(),
+        'myTokens': myTokens.toString(),
+        'activities': activities.toString(),
+        'contacts': contacts.toString(),
+      }.toString();
 }
 
 void bootstrap({
@@ -272,18 +269,6 @@ void bootstrap({
     final activities = p.readActivities(preferences);
     final contacts = p.readContacts(preferences);
 
-    logger.d(
-      'BOOTSTRAP:\n'
-      'Convex World URI: $convexWorldUri\n'
-      'Convexity Address: $convexityAddress\n'
-      'All KeyPairs: $allKeyPairs\n'
-      'Active KeyPair: $activeKeyPair\n'
-      'Following: $following\n'
-      'My Tokens: $myTokens\n'
-      'Activities: $activities\n'
-      'Contacts: ${contacts.isEmpty ? 'Empty' : contacts.length}',
-    );
-
     final _model = Model(
       convexServerUri: convexWorldUri,
       convexityAddress: convexityAddress,
@@ -294,6 +279,8 @@ void bootstrap({
       activities: activities,
       contacts: contacts,
     );
+
+    logger.d(_model.toString());
 
     context.read<AppState>().setState((_) => _model);
   } catch (e, s) {
