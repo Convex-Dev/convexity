@@ -301,8 +301,8 @@ class _FungibleTransferScreenBodyState
                     width: 120,
                     height: 120,
                   )
-                : identicon(
-                    _receiver.hex,
+                : aidenticon(
+                    _receiver,
                     height: 120,
                     width: 120,
                   ),

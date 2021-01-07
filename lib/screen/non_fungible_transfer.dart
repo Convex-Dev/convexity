@@ -251,8 +251,8 @@ class _NonFungibleTransferScreenBodyState
               replacement: replacement,
               child: _receiver == null
                   ? replacement
-                  : identicon(
-                      _receiver.hex,
+                  : aidenticon(
+                      _receiver,
                       height: 120,
                       width: 120,
                     ),

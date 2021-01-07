@@ -47,8 +47,8 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
           Gap(4),
           Row(
             children: [
-              identicon(
-                activity.from.hex,
+              aidenticon(
+                activity.from,
                 height: 30,
                 width: 30,
               ),
@@ -72,8 +72,8 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
               Gap(10),
               Icon(Icons.arrow_right_alt),
               Gap(10),
-              identicon(
-                activity.to.hex,
+              aidenticon(
+                activity.to,
                 height: 30,
                 width: 30,
               ),

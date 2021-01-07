@@ -1,3 +1,4 @@
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -34,6 +35,17 @@ Widget identicon(
 }) =>
     SvgPicture.string(
       Jdenticon.toSvg(bytes),
+      width: width,
+      height: height,
+    );
+
+Widget aidenticon(
+  Address address, {
+  double width,
+  double height,
+}) =>
+    identicon(
+      address.hex.toLowerCase(),
       width: width,
       height: height,
     );
@@ -402,7 +414,7 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: identicon(contact.address.hex),
+        leading: aidenticon(contact.address),
         title: Text(contact.name),
         subtitle: Text(contact.address.toString()),
         onTap: () {
@@ -418,7 +430,7 @@ class _AddressItem implements _AWidget {
   _AddressItem(this.address);
 
   Widget build(BuildContext context) => ListTile(
-        leading: identicon(address.hex),
+        leading: aidenticon(address),
         title: Text('Not in Address Book'),
         subtitle: Text(address.toString()),
         onTap: () {
@@ -597,7 +609,7 @@ class ActiveAccount extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: Identicon(keyPair: appState.model.activeKeyPair),
+            leading: aidenticon(appState.model.activeAddress),
             title: Text(
               appState.model.activeAddress.toString(),
               overflow: TextOverflow.ellipsis,
