@@ -26,49 +26,20 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  void bootstrap() async {
-    try {
-      final preferences = await SharedPreferences.getInstance();
+  void _bootstrap() async {
+    final preferences = await SharedPreferences.getInstance();
 
-      final allKeyPairs = p.allKeyPairs(preferences);
-      final activeKeyPair = p.activeKeyPair(preferences);
-      final following = p.readFollowing(preferences);
-      final myTokens = p.readMyTokens(preferences);
-      final activities = p.readActivities(preferences);
-      final contacts = p.readContacts(preferences);
-
-      logger.d(
-        'BOOTSTRAP:\n'
-        'Server: $convexWorldUri\n'
-        'All KeyPairs: $allKeyPairs\n'
-        'Active KeyPair: $activeKeyPair\n'
-        'Following: $following\n'
-        'My Tokens: $myTokens\n'
-        'Activities: $activities\n'
-        'Contacts: ${contacts.isEmpty ? 'Empty' : contacts.length}',
-      );
-
-      context.read<AppState>().setState(
-            (_) => Model(
-              convexServerUri: convexWorldUri,
-              allKeyPairs: allKeyPairs,
-              activeKeyPair: activeKeyPair,
-              following: following,
-              myTokens: myTokens,
-              activities: activities,
-              contacts: contacts,
-            ),
-          );
-    } catch (e, s) {
-      logger.e('$e $s');
-    }
+    bootstrap(
+      context: context,
+      preferences: preferences,
+    );
   }
 
   @override
   void initState() {
     super.initState();
 
-    bootstrap();
+    _bootstrap();
   }
 
   @override

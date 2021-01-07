@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../logger.dart';
 import '../nav.dart' as nav;
 import '../model.dart';
 
@@ -28,9 +29,7 @@ class DevScreenBody extends StatefulWidget {
 class _DevScreenBodyState extends State<DevScreenBody> {
   var formKey = GlobalKey<FormState>();
 
-  var convexityController = TextEditingController(
-    text: '0xc797058Ce310cDD0679819715C097D6257Ebf3E2aB531926d8F4D1c2BE87C5ae',
-  );
+  var convexityController = TextEditingController();
 
   void scan() async {
     var result = await BarcodeScanner.scan();
@@ -51,6 +50,12 @@ class _DevScreenBodyState extends State<DevScreenBody> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
+
+    final convexityAddress = appState.model.convexityAddress;
+
+    if (convexityController.text.isEmpty && convexityAddress != null) {
+      convexityController.text = convexityAddress.toString();
+    }
 
     var devUriStr =
         Platform.isAndroid ? 'http://10.0.2.2:8080' : 'http://localhost:8080';

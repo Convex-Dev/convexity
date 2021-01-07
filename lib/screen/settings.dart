@@ -25,13 +25,7 @@ class SettingsScreenBody extends StatelessWidget {
           ElevatedButton(
             child: Text('Reset'),
             onPressed: () {
-              SharedPreferences.getInstance().then(
-                (preferences) {
-                  preferences.clear();
-
-                  context.read<AppState>().reset(context);
-                },
-              );
+              context.read<AppState>().reset(context);
             },
           ),
         ],

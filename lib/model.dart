@@ -4,9 +4,11 @@ import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'convex.dart';
 import 'convexity.dart';
+import 'logger.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
 
@@ -181,6 +183,10 @@ enum AddressInputOption {
 
 final convexWorldUri = Uri.parse('https://convex.world');
 
+final convexityAddress = Address.fromHex(
+  '0xc797058Ce310cDD0679819715C097D6257Ebf3E2aB531926d8F4D1c2BE87C5ae',
+);
+
 /// Immutable Model data class.
 ///
 /// An instance of this class represents a snapshot of the state of the app.
@@ -251,6 +257,47 @@ class Model {
       allKeyPairsStr,
       following.toList(),
     ].join('\n');
+  }
+}
+
+void bootstrap({
+  @required BuildContext context,
+  @required SharedPreferences preferences,
+}) {
+  try {
+    final allKeyPairs = p.allKeyPairs(preferences);
+    final activeKeyPair = p.activeKeyPair(preferences);
+    final following = p.readFollowing(preferences);
+    final myTokens = p.readMyTokens(preferences);
+    final activities = p.readActivities(preferences);
+    final contacts = p.readContacts(preferences);
+
+    logger.d(
+      'BOOTSTRAP:\n'
+      'Convex World URI: $convexWorldUri\n'
+      'Convexity Address: $convexityAddress\n'
+      'All KeyPairs: $allKeyPairs\n'
+      'Active KeyPair: $activeKeyPair\n'
+      'Following: $following\n'
+      'My Tokens: $myTokens\n'
+      'Activities: $activities\n'
+      'Contacts: ${contacts.isEmpty ? 'Empty' : contacts.length}',
+    );
+
+    final _model = Model(
+      convexServerUri: convexWorldUri,
+      convexityAddress: convexityAddress,
+      allKeyPairs: allKeyPairs,
+      activeKeyPair: activeKeyPair,
+      following: following,
+      myTokens: myTokens,
+      activities: activities,
+      contacts: contacts,
+    );
+
+    context.read<AppState>().setState((_) => _model);
+  } catch (e, s) {
+    logger.e('$e $s');
   }
 }
 
@@ -394,9 +441,12 @@ class AppState with ChangeNotifier {
     SharedPreferences.getInstance().then((preferences) {
       preferences.clear();
 
-      setState((m) => Model(convexServerUri: convexWorldUri));
+      bootstrap(
+        context: context,
+        preferences: preferences,
+      );
 
-      Navigator.popUntil(context, ModalRoute.withName(route.dev));
+      Navigator.popUntil(context, ModalRoute.withName(route.launcher));
     });
   }
 }
