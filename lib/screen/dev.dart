@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../logger.dart';
 import '../nav.dart' as nav;
 import '../model.dart';
 

@@ -5,9 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model.dart';
 import 'route.dart' as route;
-import 'preferences.dart' as p;
 import 'config.dart' as config;
-import 'logger.dart';
 
 void main() {
   sodium.Sodium.init();

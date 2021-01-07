@@ -97,7 +97,6 @@ class _RecommendedState extends State<_Recommended> {
 
     final appState = context.read<AppState>();
     final convexityClient = appState.convexityClient();
-    final fungibleClient = appState.fungibleLibrary();
 
     if (convexityClient != null) {
       convexityClient.assets().then((Set<AAsset> assets) {
