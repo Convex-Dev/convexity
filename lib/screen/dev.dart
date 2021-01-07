@@ -34,7 +34,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
 
       context.read<AppState>().setState(
             (model) => model.copyWith(
-              convexityAddress: Address(hex: result.rawContent),
+              convexityAddress: Address.fromHex(result.rawContent),
             ),
           );
     } else {
@@ -83,7 +83,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
 
                 appState.setState(
                   (model) => model.copyWith(
-                    convexityAddress: Address(hex: _trimmedValue),
+                    convexityAddress: Address.fromHex(_trimmedValue),
                   ),
                 );
               },

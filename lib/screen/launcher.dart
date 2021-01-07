@@ -87,7 +87,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
       var appState = context.read<AppState>();
 
       var b = await appState.convexClient().requestForFaucet(
-            address: Address(hex: Sodium.bin2hex(randomKeyPair.pk)),
+            address: Address.fromHex(Sodium.bin2hex(randomKeyPair.pk)),
             amount: 10000000,
           );
 

@@ -229,7 +229,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
     var rawContent = r.rawContent ?? "";
 
     if (rawContent.isNotEmpty) {
-      var scannedAddress = Address(hex: rawContent);
+      var scannedAddress = Address.fromHex(rawContent);
 
       setState(() {
         this.scannedAddress = scannedAddress;

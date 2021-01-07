@@ -115,7 +115,7 @@ class _CreateTokenState extends State<_CreateToken> {
     );
 
     var fungible = FungibleToken(
-      address: Address(hex: _result.value as String),
+      address: Address.fromHex(_result.value),
       metadata: metadata,
     );
 

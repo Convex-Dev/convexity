@@ -90,9 +90,7 @@ class WalletScreenBody extends StatelessWidget {
             subtitle: Text('Address'),
             onTap: () => nav.pushAccount(
               context,
-              convex.Address(
-                hex: Sodium.bin2hex(keyPair.pk),
-              ),
+              convex.Address.fromHex(Sodium.bin2hex(keyPair.pk)),
             ),
             trailing: IconButton(
               icon: Icon(Icons.copy),
@@ -114,7 +112,7 @@ class WalletScreenBody extends StatelessWidget {
           ),
           FutureBuilder(
               future: convex.getAccount(
-                  address: convex.Address(hex: Sodium.bin2hex(keyPair.pk))),
+                  address: convex.Address.fromHex(Sodium.bin2hex(keyPair.pk))),
               builder: (context, snapshot) {
                 var animatedChild;
                 if (snapshot.connectionState == ConnectionState.waiting) {

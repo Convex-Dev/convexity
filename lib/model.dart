@@ -207,7 +207,7 @@ class Model {
   });
 
   Address get activeAddress => activeKeyPair != null
-      ? Address(hex: Sodium.bin2hex(activeKeyPair.pk))
+      ? Address.fromHex(Sodium.bin2hex(activeKeyPair.pk))
       : null;
 
   KeyPair activeKeyPairOrDefault() {

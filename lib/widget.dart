@@ -580,9 +580,7 @@ class _SelectAccountState extends State<_SelectAccount> {
                     if (isNotEmpty) {
                       Navigator.pop(
                         context,
-                        convex.Address(
-                          hex: convex.Address.trim0x(_addressHex),
-                        ),
+                        convex.Address.fromHex(_addressHex),
                       );
                     }
                   },
