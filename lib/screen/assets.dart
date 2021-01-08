@@ -21,11 +21,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
     final appState = context.read<AppState>();
     final assetLibrary = appState.assetLibrary();
 
-    final assets = <AAsset>{}
-      ..addAll(appState.model.myTokens)
-      ..addAll(appState.model.following);
-
-    balancheCache = Map.fromEntries(assets.map(
+    balancheCache = Map.fromEntries(appState.model.following.map(
       (aasset) => MapEntry(
           aasset,
           assetLibrary.balance(
@@ -39,10 +35,6 @@ class _AssetsScreenState extends State<AssetsScreen> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final assets = <AAsset>{}
-      ..addAll(appState.model.myTokens)
-      ..addAll(appState.model.following);
-
     return Scaffold(
       appBar: AppBar(title: Text('Digital Assets')),
       body: Container(
@@ -52,7 +44,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
             children: [
               Expanded(
                 child: AssetsCollection(
-                  assets: assets,
+                  assets: appState.model.following,
                   balanceCache: balancheCache,
                 ),
               ),
