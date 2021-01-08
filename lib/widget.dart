@@ -338,6 +338,11 @@ class _AssetsCollectionState extends State<AssetsCollection> {
       mainAxisSpacing: 10,
       crossAxisCount: 2,
       children: widget.assets.map((aasset) {
+        final balance = appState.assetLibrary().balance(
+              asset: aasset.asset.address,
+              owner: appState.model.activeAddress,
+            );
+
         if (aasset.type == AssetType.fungible) {
           final mine = appState.model.myTokens.firstWhere(
             (myToken) => myToken.asset.address == aasset.asset.address,
@@ -347,10 +352,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
           return fungibleTokenCard(
             isMine: mine != null,
             fungible: aasset.asset as convex.FungibleToken,
-            balance: appState.assetLibrary().balance(
-                  asset: aasset.asset.address,
-                  owner: appState.model.activeAddress,
-                ),
+            balance: balance,
             onTap: (fungible) {
               // This seems a little bit odd, but once the route pops,
               // we call `setState` to ask Flutter to rebuild this Widget,
@@ -359,10 +361,11 @@ class _AssetsCollectionState extends State<AssetsCollection> {
               nav
                   .pushAsset(
                     context,
-                    AAsset(
+                    aasset: AAsset(
                       type: AssetType.fungible,
                       asset: fungible,
                     ),
+                    balance: balance,
                   )
                   .then((value) => setState(() {}));
             },
@@ -374,10 +377,11 @@ class _AssetsCollectionState extends State<AssetsCollection> {
           onTap: (nonFungible) {
             nav.pushAsset(
               context,
-              AAsset(
+              aasset: AAsset(
                 type: AssetType.nonFungible,
                 asset: nonFungible,
               ),
+              balance: balance,
             );
           },
         );

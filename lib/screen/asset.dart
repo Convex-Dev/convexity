@@ -7,6 +7,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:tuple/tuple.dart';
 
 import '../logger.dart';
 import '../model.dart';
@@ -109,15 +110,23 @@ Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
 
 class AssetScreen extends StatelessWidget {
   final AAsset aasset;
+  final Future balance;
 
-  const AssetScreen({Key key, this.aasset}) : super(key: key);
+  const AssetScreen({
+    Key key,
+    this.aasset,
+    this.balance,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // AAsset can be passed directly to the constructor,
+    final arguments =
+        ModalRoute.of(context).settings.arguments as Tuple2<AAsset, Future>;
+
+    // AAsset and balance can be passed directly to the constructor,
     // or via the Navigator arguments.
-    AAsset _aasset =
-        aasset ?? ModalRoute.of(context).settings.arguments as AAsset;
+    AAsset _aasset = aasset ?? arguments.item1;
+    Future _balance = balance ?? arguments.item2;
 
     final title = _aasset.type == AssetType.fungible
         ? (_aasset.asset as FungibleToken).metadata.symbol
@@ -125,22 +134,29 @@ class AssetScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('$title')),
-      body: AssetScreenBody(aasset: _aasset),
+      body: AssetScreenBody(aasset: _aasset, balance: _balance),
     );
   }
 }
 
 class AssetScreenBody extends StatefulWidget {
   final AAsset aasset;
+  final Future balance;
 
-  const AssetScreenBody({Key key, this.aasset}) : super(key: key);
+  const AssetScreenBody({
+    Key key,
+    this.aasset,
+    this.balance,
+  }) : super(key: key);
 
   @override
   _AssetScreenBodyState createState() => _AssetScreenBodyState();
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  Future<dynamic> balance;
+  Future<dynamic> _balance;
+
+  Future get balance => _balance ?? widget.balance;
 
   Widget _info() => StatelessWidgetBuilder((context) => Card(
         child: Padding(
@@ -290,38 +306,37 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.aasset.type == AssetType.fungible)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Balance',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                          Gap(4),
-                          FutureBuilder(
-                            future: balance,
-                            builder: (context, snapshot) {
-                              return snapshot.connectionState ==
-                                      ConnectionState.waiting
-                                  ? SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Text(
-                                      formatFungibleCurrency(
-                                        metadata: widget.aasset.asset.metadata,
-                                        number: snapshot.data,
-                                      ),
-                                    );
-                            },
-                          ),
-                        ],
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Balance',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Gap(4),
+                        FutureBuilder(
+                          future: balance,
+                          builder: (context, snapshot) {
+                            return snapshot.connectionState ==
+                                    ConnectionState.waiting
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    formatFungibleCurrency(
+                                      metadata: widget.aasset.asset.metadata,
+                                      number: snapshot.data,
+                                    ),
+                                  );
+                          },
+                        ),
+                      ],
+                    ),
                     Row(
                       children: [
                         _action(
@@ -350,7 +365,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                               (_) {
                                 // Query the potentially updated balance.
                                 setState(() {
-                                  balance = queryBalance(context);
+                                  _balance = queryBalance(context);
                                 });
                               },
                             );
@@ -422,7 +437,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       icon: Icon(Icons.refresh),
                       onPressed: () {
                         setState(() {
-                          balance = queryBalance(context);
+                          _balance = queryBalance(context);
                         });
                       },
                     ),
@@ -506,7 +521,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
                       result.then(
                         (value) => setState(() {
-                          balance = queryBalance(context);
+                          _balance = queryBalance(context);
                         }),
                       );
                     },
@@ -603,7 +618,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   if (result == null) {
                     // Query the potentially updated balance.
                     setState(() {
-                      balance = queryBalance(context);
+                      _balance = queryBalance(context);
                     });
                   }
                 },
@@ -626,8 +641,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   @override
   void initState() {
     super.initState();
-
-    balance = queryBalance(context);
   }
 
   @override

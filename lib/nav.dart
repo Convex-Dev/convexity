@@ -34,11 +34,15 @@ void pushAssets(BuildContext context) => Navigator.pushNamed(
       route.assets,
     );
 
-Future<dynamic> pushAsset(BuildContext context, AAsset aasset) =>
+Future<dynamic> pushAsset(
+  BuildContext context, {
+  AAsset aasset,
+  Future balance,
+}) =>
     Navigator.pushNamed(
       context,
       route.asset,
-      arguments: aasset,
+      arguments: Tuple2(aasset, balance),
     );
 
 void pushFollow(BuildContext context) => Navigator.pushNamed(

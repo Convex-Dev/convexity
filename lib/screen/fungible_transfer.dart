@@ -124,13 +124,19 @@ class _FungibleTransferScreenBodyState
                     Text(
                       'Transfer $formattedAmount to ',
                     ),
-                    if (contact == null)
-                      Identicon2(
-                        address: Address.fromHex(_receiverTextController.text),
-                        isAddressVisible: true,
-                        size: 30,
-                      )
-                    else
+                    if (contact == null) ...[
+                      aidenticon(
+                        Address.fromHex(_receiverTextController.text),
+                        width: 30,
+                        height: 30,
+                      ),
+                      Expanded(
+                        child: Text(
+                          _receiverTextController.text,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ] else
                       Text(contact.name),
                     Text(
                       '?',
@@ -231,13 +237,19 @@ class _FungibleTransferScreenBodyState
                           Text(
                             'Transfered $formattedAmount to ',
                           ),
-                          if (contact == null)
-                            Identicon2(
-                              address: _receiver,
-                              isAddressVisible: true,
-                              size: 30,
-                            )
-                          else
+                          if (contact == null) ...[
+                            aidenticon(
+                              Address.fromHex(_receiverTextController.text),
+                              width: 30,
+                              height: 30,
+                            ),
+                            Expanded(
+                              child: Text(
+                                _receiverTextController.text,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ] else
                             Text(contact.name),
                         ],
                       ),
