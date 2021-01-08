@@ -17,53 +17,65 @@ import '../nav.dart' as nav;
 
 class FungibleTransferScreen extends StatelessWidget {
   final FungibleToken token;
+  final Future balance;
 
-  const FungibleTransferScreen({Key key, this.token}) : super(key: key);
+  const FungibleTransferScreen({
+    Key key,
+    this.token,
+    this.balance,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var arguments = ModalRoute.of(context).settings.arguments
         as Tuple2<FungibleToken, Future<dynamic>>;
 
-    // Token can be passed directly to the constructor,
+    // Token and balance can be passed directly to the constructor,
     // or via the Navigator arguments.
     var _token = token ?? arguments.item1;
-    var _balance = arguments.item2;
+    var _balance = balance ?? arguments.item2;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Transfer ${_token.metadata.symbol}',
-              ),
-              FutureBuilder(
-                future: _balance,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
+    return WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Transfer ${_token.metadata.symbol}',
+                ),
+                FutureBuilder(
+                  future: _balance,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
 
-                  var formattedBalance = formatFungibleCurrency(
-                    metadata: _token.metadata,
-                    number: snapshot.data as int,
-                  );
+                    var formattedBalance = formatFungibleCurrency(
+                      metadata: _token.metadata,
+                      number: snapshot.data as int,
+                    );
 
-                  return Text(
-                    'Balance $formattedBalance',
-                    style: TextStyle(fontSize: 14),
-                  );
-                },
-              )
-            ],
+                    return Text(
+                      'Balance $formattedBalance',
+                      style: TextStyle(fontSize: 14),
+                    );
+                  },
+                )
+              ],
+            ),
           ),
         ),
+        body: FungibleTransferScreenBody(token: _token),
       ),
-      body: FungibleTransferScreenBody(token: _token),
+      onWillPop: () async {
+        Navigator.of(context).pop(false);
+
+        return false;
+      },
     );
   }
 }
@@ -376,7 +388,11 @@ class _FungibleTransferScreenBodyState
                 final amount = num.tryParse(value) *
                     pow(10, widget.token.metadata.decimals);
 
-                logger.d('Set amount ${amount.toInt()}');
+                logger.d(
+                  'Set amount: ${amount.toInt()} ' +
+                      '(Token decimals: ${widget.token.metadata.decimals}; ' +
+                      'amount = $value * 10 ^ ${widget.token.metadata.decimals})',
+                );
 
                 setState(() {
                   _amount = amount.toInt();

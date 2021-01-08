@@ -154,7 +154,7 @@ class AssetScreenBody extends StatefulWidget {
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  Future<dynamic> _balance;
+  Future _balance;
 
   Future get balance => _balance ?? widget.balance;
 
@@ -362,11 +362,14 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             );
 
                             f.then(
-                              (_) {
-                                // Query the potentially updated balance.
-                                setState(() {
-                                  _balance = queryBalance(context);
-                                });
+                              (result) {
+                                // Transfer will pop with a false value
+                                // if the user didn't make a transfer.
+                                if (result != false) {
+                                  setState(() {
+                                    _balance = queryBalance(context);
+                                  });
+                                }
                               },
                             );
                           },
