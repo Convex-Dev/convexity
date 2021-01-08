@@ -391,7 +391,7 @@ class _FungibleTransferScreenBodyState
                 logger.d(
                   'Set amount: ${amount.toInt()} ' +
                       '(Token decimals: ${widget.token.metadata.decimals}; ' +
-                      'amount = $value * 10 ^ ${widget.token.metadata.decimals})',
+                      'amount = $value * 10^${widget.token.metadata.decimals})',
                 );
 
                 setState(() {
