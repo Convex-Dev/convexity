@@ -642,14 +642,17 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
+  Widget build(BuildContext context) => WillPopScope(
+        child: SafeArea(
+          child: widget.aasset.type == AssetType.fungible
+              ? _fungible()
+              : _nonFungible(),
+        ),
+        onWillPop: () async {
+          // Pop with a potentially updated balance.
+          Navigator.pop(context, balance);
 
-  @override
-  Widget build(BuildContext context) => SafeArea(
-        child: widget.aasset.type == AssetType.fungible
-            ? _fungible()
-            : _nonFungible(),
+          return false;
+        },
       );
 }

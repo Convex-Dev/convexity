@@ -292,12 +292,14 @@ Widget nonFungibleTokenCard({
 
 class AssetsCollection extends StatefulWidget {
   final Set<AAsset> assets;
+  final Map<AAsset, Future> balanceCache;
   final String empty;
 
   const AssetsCollection({
     Key key,
     @required this.assets,
-    this.empty,
+    this.balanceCache = const {},
+    this.empty = 'Nothing to show',
   }) : super(key: key);
 
   @override
@@ -321,7 +323,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
             ),
             Gap(10),
             Text(
-              widget.empty ?? 'Nothing to show',
+              widget.empty,
               style: TextStyle(
                 color: Colors.black45,
                 fontSize: 16,
@@ -338,10 +340,11 @@ class _AssetsCollectionState extends State<AssetsCollection> {
       mainAxisSpacing: 10,
       crossAxisCount: 2,
       children: widget.assets.map((aasset) {
-        final balance = appState.assetLibrary().balance(
-              asset: aasset.asset.address,
-              owner: appState.model.activeAddress,
-            );
+        final balance = widget.balanceCache[aasset] ??
+            appState.assetLibrary().balance(
+                  asset: aasset.asset.address,
+                  owner: appState.model.activeAddress,
+                );
 
         if (aasset.type == AssetType.fungible) {
           final mine = appState.model.myTokens.firstWhere(
@@ -354,20 +357,20 @@ class _AssetsCollectionState extends State<AssetsCollection> {
             fungible: aasset.asset as convex.FungibleToken,
             balance: balance,
             onTap: (fungible) {
-              // This seems a little bit odd, but once the route pops,
-              // we call `setState` to ask Flutter to rebuild this Widget,
-              // which will then create new Future objects
-              // for each Token & balance.
-              nav
-                  .pushAsset(
-                    context,
-                    aasset: AAsset(
-                      type: AssetType.fungible,
-                      asset: fungible,
-                    ),
-                    balance: balance,
-                  )
-                  .then((value) => setState(() {}));
+              final asset = AAsset(
+                type: AssetType.fungible,
+                asset: fungible,
+              );
+
+              final result = nav.pushAsset(
+                context,
+                aasset: asset,
+                balance: balance,
+              );
+
+              setState(() {
+                widget.balanceCache[asset] = result;
+              });
             },
           );
         }
