@@ -644,6 +644,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      widget.aasset.type == AssetType.fungible ? _fungible() : _nonFungible();
+  Widget build(BuildContext context) => SafeArea(
+        child: widget.aasset.type == AssetType.fungible
+            ? _fungible()
+            : _nonFungible(),
+      );
 }
