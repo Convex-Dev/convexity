@@ -68,6 +68,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
               },
               onTap: () {
                 final params = SelectAccountParams(
+                  title: 'New Contact',
                   isRecentsVisible: true,
                   isContactsVisible: false,
                 );

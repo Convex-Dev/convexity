@@ -253,7 +253,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 return null;
               },
               onTap: () {
-                pushSelectAccount(context).then((selectedAddress) {
+                pushSelectAccount(
+                  context,
+                  params: SelectAccountParams(title: 'Payee'),
+                ).then((selectedAddress) {
                   if (selectedAddress != null) {
                     setState(() {
                       targetController.text = selectedAddress.toString();

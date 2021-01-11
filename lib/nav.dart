@@ -93,7 +93,7 @@ Future<dynamic> pushSelectAccount(
     Navigator.pushNamed(
       context,
       route.selectAccount,
-      arguments: params,
+      arguments: params ?? SelectAccountParams(),
     );
 
 Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(

@@ -454,10 +454,12 @@ Future<convex.Address> selectAccountModal(BuildContext context) =>
 
 @immutable
 class SelectAccountParams {
+  final String title;
   final bool isContactsVisible;
   final bool isRecentsVisible;
 
   SelectAccountParams({
+    this.title = 'Select Account',
     this.isContactsVisible = true,
     this.isRecentsVisible = true,
   });
@@ -469,7 +471,7 @@ Widget selectAccountScreen({SelectAccountParams params}) =>
           params ?? ModalRoute.of(context).settings.arguments;
 
       return Scaffold(
-        appBar: AppBar(title: Text('Select Account')),
+        appBar: AppBar(title: Text(_params.title)),
         body: _SelectAccount(
           params: _params ??
               SelectAccountParams(
