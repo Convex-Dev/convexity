@@ -161,6 +161,12 @@ class _CreateTokenState extends State<_CreateToken> {
       isPersistent: true,
     );
 
+    // Auto follow personal tokens.
+    appState.follow(
+      aasset,
+      isPersistent: true,
+    );
+
     setState(() {
       _newTokenStatus = _NewTokenStatus.success;
       _newTokenResult = _result;
