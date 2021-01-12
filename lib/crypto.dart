@@ -1,11 +1,11 @@
+// Reference: https://tools.ietf.org/html/rfc8410
+
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:asn1lib/asn1lib.dart';
 
-// Reference: https://tools.ietf.org/html/draft-ietf-curdle-pkix-00
-
-final idCurve25519ObjectIdentifier = ASN1ObjectIdentifier([1, 3, 101, 100]);
+final idCurve25519ObjectIdentifier = ASN1ObjectIdentifier([1, 3, 101, 112]);
 
 String encodePublicKeyPEM(Uint8List publicKey) {
   final algorithmIdentifier = ASN1Sequence()..add(idCurve25519ObjectIdentifier);
