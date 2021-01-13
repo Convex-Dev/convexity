@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,7 +25,15 @@ void main() {
     test('Private Key', () {
       final pem = crypto.encodePrivateKeyPEM(randomKeyPair.sk);
 
-      print(pem);
+      print(
+        'PUBLIC KEY\n' +
+            Sodium.bin2hex(randomKeyPair.pk) +
+            '\n\n' +
+            'PRIVATE KEY\n' +
+            Sodium.bin2hex(randomKeyPair.sk) +
+            '\n\n' +
+            pem,
+      );
 
       final decodedSecretKey = crypto.decodePrivateKeyPEM(pem);
 

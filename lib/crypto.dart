@@ -33,12 +33,17 @@ Uint8List decodePublicKeyPEM(String pem) {
 }
 
 String encodePrivateKeyPEM(Uint8List privateKey) {
-  final privateKeySequence = ASN1Sequence()
-    ..add(ASN1Integer(BigInt.from(1)))
-    ..add(ASN1BitString(privateKey))
-    ..add(idCurve25519ObjectIdentifier);
+  final version = ASN1Integer(BigInt.from(0));
 
-  final encoded = base64.encode(privateKeySequence.encodedBytes);
+  final algorithm = ASN1Sequence();
+  algorithm.add(idCurve25519ObjectIdentifier);
+
+  final privateKeyInfo = ASN1Sequence()
+    ..add(version)
+    ..add(algorithm)
+    ..add(ASN1OctetString(privateKey));
+
+  final encoded = base64.encode(privateKeyInfo.encodedBytes);
 
   return '-----BEGIN PRIVATE KEY-----\n$encoded\n-----END PRIVATE KEY-----';
 }
@@ -50,7 +55,8 @@ Uint8List decodePrivateKeyPEM(String pem) {
 
   final privateKeySequence = ASN1Parser(decoded).nextObject() as ASN1Sequence;
 
-  final privateKeyBitString = privateKeySequence.elements[1] as ASN1BitString;
+  final privateKeyOctetString =
+      privateKeySequence.elements[2] as ASN1OctetString;
 
-  return Uint8List.fromList(privateKeyBitString.stringValue);
+  return privateKeyOctetString.valueBytes();
 }
