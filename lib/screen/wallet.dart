@@ -186,6 +186,18 @@ class WalletScreenBody extends StatelessWidget {
                               )
                             ],
                           ),
+                          Row(
+                            children: [
+                              TextButton(
+                                child: Text('Make Active'),
+                                onPressed: () {},
+                              ),
+                              TextButton(
+                                child: Text('Export'),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     );
