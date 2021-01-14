@@ -1,10 +1,11 @@
-// Reference: https://tools.ietf.org/html/rfc8410
+// REFERENCE
+//  https://tools.ietf.org/html/rfc8410
+//  https://tools.ietf.org/html/rfc5958
 
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:asn1lib/asn1lib.dart';
-import 'package:flutter_sodium/flutter_sodium.dart';
 
 final idCurve25519ObjectIdentifier = ASN1ObjectIdentifier([1, 3, 101, 112]);
 
@@ -34,7 +35,7 @@ Uint8List decodePublicKeyPEM(String pem) {
 }
 
 String encodePrivateKeyPEM(Uint8List privateKey) {
-  final version = ASN1Integer(BigInt.from(0));
+  final version = ASN1Integer(BigInt.from(1));
 
   final algorithm = ASN1Sequence();
   algorithm.add(idCurve25519ObjectIdentifier);
@@ -45,10 +46,30 @@ String encodePrivateKeyPEM(Uint8List privateKey) {
 
   final publicKeyBitString = ASN1BitString(privateKey.sublist(32, 64));
 
+  final curdleAttribute = ASN1Sequence()
+    ..add(
+      ASN1ObjectIdentifier([1, 2, 840, 113549, 1, 9, 9, 20]),
+    )
+    ..add(
+      ASN1Set()
+        ..add(
+          ASN1UTF8String("Curdle Chairs"),
+        ),
+    );
+
+  final attributes = ASN1Set()
+    ..add(
+      curdleAttribute,
+    );
+
   final oneAsymmetricKey = ASN1Sequence()
     ..add(version)
     ..add(algorithm)
-    ..add(privateKeyOctetString);
+    ..add(privateKeyOctetString)
+    // Attrbiutes
+    ..add(attributes)
+    // Public Key
+    ..add(publicKeyBitString);
 
   final encoded = base64.encode(oneAsymmetricKey.encodedBytes);
 
