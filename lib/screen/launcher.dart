@@ -50,7 +50,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
             : null,
       ),
       body: Container(
-        padding: EdgeInsets.all(40),
+        padding: defaultScreenPadding,
         child: body(context),
       ),
       bottomNavigationBar: isSignedIn
@@ -108,7 +108,8 @@ class _LauncherScreenState extends State<LauncherScreen> {
     var appState = context.watch<AppState>();
 
     if (appState.model.activeKeyPair == null) {
-      return Center(
+      return Container(
+        padding: EdgeInsets.all(30),
         child: Column(
           children: [
             Text(
