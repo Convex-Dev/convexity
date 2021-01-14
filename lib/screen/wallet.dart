@@ -1,4 +1,4 @@
-import 'package:convex_wallet/model.dart';
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -7,9 +7,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import 'package:convex_wallet/convex.dart' as convex;
-import 'package:convex_wallet/nav.dart' as nav;
-import 'package:convex_wallet/widget.dart';
+import '../model.dart';
+import '../convex.dart' as convex;
+import '../nav.dart' as nav;
+import '../widget.dart';
+import '../crypto.dart' as crypto;
 
 void _createAccount(BuildContext context) {
   var randomKeyPair = CryptoSign.randomKeys();
@@ -194,7 +196,16 @@ class WalletScreenBody extends StatelessWidget {
                               ),
                               TextButton(
                                 child: Text('Export'),
-                                onPressed: () {},
+                                onPressed: () {
+                                  final appState = context.read<AppState>();
+
+                                  print(
+                                    '\n' +
+                                        crypto.encodePrivateKeyPEM(
+                                          appState.model.activeKeyPair.sk,
+                                        ),
+                                  );
+                                },
                               ),
                             ],
                           ),
