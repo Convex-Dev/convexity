@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:asn1lib/asn1lib.dart';
+import 'package:flutter_sodium/flutter_sodium.dart';
 
 final idCurve25519ObjectIdentifier = ASN1ObjectIdentifier([1, 3, 101, 112]);
 
@@ -38,12 +39,18 @@ String encodePrivateKeyPEM(Uint8List privateKey) {
   final algorithm = ASN1Sequence();
   algorithm.add(idCurve25519ObjectIdentifier);
 
-  final privateKeyInfo = ASN1Sequence()
+  final privateKeyOctetString = ASN1OctetString(
+    ASN1OctetString(privateKey.sublist(0, 32)).encodedBytes,
+  );
+
+  final publicKeyBitString = ASN1BitString(privateKey.sublist(32, 64));
+
+  final oneAsymmetricKey = ASN1Sequence()
     ..add(version)
     ..add(algorithm)
-    ..add(ASN1OctetString(privateKey));
+    ..add(privateKeyOctetString);
 
-  final encoded = base64.encode(privateKeyInfo.encodedBytes);
+  final encoded = base64.encode(oneAsymmetricKey.encodedBytes);
 
   return '-----BEGIN PRIVATE KEY-----\n$encoded\n-----END PRIVATE KEY-----';
 }
