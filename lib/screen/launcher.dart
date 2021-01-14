@@ -50,7 +50,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
             : null,
       ),
       body: Container(
-        padding: defaultScreenPadding,
+        padding: EdgeInsets.all(40),
         child: body(context),
       ),
       bottomNavigationBar: isSignedIn
@@ -124,13 +124,18 @@ class _LauncherScreenState extends State<LauncherScreen> {
             Gap(20),
             if (isCreatingAccount)
               CircularProgressIndicator()
-            else
+            else ...[
               TextButton(
                 child: Text('CREATE ACCOUNT'),
                 onPressed: () {
                   _createAccount(context);
                 },
               ),
+              TextButton(
+                child: Text('IMPORT EXISTING ACCOUNT'),
+                onPressed: () {},
+              )
+            ],
           ],
         ),
       );
