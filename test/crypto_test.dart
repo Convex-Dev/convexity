@@ -1,4 +1,6 @@
-import 'dart:convert';
+// REQUIREMENTS
+// 'libsodium' must be installed on your lachine to be able to run these tests.
+// On macOS: brew install libsodium
 
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_test/flutter_test.dart';
