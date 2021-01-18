@@ -26,6 +26,12 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
   var currentIndex = 0;
 
+  final currentIndexLabel = {
+    0: 'Home',
+    1: 'Wallet',
+    2: 'Profile',
+  };
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -34,7 +40,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Convexity'),
+        title: Text(isSignedIn ? currentIndexLabel[currentIndex] : ''),
         actions: isSignedIn
             ? [
                 PopupMenuButton<_PopupChoice>(
@@ -59,15 +65,15 @@ class _LauncherScreenState extends State<LauncherScreen> {
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: 'Home',
+                  label: currentIndexLabel[currentIndex],
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.account_balance_wallet),
-                  label: 'Wallet',
+                  label: currentIndexLabel[currentIndex],
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.account_circle),
-                  label: 'Profile',
+                  label: currentIndexLabel[currentIndex],
                 ),
               ],
               onTap: (index) => setState(() => currentIndex = index),
