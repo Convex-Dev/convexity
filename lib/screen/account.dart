@@ -1,4 +1,3 @@
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -7,15 +6,37 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../convex.dart';
 import '../model.dart';
+import '../widget.dart';
 
 class AccountScreen extends StatelessWidget {
+  final Address address;
+
+  const AccountScreen({Key key, this.address}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final Address address = ModalRoute.of(context).settings.arguments;
+    final Address _address =
+        address ?? ModalRoute.of(context).settings.arguments;
+
+    final isMine = context.watch<AppState>().model.activeAddress == _address;
+
+    final body = Container(
+      padding: defaultScreenPadding,
+      child: AccountScreenBody(address: _address),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text('Account Details')),
-      body: AccountScreenBody(address: address),
+      body: isMine
+          ? ClipRect(
+              child: Banner(
+                message: "My Account",
+                color: Colors.orange,
+                location: BannerLocation.topEnd,
+                child: body,
+              ),
+            )
+          : body,
     );
   }
 }
@@ -176,12 +197,9 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 )
                 .toList();
 
-            return Padding(
-              padding: const EdgeInsets.all(12),
-              child: AnimationLimiter(
-                child: ListView(
-                  children: animated,
-                ),
+            return AnimationLimiter(
+              child: ListView(
+                children: animated,
               ),
             );
         }
