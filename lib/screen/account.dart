@@ -122,7 +122,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   children: [
                     Text(
                       label,
-                      style: TextStyle(fontSize: 16.0),
+                      style: TextStyle(color: Colors.black54, fontSize: 16.0),
                     ),
                     Text(
                       value,

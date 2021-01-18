@@ -16,95 +16,115 @@ import '../convex.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
 
-Widget fungibleTransferActivityView(FungibleTransferActivity activity) =>
+Widget fungibleTransferActivityView(Activity activity) =>
     StatelessWidgetBuilder((context) {
+      final fungibleTransferActivity =
+          activity.payload as FungibleTransferActivity;
+
       final contacts = context.select(
         (AppState appState) => appState.model.contacts,
       );
 
       final toContact = contacts.firstWhere(
-        (contact) => contact.address == activity.to,
+        (contact) => contact.address == fungibleTransferActivity.to,
         orElse: () => null,
       );
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Transfer',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Gap(20),
-              Text(
-                activity.timestamp.toString(),
-                style: Theme.of(context).textTheme.caption,
-              )
-            ],
-          ),
-          Gap(4),
-          Row(
-            children: [
-              aidenticon(
-                activity.from,
-                height: 30,
-                width: 30,
-              ),
-              Gap(10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      return Card(
+        child: InkWell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Own Account',
-                      overflow: TextOverflow.ellipsis,
+                      'Transfer',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    Gap(20),
                     Text(
-                      activity.from.toString(),
-                      overflow: TextOverflow.ellipsis,
+                      fungibleTransferActivity.timestamp.toString(),
                       style: Theme.of(context).textTheme.caption,
                     )
                   ],
                 ),
-              ),
-              Gap(10),
-              Icon(Icons.arrow_right_alt),
-              Gap(10),
-              aidenticon(
-                activity.to,
-                height: 30,
-                width: 30,
-              ),
-              Gap(10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Gap(4),
+                Row(
                   children: [
-                    Text(
-                      toContact?.name?.toString() ?? 'Not in Address Book',
-                      overflow: TextOverflow.ellipsis,
+                    aidenticon(
+                      fungibleTransferActivity.from,
+                      height: 30,
+                      width: 30,
                     ),
-                    Text(
-                      activity.to.toString(),
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.caption,
+                    Gap(10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Own Account',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            fungibleTransferActivity.from.toString(),
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.caption,
+                          )
+                        ],
+                      ),
+                    ),
+                    Gap(10),
+                    Icon(Icons.arrow_right_alt),
+                    Gap(10),
+                    aidenticon(
+                      fungibleTransferActivity.to,
+                      height: 30,
+                      width: 30,
+                    ),
+                    Gap(10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            toContact?.name?.toString() ??
+                                'Not in Address Book',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            fungibleTransferActivity.to.toString(),
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.caption,
+                          )
+                        ],
+                      ),
                     )
                   ],
                 ),
-              )
-            ],
-          ),
-          Gap(4),
-          Text(
-            'Amount: ${formatFungibleCurrency(metadata: activity.token.metadata, number: activity.amount)}',
-            style: TextStyle(
-              color: Colors.black87,
+                Gap(4),
+                Text(
+                  'Amount: ${formatFungibleCurrency(
+                    metadata: fungibleTransferActivity.token.metadata,
+                    number: fungibleTransferActivity.amount,
+                  )}',
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+          onTap: () {
+            nav.pushActivity(
+              context,
+              activity: activity,
+            );
+          },
+        ),
       );
     });
 
@@ -390,19 +410,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
                 Expanded(
                   child: SafeArea(
-                    child: Card(
-                      child: ListView.separated(
-                        itemCount: activities.length,
-                        separatorBuilder: (BuildContext context, int index) =>
-                            const Divider(),
-                        itemBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: fungibleTransferActivityView(
-                            activities[index].payload
-                                as FungibleTransferActivity,
-                          ),
-                        ),
-                      ),
+                    child: ListView.separated(
+                      itemCount: activities.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                      itemBuilder: (context, index) =>
+                          fungibleTransferActivityView(activities[index]),
                     ),
                   ),
                 ),

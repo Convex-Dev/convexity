@@ -45,11 +45,21 @@ enum ActivityType {
   transfer,
 }
 
+String activityTypeString(ActivityType activityType) {
+  switch (activityType) {
+    case ActivityType.transfer:
+      return 'Transfer';
+  }
+
+  return 'Unknown';
+}
+
 /// Immutable data class to encode an 'Activity'.
 ///
 /// You can know the concrete type of [payload] using the [type] enum,
 /// and then cast to the particular type e.g. `activity.payload as FungibleTransferActivity`.
 @immutable
+@sealed
 class Activity {
   final ActivityType type;
   final dynamic payload;

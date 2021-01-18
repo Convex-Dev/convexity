@@ -51,7 +51,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  child: Text('Follow'),
+                  child: Text('Follow more Assets...'),
                   onPressed: () {
                     nav.pushFollow(context);
                   },

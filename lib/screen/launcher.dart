@@ -67,7 +67,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.account_circle),
-                  label: 'Account',
+                  label: 'Profile',
                 ),
               ],
               onTap: (index) => setState(() => currentIndex = index),

@@ -130,3 +130,13 @@ Future<dynamic> pushNonFungibleTransfer(
         tokenId,
       ),
     );
+
+Future<dynamic> pushActivity(
+  BuildContext context, {
+  @required Activity activity,
+}) =>
+    Navigator.pushNamed(
+      context,
+      route.activity,
+      arguments: activity,
+    );
