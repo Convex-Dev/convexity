@@ -1,3 +1,4 @@
+import 'package:convex_wallet/screen/white_list.dart';
 import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,7 @@ const String myTokens = '/myTokens';
 const String newToken = '/newToken';
 const String newNonFungibleToken = '/newNonFungibleToken';
 const String addressBook = '/addressBook';
+const String whitelist = '/whitelist';
 const String newContact = '/newContact';
 const String selectAccount = '/selectAccount';
 const String nonFungibleToken = '/nonFungibleToken';
@@ -56,6 +58,7 @@ Map<String, WidgetBuilder> routes() => {
       newToken: (context) => NewTokenScreen(),
       newNonFungibleToken: (context) => NewNonFungibleTokenScreen(),
       addressBook: (context) => AddressBookScreen(),
+      whitelist: (context) => WhiteListScreen(),
       newContact: (context) => NewContactScreen(),
       selectAccount: (context) => selectAccountScreen(),
       nonFungibleToken: (context) => NonFungibleTokenScreen(),

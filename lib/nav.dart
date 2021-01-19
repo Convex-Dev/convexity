@@ -101,6 +101,11 @@ Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(
       route.newContact,
     );
 
+Future<dynamic> pushWhitelist(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.whitelist,
+    );
+
 Future<dynamic> pushNonFungibleToken(
   BuildContext context, {
   convex.NonFungibleToken nonFungibleToken,
