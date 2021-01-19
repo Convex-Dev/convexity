@@ -18,7 +18,18 @@ class AccountScreen extends StatelessWidget {
     final Address _address =
         address ?? ModalRoute.of(context).settings.arguments;
 
-    final isMine = context.watch<AppState>().model.activeAddress == _address;
+    final contacts = context
+        .select<AppState, Set<Contact>>((appState) => appState.model.contacts);
+
+    final contact = contacts.firstWhere(
+      (element) => element.address == _address,
+      orElse: () => null,
+    );
+
+    final activeAddress = context
+        .select<AppState, Address>((appState) => appState.model.activeAddress);
+
+    final isMine = activeAddress == _address;
 
     final body = Container(
       padding: defaultScreenPadding,
@@ -26,7 +37,9 @@ class AccountScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('Account Details')),
+      appBar: AppBar(
+        title: Text(contact?.name ?? 'Not in Address Book'),
+      ),
       body: isMine
           ? ClipRect(
               child: Banner(
@@ -140,6 +153,15 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    final contacts = context.select<AppState, Set<Contact>>(
+      (appState) => appState.model.contacts,
+    );
+
+    final contact = contacts.firstWhere(
+      (_contact) => _contact.address == widget.address,
+      orElse: () => null,
+    );
+
     return FutureBuilder(
       future: account,
       builder: (BuildContext context, AsyncSnapshot<Account> snapshot) {
@@ -197,9 +219,35 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 )
                 .toList();
 
-            return AnimationLimiter(
-              child: ListView(
-                children: animated,
+            return SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: AnimationLimiter(
+                      child: ListView(
+                        children: animated,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: Icon(contact != null ? Icons.delete : Icons.add),
+                      label: Text(
+                        contact != null
+                            ? 'Remove from Address Book'
+                            : 'Add to Address Book',
+                      ),
+                      onPressed: () {
+                        if (contact == null) {
+                          _addToAddressBook(context, address: widget.address);
+                        } else {
+                          _removeFromAddressBook(context, contact: contact);
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
             );
         }
@@ -212,5 +260,117 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
         );
       },
     );
+  }
+
+  void _addToAddressBook(BuildContext context, {Address address}) async {
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.person,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [],
+                ),
+              ),
+              Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlineButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  Gap(10),
+                  ElevatedButton(
+                    child: const Text('Confirm'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmation == true) {
+      final _appState = context.read<AppState>();
+
+      final _newContact = Contact(
+        name: 'Bla',
+        address: address,
+      );
+
+      _appState.addContact(_newContact, isPersistent: true);
+    }
+  }
+
+  void _removeFromAddressBook(BuildContext context, {Contact contact}) async {
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text('Remove ${contact.name} from Address Book?'),
+              ),
+              Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlineButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  Gap(10),
+                  ElevatedButton(
+                    child: const Text('Confirm'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmation == true) {
+      final _appState = context.read<AppState>();
+
+      _appState.removeContact(contact, isPersistent: true);
+    }
   }
 }

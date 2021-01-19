@@ -402,9 +402,29 @@ class AppState with ChangeNotifier {
     );
   }
 
-  /// Add a new Contact.
+  /// Add a new Contact to Address Book.
   void addContact(Contact contact, {bool isPersistent = false}) {
     var contacts = Set<Contact>.from(model.contacts)..add(contact);
+
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeContacts(preferences, contacts),
+      );
+    }
+
+    setState(
+      (model) => model.copyWith(
+        contacts: contacts,
+      ),
+    );
+  }
+
+  /// Remove Contact from Address Book.
+  void removeContact(Contact contact, {bool isPersistent = false}) {
+    var contacts = Set<Contact>.from(model.contacts);
+    contacts.remove(contact);
+
+    print(contacts);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
