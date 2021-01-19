@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -219,16 +220,101 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 )
                 .toList();
 
+            Widget _cell({
+              String text,
+              TextStyle style,
+              TextAlign textAlign = TextAlign.right,
+            }) {
+              return TableCell(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 12),
+                  child: Text(
+                    text,
+                    textAlign: textAlign,
+                    style: style ?? Theme.of(context).textTheme.bodyText2,
+                  ),
+                ),
+              );
+            }
+
             return SafeArea(
               child: Column(
                 children: [
-                  Expanded(
-                    child: AnimationLimiter(
-                      child: ListView(
-                        children: animated,
-                      ),
+                  QrImage(
+                    data: widget.address.hex,
+                    version: QrVersions.auto,
+                    size: 120,
+                  ),
+                  Gap(10),
+                  ListTile(
+                    leading: aidenticon(widget.address),
+                    trailing: IconButton(
+                      icon: Icon(Icons.copy),
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: widget.address.toString(),
+                          ),
+                        );
+
+                        Scaffold.of(context)
+                          ..removeCurrentSnackBar()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text('Copied ${widget.address}'),
+                            ),
+                          );
+                      },
+                    ),
+                    title: Text(
+                      widget.address.toString(),
+                      style: Theme.of(context).textTheme.bodyText2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text('Address'),
+                  ),
+                  Gap(10),
+                  Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.all(8),
+                    child: Table(
+                      children: [
+                        TableRow(
+                          children: [
+                            _cell(
+                              text: 'Balance',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            _cell(
+                              text: 'Sequence',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            _cell(
+                              text: 'Memory Size',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            _cell(
+                              text: 'Memory Allowance',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            _cell(text: account.balance.toString()),
+                            _cell(text: account.sequence.toString()),
+                            _cell(text: account.memorySize.toString()),
+                            _cell(text: account.memoryAllowance.toString()),
+                          ],
+                        )
+                      ],
                     ),
                   ),
+                  Gap(20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
