@@ -129,107 +129,116 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
             }
 
             return SafeArea(
-              child: Column(
-                children: [
-                  QrImage(
-                    data: widget.address.hex,
-                    version: QrVersions.auto,
-                    size: 120,
-                  ),
-                  Gap(10),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: aidenticon(widget.address),
-                            trailing: IconButton(
-                              icon: Icon(Icons.copy),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(
-                                    text: widget.address.toString(),
-                                  ),
-                                );
-
-                                Scaffold.of(context)
-                                  ..removeCurrentSnackBar()
-                                  ..showSnackBar(
-                                    SnackBar(
-                                      content: Text('Copied ${widget.address}'),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    QrImage(
+                      data:
+                          'https://convex.world/explorer/accounts/${widget.address.hex}',
+                      version: QrVersions.auto,
+                      size: 140,
+                    ),
+                    Gap(10),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: aidenticon(widget.address),
+                              trailing: IconButton(
+                                icon: Icon(Icons.copy),
+                                onPressed: () {
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text: widget.address.toString(),
                                     ),
                                   );
-                              },
-                            ),
-                            title: Text(
-                              widget.address.toString(),
-                              style: Theme.of(context).textTheme.bodyText2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text('Address'),
-                          ),
-                          Table(
-                            children: [
-                              TableRow(
-                                children: [
-                                  _cell(
-                                    text: 'Balance',
-                                    textAlign: TextAlign.left,
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                  _cell(
-                                    text: 'Sequence',
-                                    textAlign: TextAlign.left,
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                  _cell(
-                                    text: 'Memory Size',
-                                    textAlign: TextAlign.left,
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                  _cell(
-                                    text: 'Memory Allowance',
-                                    textAlign: TextAlign.left,
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ],
+
+                                  Scaffold.of(context)
+                                    ..removeCurrentSnackBar()
+                                    ..showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('Copied ${widget.address}'),
+                                      ),
+                                    );
+                                },
                               ),
-                              TableRow(
-                                children: [
-                                  _cell(text: account.balance.toString()),
-                                  _cell(text: account.sequence.toString()),
-                                  _cell(text: account.memorySize.toString()),
-                                  _cell(
-                                      text: account.memoryAllowance.toString()),
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
+                              title: Text(
+                                widget.address.toString(),
+                                style: Theme.of(context).textTheme.bodyText2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text('Address'),
+                            ),
+                            Table(
+                              children: [
+                                TableRow(
+                                  children: [
+                                    _cell(
+                                      text: 'Balance',
+                                      textAlign: TextAlign.left,
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                    _cell(
+                                      text: 'Sequence',
+                                      textAlign: TextAlign.left,
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                    _cell(
+                                      text: 'Memory Size',
+                                      textAlign: TextAlign.left,
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                    _cell(
+                                      text: 'Memory Allowance',
+                                      textAlign: TextAlign.left,
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    _cell(text: account.balance.toString()),
+                                    _cell(text: account.sequence.toString()),
+                                    _cell(text: account.memorySize.toString()),
+                                    _cell(
+                                        text:
+                                            account.memoryAllowance.toString()),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Gap(20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: Icon(contact != null ? Icons.delete : Icons.add),
-                      label: Text(
-                        contact != null
-                            ? 'Remove from Address Book'
-                            : 'Add to Address Book',
+                    Gap(20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: Icon(contact != null ? Icons.delete : Icons.add),
+                        label: Text(
+                          contact != null
+                              ? 'Remove from Address Book'
+                              : 'Add to Address Book',
+                        ),
+                        onPressed: () {
+                          if (contact == null) {
+                            _addToAddressBook(context, address: widget.address);
+                          } else {
+                            _removeFromAddressBook(context, contact: contact);
+                          }
+                        },
                       ),
-                      onPressed: () {
-                        if (contact == null) {
-                          _addToAddressBook(context, address: widget.address);
-                        } else {
-                          _removeFromAddressBook(context, contact: contact);
-                        }
-                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
         }
