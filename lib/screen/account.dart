@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:intl/intl.dart';
 
 import '../convex.dart';
 import '../model.dart';
@@ -173,17 +174,12 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                               subtitle: Text('Address'),
                             ),
                             Table(
+                              defaultColumnWidth: IntrinsicColumnWidth(),
                               children: [
                                 TableRow(
                                   children: [
                                     _cell(
                                       text: 'Balance',
-                                      textAlign: TextAlign.left,
-                                      style:
-                                          Theme.of(context).textTheme.caption,
-                                    ),
-                                    _cell(
-                                      text: 'Sequence',
                                       textAlign: TextAlign.left,
                                       style:
                                           Theme.of(context).textTheme.caption,
@@ -204,12 +200,17 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                                 ),
                                 TableRow(
                                   children: [
-                                    _cell(text: account.balance.toString()),
-                                    _cell(text: account.sequence.toString()),
-                                    _cell(text: account.memorySize.toString()),
                                     _cell(
-                                        text:
-                                            account.memoryAllowance.toString()),
+                                      text: NumberFormat().format(
+                                        account.balance,
+                                      ),
+                                    ),
+                                    _cell(
+                                      text: account.memorySize.toString(),
+                                    ),
+                                    _cell(
+                                      text: account.memoryAllowance.toString(),
+                                    ),
                                   ],
                                 )
                               ],
