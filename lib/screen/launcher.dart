@@ -65,15 +65,15 @@ class _LauncherScreenState extends State<LauncherScreen> {
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
-                  label: currentIndexLabel[currentIndex],
+                  label: currentIndexLabel[0],
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.account_balance_wallet),
-                  label: currentIndexLabel[currentIndex],
+                  label: currentIndexLabel[1],
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.account_circle),
-                  label: currentIndexLabel[currentIndex],
+                  label: currentIndexLabel[2],
                 ),
               ],
               onTap: (index) => setState(() => currentIndex = index),
