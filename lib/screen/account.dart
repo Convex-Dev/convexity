@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../convex.dart';
@@ -77,81 +76,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
         .account(address: widget.address);
   }
 
-  Widget _addressInfo(String account) {
-    return StatelessWidgetBuilder(
-      (context) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Address',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    Gap(4),
-                    SelectableText(
-                      account,
-                      showCursor: false,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                  ],
-                ),
-              ),
-              QrImage(
-                data: widget.address.hex,
-                version: QrVersions.auto,
-                size: 80,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _field({
-    @required String label,
-    @required String value,
-  }) {
-    return StatelessWidgetBuilder(
-      (context) => Card(
-        margin: EdgeInsets.symmetric(vertical: 8.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(color: Colors.black54, fontSize: 16.0),
-                    ),
-                    Text(
-                      value,
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final contacts = context.select<AppState, Set<Contact>>(
@@ -187,39 +111,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               );
             }
 
-            final fields = [
-              _addressInfo(account.address.toString()),
-              _field(
-                label: "Balance",
-                value: account.balance.toString(),
-              ),
-              _field(
-                label: "Memory Size",
-                value: account.memorySize.toString(),
-              ),
-              _field(
-                label: "Memory Allowance",
-                value: account.memoryAllowance.toString(),
-              ),
-            ];
-
-            final animated = fields
-                .asMap()
-                .entries
-                .map(
-                  (e) => AnimationConfiguration.staggeredList(
-                    position: e.key,
-                    duration: const Duration(milliseconds: 375),
-                    child: SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: e.value,
-                      ),
-                    ),
-                  ),
-                )
-                .toList();
-
             Widget _cell({
               String text,
               TextStyle style,
@@ -246,72 +137,77 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                     size: 120,
                   ),
                   Gap(10),
-                  ListTile(
-                    leading: aidenticon(widget.address),
-                    trailing: IconButton(
-                      icon: Icon(Icons.copy),
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: widget.address.toString(),
-                          ),
-                        );
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: aidenticon(widget.address),
+                            trailing: IconButton(
+                              icon: Icon(Icons.copy),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(
+                                    text: widget.address.toString(),
+                                  ),
+                                );
 
-                        Scaffold.of(context)
-                          ..removeCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: Text('Copied ${widget.address}'),
+                                Scaffold.of(context)
+                                  ..removeCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      content: Text('Copied ${widget.address}'),
+                                    ),
+                                  );
+                              },
                             ),
-                          );
-                      },
-                    ),
-                    title: Text(
-                      widget.address.toString(),
-                      style: Theme.of(context).textTheme.bodyText2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text('Address'),
-                  ),
-                  Gap(10),
-                  Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.all(8),
-                    child: Table(
-                      children: [
-                        TableRow(
-                          children: [
-                            _cell(
-                              text: 'Balance',
-                              textAlign: TextAlign.left,
-                              style: Theme.of(context).textTheme.caption,
+                            title: Text(
+                              widget.address.toString(),
+                              style: Theme.of(context).textTheme.bodyText2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            _cell(
-                              text: 'Sequence',
-                              textAlign: TextAlign.left,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                            _cell(
-                              text: 'Memory Size',
-                              textAlign: TextAlign.left,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                            _cell(
-                              text: 'Memory Allowance',
-                              textAlign: TextAlign.left,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            _cell(text: account.balance.toString()),
-                            _cell(text: account.sequence.toString()),
-                            _cell(text: account.memorySize.toString()),
-                            _cell(text: account.memoryAllowance.toString()),
-                          ],
-                        )
-                      ],
+                            subtitle: Text('Address'),
+                          ),
+                          Table(
+                            children: [
+                              TableRow(
+                                children: [
+                                  _cell(
+                                    text: 'Balance',
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                  _cell(
+                                    text: 'Sequence',
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                  _cell(
+                                    text: 'Memory Size',
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                  _cell(
+                                    text: 'Memory Allowance',
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  _cell(text: account.balance.toString()),
+                                  _cell(text: account.sequence.toString()),
+                                  _cell(text: account.memorySize.toString()),
+                                  _cell(
+                                      text: account.memoryAllowance.toString()),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Gap(20),
@@ -349,6 +245,11 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   }
 
   void _addToAddressBook(BuildContext context, {Address address}) async {
+    final _newContact = Contact(
+      name: 'Bla',
+      address: address,
+    );
+
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -366,10 +267,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               Gap(10),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [],
-                ),
+                child: Text('Add ${_newContact.name} to Address Book?'),
               ),
               Gap(10),
               Row(
@@ -398,11 +296,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
 
     if (confirmation == true) {
       final _appState = context.read<AppState>();
-
-      final _newContact = Contact(
-        name: 'Bla',
-        address: address,
-      );
 
       _appState.addContact(_newContact, isPersistent: true);
     }
