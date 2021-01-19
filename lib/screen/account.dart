@@ -255,50 +255,57 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   }
 
   void _addToAddressBook(BuildContext context, {Address address}) async {
-    final _newContact = Contact(
-      name: 'Bla',
-      address: address,
-    );
+    String alias;
 
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
-          height: 300,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                Icons.person,
-                size: 80,
-                color: Colors.black12,
-              ),
-              Gap(10),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text('Add ${_newContact.name} to Address Book?'),
-              ),
-              Gap(10),
-              Row(
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(40),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  OutlineButton(
-                    child: const Text('Cancel'),
-                    onPressed: () {
-                      Navigator.pop(context, false);
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  aidenticon(widget.address, width: 80, height: 80),
+                  Gap(5),
+                  Text(
+                    widget.address.toString(),
+                    style: Theme.of(context).textTheme.caption,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Gap(5),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                    ),
+                    onChanged: (s) {
+                      alias = s;
                     },
                   ),
                   Gap(10),
-                  ElevatedButton(
-                    child: const Text('Confirm'),
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      OutlineButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Confirm'),
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                      )
+                    ],
                   )
                 ],
-              )
-            ],
+              ),
+            ),
           ),
         );
       },
@@ -306,6 +313,13 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
 
     if (confirmation == true) {
       final _appState = context.read<AppState>();
+
+      print('Alias $alias');
+
+      final _newContact = Contact(
+        name: alias,
+        address: address,
+      );
 
       _appState.addContact(_newContact, isPersistent: true);
     }
