@@ -268,6 +268,11 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  Text(
+                    'New Contact',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                  Gap(20),
                   aidenticon(widget.address, width: 80, height: 80),
                   Gap(5),
                   Text(
