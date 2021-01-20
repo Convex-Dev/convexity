@@ -53,18 +53,33 @@ class ActivityScreenBody extends StatelessWidget {
 
     return Column(
       children: [
-        Column(
+        Row(
           children: [
+            Icon(
+              Icons.access_time_rounded,
+              color: Colors.black54,
+            ),
+            Gap(5),
             Text(
-              formatFungibleCurrency(
-                metadata: a.token.metadata,
-                number: a.amount,
-              ),
-              style: Theme.of(context).textTheme.headline3,
+              defaultDateTimeFormat(a.timestamp),
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle2
+                  .copyWith(color: Colors.black54),
+              textAlign: TextAlign.left,
             ),
           ],
         ),
-        Gap(10),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            formatFungibleCurrency(
+              metadata: a.token.metadata,
+              number: a.amount,
+            ),
+            style: TextStyle(fontSize: 50),
+          ),
+        ),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(12),

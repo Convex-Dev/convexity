@@ -27,3 +27,5 @@ String formatFungibleCurrency({
     (metadata.decimals == 0
         ? number.toString()
         : showDecimals(number, metadata.decimals));
+
+String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
