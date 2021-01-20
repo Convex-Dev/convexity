@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -243,15 +244,32 @@ class WalletScreenBody extends StatelessWidget {
     }
 
     return ListView(
-      children: allKeyPairs
-          .map(
-            (_keypair) => keyPairCard(
-              context,
-              keyPair: _keypair,
-              activeKeyPair: activeKeyPair,
-            ),
-          )
-          .toList(),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 20,
+            bottom: 40,
+            left: 20,
+            right: 20,
+          ),
+          child: Text(
+            'Wallet contains your own Accounts managed on this device.',
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                .copyWith(color: Colors.black54),
+          ),
+        ),
+        ...(allKeyPairs
+            .map(
+              (_keypair) => keyPairCard(
+                context,
+                keyPair: _keypair,
+                activeKeyPair: activeKeyPair,
+              ),
+            )
+            .toList()),
+      ],
     );
   }
 }
