@@ -21,14 +21,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
       final fungibleTransferActivity =
           activity.payload as FungibleTransferActivity;
 
-      final contacts = context.select(
-        (AppState appState) => appState.model.contacts,
-      );
-
-      final toContact = contacts.firstWhere(
-        (contact) => contact.address == fungibleTransferActivity.to,
-        orElse: () => null,
-      );
+      final appState = context.watch<AppState>();
 
       return Card(
         child: InkWell(
@@ -66,14 +59,17 @@ Widget fungibleTransferActivityView(Activity activity) =>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Own Account',
+                            appState
+                                    .findContact(fungibleTransferActivity.from)
+                                    ?.name ??
+                                'Not in Address Book',
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             fungibleTransferActivity.from.toString(),
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.caption,
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -91,7 +87,9 @@ Widget fungibleTransferActivityView(Activity activity) =>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            toContact?.name?.toString() ??
+                            appState
+                                    .findContact(fungibleTransferActivity.to)
+                                    ?.name ??
                                 'Not in Address Book',
                             overflow: TextOverflow.ellipsis,
                           ),
