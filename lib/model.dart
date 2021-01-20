@@ -466,4 +466,9 @@ class AppState with ChangeNotifier {
       Navigator.popUntil(context, ModalRoute.withName(route.launcher));
     });
   }
+
+  Contact findContact(Address address) => model.contacts.firstWhere(
+        (_contact) => _contact.address == address,
+        orElse: () => null,
+      );
 }

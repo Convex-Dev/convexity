@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../widget.dart';
 import '../model.dart';
@@ -50,6 +50,8 @@ class ActivityScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final a = activity.payload as FungibleTransferActivity;
+
+    final appState = context.watch<AppState>();
 
     return Column(
       children: [
@@ -108,7 +110,8 @@ class ActivityScreenBody extends StatelessWidget {
                         icon: aidenticon(a.from, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
-                            a.from.toString(),
+                            appState.findContact(a.from)?.name ??
+                                a.from.toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -122,7 +125,7 @@ class ActivityScreenBody extends StatelessWidget {
                         icon: aidenticon(a.to, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
-                            a.to.toString(),
+                            appState.findContact(a.to)?.name ?? a.to.toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
