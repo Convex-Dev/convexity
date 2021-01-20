@@ -39,7 +39,7 @@ class AccountScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(contact?.name ?? 'Not in Address Book'),
+        title: Text(contact?.name ?? 'Account'),
       ),
       body: isMine
           ? ClipRect(
@@ -179,7 +179,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                                 TableRow(
                                   children: [
                                     _cell(
-                                      text: 'Balance',
+                                      text: 'Coin Balance',
                                       textAlign: TextAlign.left,
                                       style:
                                           Theme.of(context).textTheme.caption,
