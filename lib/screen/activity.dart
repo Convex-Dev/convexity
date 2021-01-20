@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 import '../widget.dart';
 import '../model.dart';
+import '../format.dart';
+import '../nav.dart' as nav;
 
 class ActivityScreen extends StatelessWidget {
   const ActivityScreen({Key key}) : super(key: key);
@@ -48,55 +51,78 @@ class ActivityScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final a = activity.payload as FungibleTransferActivity;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Table(
+    return Column(
+      children: [
+        Column(
           children: [
-            TableRow(
-              children: [
-                TableCell(
-                  child: Text(
-                    'From',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ),
-                TableCell(
-                  child: Text(
-                    'To',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ),
-                TableCell(
-                  child: Text(
-                    'Amount',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ),
-              ],
+            Text(
+              formatFungibleCurrency(
+                metadata: a.token.metadata,
+                number: a.amount,
+              ),
+              style: Theme.of(context).textTheme.headline3,
             ),
-            TableRow(
-              children: [
-                TableCell(
-                  child: Text(
-                    a.from.toString(),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                TableCell(
-                  child: Text(
-                    a.to.toString(),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                TableCell(
-                  child: Text(NumberFormat().format(a.amount)),
-                ),
-              ],
-            )
           ],
         ),
-      ),
+        Gap(10),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Table(
+              children: [
+                TableRow(
+                  children: [
+                    TableCell(
+                      child: Text(
+                        'FROM',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
+                    TableCell(
+                      child: Text(
+                        'TO',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    TableCell(
+                      child: TextButton.icon(
+                        icon: aidenticon(a.from, width: 30, height: 30),
+                        label: Expanded(
+                          child: Text(
+                            a.from.toString(),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        onPressed: () {
+                          nav.pushAccount(context, a.from);
+                        },
+                      ),
+                    ),
+                    TableCell(
+                      child: TextButton.icon(
+                        icon: aidenticon(a.to, width: 30, height: 30),
+                        label: Expanded(
+                          child: Text(
+                            a.to.toString(),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        onPressed: () {
+                          nav.pushAccount(context, a.to);
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
