@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-import 'package:tuple/tuple.dart';
+import 'package:intl/intl.dart';
 
 import '../widget.dart';
 import '../model.dart';
@@ -49,41 +48,53 @@ class ActivityScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final a = activity.payload as FungibleTransferActivity;
 
-    final c = [
-      Tuple2<String, String>('From', a.from.toString()),
-      Tuple2<String, String>('To', a.to.toString()),
-    ];
-
-    return ListView.builder(
-      itemCount: c.length,
-      itemBuilder: (context, index) => Card(
-        child: ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                c[index].item1,
-                style: TextStyle(color: Colors.black54),
-              ),
-              Gap(20),
-              Flexible(
-                flex: 1,
-                child: Row(
-                  children: [
-                    aidenticon(a.from, width: 30, height: 30),
-                    Gap(5),
-                    Expanded(
-                      child: Text(
-                        c[index].item2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyText2,
-                      ),
-                    ),
-                  ],
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Table(
+          children: [
+            TableRow(
+              children: [
+                TableCell(
+                  child: Text(
+                    'From',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ),
-              ),
-            ],
-          ),
+                TableCell(
+                  child: Text(
+                    'To',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+                TableCell(
+                  child: Text(
+                    'Amount',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                TableCell(
+                  child: Text(
+                    a.from.toString(),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                TableCell(
+                  child: Text(
+                    a.to.toString(),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                TableCell(
+                  child: Text(NumberFormat().format(a.amount)),
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
