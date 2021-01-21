@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/logger.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ const PREF_ACTIVE_KEYPAIR = 'ACTIVE_KEYPAIR';
 const PREF_MY_TOKENS = 'MY_TOKENS';
 const PREF_ACTIVITIES = 'ACTIVITIES';
 const PREF_CONTACTS = 'CONTACTS';
+const PREF_WHITELISTS = 'WHITELISTS';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -102,6 +104,7 @@ Future<bool> writeMyTokens(
   SharedPreferences preferences,
   Iterable<AAsset> myTokens,
 ) {
+  ;
   var encoded = jsonEncode(myTokens.toList());
 
   return preferences.setString(PREF_MY_TOKENS, encoded);
@@ -178,4 +181,31 @@ Future<bool> writeContacts(
   logger.d('Write Contacts: $encoded');
 
   return preferences.setString(PREF_CONTACTS, encoded);
+}
+
+/// Reads the set of [Whitelist].
+///
+/// Return an empty set if there is none.
+Set<Address> readWhitelist(SharedPreferences preferences) {
+  var encoded = preferences.getString(PREF_WHITELISTS);
+
+  if (encoded != null) {
+    var wl = jsonDecode(encoded) as List;
+    return wl.map((m) => Address.fromJson(m)).toSet();
+  }
+  return Set<Address>.identity();
+}
+
+/// Persists [Whitelist]
+///
+/// [Whitelist] wil be persisted as a JSON encoded String.
+Future<bool> writeWhitelist(
+  SharedPreferences preferences,
+  Set<Address> whitelists,
+) {
+  var encoded = jsonEncode(whitelists.toList());
+
+  logger.d('Write Whitelist: $encoded');
+
+  return preferences.setString(PREF_WHITELISTS, encoded);
 }

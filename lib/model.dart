@@ -210,6 +210,7 @@ class Model {
   final Set<AAsset> myTokens;
   final List<Activity> activities;
   final Set<Contact> contacts;
+  final Set<Address> whitelist;
 
   const Model({
     this.convexServerUri,
@@ -220,6 +221,7 @@ class Model {
     this.myTokens = const {},
     this.activities = const [],
     this.contacts = const {},
+    this.whitelist = const {},
   });
 
   Address get activeAddress => activeKeyPair != null
@@ -243,6 +245,7 @@ class Model {
     Set<AAsset> myTokens,
     List<Activity> activities,
     Set<Contact> contacts,
+    Set<Address> whitelist,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -253,6 +256,7 @@ class Model {
         myTokens: myTokens ?? this.myTokens,
         activities: activities ?? this.activities,
         contacts: contacts ?? this.contacts,
+        whitelist: whitelist ?? this.whitelist,
       );
 
   String toString() => {
@@ -278,6 +282,7 @@ void bootstrap({
     final myTokens = p.readMyTokens(preferences);
     final activities = p.readActivities(preferences);
     final contacts = p.readContacts(preferences);
+    final whitelists = p.readWhitelist(preferences);
 
     final _model = Model(
       convexServerUri: convexWorldUri,
@@ -288,6 +293,7 @@ void bootstrap({
       myTokens: myTokens,
       activities: activities,
       contacts: contacts,
+      whitelist: whitelists,
     );
 
     logger.d(_model.toString());
@@ -441,6 +447,19 @@ class AppState with ChangeNotifier {
         contacts: contacts,
       ),
     );
+  }
+
+  /// Add a new Address to Whitelist
+  void addWhitelist(Address address, {bool isPersistent = false}) {
+    var whitelist = Set<Address>.from(model.whitelist)..add(address);
+
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeWhitelist(preferences, whitelist),
+      );
+    }
+
+    setState((model) => model.copyWith(whitelist: whitelist));
   }
 
   /// Add a new KeyPair `k`, and persist it to disk if `isPersistent` is true.
