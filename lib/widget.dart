@@ -636,51 +636,7 @@ class ActiveAccount extends StatelessWidget {
               } else {
                 animatedChild = Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            (snapshot.data?.balance == null
-                                ? '-'
-                                : NumberFormat().format(snapshot.data.balance)),
-                            textAlign: TextAlign.start,
-                          ),
-                          Text(
-                            'Balance',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            (snapshot.data?.memorySize?.toString() ?? '-'),
-                            textAlign: TextAlign.start,
-                          ),
-                          Text(
-                            'Memory Size',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            snapshot.data?.sequence?.toString() ?? '-',
-                          ),
-                          Text(
-                            'Sequence',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+                  child: AccountTable(account: snapshot.data),
                 );
               }
 
@@ -759,6 +715,79 @@ class AddressTile extends StatelessWidget {
         style: Theme.of(context).textTheme.caption,
       ),
       onTap: onTap,
+    );
+  }
+}
+
+class AccountTable extends StatelessWidget {
+  final Account account;
+
+  const AccountTable({Key key, this.account}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Table(
+      defaultColumnWidth: IntrinsicColumnWidth(),
+      children: [
+        TableRow(
+          children: [
+            _cell(
+              context,
+              text: 'Coin Balance',
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            _cell(
+              context,
+              text: 'Memory Size',
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            _cell(
+              context,
+              text: 'Memory Allowance',
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.caption,
+            ),
+          ],
+        ),
+        TableRow(
+          children: [
+            _cell(
+              context,
+              text: NumberFormat().format(
+                account.balance,
+              ),
+            ),
+            _cell(
+              context,
+              text: account.memorySize.toString(),
+            ),
+            _cell(
+              context,
+              text: account.memoryAllowance.toString(),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _cell(
+    BuildContext context, {
+    String text,
+    TextStyle style,
+    TextAlign textAlign = TextAlign.right,
+  }) {
+    return TableCell(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12, right: 12),
+        child: Text(
+          text,
+          textAlign: textAlign,
+          style: style ?? Theme.of(context).textTheme.bodyText2,
+        ),
+      ),
     );
   }
 }

@@ -145,48 +145,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                         child: Column(
                           children: [
                             AddressTile(address: widget.address),
-                            Table(
-                              defaultColumnWidth: IntrinsicColumnWidth(),
-                              children: [
-                                TableRow(
-                                  children: [
-                                    _cell(
-                                      text: 'Coin Balance',
-                                      textAlign: TextAlign.left,
-                                      style:
-                                          Theme.of(context).textTheme.caption,
-                                    ),
-                                    _cell(
-                                      text: 'Memory Size',
-                                      textAlign: TextAlign.left,
-                                      style:
-                                          Theme.of(context).textTheme.caption,
-                                    ),
-                                    _cell(
-                                      text: 'Memory Allowance',
-                                      textAlign: TextAlign.left,
-                                      style:
-                                          Theme.of(context).textTheme.caption,
-                                    ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    _cell(
-                                      text: NumberFormat().format(
-                                        account.balance,
-                                      ),
-                                    ),
-                                    _cell(
-                                      text: account.memorySize.toString(),
-                                    ),
-                                    _cell(
-                                      text: account.memoryAllowance.toString(),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
+                            AccountTable(account: account),
                           ],
                         ),
                       ),
