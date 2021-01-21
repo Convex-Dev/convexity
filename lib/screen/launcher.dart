@@ -105,6 +105,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
             name: 'Account ${appState.model.allKeyPairs.length}',
             address: Address.fromKeyPair(randomKeyPair),
           ),
+          isPersistent: true,
         );
       } else {
         logger.e('Failed to create Account.');

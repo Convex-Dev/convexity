@@ -25,6 +25,25 @@ KeyPair decodeKeyPair(String s) {
   );
 }
 
+/// Returns a list of persisted KeyPairs.
+List<KeyPair> readKeyPairs(SharedPreferences preferences) {
+  List<String> wallet = preferences.getStringList(PREF_ALL_KEYPAIRS) ?? [];
+
+  return wallet.map(decodeKeyPair).toList();
+}
+
+void writeKeyPairs(
+  SharedPreferences preferences,
+  Iterable<KeyPair> keyPairs,
+) {
+  final _keyPairs = keyPairs ?? [];
+
+  preferences.setStringList(
+    PREF_ALL_KEYPAIRS,
+    _keyPairs.map(encodeKeyPair).toList(),
+  );
+}
+
 /// Persists a new KeyPair.
 ///
 /// Adds to the existing list of KeyPairs.
@@ -39,13 +58,6 @@ void addKeyPair(SharedPreferences preferences, KeyPair keyPair) {
 /// Persists the active KeyPair.
 void setActiveKeyPair(SharedPreferences preferences, KeyPair keyPair) {
   preferences.setString(PREF_ACTIVE_KEYPAIR, encodeKeyPair(keyPair));
-}
-
-/// Returns a list of persisted KeyPairs.
-List<KeyPair> allKeyPairs(SharedPreferences preferences) {
-  List<String> wallet = preferences.getStringList(PREF_ALL_KEYPAIRS) ?? [];
-
-  return wallet.map(decodeKeyPair).toList();
 }
 
 /// Returns the active KeyPair, or null if there isn't one.

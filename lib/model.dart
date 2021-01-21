@@ -272,7 +272,7 @@ void bootstrap({
   @required SharedPreferences preferences,
 }) {
   try {
-    final allKeyPairs = p.allKeyPairs(preferences);
+    final allKeyPairs = p.readKeyPairs(preferences);
     final activeKeyPair = p.activeKeyPair(preferences);
     final following = p.readFollowing(preferences);
     final myTokens = p.readMyTokens(preferences);
@@ -430,8 +430,6 @@ class AppState with ChangeNotifier {
     var contacts = Set<Contact>.from(model.contacts);
     contacts.remove(contact);
 
-    print(contacts);
-
     if (isPersistent) {
       SharedPreferences.getInstance().then(
         (preferences) => p.writeContacts(preferences, contacts),
@@ -456,6 +454,22 @@ class AppState with ChangeNotifier {
 
     setState(
       (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
+    );
+  }
+
+  /// Remove KeyPair [k].
+  void removeKeyPair(KeyPair k, {bool isPersistent = false}) {
+    final keyPairs = List<KeyPair>.from(model.allKeyPairs)..remove(k);
+
+    if (isPersistent) {
+      SharedPreferences.getInstance()
+          .then((preferences) => p.writeKeyPairs(preferences, keyPairs));
+    }
+
+    setState(
+      (m) {
+        return m.copyWith(allKeyPairs: keyPairs);
+      },
     );
   }
 

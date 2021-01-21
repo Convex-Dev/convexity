@@ -89,80 +89,89 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                   ),
                 ),
               ),
-              FutureBuilder(
-                future: getAccount(
-                    address: Address.fromHex(Sodium.bin2hex(keyPair.pk))),
-                builder: (context, snapshot) {
-                  var animatedChild;
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    animatedChild = SizedBox(
-                      height: 63,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'loading...',
-                          style: TextStyle(color: Colors.black26),
-                        ),
-                      ),
-                    );
-                  } else {
-                    animatedChild = Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                snapshot.data?.balance == null
-                                    ? '-'
-                                    : NumberFormat()
-                                        .format(snapshot.data.balance),
-                                textAlign: TextAlign.start,
-                              ),
-                              Text(
-                                'Balance',
-                                style: Theme.of(context).textTheme.caption,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              TextButton(
-                                child: Text('Make Active'),
-                                onPressed: () {
-                                  context.read<AppState>().setActiveKeyPair(
-                                        keyPair,
-                                        isPersistent: true,
-                                      );
-                                },
-                              ),
-                              TextButton(
-                                child: Text('Export'),
-                                onPressed: () {
-                                  final appState = context.read<AppState>();
+              Row(
+                children: [
+                  TextButton(
+                    child: Text('MAKE ACTIVE'),
+                    onPressed: () {
+                      context.read<AppState>().setActiveKeyPair(
+                            keyPair,
+                            isPersistent: true,
+                          );
+                    },
+                  ),
+                  TextButton(
+                    child: Text('EXPORT'),
+                    onPressed: () {
+                      final appState = context.read<AppState>();
 
-                                  print(
-                                    '\n' +
-                                        crypto.encodePrivateKeyPEM(
-                                          appState.model.activeKeyPair.sk,
-                                        ),
+                      print(
+                        '\n' +
+                            crypto.encodePrivateKeyPEM(
+                              appState.model.activeKeyPair.sk,
+                            ),
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          icon: Icon(Icons.delete),
+                          label: Text('REMOVE'),
+                          onPressed: () {
+                            final appState = context.read<AppState>();
+
+                            if (Address.fromKeyPair(keyPair) ==
+                                appState.model.activeAddress) {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return SafeArea(
+                                    child: Container(
+                                      height: 300,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.info,
+                                            size: 80,
+                                            color: Colors.black12,
+                                          ),
+                                          Gap(20),
+                                          Text(
+                                            "You can't remove your active Account.",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                          Gap(40),
+                                          ElevatedButton(
+                                            child: const Text('Okay'),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   );
                                 },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return AnimatedSwitcher(
-                    duration: Duration(milliseconds: 500),
-                    child: animatedChild,
-                  );
-                },
-              )
+                              );
+
+                              return;
+                            }
+
+                            appState.removeKeyPair(keyPair, isPersistent: true);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ],
@@ -236,6 +245,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
             name: 'Account ${appState.model.allKeyPairs.length}',
             address: Address.fromKeyPair(randomKeyPair),
           ),
+          isPersistent: true,
         );
       } else {
         logger.e('Failed to create Account.');
