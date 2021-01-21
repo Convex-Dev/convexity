@@ -675,7 +675,7 @@ class AddressTile extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            contact == null ? 'Unknown' : '${contact.name}',
+            contact == null ? 'Unnamed' : '${contact.name}',
             style: Theme.of(context).textTheme.bodyText2,
             overflow: TextOverflow.ellipsis,
           ),
