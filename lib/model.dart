@@ -471,4 +471,8 @@ class AppState with ChangeNotifier {
         (_contact) => _contact.address == address,
         orElse: () => null,
       );
+
+  bool isAddressMine(Address address) => model.allKeyPairs.any(
+        (_keypair) => Address.fromKeyPair(_keypair) == address,
+      );
 }

@@ -56,10 +56,8 @@ class AddressBookScreenBody extends StatelessWidget {
       child: ListView.builder(
         itemCount: contacts.length,
         itemBuilder: (context, index) => Card(
-          child: ListTile(
-            leading: aidenticon(contacts[index].address),
-            title: Text(contacts[index].name),
-            subtitle: Text(contacts[index].address.toString()),
+          child: AddressTile(
+            address: contacts[index].address,
             onTap: () {
               nav.pushAccount(context, contacts[index].address);
             },

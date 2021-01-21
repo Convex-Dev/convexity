@@ -739,6 +739,30 @@ class AddressTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    final contact = appState.findContact(address);
+
+    final isAddressMine = appState.isAddressMine(address);
+
+    final title = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Text(
+            contact == null ? 'Unknown' : '${contact.name}',
+            style: Theme.of(context).textTheme.bodyText2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (isAddressMine)
+          Text(
+            '(Owned by me)',
+            style: Theme.of(context).textTheme.overline,
+          ),
+      ],
+    );
+
     return ListTile(
       leading: aidenticon(address),
       trailing: IconButton(
@@ -759,12 +783,12 @@ class AddressTile extends StatelessWidget {
             );
         },
       ),
-      title: Text(
+      title: title,
+      subtitle: Text(
         address.toString(),
-        style: Theme.of(context).textTheme.bodyText2,
         overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.caption,
       ),
-      subtitle: Text('Address'),
       onTap: onTap,
     );
   }
