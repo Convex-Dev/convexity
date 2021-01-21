@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:intl/intl.dart';
 
 import '../convex.dart';
 import '../model.dart';
@@ -107,23 +106,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 padding: const EdgeInsets.all(8),
                 child: Center(
                   child: Text('Account not found.'),
-                ),
-              );
-            }
-
-            Widget _cell({
-              String text,
-              TextStyle style,
-              TextAlign textAlign = TextAlign.right,
-            }) {
-              return TableCell(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12, right: 12),
-                  child: Text(
-                    text,
-                    textAlign: textAlign,
-                    style: style ?? Theme.of(context).textTheme.bodyText2,
-                  ),
                 ),
               );
             }

@@ -104,7 +104,6 @@ Future<bool> writeMyTokens(
   SharedPreferences preferences,
   Iterable<AAsset> myTokens,
 ) {
-  ;
   var encoded = jsonEncode(myTokens.toList());
 
   return preferences.setString(PREF_MY_TOKENS, encoded);

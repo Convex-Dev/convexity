@@ -73,7 +73,7 @@ class _WhitelistScreenBodyState extends State<NewWhitelistScreenBody> {
               child: Text('Save'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  context.read<AppState>().addWhitelist(
+                  context.read<AppState>().addToWhitelist(
                         Address.fromHex(_address.toString()),
                         isPersistent: true,
                       );

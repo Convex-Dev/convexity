@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../convex.dart';
 import '../model.dart';
 import '../nav.dart' as nav;
 

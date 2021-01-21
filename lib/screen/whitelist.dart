@@ -52,13 +52,12 @@ class WhiteListScreenBody extends StatelessWidget {
       child: ListView.builder(
         itemCount: whitelist.length,
         itemBuilder: (context, index) => Card(
-          child: ListTile(
-            leading: aidenticon(whitelist[index]),
-            title: Text('Address'),
-            subtitle: Text(whitelist[index].toString()),
-            onTap: () {
-              nav.pushAccount(context, whitelist[index]);
-            },
+          child: AddressTile(
+            address: whitelist[index],
+            onTap: () => nav.pushAccount(
+              context,
+              whitelist[index],
+            ),
           ),
         ),
       ),

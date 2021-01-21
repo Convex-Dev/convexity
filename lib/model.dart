@@ -449,8 +449,8 @@ class AppState with ChangeNotifier {
     );
   }
 
-  /// Add a new Address to Whitelist
-  void addWhitelist(Address address, {bool isPersistent = false}) {
+  /// Add a new Address to Whitelist.
+  void addToWhitelist(Address address, {bool isPersistent = false}) {
     var whitelist = Set<Address>.from(model.whitelist)..add(address);
 
     if (isPersistent) {

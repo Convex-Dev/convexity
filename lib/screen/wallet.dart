@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import '../convex.dart';
 import '../logger.dart';
