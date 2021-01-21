@@ -145,34 +145,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                         padding: const EdgeInsets.all(8),
                         child: Column(
                           children: [
-                            ListTile(
-                              leading: aidenticon(widget.address),
-                              trailing: IconButton(
-                                icon: Icon(Icons.copy),
-                                onPressed: () {
-                                  Clipboard.setData(
-                                    ClipboardData(
-                                      text: widget.address.toString(),
-                                    ),
-                                  );
-
-                                  Scaffold.of(context)
-                                    ..removeCurrentSnackBar()
-                                    ..showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Copied ${widget.address}'),
-                                      ),
-                                    );
-                                },
-                              ),
-                              title: Text(
-                                widget.address.toString(),
-                                style: Theme.of(context).textTheme.bodyText2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Text('Address'),
-                            ),
+                            AddressTile(address: widget.address),
                             Table(
                               defaultColumnWidth: IntrinsicColumnWidth(),
                               children: [

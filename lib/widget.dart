@@ -726,3 +726,46 @@ class ActiveAccount extends StatelessWidget {
     );
   }
 }
+
+class AddressTile extends StatelessWidget {
+  final Address address;
+  final void Function() onTap;
+
+  const AddressTile({
+    Key key,
+    this.address,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: aidenticon(address),
+      trailing: IconButton(
+        icon: Icon(Icons.copy),
+        onPressed: () {
+          Clipboard.setData(
+            ClipboardData(
+              text: address.toString(),
+            ),
+          );
+
+          Scaffold.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text('Copied $address'),
+              ),
+            );
+        },
+      ),
+      title: Text(
+        address.toString(),
+        style: Theme.of(context).textTheme.bodyText2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text('Address'),
+      onTap: onTap,
+    );
+  }
+}
