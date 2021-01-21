@@ -1,49 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../convex.dart';
+import '../logger.dart';
 import '../model.dart';
-import '../convex.dart' as convex;
 import '../nav.dart' as nav;
 import '../widget.dart';
 import '../crypto.dart' as crypto;
-
-void _createAccount(BuildContext context) {
-  var randomKeyPair = CryptoSign.randomKeys();
-
-  convex
-      .faucet(
-    address: Sodium.bin2hex(randomKeyPair.pk),
-    amount: 1000000,
-  )
-      .then(
-    (response) {
-      if (response.statusCode == 200) {
-        var state = context.read<AppState>();
-
-        state.addKeyPair(randomKeyPair, isPersistent: true);
-        state.setActiveKeyPair(randomKeyPair, isPersistent: true);
-      }
-    },
-  );
-}
-
-class CreateAccountButton extends StatelessWidget {
-  const CreateAccountButton({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      child: Icon(Icons.add),
-      onPressed: () {
-        _createAccount(context);
-      },
-    );
-  }
-}
 
 class WalletScreen extends StatelessWidget {
   @override
@@ -62,7 +28,6 @@ class WalletScreen extends StatelessWidget {
         ],
       ),
       body: WalletScreenBody(),
-      floatingActionButton: CreateAccountButton(),
     );
   }
 }
@@ -82,7 +47,12 @@ class CirclePainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-class WalletScreenBody extends StatelessWidget {
+class WalletScreenBody extends StatefulWidget {
+  @override
+  _WalletScreenBodyState createState() => _WalletScreenBodyState();
+}
+
+class _WalletScreenBodyState extends State<WalletScreenBody> {
   Widget keyPairCard(
     BuildContext context, {
     KeyPair keyPair,
@@ -95,8 +65,8 @@ class WalletScreenBody extends StatelessWidget {
             right: 7,
             top: 7,
             child: Opacity(
-              opacity: (convex.Address.fromKeyPair(keyPair) ==
-                      convex.Address.fromKeyPair(activeKeyPair))
+              opacity: (Address.fromKeyPair(keyPair) ==
+                      Address.fromKeyPair(activeKeyPair))
                   ? 1.0
                   : 0.0,
               child: SizedBox(
@@ -111,18 +81,17 @@ class WalletScreenBody extends StatelessWidget {
           Column(
             children: [
               AddressTile(
-                address: convex.Address.fromKeyPair(keyPair),
+                address: Address.fromKeyPair(keyPair),
                 onTap: () => nav.pushAccount(
                   context,
-                  convex.Address.fromHex(
+                  Address.fromHex(
                     Sodium.bin2hex(keyPair.pk),
                   ),
                 ),
               ),
               FutureBuilder(
-                future: convex.getAccount(
-                    address:
-                        convex.Address.fromHex(Sodium.bin2hex(keyPair.pk))),
+                future: getAccount(
+                    address: Address.fromHex(Sodium.bin2hex(keyPair.pk))),
                 builder: (context, snapshot) {
                   var animatedChild;
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -202,17 +171,6 @@ class WalletScreenBody extends StatelessWidget {
     var activeKeyPair = appState.model.activeKeyPair;
     var allKeyPairs = appState.model.allKeyPairs;
 
-    if (allKeyPairs.isEmpty) {
-      return Center(
-        child: RaisedButton(
-          child: Text('Create Account'),
-          onPressed: () {
-            _createAccount(context);
-          },
-        ),
-      );
-    }
-
     return ListView(
       children: [
         Padding(
@@ -239,7 +197,46 @@ class WalletScreenBody extends StatelessWidget {
               ),
             )
             .toList()),
+        Gap(20),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            child: Text('Create Account'),
+            onPressed: () {
+              _createAccount(context);
+            },
+          ),
+        ),
       ],
     );
+  }
+
+  void _createAccount(BuildContext context) async {
+    try {
+      setState(() {});
+
+      var randomKeyPair = CryptoSign.randomKeys();
+
+      var appState = context.read<AppState>();
+
+      var b = await appState.convexClient().requestForFaucet(
+            address: Address.fromHex(Sodium.bin2hex(randomKeyPair.pk)),
+            amount: 10000000,
+          );
+
+      if (b) {
+        appState.addKeyPair(randomKeyPair, isPersistent: true);
+        appState.addContact(
+          Contact(
+            name: 'Account ${appState.model.allKeyPairs.length}',
+            address: Address.fromKeyPair(randomKeyPair),
+          ),
+        );
+      } else {
+        logger.e('Failed to create Account.');
+      }
+    } finally {
+      setState(() {});
+    }
   }
 }
