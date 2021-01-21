@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
-import 'package:gap/gap.dart';
-import 'package:jdenticon_dart/jdenticon_dart.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -114,39 +110,13 @@ class WalletScreenBody extends StatelessWidget {
           ),
           Column(
             children: [
-              ListTile(
-                leading: SvgPicture.string(
-                  Jdenticon.toSvg(Sodium.bin2hex(keyPair.pk)),
-                  fit: BoxFit.contain,
-                  height: 64,
-                  width: 64,
-                ),
-                title: Text(
-                  convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text('Address'),
+              AddressTile(
+                address: convex.Address.fromKeyPair(keyPair),
                 onTap: () => nav.pushAccount(
                   context,
                   convex.Address.fromHex(
                     Sodium.bin2hex(keyPair.pk),
                   ),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.copy),
-                  onPressed: () {
-                    Clipboard.setData(
-                      ClipboardData(
-                        text: convex.prefix0x(Sodium.bin2hex(keyPair.pk)),
-                      ),
-                    );
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Copied ${convex.prefix0x(Sodium.bin2hex(keyPair.pk))}'),
-                      ),
-                    );
-                  },
                 ),
               ),
               FutureBuilder(

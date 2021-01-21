@@ -614,38 +614,7 @@ class ActiveAccount extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          ListTile(
-            leading: aidenticon(appState.model.activeAddress),
-            title: Text(
-              appState.model.activeAddress.toString(),
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              'Address',
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.copy),
-              onPressed: () {
-                Clipboard.setData(
-                  ClipboardData(
-                    text: appState.model.activeAddress.toString(),
-                  ),
-                );
-
-                Scaffold.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Copied ${appState.model.activeAddress.toString()}',
-                        overflow: TextOverflow.clip,
-                      ),
-                    ),
-                  );
-              },
-            ),
-          ),
+          AddressTile(address: appState.model.activeAddress),
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
