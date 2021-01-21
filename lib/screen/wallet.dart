@@ -165,6 +165,13 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                             }
 
                             appState.removeKeyPair(keyPair, isPersistent: true);
+                            appState.removeContact(
+                              Contact(
+                                name: '',
+                                address: Address.fromKeyPair(keyPair),
+                              ),
+                              isPersistent: true,
+                            );
                           },
                         ),
                       ],
