@@ -10,7 +10,7 @@ class AddWhitelistScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Whitelist'),
+        title: Text('Add to Whitelist'),
       ),
       body: NewWhitelistScreenBody(),
     );
@@ -29,7 +29,6 @@ class _WhitelistScreenBodyState extends State<NewWhitelistScreenBody> {
   Address get _address => _addressTextController.text.isNotEmpty
       ? Address.fromHex(_addressTextController.text)
       : null;
-  String _name;
 
   @override
   Widget build(BuildContext context) {
@@ -37,23 +36,6 @@ class _WhitelistScreenBodyState extends State<NewWhitelistScreenBody> {
       key: _formKey,
       child: ListView(
         children: [
-          ListTile(
-            title: TextFormField(
-              autofocus: true,
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Required';
-                }
-                return null;
-              },
-              onChanged: (value) {
-                setState(() {
-                  _name = value;
-                });
-              },
-            ),
-            subtitle: Text('Name'),
-          ),
           ListTile(
             title: TextFormField(
               readOnly: true,
