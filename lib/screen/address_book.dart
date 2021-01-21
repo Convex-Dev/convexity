@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../convex.dart';
 import '../model.dart';
 import '../nav.dart' as nav;
 
@@ -12,7 +13,10 @@ class AddressBookScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Address Book')),
-      body: AddressBookScreenBody(),
+      body: Container(
+        padding: defaultScreenPadding,
+        child: AddressBookScreenBody(),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => nav.pushNewContact(context),
@@ -51,16 +55,157 @@ class AddressBookScreenBody extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: ListView.builder(
-        itemCount: contacts.length,
-        itemBuilder: (context, index) => Card(
-          child: AddressTile(
-            address: contacts[index].address,
-            onTap: () {
-              nav.pushAccount(context, contacts[index].address);
-            },
+    return ListView.builder(
+      itemCount: contacts.length,
+      itemBuilder: (context, index) => Card(
+        child: Column(
+          children: [
+            AddressTile(
+              address: contacts[index].address,
+              onTap: () {
+                nav.pushAccount(context, contacts[index].address);
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  child: Text('EDIT'),
+                  onPressed: () {
+                    _edit(context, contact: contacts[index]);
+                  },
+                ),
+                TextButton(
+                  child: Text('REMOVE'),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _edit(BuildContext context, {Contact contact}) async {
+    final nameController = TextEditingController.fromValue(
+      TextEditingValue(
+        text: contact.name,
+        selection: TextSelection(
+          baseOffset: 0,
+          extentOffset: contact.name.length,
+        ),
+      ),
+    );
+
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) => _Edit(contact: contact),
+    );
+
+    if (confirmation == true) {
+      final appState = context.read<AppState>();
+
+      // 'add' will replace the existing Contact.
+      appState.addContact(
+        Contact(
+          name: nameController.text,
+          address: contact.address,
+        ),
+      );
+    }
+  }
+}
+
+class _Edit extends StatefulWidget {
+  final Contact contact;
+
+  const _Edit({Key key, this.contact}) : super(key: key);
+
+  @override
+  _EditState createState() => _EditState();
+}
+
+class _EditState extends State<_Edit> {
+  final formKey = GlobalKey<FormState>();
+
+  TextEditingController nameTextController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    nameTextController = TextEditingController.fromValue(
+      TextEditingValue(
+        text: widget.contact.name,
+        selection: TextSelection(
+          baseOffset: 0,
+          extentOffset: widget.contact.name.length,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Edit Contact',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Gap(20),
+                aidenticon(widget.contact.address, width: 80, height: 80),
+                Gap(5),
+                Text(
+                  widget.contact.address.toString(),
+                  style: Theme.of(context).textTheme.caption,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Gap(5),
+                TextFormField(
+                  autofocus: true,
+                  controller: nameTextController,
+                  decoration: InputDecoration(labelText: 'Name'),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Required';
+                    }
+
+                    return null;
+                  },
+                ),
+                Gap(10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlineButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: const Text('Confirm'),
+                      onPressed: () {
+                        if (formKey.currentState.validate()) {
+                          Navigator.pop(context, true);
+                        }
+                      },
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

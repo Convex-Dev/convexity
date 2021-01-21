@@ -404,7 +404,13 @@ class AppState with ChangeNotifier {
 
   /// Add a new Contact to Address Book.
   void addContact(Contact contact, {bool isPersistent = false}) {
-    var contacts = Set<Contact>.from(model.contacts)..add(contact);
+    var contacts = Set<Contact>.from(model.contacts);
+
+    if (contacts.contains(contact)) {
+      contacts.remove(contact);
+    }
+
+    contacts.add(contact);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
