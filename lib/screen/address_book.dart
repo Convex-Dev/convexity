@@ -77,7 +77,9 @@ class AddressBookScreenBody extends StatelessWidget {
                 ),
                 TextButton(
                   child: Text('REMOVE'),
-                  onPressed: () {},
+                  onPressed: () {
+                    _remove(context, contact: contacts[index]);
+                  },
                 ),
               ],
             ),
@@ -103,6 +105,17 @@ class AddressBookScreenBody extends StatelessWidget {
           address: contact.address,
         ),
       );
+    }
+  }
+
+  void _remove(BuildContext context, {Contact contact}) async {
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) => _Remove(contact: contact),
+    );
+
+    if (confirmation == true) {
+      context.read<AppState>().removeContact(contact);
     }
   }
 }
@@ -196,6 +209,65 @@ class _EditState extends State<_Edit> {
                 )
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Remove extends StatefulWidget {
+  final Contact contact;
+
+  const _Remove({Key key, this.contact}) : super(key: key);
+
+  @override
+  _RemoveState createState() => _RemoveState();
+}
+
+class _RemoveState extends State<_Remove> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Remove ${widget.contact.name}?',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Gap(20),
+              aidenticon(widget.contact.address, width: 80, height: 80),
+              Gap(5),
+              Text(
+                widget.contact.address.toString(),
+                style: Theme.of(context).textTheme.caption,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlineButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  Gap(10),
+                  ElevatedButton(
+                    child: const Text('Confirm'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ),
