@@ -107,7 +107,7 @@ class HomeScreenBody extends StatelessWidget {
       ListTile(
         leading: Icon(Icons.view_list),
         title: Text('Whitelist'),
-        subtitle: Text('Manage whitelist'),
+        subtitle: Text('Manage trusted Accounts'),
         onTap: () => nav.pushWhitelist(context),
       ),
       ListTile(
