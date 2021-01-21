@@ -88,28 +88,18 @@ class AddressBookScreenBody extends StatelessWidget {
   }
 
   void _edit(BuildContext context, {Contact contact}) async {
-    final nameController = TextEditingController.fromValue(
-      TextEditingValue(
-        text: contact.name,
-        selection: TextSelection(
-          baseOffset: 0,
-          extentOffset: contact.name.length,
-        ),
-      ),
-    );
-
-    var confirmation = await showModalBottomSheet(
+    var _name = await showModalBottomSheet(
       context: context,
       builder: (context) => _Edit(contact: contact),
     );
 
-    if (confirmation == true) {
+    if (_name != null) {
       final appState = context.read<AppState>();
 
       // 'add' will replace the existing Contact.
       appState.addContact(
         Contact(
-          name: nameController.text,
+          name: _name,
           address: contact.address,
         ),
       );
@@ -198,7 +188,7 @@ class _EditState extends State<_Edit> {
                       child: const Text('Confirm'),
                       onPressed: () {
                         if (formKey.currentState.validate()) {
-                          Navigator.pop(context, true);
+                          Navigator.pop(context, nameTextController.text);
                         }
                       },
                     )
