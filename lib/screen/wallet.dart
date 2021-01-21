@@ -131,7 +131,12 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                             children: [
                               TextButton(
                                 child: Text('Make Active'),
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.read<AppState>().setActiveKeyPair(
+                                        keyPair,
+                                        isPersistent: true,
+                                      );
+                                },
                               ),
                               TextButton(
                                 child: Text('Export'),
