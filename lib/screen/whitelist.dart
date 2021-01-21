@@ -15,7 +15,7 @@ class WhiteListScreen extends StatelessWidget {
       body: WhiteListScreenBody(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => nav.pushNewContact(context),
+        onPressed: () => nav.pushNewWhitelist(context),
       ),
     );
   }
@@ -25,10 +25,9 @@ class WhiteListScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AppState>().model;
+    final whitelist = model.whitelist.toList(growable: false);
 
-    final whitelists = model.whitelists.toList(growable: false);
-
-    if (whitelists.isEmpty) {
+    if (whitelist.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -51,13 +50,15 @@ class WhiteListScreenBody extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: ListView.builder(
-        itemCount: whitelists.length,
+        itemCount: whitelist.length,
         itemBuilder: (context, index) => Card(
           child: ListTile(
-            leading: aidenticon(whitelists[index].item2),
-            title: Text(whitelists[index].item1),
-            subtitle: Text(whitelists[index].item2.toString()),
-            onTap: () {},
+            leading: aidenticon(whitelist[index]),
+            title: Text('Address'),
+            subtitle: Text(whitelist[index].toString()),
+            onTap: () {
+              nav.pushAccount(context, whitelist[index]);
+            },
           ),
         ),
       ),

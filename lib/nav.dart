@@ -106,6 +106,11 @@ Future<dynamic> pushWhitelist(BuildContext context) => Navigator.pushNamed(
       route.whitelist,
     );
 
+Future<dynamic> pushNewWhitelist(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.addWhitelist,
+    );
+
 Future<dynamic> pushNonFungibleToken(
   BuildContext context, {
   convex.NonFungibleToken nonFungibleToken,
