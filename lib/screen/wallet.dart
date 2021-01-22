@@ -60,6 +60,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     KeyPair keyPair,
     KeyPair activeKeyPair,
   }) {
+    final isActive =
+        Address.fromKeyPair(keyPair) == Address.fromKeyPair(activeKeyPair);
+
     return Card(
       child: Stack(
         children: [
@@ -67,10 +70,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
             right: 7,
             top: 7,
             child: Opacity(
-              opacity: (Address.fromKeyPair(keyPair) ==
-                      Address.fromKeyPair(activeKeyPair))
-                  ? 1.0
-                  : 0.0,
+              opacity: isActive ? 1.0 : 0.0,
               child: SizedBox(
                 width: 13,
                 height: 13,
@@ -94,7 +94,12 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
               Row(
                 children: [
                   TextButton(
-                    child: Text('MAKE ACTIVE'),
+                    child: Text(
+                      'MAKE ACTIVE',
+                      style: TextStyle(
+                        color: isActive ? Colors.grey : Colors.blue,
+                      ),
+                    ),
                     onPressed: () {
                       context.read<AppState>().setActiveKeyPair(
                             keyPair,
@@ -120,8 +125,16 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton.icon(
-                          icon: Icon(Icons.delete),
-                          label: Text('REMOVE'),
+                          icon: Icon(
+                            Icons.delete,
+                            color: isActive ? Colors.grey : Colors.blue,
+                          ),
+                          label: Text(
+                            'REMOVE',
+                            style: TextStyle(
+                              color: isActive ? Colors.grey : Colors.blue,
+                            ),
+                          ),
                           onPressed: () {
                             final appState = context.read<AppState>();
 
