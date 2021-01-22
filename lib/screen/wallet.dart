@@ -52,6 +52,8 @@ class WalletScreenBody extends StatefulWidget {
 }
 
 class _WalletScreenBodyState extends State<WalletScreenBody> {
+  var isCreatingAccount = false;
+
   Widget keyPairCard(
     BuildContext context, {
     KeyPair keyPair,
@@ -221,8 +223,21 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            child: Text('Create Account'),
+            child: isCreatingAccount
+                ? SizedBox(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                    width: 20,
+                    height: 20,
+                  )
+                : Text('Create Account'),
             onPressed: () {
+              if (isCreatingAccount) {
+                return;
+              }
+
               _createAccount(context);
             },
           ),
@@ -233,7 +248,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   void _createAccount(BuildContext context) async {
     try {
-      setState(() {});
+      setState(() {
+        isCreatingAccount = true;
+      });
 
       var randomKeyPair = CryptoSign.randomKeys();
 
@@ -257,7 +274,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         logger.e('Failed to create Account.');
       }
     } finally {
-      setState(() {});
+      setState(() {
+        isCreatingAccount = false;
+      });
     }
   }
 }
