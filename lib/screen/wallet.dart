@@ -212,29 +212,6 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
             ),
           )
           .toList()),
-      Gap(20),
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          child: isCreatingAccount
-              ? SizedBox(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                  width: 20,
-                  height: 20,
-                )
-              : Text('Create Account'),
-          onPressed: () {
-            if (isCreatingAccount) {
-              return;
-            }
-
-            _createAccount(context);
-          },
-        ),
-      ),
     ];
 
     final animated = widgets
@@ -254,10 +231,39 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         )
         .toList();
 
-    return AnimationLimiter(
-      child: ListView(
-        children: animated,
-      ),
+    return Column(
+      children: [
+        Expanded(
+          child: AnimationLimiter(
+            child: ListView(
+              children: animated,
+            ),
+          ),
+        ),
+        Gap(20),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            child: isCreatingAccount
+                ? SizedBox(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                    width: 20,
+                    height: 20,
+                  )
+                : Text('Create Account'),
+            onPressed: () {
+              if (isCreatingAccount) {
+                return;
+              }
+
+              _createAccount(context);
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -305,13 +311,6 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
       final appState = context.read<AppState>();
 
       appState.removeKeyPair(keyPair, isPersistent: true);
-      appState.removeContact(
-        Contact(
-          name: '',
-          address: Address.fromKeyPair(keyPair),
-        ),
-        isPersistent: true,
-      );
     }
   }
 }

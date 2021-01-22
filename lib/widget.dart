@@ -170,7 +170,7 @@ Widget fungibleTokenCard({
             ),
             Gap(10),
             Text(
-              'Balance',
+              'Own Holding',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.caption,
             ),

@@ -182,7 +182,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    'New Contact',
+                    'New Address Details',
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Gap(20),
@@ -195,6 +195,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   ),
                   Gap(5),
                   TextField(
+                    autofocus: true,
                     decoration: InputDecoration(
                       labelText: 'Name',
                     ),

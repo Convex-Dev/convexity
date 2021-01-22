@@ -161,7 +161,7 @@ class _EditState extends State<_Edit> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Edit Contact',
+                  'Edit Address Details',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Gap(20),
