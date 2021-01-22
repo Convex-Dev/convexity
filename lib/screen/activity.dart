@@ -64,10 +64,7 @@ class ActivityScreenBody extends StatelessWidget {
             Gap(5),
             Text(
               defaultDateTimeFormat(a.timestamp),
-              style: Theme.of(context)
-                  .textTheme
-                  .subtitle2
-                  .copyWith(color: Colors.black54),
+              style: Theme.of(context).textTheme.caption,
               textAlign: TextAlign.left,
             ),
           ],

@@ -40,7 +40,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                     ),
                     Gap(20),
                     Text(
-                      fungibleTransferActivity.timestamp.toString(),
+                      defaultDateTimeFormat(fungibleTransferActivity.timestamp),
                       style: Theme.of(context).textTheme.caption,
                     )
                   ],
