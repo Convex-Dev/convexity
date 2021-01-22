@@ -166,14 +166,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                               return;
                             }
 
-                            appState.removeKeyPair(keyPair, isPersistent: true);
-                            appState.removeContact(
-                              Contact(
-                                name: '',
-                                address: Address.fromKeyPair(keyPair),
-                              ),
-                              isPersistent: true,
-                            );
+                            _remove(context, keyPair: keyPair);
                           },
                         ),
                       ],
@@ -300,5 +293,92 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         isCreatingAccount = false;
       });
     }
+  }
+
+  void _remove(BuildContext context, {KeyPair keyPair}) async {
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) => _Remove(keyPair: keyPair),
+    );
+
+    if (confirmation == true) {
+      final appState = context.read<AppState>();
+
+      appState.removeKeyPair(keyPair, isPersistent: true);
+      appState.removeContact(
+        Contact(
+          name: '',
+          address: Address.fromKeyPair(keyPair),
+        ),
+        isPersistent: true,
+      );
+    }
+  }
+}
+
+class _Remove extends StatefulWidget {
+  final KeyPair keyPair;
+
+  const _Remove({Key key, this.keyPair}) : super(key: key);
+
+  @override
+  _RemoveState createState() => _RemoveState();
+}
+
+class _RemoveState extends State<_Remove> {
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final address = Address.fromKeyPair(widget.keyPair);
+    final contact = appState.findContact(address);
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Remove ${contact?.name ?? address.toString()}?',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Gap(20),
+              aidenticon(
+                Address.fromKeyPair(widget.keyPair),
+                width: 80,
+                height: 80,
+              ),
+              Gap(5),
+              Text(
+                Address.fromKeyPair(widget.keyPair).toString(),
+                style: Theme.of(context).textTheme.caption,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlineButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  Gap(10),
+                  ElevatedButton(
+                    child: const Text('Confirm'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

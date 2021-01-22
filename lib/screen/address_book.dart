@@ -1,4 +1,3 @@
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -6,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
+import '../widget.dart';
 
 class AddressBookScreen extends StatelessWidget {
   @override
