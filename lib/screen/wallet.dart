@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
@@ -193,56 +194,77 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     var activeKeyPair = appState.model.activeKeyPair;
     var allKeyPairs = appState.model.allKeyPairs;
 
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 20,
-            bottom: 40,
-            left: 20,
-            right: 20,
-          ),
-          child: Text(
-            'Wallet contains your own Accounts managed on this device.',
-            style: Theme.of(context)
-                .textTheme
-                .subtitle1
-                .copyWith(color: Colors.black54),
-          ),
+    final widgets = [
+      Padding(
+        padding: const EdgeInsets.only(
+          top: 20,
+          bottom: 40,
+          left: 20,
+          right: 20,
         ),
-        ...(allKeyPairs
-            .map(
-              (_keypair) => keyPairCard(
-                context,
-                keyPair: _keypair,
-                activeKeyPair: activeKeyPair,
-              ),
-            )
-            .toList()),
-        Gap(20),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            child: isCreatingAccount
-                ? SizedBox(
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                    width: 20,
-                    height: 20,
-                  )
-                : Text('Create Account'),
-            onPressed: () {
-              if (isCreatingAccount) {
-                return;
-              }
+        child: Text(
+          'Wallet contains your own Accounts managed on this device.',
+          style: Theme.of(context)
+              .textTheme
+              .subtitle1
+              .copyWith(color: Colors.black54),
+        ),
+      ),
+      ...(allKeyPairs
+          .map(
+            (_keypair) => keyPairCard(
+              context,
+              keyPair: _keypair,
+              activeKeyPair: activeKeyPair,
+            ),
+          )
+          .toList()),
+      Gap(20),
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          child: isCreatingAccount
+              ? SizedBox(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                  width: 20,
+                  height: 20,
+                )
+              : Text('Create Account'),
+          onPressed: () {
+            if (isCreatingAccount) {
+              return;
+            }
 
-              _createAccount(context);
-            },
-          ),
+            _createAccount(context);
+          },
         ),
-      ],
+      ),
+    ];
+
+    final animated = widgets
+        .asMap()
+        .entries
+        .map(
+          (e) => AnimationConfiguration.staggeredList(
+            position: e.key,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: e.value,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return AnimationLimiter(
+      child: ListView(
+        children: animated,
+      ),
     );
   }
 
