@@ -89,7 +89,18 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
           ],
         ),
         Gap(20),
-        ElevatedButton(onPressed: () {}, child: Text('Action')),
+        ElevatedButton(
+          child: Text('Stake'),
+          onPressed: () {
+            final appState = context.read<AppState>();
+
+            appState.convexClient().transact(
+                  caller: appState.model.activeAddress,
+                  callerSecretKey: appState.model.activeKeyPair.sk,
+                  source: '(stake ${widget.peer.address} 10)',
+                );
+          },
+        ),
       ],
     );
   }
