@@ -1,6 +1,7 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -21,13 +22,19 @@ class StakingPeerScreen extends StatelessWidget {
       ),
       body: Container(
         padding: defaultScreenPadding,
-        child: StakingPeerScreenBody(),
+        child: StakingPeerScreenBody(
+          peer: _peer,
+        ),
       ),
     );
   }
 }
 
 class StakingPeerScreenBody extends StatefulWidget {
+  final Peer peer;
+
+  const StakingPeerScreenBody({Key key, this.peer}) : super(key: key);
+
   @override
   _StakingPeerScreenBodyState createState() => _StakingPeerScreenBodyState();
 }
@@ -35,6 +42,73 @@ class StakingPeerScreenBody extends StatefulWidget {
 class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
   @override
   Widget build(BuildContext context) {
-    return Text('Bla');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Table(
+          defaultColumnWidth: IntrinsicColumnWidth(),
+          children: [
+            TableRow(
+              children: [
+                _cell(
+                  context,
+                  text: 'Stake',
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                _cell(
+                  context,
+                  text: 'Delegated Stake',
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                _cell(
+                  context,
+                  text: 'URI',
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                _cell(
+                  context,
+                  text: NumberFormat().format(widget.peer.stake),
+                ),
+                _cell(
+                  context,
+                  text: NumberFormat().format(widget.peer.delegatedStake),
+                ),
+                _cell(
+                  context,
+                  text: widget.peer.uri?.toString() ?? '-',
+                ),
+              ],
+            )
+          ],
+        ),
+        Gap(20),
+        ElevatedButton(onPressed: () {}, child: Text('Action')),
+      ],
+    );
+  }
+
+  Widget _cell(
+    BuildContext context, {
+    String text,
+    TextStyle style,
+    TextAlign textAlign = TextAlign.right,
+  }) {
+    return TableCell(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12, right: 12),
+        child: Text(
+          text,
+          textAlign: textAlign,
+          style: style ?? Theme.of(context).textTheme.bodyText2,
+        ),
+      ),
+    );
   }
 }
