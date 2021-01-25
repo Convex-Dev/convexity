@@ -53,21 +53,25 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
           );
         }
 
-        final sorted = (snapshot.data.value as Map).entries.toList()
-          ..sort((a, b) => b.value['stake'].compareTo(a.value['stake']));
+        final peers = (snapshot.data.value as Map).entries.map((e) {
+          final m = e.value as Map<String, dynamic>;
+
+          return Peer.fromJson(m..addAll({'address': e.key}));
+        });
+
+        final sorted = peers.toList()
+          ..sort((a, b) => b.stake.compareTo(a.stake));
 
         final tiles = sorted.map(
           (e) {
-            final m = e.value as Map<String, dynamic>;
-
             return ListTile(
               leading: Icon(Icons.computer),
               title: Text(
-                e.key.toString(),
+                e.address.toString(),
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
-                'Stake: ' + NumberFormat().format(m['stake'] ?? 0),
+                'Stake: ' + NumberFormat().format(e.stake),
               ),
               onTap: () {
                 nav.pushStakingPeer(context);

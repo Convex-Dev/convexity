@@ -41,6 +41,43 @@ class Contact {
   String toString() => toJson().toString();
 }
 
+@immutable
+class Peer {
+  final Address address;
+  final int stake;
+  final int delegatedStake;
+  final Uri uri;
+
+  Peer({
+    this.address,
+    this.stake,
+    this.delegatedStake,
+    this.uri,
+  });
+
+  Peer.fromJson(Map<String, dynamic> json)
+      : address = Address.fromHex(json['address']),
+        stake = json['stake'],
+        delegatedStake = json['delegated-stake'],
+        uri = Uri.parse(json['uri'] ?? '');
+
+  Map<String, dynamic> toJson() => {
+        'address': address.toJson(),
+        'stake': stake,
+        'delegated-stake': delegatedStake,
+        'uri': uri.toString(),
+      };
+
+  @override
+  bool operator ==(o) => o is Peer && o.address == address;
+
+  @override
+  int get hashCode => address.hashCode;
+
+  @override
+  String toString() => toJson().toString();
+}
+
 enum ActivityType {
   transfer,
 }
