@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../widget.dart';
+import '../nav.dart' as nav;
 
 class StakingScreen extends StatelessWidget {
   const StakingScreen({Key key}) : super(key: key);
@@ -67,6 +68,9 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
               subtitle: Text(
                 'Stake: ' + NumberFormat().format(m['stake'] ?? 0),
               ),
+              onTap: () {
+                nav.pushStakingPeer(context);
+              },
             );
           },
         ).toList();

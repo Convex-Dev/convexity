@@ -1,4 +1,5 @@
 import 'package:convex_wallet/screen/new_whitelist.dart';
+import 'package:convex_wallet/screen/staking_peer.dart';
 import 'package:convex_wallet/screen/whitelist.dart';
 import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,7 @@ const String nonFungibleToken = '/nonFungibleToken';
 const String nonFungibleTransfer = '/nonFungibleTransfer';
 const String activity = '/activity';
 const String staking = '/staking';
+const String stakingPeer = '/stakingPeer';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -72,4 +74,5 @@ Map<String, WidgetBuilder> routes() => {
       nonFungibleTransfer: (context) => NonFungibleTransferScreen(),
       activity: (context) => ActivityScreen(),
       staking: (context) => StakingScreen(),
+      stakingPeer: (context) => StakingPeerScreen(),
     };

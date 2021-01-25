@@ -155,3 +155,8 @@ Future<dynamic> pushStaking(BuildContext context) => Navigator.pushNamed(
       context,
       route.staking,
     );
+
+Future<dynamic> pushStakingPeer(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.stakingPeer,
+    );
