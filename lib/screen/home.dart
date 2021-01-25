@@ -115,6 +115,12 @@ class HomeScreenBody extends StatelessWidget {
         title: Text('Transfer'),
         subtitle: Text('Transfer Convex coins'),
         onTap: () => nav.pushTransfer(context),
+      ),
+      ListTile(
+        leading: Icon(Icons.money),
+        title: Text('Staking'),
+        subtitle: Text(''),
+        onTap: () => nav.pushStaking(context),
       )
     ];
 

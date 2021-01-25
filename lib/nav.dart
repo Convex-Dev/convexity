@@ -150,3 +150,8 @@ Future<dynamic> pushActivity(
       route.activity,
       arguments: activity,
     );
+
+Future<dynamic> pushStaking(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.staking,
+    );
