@@ -7,13 +7,17 @@ import 'package:intl/intl.dart';
 import '../widget.dart';
 
 class StakingPeerScreen extends StatelessWidget {
-  const StakingPeerScreen({Key key}) : super(key: key);
+  final Peer peer;
+
+  const StakingPeerScreen({Key key, this.peer}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final Peer _peer = peer ?? ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Staking'),
+        title: Text(_peer.address.toString()),
       ),
       body: Container(
         padding: defaultScreenPadding,

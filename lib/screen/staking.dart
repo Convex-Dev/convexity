@@ -63,18 +63,18 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
           ..sort((a, b) => b.stake.compareTo(a.stake));
 
         final tiles = sorted.map(
-          (e) {
+          (peer) {
             return ListTile(
               leading: Icon(Icons.computer),
               title: Text(
-                e.address.toString(),
+                peer.address.toString(),
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
-                'Stake: ' + NumberFormat().format(e.stake),
+                'Stake: ' + NumberFormat().format(peer.stake),
               ),
               onTap: () {
-                nav.pushStakingPeer(context);
+                nav.pushStakingPeer(context, peer: peer);
               },
             );
           },
