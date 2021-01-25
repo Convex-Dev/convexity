@@ -92,13 +92,52 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
         ElevatedButton(
           child: Text('Stake'),
           onPressed: () {
-            final appState = context.read<AppState>();
-
-            appState.convexClient().transact(
-                  caller: appState.model.activeAddress,
-                  callerSecretKey: appState.model.activeKeyPair.sk,
-                  source: '(stake ${widget.peer.address} 10)',
+            final confirmation = showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return Container(
+                  padding: defaultScreenPadding,
+                  height: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextField(),
+                      Gap(20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlineButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                          ),
+                          Gap(10),
+                          ElevatedButton(
+                            child: Text('Confirm'),
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 );
+              },
+            );
+
+            confirmation.then((value) {
+              if (value == true) {
+                final appState = context.read<AppState>();
+
+                appState.convexClient().transact(
+                      caller: appState.model.activeAddress,
+                      callerSecretKey: appState.model.activeKeyPair.sk,
+                      source: '(stake ${widget.peer.address} 10)',
+                    );
+              }
+            });
           },
         ),
       ],

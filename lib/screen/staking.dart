@@ -70,8 +70,15 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
                 peer.address.toString(),
                 overflow: TextOverflow.ellipsis,
               ),
-              subtitle: Text(
-                'Stake: ' + NumberFormat().format(peer.stake),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Stake: ' + NumberFormat().format(peer.stake)),
+                  Text(
+                    'Delegated Stake: ' +
+                        NumberFormat().format(peer.delegatedStake),
+                  )
+                ],
               ),
               onTap: () {
                 nav.pushStakingPeer(context, peer: peer);
