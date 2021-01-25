@@ -1,6 +1,7 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -75,7 +76,7 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
           },
         ).toList();
 
-        return ListView(
+        return AnimatedListView(
           children: [
             ListTile(
               title: Text(

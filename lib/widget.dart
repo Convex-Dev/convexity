@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
@@ -787,6 +788,38 @@ class AccountTable extends StatelessWidget {
           textAlign: textAlign,
           style: style ?? Theme.of(context).textTheme.bodyText2,
         ),
+      ),
+    );
+  }
+}
+
+class AnimatedListView extends StatelessWidget {
+  final List<Widget> children;
+
+  const AnimatedListView({Key key, this.children}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final animated = children
+        .asMap()
+        .entries
+        .map(
+          (e) => AnimationConfiguration.staggeredList(
+            position: e.key,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: e.value,
+              ),
+            ),
+          ),
+        )
+        .toList();
+
+    return AnimationLimiter(
+      child: ListView(
+        children: animated,
       ),
     );
   }
