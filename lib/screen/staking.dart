@@ -2,6 +2,7 @@ import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import '../widget.dart';
 
@@ -36,21 +37,52 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
 
     final appState = context.read<AppState>();
 
-    final s = '''
-    (map 
-      (fn [[a m]]
-        [(str a) (:stake m) (:delegated-stake m)]) 
-      (:peers *state*))
-     ''';
-
-    peers = appState.convexClient().query(source: s);
-    peers.then((value) => print('Type ${value.value.runtimeType}'));
+    peers = appState.convexClient().query(source: '(:peers *state*)');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [],
+    return FutureBuilder<Result>(
+      future: peers,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final sorted = (snapshot.data.value as Map).entries.toList()
+          ..sort((a, b) => b.value['stake'].compareTo(a.value['stake']));
+
+        final tiles = sorted.map(
+          (e) {
+            final m = e.value as Map<String, dynamic>;
+
+            return ListTile(
+              leading: Icon(Icons.computer),
+              title: Text(
+                e.key.toString(),
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                'Stake: ' + NumberFormat().format(m['stake'] ?? 0),
+              ),
+            );
+          },
+        ).toList();
+
+        return ListView(
+          children: [
+            ListTile(
+              title: Text(
+                'Peers',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ),
+            ...tiles,
+          ],
+        );
+      },
     );
   }
 }
