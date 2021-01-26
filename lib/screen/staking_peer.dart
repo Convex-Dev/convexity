@@ -5,7 +5,9 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
+import 'package:intl/intl.dart';
 
+import '../convex.dart';
 import '../widget.dart';
 
 class StakingPeerScreen extends StatelessWidget {
@@ -41,6 +43,19 @@ class StakingPeerScreenBody extends StatefulWidget {
 }
 
 class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
+  Future<Account> _account;
+
+  int _stakeAmount;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final appState = context.read<AppState>();
+    _account =
+        appState.convexClient().account(address: appState.model.activeAddress);
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -134,24 +149,61 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
             ElevatedButton(
               child: Text('Stake'),
               onPressed: () {
+                num amount;
+
                 final confirmation = showModalBottomSheet(
                   context: context,
                   builder: (context) {
                     return Container(
                       padding: defaultScreenPadding,
-                      height: 300,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TextField(),
+                          Text(
+                            'How much would you like to stake?',
+                            style: Theme.of(context).textTheme.subtitle1,
+                          ),
+                          Gap(10),
+                          FutureBuilder<Account>(
+                            future: _account,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              }
+
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Available balance:'),
+                                  Gap(5),
+                                  Text(
+                                    NumberFormat().format(
+                                      snapshot.data.balance,
+                                    ),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              );
+                            },
+                          ),
                           Gap(20),
+                          TextField(
+                            decoration: InputDecoration(labelText: 'Amount'),
+                            autofocus: true,
+                            onChanged: (value) {
+                              amount = int.tryParse(value);
+                            },
+                          ),
+                          Gap(40),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               OutlineButton(
                                 child: Text('Cancel'),
                                 onPressed: () {
-                                  Navigator.pop(context, false);
+                                  Navigator.pop(context);
                                 },
                               ),
                               Gap(10),
@@ -176,7 +228,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                     appState.convexClient().transact(
                           caller: appState.model.activeAddress,
                           callerSecretKey: appState.model.activeKeyPair.sk,
-                          source: '(stake ${widget.peer.address} 10)',
+                          source: '(stake ${widget.peer.address} $amount)',
                         );
                   }
                 });
