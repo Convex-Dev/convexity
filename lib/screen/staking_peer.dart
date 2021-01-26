@@ -5,7 +5,6 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
-import 'package:intl/intl.dart';
 
 import '../convex.dart';
 import '../widget.dart';
@@ -44,8 +43,6 @@ class StakingPeerScreenBody extends StatefulWidget {
 
 class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
   Future<Account> _account;
-
-  int _stakeAmount;
 
   @override
   void initState() {
@@ -149,89 +146,13 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
             ElevatedButton(
               child: Text('Stake'),
               onPressed: () {
-                num amount;
-
-                final confirmation = showModalBottomSheet(
+                showModalBottomSheet(
                   context: context,
-                  builder: (context) {
-                    return Container(
-                      padding: defaultScreenPadding,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'How much would you like to stake?',
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                          Gap(10),
-                          FutureBuilder<Account>(
-                            future: _account,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return CircularProgressIndicator();
-                              }
-
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Available balance:'),
-                                  Gap(5),
-                                  Text(
-                                    NumberFormat().format(
-                                      snapshot.data.balance,
-                                    ),
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              );
-                            },
-                          ),
-                          Gap(20),
-                          TextField(
-                            decoration: InputDecoration(labelText: 'Amount'),
-                            autofocus: true,
-                            onChanged: (value) {
-                              amount = int.tryParse(value);
-                            },
-                          ),
-                          Gap(40),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlineButton(
-                                child: Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              Gap(10),
-                              ElevatedButton(
-                                child: Text('Confirm'),
-                                onPressed: () {
-                                  Navigator.pop(context, true);
-                                },
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    );
-                  },
+                  builder: (context) => _TransactStake(
+                    peer: widget.peer,
+                    account: _account,
+                  ),
                 );
-
-                confirmation.then((value) {
-                  if (value == true) {
-                    final appState = context.read<AppState>();
-
-                    appState.convexClient().transact(
-                          caller: appState.model.activeAddress,
-                          callerSecretKey: appState.model.activeKeyPair.sk,
-                          source: '(stake ${widget.peer.address} $amount)',
-                        );
-                  }
-                });
               },
             ),
           ],
@@ -256,5 +177,182 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
         ),
       ),
     );
+  }
+}
+
+class _TransactStake extends StatefulWidget {
+  final Peer peer;
+  final Future<Account> account;
+
+  const _TransactStake({
+    Key key,
+    this.peer,
+    this.account,
+  }) : super(key: key);
+
+  @override
+  _TransactStakeState createState() => _TransactStakeState();
+}
+
+class _TransactStakeState extends State<_TransactStake> {
+  // Stake amount.
+  num amount;
+
+  // Flag to indicate the app is processing the transaction.
+  bool isProcessing = false;
+
+  // Returned value from the transaction - it's used to check if the was an error.
+  Result transaction;
+
+  Widget _successLayout() => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Successfully staked ${NumberFormat().format(amount ?? 0)}.',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          ElevatedButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      );
+
+  Widget _errorLayout() => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '${transaction?.value}',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          ElevatedButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      );
+
+  Widget _processingLayout() => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          Gap(20),
+          Text(
+            'Processing...',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+        ],
+      );
+
+  Widget _promptLayout() => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'How much would you like to stake?',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          Gap(10),
+          FutureBuilder<Account>(
+            future: widget.account,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Available balance:'),
+                  Gap(5),
+                  Text(
+                    NumberFormat().format(
+                      snapshot.data.balance,
+                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              );
+            },
+          ),
+          Gap(20),
+          TextField(
+            decoration: InputDecoration(labelText: 'Amount'),
+            autofocus: true,
+            onChanged: (value) {
+              setState(() {
+                amount = int.tryParse(value);
+              });
+            },
+          ),
+          Gap(40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              OutlineButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: Text('Confirm'),
+                onPressed: amount != null
+                    ? () {
+                        _transact().then((result) {
+                          setState(() {
+                            transaction = result;
+                          });
+                        });
+                      }
+                    : null,
+              ),
+            ],
+          )
+        ],
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    var child;
+
+    if (isProcessing) {
+      child = _processingLayout();
+    } else if (transaction != null && transaction.errorCode != null) {
+      child = _errorLayout();
+    } else if (transaction != null) {
+      child = _successLayout();
+    } else {
+      child = _promptLayout();
+    }
+
+    return Container(
+      padding: defaultScreenPadding,
+      child: child,
+    );
+  }
+
+  Future<Result> _transact() async {
+    try {
+      setState(() {
+        isProcessing = true;
+      });
+
+      final appState = context.read<AppState>();
+
+      return await appState.convexClient().transact(
+            caller: appState.model.activeAddress,
+            callerSecretKey: appState.model.activeKeyPair.sk,
+            source: '(stake ${widget.peer.address} $amount)',
+          );
+    } finally {
+      setState(() {
+        isProcessing = false;
+      });
+    }
   }
 }
