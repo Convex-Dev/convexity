@@ -50,18 +50,19 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
         id: 'Staking',
         domainFn: (datum, index) => datum.item1,
         measureFn: (datum, index) => datum.item2,
+        labelAccessorFn: (datum, index) => datum.item1,
         data: [
           Tuple2<String, int>(
-            'Owned Stake',
-            widget.peer.stakes[appState.model.activeAddress] ?? 0,
+            'Stake',
+            widget.peer.stake,
           ),
           Tuple2<String, int>(
             'Delegated Stake',
             widget.peer.delegatedStake,
           ),
           Tuple2<String, int>(
-            'Stake',
-            widget.peer.stake,
+            'Owned Stake',
+            widget.peer.stakes[appState.model.activeAddress] ?? 0,
           ),
         ],
       ),
@@ -124,6 +125,9 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
               child: charts.BarChart(
                 series,
                 vertical: false,
+                barRendererDecorator: charts.BarLabelDecorator<String>(),
+                domainAxis:
+                    charts.OrdinalAxisSpec(renderSpec: charts.NoneRenderSpec()),
               ),
             ),
             Gap(40),
