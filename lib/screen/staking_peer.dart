@@ -1,10 +1,10 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/logger.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 
 import '../widget.dart';
 
@@ -45,106 +45,142 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Table(
-          defaultColumnWidth: IntrinsicColumnWidth(),
+    final series = [
+      charts.Series<Tuple2<String, int>, String>(
+        id: 'Staking',
+        domainFn: (datum, index) => datum.item1,
+        measureFn: (datum, index) => datum.item2,
+        data: [
+          Tuple2<String, int>(
+            'Owned Stake',
+            widget.peer.stakes[appState.model.activeAddress] ?? 0,
+          ),
+          Tuple2<String, int>(
+            'Delegated Stake',
+            widget.peer.delegatedStake,
+          ),
+          Tuple2<String, int>(
+            'Stake',
+            widget.peer.stake,
+          ),
+        ],
+      ),
+    ];
+
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TableRow(
+            Table(
+              defaultColumnWidth: IntrinsicColumnWidth(),
               children: [
-                _cell(
-                  context,
-                  text: 'Stake',
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.caption,
+                TableRow(
+                  children: [
+                    _cell(
+                      context,
+                      text: 'Stake',
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    _cell(
+                      context,
+                      text: 'Delegated Stake',
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    _cell(
+                      context,
+                      text: 'Owned Stake',
+                      textAlign: TextAlign.left,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
                 ),
-                _cell(
-                  context,
-                  text: 'Delegated Stake',
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                _cell(
-                  context,
-                  text: 'Owned Stake',
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.caption,
-                ),
+                TableRow(
+                  children: [
+                    _cell(
+                      context,
+                      text: NumberFormat().format(widget.peer.stake),
+                    ),
+                    _cell(
+                      context,
+                      text: NumberFormat().format(widget.peer.delegatedStake),
+                    ),
+                    _cell(
+                      context,
+                      text: NumberFormat().format(
+                          widget.peer.stakes[appState.model.activeAddress] ??
+                              0),
+                    ),
+                  ],
+                )
               ],
             ),
-            TableRow(
-              children: [
-                _cell(
-                  context,
-                  text: NumberFormat().format(widget.peer.stake),
-                ),
-                _cell(
-                  context,
-                  text: NumberFormat().format(widget.peer.delegatedStake),
-                ),
-                _cell(
-                  context,
-                  text: NumberFormat().format(
-                      widget.peer.stakes[appState.model.activeAddress] ?? 0),
-                ),
-              ],
-            )
-          ],
-        ),
-        Gap(20),
-        ElevatedButton(
-          child: Text('Stake'),
-          onPressed: () {
-            final confirmation = showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return Container(
-                  padding: defaultScreenPadding,
-                  height: 300,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextField(),
-                      Gap(20),
-                      Row(
+            Gap(20),
+            Container(
+              height: 300,
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: charts.BarChart(
+                series,
+                vertical: false,
+              ),
+            ),
+            Gap(40),
+            ElevatedButton(
+              child: Text('Stake'),
+              onPressed: () {
+                final confirmation = showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      padding: defaultScreenPadding,
+                      height: 300,
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          OutlineButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.pop(context, false);
-                            },
-                          ),
-                          Gap(10),
-                          ElevatedButton(
-                            child: Text('Confirm'),
-                            onPressed: () {
-                              Navigator.pop(context, true);
-                            },
-                          ),
+                          TextField(),
+                          Gap(20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              OutlineButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.pop(context, false);
+                                },
+                              ),
+                              Gap(10),
+                              ElevatedButton(
+                                child: Text('Confirm'),
+                                onPressed: () {
+                                  Navigator.pop(context, true);
+                                },
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                );
-              },
-            );
-
-            confirmation.then((value) {
-              if (value == true) {
-                final appState = context.read<AppState>();
-
-                appState.convexClient().transact(
-                      caller: appState.model.activeAddress,
-                      callerSecretKey: appState.model.activeKeyPair.sk,
-                      source: '(stake ${widget.peer.address} 10)',
+                      ),
                     );
-              }
-            });
-          },
+                  },
+                );
+
+                confirmation.then((value) {
+                  if (value == true) {
+                    final appState = context.read<AppState>();
+
+                    appState.convexClient().transact(
+                          caller: appState.model.activeAddress,
+                          callerSecretKey: appState.model.activeKeyPair.sk,
+                          source: '(stake ${widget.peer.address} 10)',
+                        );
+                  }
+                });
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
