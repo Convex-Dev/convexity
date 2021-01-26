@@ -18,9 +18,10 @@ enum Lang {
 class Address {
   final String hex;
 
-  Address.fromHex(String hex) : hex = Address.trim0x(hex);
+  Address.fromHex(String hex) : hex = Address.trim0x(hex).toLowerCase();
 
-  Address.fromJson(Map<String, dynamic> m) : hex = m['hex'] as String;
+  Address.fromJson(Map<String, dynamic> m)
+      : hex = Address.trim0x(m['hex']).toLowerCase();
 
   Address.fromKeyPair(
     sodium.KeyPair keyPair,

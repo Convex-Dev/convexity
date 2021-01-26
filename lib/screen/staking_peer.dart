@@ -1,4 +1,5 @@
 import 'package:convex_wallet/convex.dart';
+import 'package:convex_wallet/logger.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -42,6 +43,8 @@ class StakingPeerScreenBody extends StatefulWidget {
 class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -64,7 +67,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                 ),
                 _cell(
                   context,
-                  text: 'URI',
+                  text: 'Owned Stake',
                   textAlign: TextAlign.left,
                   style: Theme.of(context).textTheme.caption,
                 ),
@@ -82,7 +85,8 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                 ),
                 _cell(
                   context,
-                  text: widget.peer.uri?.toString() ?? '-',
+                  text: NumberFormat().format(
+                      widget.peer.stakes[appState.model.activeAddress] ?? 0),
                 ),
               ],
             )
