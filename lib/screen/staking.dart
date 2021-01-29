@@ -1,7 +1,6 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -70,8 +69,43 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
                 peer.address.toString(),
                 overflow: TextOverflow.ellipsis,
               ),
-              subtitle: Text(
-                'Stake: ' + NumberFormat().format(peer.stake),
+              subtitle: Table(
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          'Stake',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          'Delegated Stake',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      )
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          NumberFormat().format(peer.stake),
+                          textAlign: TextAlign.right,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          NumberFormat().format(peer.delegatedStake),
+                          textAlign: TextAlign.right,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
               onTap: () {
                 nav.pushStakingPeer(context, peer: peer);
