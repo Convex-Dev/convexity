@@ -50,6 +50,17 @@ Widget aidenticon(
       height: height,
     );
 
+Widget aidenticon2(
+  Address2 address, {
+  double width,
+  double height,
+}) =>
+    identicon(
+      address.value.toString(),
+      width: width,
+      height: height,
+    );
+
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
 
@@ -653,6 +664,52 @@ class ActiveAccount extends StatelessWidget {
   }
 }
 
+class ActiveAccount2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    return Card(
+      child: Column(
+        children: [
+          AddressTile2(address: appState.model.activeAddress2),
+          FutureBuilder<Account>(
+            future: appState
+                .convexClient()
+                .account2(address: appState.model.activeAddress2),
+            builder: (context, snapshot) {
+              var animatedChild;
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                animatedChild = SizedBox(
+                  height: 63,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'loading...',
+                      style: TextStyle(color: Colors.black38),
+                    ),
+                  ),
+                );
+              } else {
+                animatedChild = Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: AccountTable(account: snapshot.data),
+                );
+              }
+
+              return AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: animatedChild,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class AddressTile extends StatelessWidget {
   final Address address;
   final void Function() onTap;
@@ -691,6 +748,77 @@ class AddressTile extends StatelessWidget {
 
     return ListTile(
       leading: aidenticon(address),
+      trailing: IconButton(
+        icon: Icon(Icons.copy),
+        onPressed: () {
+          Clipboard.setData(
+            ClipboardData(
+              text: address.toString(),
+            ),
+          );
+
+          Scaffold.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text('Copied $address'),
+              ),
+            );
+        },
+      ),
+      title: title,
+      subtitle: Text(
+        address.toString(),
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.caption,
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+class AddressTile2 extends StatelessWidget {
+  final Address2 address;
+  final void Function() onTap;
+
+  const AddressTile2({
+    Key key,
+    this.address,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    // TODO
+    // final contact = appState.findContact(address);
+    final contact = null;
+
+    // TODO
+    // final isAddressMine = appState.isAddressMine(address);
+    final isAddressMine = false;
+
+    final title = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Text(
+            contact == null ? 'Unnamed' : '${contact.name}',
+            style: Theme.of(context).textTheme.bodyText2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (isAddressMine)
+          Text(
+            '(Owned by me)',
+            style: Theme.of(context).textTheme.overline,
+          ),
+      ],
+    );
+
+    return ListTile(
+      leading: aidenticon2(address),
       trailing: IconButton(
         icon: Icon(Icons.copy),
         onPressed: () {

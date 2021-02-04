@@ -36,7 +36,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    var isSignedIn = appState.model.activeKeyPair != null;
+    var isSignedIn = appState.model.activeAddress2 != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -110,9 +110,12 @@ class _LauncherScreenState extends State<LauncherScreen> {
         appState.addToKeyring(
           address: generatedAddress,
           keyPair: generatedKeyPair,
+          // TODO Persistence.
+          isPersistent: false,
         );
 
-        appState.setActiveAddress2(generatedAddress);
+        // TODO Persistence.
+        appState.setActiveAddress2(generatedAddress, isPersistent: false);
 
         appState.convexClient().requestForFaucet(
               address: Address.fromHex(Sodium.bin2hex(generatedKeyPair.pk)),
@@ -131,7 +134,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget body(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    if (appState.model.activeKeyPair == null) {
+    if (appState.model.activeAddress2 == null) {
       return Container(
         padding: EdgeInsets.all(30),
         child: Column(

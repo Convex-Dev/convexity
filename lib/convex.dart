@@ -84,6 +84,7 @@ enum AccountType {
 class Account {
   final int sequence;
   final Address address;
+  final Address2 address2;
   final AccountType type;
   final int balance;
   final int memorySize;
@@ -92,6 +93,7 @@ class Account {
   Account({
     this.sequence,
     this.address,
+    this.address2,
     this.balance,
     this.type,
     this.memorySize,
@@ -103,7 +105,9 @@ class Account {
 
     return Account(
       sequence: m['sequence'],
-      address: Address.fromHex(m['address']),
+      // TODO Remove.
+      address: null,
+      address2: Address2(m['address']),
       balance: m['balance'],
       type: AccountType.user,
       memorySize: m['memory_size'],
@@ -314,6 +318,27 @@ Future<http.Response> getAccountRaw({
   return client.get(uri);
 }
 
+Future<http.Response> getAccountRaw2({
+  http.Client client,
+  String scheme = 'https',
+  String host = CONVEX_WORLD_HOST,
+  int port = 443,
+  Address2 address,
+}) {
+  var uri = Uri(
+    scheme: scheme,
+    host: host,
+    port: port,
+    path: 'api/v1/accounts/${address.value}',
+  );
+
+  if (client == null) {
+    return http.get(uri);
+  }
+
+  return client.get(uri);
+}
+
 Future<Account> getAccount({
   http.Client client,
   String scheme = 'https',
@@ -336,6 +361,34 @@ Future<Account> getAccount({
   if (config.isDebug()) {
     logger.d(
       '[ACCOUNT] ${response.body}',
+    );
+  }
+
+  return Account.fromJson(response.body);
+}
+
+Future<Account> getAccount2({
+  http.Client client,
+  String scheme = 'https',
+  String host = CONVEX_WORLD_HOST,
+  int port = 443,
+  Address2 address,
+}) async {
+  var response = await getAccountRaw2(
+    client: client,
+    scheme: scheme,
+    host: host,
+    port: port,
+    address: address,
+  );
+
+  if (response.statusCode != 200) {
+    return null;
+  }
+
+  if (config.isDebug()) {
+    logger.d(
+      'ACCOUNT ${response.body}',
     );
   }
 
@@ -505,6 +558,17 @@ class ConvexClient {
     @required Address address,
   }) =>
       getAccount(
+        client: client,
+        scheme: server.scheme,
+        host: server.host,
+        port: server.port,
+        address: address,
+      );
+
+  Future<Account> account2({
+    @required Address2 address,
+  }) =>
+      getAccount2(
         client: client,
         scheme: server.scheme,
         host: server.host,

@@ -85,7 +85,7 @@ class HomeScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final widgets = [
-      ActiveAccount(),
+      ActiveAccount2(),
       ListTile(
         leading: Icon(Icons.videogame_asset_rounded),
         title: Text('Digital Assets'),
