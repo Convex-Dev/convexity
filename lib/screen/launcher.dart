@@ -88,25 +88,29 @@ class _LauncherScreenState extends State<LauncherScreen> {
         isCreatingAccount = true;
       });
 
-      var randomKeyPair = CryptoSign.randomKeys();
+      var generatedKeyPair = CryptoSign.randomKeys();
 
       var appState = context.read<AppState>();
 
-      var b = await appState.convexClient().requestForFaucet(
-            address: Address.fromHex(Sodium.bin2hex(randomKeyPair.pk)),
-            amount: 10000000,
+      final generatedAddress = await appState.convexClient().createAccount(
+            accountKey: AccountKey.fromBin(generatedKeyPair.pk),
           );
 
-      if (b) {
-        appState.addKeyPair(randomKeyPair, isPersistent: true);
-        appState.setActiveKeyPair(randomKeyPair, isPersistent: true);
-        appState.addContact(
-          Contact(
-            name: 'Account ${appState.model.allKeyPairs.length}',
-            address: Address.fromKeyPair(randomKeyPair),
-          ),
-          isPersistent: true,
-        );
+      if (generatedAddress != null) {
+        // appState.addKeyPair(generatedKeyPair, isPersistent: true);
+        // appState.setActiveKeyPair(generatedKeyPair, isPersistent: true);
+        // appState.addContact(
+        //   Contact(
+        //     name: 'Account ${appState.model.allKeyPairs.length}',
+        //     address: Address.fromKeyPair(generatedKeyPair),
+        //   ),
+        //   isPersistent: true,
+        // );
+
+        appState.convexClient().requestForFaucet(
+              address: Address.fromHex(Sodium.bin2hex(generatedKeyPair.pk)),
+              amount: 10000000,
+            );
       } else {
         logger.e('Failed to create Account.');
       }

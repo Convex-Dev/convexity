@@ -15,6 +15,34 @@ enum Lang {
   convexScript,
 }
 
+class Address2 {
+  final int value;
+
+  Address2(this.value);
+
+  Address2.fromStr(String s) : value = int.parse(s);
+
+  Address2.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
+
+  @override
+  String toString() {
+    return '#$value';
+  }
+}
+
+class AccountKey {
+  final String value;
+
+  AccountKey(this.value);
+
+  AccountKey.fromBin(Uint8List bin) : value = sodium.Sodium.bin2hex(bin);
+
+  Uint8List toBin() => sodium.Sodium.hex2bin(value);
+
+  @override
+  String toString() => value;
+}
+
 class Address {
   final String hex;
 
@@ -349,6 +377,48 @@ class ConvexClient {
     @required this.server,
     this.client,
   });
+
+  Uri _uri(String path) => Uri(
+        scheme: server.scheme,
+        host: server.host,
+        port: server.port,
+        path: path,
+      );
+
+  Future<Address2> createAccount({@required AccountKey accountKey}) async {
+    if (config.isDebug()) {
+      logger.d(
+        'Create Account with Account Key: $accountKey',
+      );
+    }
+
+    var body = convert.jsonEncode({
+      'public_key': accountKey.value,
+    });
+
+    final response = await client.post(
+      _uri('api/v1/create-account'),
+      body: body,
+    );
+
+    if (response.statusCode != 200) {
+      logger.e(
+        'Failed to create Account: ${response.body}',
+      );
+
+      return null;
+    }
+
+    var bodyDecoded = convert.jsonDecode(response.body);
+
+    final n = bodyDecoded['address'] as int;
+
+    logger.d(
+      'Account created: Address $n, Account Key $accountKey',
+    );
+
+    return Address2(n);
+  }
 
   /// **Requests for Faucet.**
   ///
