@@ -175,11 +175,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
       case 1:
         return WalletScreenBody();
       case 2:
-        return AccountScreenBody(
-          address: Address.fromKeyPair(
-            appState.model.activeKeyPair,
-          ),
-        );
+        return AccountScreenBody(address: appState.model.activeAddress2);
       default:
         return HomeScreenBody();
     }

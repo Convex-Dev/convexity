@@ -14,7 +14,7 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Address _address =
+    final Address2 _address =
         address ?? ModalRoute.of(context).settings.arguments;
 
     final contacts = context
@@ -54,7 +54,7 @@ class AccountScreen extends StatelessWidget {
 }
 
 class AccountScreenBody extends StatefulWidget {
-  final Address address;
+  final Address2 address;
 
   const AccountScreenBody({Key key, this.address}) : super(key: key);
 
@@ -72,7 +72,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
     account = context
         .read<AppState>()
         .convexClient()
-        .account(address: widget.address);
+        .account2(address: widget.address);
   }
 
   @override
@@ -81,6 +81,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
       (appState) => appState.model.contacts,
     );
 
+    // TODO Fix Address Book.
     final contact = contacts.firstWhere(
       (_contact) => _contact.address == widget.address,
       orElse: () => null,
@@ -116,7 +117,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   children: [
                     QrImage(
                       data:
-                          'https://convex.world/explorer/accounts/${widget.address.hex}',
+                          'https://convex.world/explorer/accounts/${widget.address.value}',
                       version: QrVersions.auto,
                       size: 140,
                     ),
@@ -126,7 +127,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                         padding: const EdgeInsets.all(8),
                         child: Column(
                           children: [
-                            AddressTile(address: widget.address),
+                            AddressTile2(address: widget.address),
                             AccountTable(account: account),
                           ],
                         ),
@@ -144,7 +145,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                         ),
                         onPressed: () {
                           if (contact == null) {
-                            _addToAddressBook(context, address: widget.address);
+                            // TODO
+                            _addToAddressBook(context, address: null);
                           } else {
                             _removeFromAddressBook(context, contact: contact);
                           }
@@ -186,7 +188,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Gap(20),
-                  aidenticon(widget.address, width: 80, height: 80),
+                  aidenticon2(widget.address, width: 80, height: 80),
                   Gap(5),
                   Text(
                     widget.address.toString(),

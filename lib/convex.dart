@@ -388,7 +388,7 @@ Future<Account> getAccount2({
 
   if (config.isDebug()) {
     logger.d(
-      'ACCOUNT ${response.body}',
+      'Account JSON ${response.body}',
     );
   }
 
