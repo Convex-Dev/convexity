@@ -255,6 +255,8 @@ class Model {
   final List<Activity> activities;
   final Set<Contact> contacts;
   final Set<Address> whitelist;
+  final Map<Address2, KeyPair> keyring;
+  final Address2 activeAddress2;
 
   const Model({
     this.convexServerUri,
@@ -266,6 +268,8 @@ class Model {
     this.activities = const [],
     this.contacts = const {},
     this.whitelist = const {},
+    this.keyring = const {},
+    this.activeAddress2,
   });
 
   Address get activeAddress => activeKeyPair != null
@@ -290,6 +294,8 @@ class Model {
     List<Activity> activities,
     Set<Contact> contacts,
     Set<Address> whitelist,
+    Map<Address2, KeyPair> keyring,
+    Address2 activeAddress2,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -301,6 +307,8 @@ class Model {
         activities: activities ?? this.activities,
         contacts: contacts ?? this.contacts,
         whitelist: whitelist ?? this.whitelist,
+        keyring: keyring ?? this.keyring,
+        activeAddress2: activeAddress2 ?? this.activeAddress2,
       );
 
   String toString() => {
@@ -312,6 +320,8 @@ class Model {
         'myTokens': myTokens.toString(),
         'activities': activities.toString(),
         'contacts': contacts.toString(),
+        'keyring': keyring.toString(),
+        'activeAddress2': activeAddress2.toString(),
       }.toString();
 }
 
@@ -558,4 +568,28 @@ class AppState with ChangeNotifier {
   bool isAddressMine(Address address) => model.allKeyPairs.any(
         (_keypair) => Address.fromKeyPair(_keypair) == address,
       );
+
+  void addToKeyring({
+    Address2 address,
+    KeyPair keyPair,
+    bool isPersistent = false,
+  }) {
+    if (isPersistent) {}
+
+    setState((m) {
+      final _keyring = Map<Address2, KeyPair>.from(m.keyring);
+      _keyring[address] = keyPair;
+
+      return m.copyWith(keyring: _keyring);
+    });
+  }
+
+  void setActiveAddress2(
+    Address2 address, {
+    bool isPersistent = false,
+  }) {
+    if (isPersistent) {}
+
+    setState((m) => m.copyWith(activeAddress2: address));
+  }
 }

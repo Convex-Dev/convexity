@@ -107,6 +107,13 @@ class _LauncherScreenState extends State<LauncherScreen> {
         //   isPersistent: true,
         // );
 
+        appState.addToKeyring(
+          address: generatedAddress,
+          keyPair: generatedKeyPair,
+        );
+
+        appState.setActiveAddress2(generatedAddress);
+
         appState.convexClient().requestForFaucet(
               address: Address.fromHex(Sodium.bin2hex(generatedKeyPair.pk)),
               amount: 10000000,

@@ -411,13 +411,13 @@ class ConvexClient {
 
     var bodyDecoded = convert.jsonDecode(response.body);
 
-    final n = bodyDecoded['address'] as int;
+    final address = Address2(bodyDecoded['address'] as int);
 
     logger.d(
-      'Account created: Address $n, Account Key $accountKey',
+      'Created Account: Address $address, Account Key $accountKey',
     );
 
-    return Address2(n);
+    return address;
   }
 
   /// **Requests for Faucet.**
