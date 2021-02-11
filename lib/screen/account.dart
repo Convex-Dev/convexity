@@ -8,7 +8,7 @@ import '../model.dart';
 import '../widget.dart';
 
 class AccountScreen extends StatelessWidget {
-  final Address address;
+  final Address2 address;
 
   const AccountScreen({Key key, this.address}) : super(key: key);
 
@@ -21,12 +21,13 @@ class AccountScreen extends StatelessWidget {
         .select<AppState, Set<Contact>>((appState) => appState.model.contacts);
 
     final contact = contacts.firstWhere(
-      (element) => element.address == _address,
+      (element) => element.address2 == _address,
       orElse: () => null,
     );
 
-    final activeAddress = context
-        .select<AppState, Address>((appState) => appState.model.activeAddress);
+    final activeAddress = context.select<AppState, Address2>(
+      (appState) => appState.model.activeAddress2,
+    );
 
     final isMine = activeAddress == _address;
 
@@ -81,9 +82,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
       (appState) => appState.model.contacts,
     );
 
-    // TODO Fix Address Book.
     final contact = contacts.firstWhere(
-      (_contact) => _contact.address == widget.address,
+      (_contact) => _contact.address2 == widget.address,
       orElse: () => null,
     );
 
@@ -145,8 +145,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                         ),
                         onPressed: () {
                           if (contact == null) {
-                            // TODO
-                            _addToAddressBook(context, address: null);
+                            _addToAddressBook(context, address: widget.address);
                           } else {
                             _removeFromAddressBook(context, contact: contact);
                           }
@@ -169,7 +168,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
     );
   }
 
-  void _addToAddressBook(BuildContext context, {Address address}) async {
+  void _addToAddressBook(BuildContext context, {Address2 address}) async {
     String alias;
 
     var confirmation = await showModalBottomSheet(
@@ -239,7 +238,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
 
       final _newContact = Contact(
         name: alias,
-        address: address,
+        address: null,
+        address2: address,
       );
 
       _appState.addContact(_newContact, isPersistent: true);

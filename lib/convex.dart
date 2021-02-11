@@ -28,6 +28,8 @@ class Address2 {
   String toString() {
     return '#$value';
   }
+
+  Map<String, dynamic> toJson() => {'value': value};
 }
 
 class AccountKey {

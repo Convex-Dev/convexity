@@ -97,16 +97,6 @@ class _LauncherScreenState extends State<LauncherScreen> {
           );
 
       if (generatedAddress != null) {
-        // appState.addKeyPair(generatedKeyPair, isPersistent: true);
-        // appState.setActiveKeyPair(generatedKeyPair, isPersistent: true);
-        // appState.addContact(
-        //   Contact(
-        //     name: 'Account ${appState.model.allKeyPairs.length}',
-        //     address: Address.fromKeyPair(generatedKeyPair),
-        //   ),
-        //   isPersistent: true,
-        // );
-
         appState.addToKeyring(
           address: generatedAddress,
           keyPair: generatedKeyPair,
@@ -116,6 +106,16 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
         // TODO Persistence.
         appState.setActiveAddress2(generatedAddress, isPersistent: false);
+
+        // TODO Persistence.
+        appState.addContact(
+          Contact(
+            name: 'Account ${appState.model.keyring.length}',
+            address: null,
+            address2: generatedAddress,
+          ),
+          isPersistent: false,
+        );
 
         appState.convexClient().requestForFaucet(
               address: Address.fromHex(Sodium.bin2hex(generatedKeyPair.pk)),

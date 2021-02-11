@@ -791,13 +791,9 @@ class AddressTile2 extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    // TODO
-    // final contact = appState.findContact(address);
-    final contact = null;
+    final contact = appState.findContact2(address);
 
-    // TODO
-    // final isAddressMine = appState.isAddressMine(address);
-    final isAddressMine = false;
+    final isAddressMine = appState.isAddressMine2(address);
 
     final title = Row(
       crossAxisAlignment: CrossAxisAlignment.center,

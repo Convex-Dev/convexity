@@ -16,23 +16,26 @@ import 'route.dart' as route;
 class Contact {
   final String name;
   final Address address;
+  final Address2 address2;
 
   Contact({
     @required this.name,
     @required this.address,
+    this.address2,
   });
 
   Contact.fromJson(Map<String, dynamic> json)
       : name = json['name'],
-        address = Address.fromJson(json['address']);
+        address = null,
+        address2 = Address2.fromJson(json['address']);
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'address': address.toJson(),
+        'address': address2.toJson(),
       };
 
   @override
-  bool operator ==(o) => o is Contact && o.address == address;
+  bool operator ==(o) => o is Contact && o.address2 == address2;
 
   @override
   int get hashCode => address.hashCode;
@@ -565,9 +568,16 @@ class AppState with ChangeNotifier {
         orElse: () => null,
       );
 
+  Contact findContact2(Address2 address) => model.contacts.firstWhere(
+        (_contact) => _contact.address2 == address,
+        orElse: () => null,
+      );
+
   bool isAddressMine(Address address) => model.allKeyPairs.any(
         (_keypair) => Address.fromKeyPair(_keypair) == address,
       );
+
+  bool isAddressMine2(Address2 address) => model.keyring.containsKey(address);
 
   void addToKeyring({
     Address2 address,
