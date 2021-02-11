@@ -81,6 +81,18 @@ enum AccountType {
   actor,
 }
 
+// ignore: missing_return
+AccountType accountType(String s) {
+  switch (s.toLowerCase()) {
+    case "user":
+      return AccountType.user;
+    case "library":
+      return AccountType.library;
+    case "actor":
+      return AccountType.actor;
+  }
+}
+
 class Account {
   final int sequence;
   final Address address;
@@ -109,8 +121,8 @@ class Account {
       address: null,
       address2: Address2(m['address']),
       balance: m['balance'],
-      type: AccountType.user,
-      memorySize: m['memory_size'],
+      type: accountType(m['type']),
+      memorySize: m['memorySize'],
       memoryAllowance: m['allowance'],
     );
   }
@@ -446,11 +458,11 @@ class ConvexClient {
     }
 
     var body = convert.jsonEncode({
-      'public_key': accountKey.value,
+      'accountKey': accountKey.value,
     });
 
     final response = await client.post(
-      _uri('api/v1/create-account'),
+      _uri('api/v1/createAccount'),
       body: body,
     );
 
