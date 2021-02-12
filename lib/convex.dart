@@ -20,7 +20,7 @@ class Address2 {
 
   Address2(this.value);
 
-  Address2.fromStr(String s) : value = int.parse(s);
+  Address2.fromStr(String s) : value = int.parse(s.replaceAll('#', ''));
 
   Address2.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
 
@@ -558,6 +558,23 @@ class ConvexClient {
       address: caller.hex,
       secretKey: callerSecretKey,
     );
+
+    if (config.isDebug()) {
+      logger.d(
+        '[TRANSACT] Source: $source, Address: $caller, Lang: $lang',
+      );
+    }
+
+    return result;
+  }
+
+  Future<Result> _transact2({
+    @required Address2 caller,
+    @required Uint8List callerSecretKey,
+    @required String source,
+    Lang lang = Lang.convexLisp,
+  }) {
+    var result = null;
 
     if (config.isDebug()) {
       logger.d(

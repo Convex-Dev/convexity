@@ -504,7 +504,7 @@ class _SelectAccount extends StatefulWidget {
 }
 
 class _SelectAccountState extends State<_SelectAccount> {
-  String _addressHex;
+  String _addressStr;
 
   @override
   Widget build(BuildContext context) {
@@ -587,7 +587,7 @@ class _SelectAccountState extends State<_SelectAccount> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      _addressHex = value;
+                      _addressStr = value;
                     });
                   },
                 ),
@@ -595,12 +595,12 @@ class _SelectAccountState extends State<_SelectAccount> {
                 ElevatedButton(
                   child: Text('Confirm'),
                   onPressed: () {
-                    final isNotEmpty = _addressHex?.isNotEmpty ?? false;
+                    final isNotEmpty = _addressStr?.isNotEmpty ?? false;
 
                     if (isNotEmpty) {
                       Navigator.pop(
                         context,
-                        convex.Address.fromHex(_addressHex),
+                        convex.Address2.fromStr(_addressStr),
                       );
                     }
                   },
