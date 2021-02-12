@@ -10,6 +10,8 @@ import 'logger.dart';
 
 const CONVEX_WORLD_HOST = 'convex.world';
 
+final convexWorldUri = Uri.parse('https://convex.world');
+
 enum Lang {
   convexLisp,
   convexScript,
@@ -442,7 +444,7 @@ class ConvexClient {
 
   ConvexClient({
     @required this.server,
-    this.client,
+    @required this.client,
   });
 
   Uri _uri(String path) => Uri(
@@ -451,6 +453,35 @@ class ConvexClient {
         port: server.port,
         path: path,
       );
+
+  Future<http.Response> prepareTransaction2({
+    @required Address2 address,
+    @required String source,
+    int sequence,
+    Lang lang = Lang.convexLisp,
+  }) {
+    var uri = _uri('api/v1/transaction/prepare');
+
+    Map<String, dynamic> body = {
+      'source': source,
+      'address': address.value,
+      'lang': langString(lang),
+    };
+
+    if (sequence != null) {
+      body['sequence'] = sequence;
+    }
+
+    var bodyEncoded = convert.jsonEncode(body);
+
+    if (config.isDebug()) {
+      logger.d(
+        'Prepare Transaction $body',
+      );
+    }
+
+    return client.post(uri, body: bodyEncoded);
+  }
 
   Future<Address2> createAccount({@required AccountKey accountKey}) async {
     if (config.isDebug()) {

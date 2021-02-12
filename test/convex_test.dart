@@ -1,5 +1,6 @@
 import 'dart:convert' as convert;
 
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,18 +46,30 @@ Future<http.Response> _prepareTransaction({
     );
 
 void main() {
-  // test('Sign', () {
-  //   var randomKeyPair = convex.randomKeyPair();
+  final convexClient = ConvexClient(
+    server: convexWorldUri,
+    client: http.Client(),
+  );
 
-  //   var signed = convex.sign(
-  //     sodium.Sodium.hex2bin(
-  //       'badb861fc51d49e0212c0304b1890da42e4a4b54228986be17de8d7dccd845e2',
-  //     ),
-  //     randomKeyPair.sk,
-  //   );
+  group('Convex Client', () {
+    test('Prepare Transaction', () async {
+      final response = await convexClient.prepareTransaction2(
+        address: Address2(9),
+        source: '(inc 1)',
+      );
 
-  //   expect(sodium.Sodium.bin2hex(signed), '');
-  // });
+      Map body = convert.jsonDecode(response.body);
+
+      expect(response.statusCode, 200);
+      expect(body.keys.toSet(), {
+        'sequence',
+        'address',
+        'source',
+        'lang',
+        'hash',
+      });
+    });
+  });
 
   group('Account', () {
     test('Details', () async {

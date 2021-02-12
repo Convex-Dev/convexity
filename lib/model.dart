@@ -235,8 +235,6 @@ enum AddressInputOption {
   scan,
 }
 
-final convexWorldUri = Uri.parse('https://convex.world');
-
 final convexityAddress = Address.fromHex(
   '0xc797058Ce310cDD0679819715C097D6257Ebf3E2aB531926d8F4D1c2BE87C5ae',
 );
