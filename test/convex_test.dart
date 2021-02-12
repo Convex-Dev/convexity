@@ -51,7 +51,7 @@ void main() {
         accountKey: AccountKey.fromBin(generatedKeyPair.pk),
       );
 
-      expect(true, generatedAddress != null);
+      expect(generatedAddress != null, true);
 
       final account = await convexClient.account2(address: generatedAddress);
 
