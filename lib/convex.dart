@@ -31,6 +31,12 @@ class Address2 {
     return '#$value';
   }
 
+  @override
+  bool operator ==(o) => o is Address2 && o.value == value;
+
+  @override
+  int get hashCode => value.hashCode;
+
   Map<String, dynamic> toJson() => {'value': value};
 }
 

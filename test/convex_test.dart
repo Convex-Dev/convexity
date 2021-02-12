@@ -1,6 +1,7 @@
 import 'dart:convert' as convert;
 
 import 'package:convex_wallet/convex.dart';
+import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -43,6 +44,21 @@ void main() {
   );
 
   group('Convex Client', () {
+    test('Create Account & Check Details', () async {
+      final generatedKeyPair = CryptoSign.randomKeys();
+
+      final generatedAddress = await convexClient.createAccount(
+        accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+      );
+
+      expect(true, generatedAddress != null);
+
+      final account = await convexClient.account2(address: generatedAddress);
+
+      expect(account.type, AccountType.user);
+      expect(account.address2, generatedAddress);
+    });
+
     test('Prepare & Submit Transaction', () async {
       final prepareResponse = await convexClient.prepareTransaction2(
         address: Address2(9),
@@ -73,35 +89,6 @@ void main() {
       expect(submitted['errorCode'], 'INCORRECT');
       expect(submitted['value'], 'Invalid signature.');
       expect(submitted['source'], 'Server');
-    });
-  });
-
-  group('Account', () {
-    test('Details', () async {
-      var response = await _account(address: _TEST_ADDRESS);
-
-      Map body = convert.jsonDecode(response.body);
-
-      expect(response.statusCode, 200);
-      expect(body.keys.toSet(), {
-        'environment',
-        'address',
-        'is_library',
-        'is_actor',
-        'memory_size',
-        'balance',
-        'allowance',
-        'sequence',
-        'type',
-      });
-    });
-
-    test('Not found', () async {
-      var response = await _account(
-          address:
-              '7E66429CA9c10e68eFae2dCBF1804f0F6B3369c7164a3187D6233683c258710d');
-
-      expect(response.statusCode, 404);
     });
   });
 
