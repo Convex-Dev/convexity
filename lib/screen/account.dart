@@ -21,7 +21,7 @@ class AccountScreen extends StatelessWidget {
         .select<AppState, Set<Contact>>((appState) => appState.model.contacts);
 
     final contact = contacts.firstWhere(
-      (element) => element.address2 == _address,
+      (element) => element.address == _address,
       orElse: () => null,
     );
 
@@ -83,7 +83,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
     );
 
     final contact = contacts.firstWhere(
-      (_contact) => _contact.address2 == widget.address,
+      (_contact) => _contact.address == widget.address,
       orElse: () => null,
     );
 
@@ -238,8 +238,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
 
       final _newContact = Contact(
         name: alias,
-        address: null,
-        address2: address,
+        address: address,
       );
 
       _appState.addContact(_newContact, isPersistent: true);

@@ -111,8 +111,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
         appState.addContact(
           Contact(
             name: 'Account ${appState.model.keyring.length}',
-            address: null,
-            address2: generatedAddress,
+            address: generatedAddress,
           ),
           isPersistent: false,
         );

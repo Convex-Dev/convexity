@@ -60,9 +60,9 @@ class AddressBookScreenBody extends StatelessWidget {
         child: Column(
           children: [
             AddressTile2(
-              address: contacts[index].address2,
+              address: contacts[index].address,
               onTap: () {
-                nav.pushAccount2(context, contacts[index].address2);
+                nav.pushAccount2(context, contacts[index].address);
               },
             ),
             Row(
@@ -101,8 +101,7 @@ class AddressBookScreenBody extends StatelessWidget {
       appState.addContact(
         Contact(
           name: _name,
-          address: null,
-          address2: contact.address2,
+          address: contact.address,
         ),
       );
     }
@@ -166,10 +165,10 @@ class _EditState extends State<_Edit> {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Gap(20),
-                aidenticon2(widget.contact.address2, width: 80, height: 80),
+                aidenticon2(widget.contact.address, width: 80, height: 80),
                 Gap(5),
                 Text(
-                  widget.contact.address2.toString(),
+                  widget.contact.address.toString(),
                   style: Theme.of(context).textTheme.caption,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -241,10 +240,10 @@ class _RemoveState extends State<_Remove> {
                 style: Theme.of(context).textTheme.headline6,
               ),
               Gap(20),
-              aidenticon2(widget.contact.address2, width: 80, height: 80),
+              aidenticon2(widget.contact.address, width: 80, height: 80),
               Gap(5),
               Text(
-                widget.contact.address2.toString(),
+                widget.contact.address.toString(),
                 style: Theme.of(context).textTheme.caption,
                 overflow: TextOverflow.ellipsis,
               ),

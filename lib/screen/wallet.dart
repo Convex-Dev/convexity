@@ -300,7 +300,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         appState.addContact(
           Contact(
             name: 'Account ${appState.model.allKeyPairs.length}',
-            address: Address.fromKeyPair(randomKeyPair),
+            address: null,
           ),
           isPersistent: true,
         );

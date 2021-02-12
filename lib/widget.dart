@@ -432,7 +432,7 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon(contact.address),
+        leading: aidenticon2(contact.address),
         title: Text(contact.name),
         subtitle: Text(contact.address.toString()),
         onTap: () {

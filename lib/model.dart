@@ -15,27 +15,24 @@ import 'route.dart' as route;
 @immutable
 class Contact {
   final String name;
-  final Address address;
-  final Address2 address2;
+  final Address2 address;
 
   Contact({
     @required this.name,
     @required this.address,
-    this.address2,
   });
 
   Contact.fromJson(Map<String, dynamic> json)
       : name = json['name'],
-        address = null,
-        address2 = Address2.fromJson(json['address']);
+        address = Address2.fromJson(json['address']);
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'address': address2.toJson(),
+        'address': address.toJson(),
       };
 
   @override
-  bool operator ==(o) => o is Contact && o.address2 == address2;
+  bool operator ==(o) => o is Contact && o.address == address;
 
   @override
   int get hashCode => address.hashCode;
@@ -569,7 +566,7 @@ class AppState with ChangeNotifier {
       );
 
   Contact findContact2(Address2 address) => model.contacts.firstWhere(
-        (_contact) => _contact.address2 == address,
+        (_contact) => _contact.address == address,
         orElse: () => null,
       );
 
