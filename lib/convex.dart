@@ -460,7 +460,7 @@ class ConvexClient {
     int sequence,
     Lang lang = Lang.convexLisp,
   }) {
-    var uri = _uri('api/v1/transaction/prepare');
+    final uri = _uri('api/v1/transaction/prepare');
 
     Map<String, dynamic> body = {
       'source': source,
@@ -472,7 +472,7 @@ class ConvexClient {
       body['sequence'] = sequence;
     }
 
-    var bodyEncoded = convert.jsonEncode(body);
+    final bodyEncoded = convert.jsonEncode(body);
 
     if (config.isDebug()) {
       logger.d(
@@ -481,6 +481,78 @@ class ConvexClient {
     }
 
     return client.post(uri, body: bodyEncoded);
+  }
+
+  Future<http.Response> submitTransaction2({
+    @required Address2 address,
+    @required AccountKey accountKey,
+    @required String hash,
+    @required String sig,
+  }) {
+    final uri = _uri('api/v1/transaction/submit');
+
+    Map<String, dynamic> body = {
+      'address': address.value,
+      'accountKey': accountKey.value,
+      'hash': hash,
+      'sig': sig,
+    };
+
+    final bodyEncoded = convert.jsonEncode(body);
+
+    if (config.isDebug()) {
+      logger.d(
+        'Submit Transaction $body',
+      );
+    }
+
+    return client.post(uri, body: bodyEncoded);
+  }
+
+  Future<Result> prepareTransact({
+    @required Address2 address,
+    @required String source,
+    @required AccountKey accountKey,
+    @required Uint8List secretKey,
+    int sequence,
+    Lang lang = Lang.convexLisp,
+  }) async {
+    var prepareResponse = await prepareTransaction2(
+      source: source,
+      address: address,
+      sequence: sequence,
+      lang: lang,
+    );
+
+    var prepareBody = convert.jsonDecode(prepareResponse.body);
+
+    if (prepareResponse.statusCode != 200) {
+      throw Exception(prepareBody['errorCode']);
+    }
+
+    var hashHex = prepareBody['hash'];
+    var hashBin = sodium.Sodium.hex2bin(hashHex);
+
+    var sigBin = sign(hashBin, secretKey);
+    var sigHex = sodium.Sodium.bin2hex(sigBin);
+
+    var submitResponse = await submitTransaction2(
+      address: address,
+      accountKey: accountKey,
+      hash: hashHex,
+      sig: sigHex,
+    );
+
+    var submitBody = convert.jsonDecode(submitResponse.body);
+
+    if (submitResponse.statusCode != 200) {
+      throw Exception(submitBody['errorCode']);
+    }
+
+    return Result(
+      value: submitBody['value'],
+      errorCode: submitBody['errorCode'],
+    );
   }
 
   Future<Address2> createAccount({@required AccountKey accountKey}) async {

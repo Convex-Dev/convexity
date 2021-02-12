@@ -36,15 +36,6 @@ Future<http.Response> _faucet({
       amount: amount,
     );
 
-Future<http.Response> _prepareTransaction({
-  String source,
-  convex.Address address,
-}) =>
-    convex.prepareTransaction(
-      source: source,
-      address: address.hex,
-    );
-
 void main() {
   final convexClient = ConvexClient(
     server: convexWorldUri,
@@ -52,22 +43,36 @@ void main() {
   );
 
   group('Convex Client', () {
-    test('Prepare Transaction', () async {
-      final response = await convexClient.prepareTransaction2(
+    test('Prepare & Submit Transaction', () async {
+      final prepareResponse = await convexClient.prepareTransaction2(
         address: Address2(9),
         source: '(inc 1)',
       );
 
-      Map body = convert.jsonDecode(response.body);
+      Map<String, dynamic> prepared = convert.jsonDecode(prepareResponse.body);
 
-      expect(response.statusCode, 200);
-      expect(body.keys.toSet(), {
+      expect(prepareResponse.statusCode, 200);
+      expect(prepared.keys.toSet(), {
         'sequence',
         'address',
         'source',
         'lang',
         'hash',
       });
+
+      final submitResponse = await convexClient.submitTransaction2(
+        address: Address2(9),
+        accountKey: AccountKey(''),
+        hash: prepared['hash'],
+        sig: '',
+      );
+
+      Map<String, dynamic> submitted = convert.jsonDecode(submitResponse.body);
+
+      expect(submitResponse.statusCode, 400);
+      expect(submitted['errorCode'], 'INCORRECT');
+      expect(submitted['value'], 'Invalid signature.');
+      expect(submitted['source'], 'Server');
     });
   });
 
@@ -152,26 +157,6 @@ void main() {
 
       expect(response.statusCode, 200);
       expect(convert.jsonDecode(response.body), {'value': _TEST_ADDRESS});
-    });
-  });
-
-  group('Transaction', () {
-    test('Prepare', () async {
-      var response = await _prepareTransaction(
-        address: convex.Address.fromHex(_TEST_ADDRESS),
-        source: '(inc 1)',
-      );
-
-      Map body = convert.jsonDecode(response.body);
-
-      expect(response.statusCode, 200);
-      expect(body.keys.toSet(), {
-        'sequence_number',
-        'address',
-        'source',
-        'lang',
-        'hash',
-      });
     });
   });
 
