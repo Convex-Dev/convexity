@@ -481,9 +481,7 @@ class ConvexClient {
     final bodyEncoded = convert.jsonEncode(body);
 
     if (config.isDebug()) {
-      logger.d(
-        'Prepare Transaction $body',
-      );
+      logger.d(body);
     }
 
     return client.post(uri, body: bodyEncoded);
@@ -507,9 +505,7 @@ class ConvexClient {
     final bodyEncoded = convert.jsonEncode(body);
 
     if (config.isDebug()) {
-      logger.d(
-        'Submit Transaction $body',
-      );
+      logger.d(body);
     }
 
     return client.post(uri, body: bodyEncoded);

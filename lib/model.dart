@@ -282,6 +282,10 @@ class Model {
     return allKeyPairs.isNotEmpty ? allKeyPairs.last : null;
   }
 
+  KeyPair get activeKeypair2 => keyring[activeAddress2];
+
+  AccountKey get activeAccountKey => AccountKey.fromBin(activeKeypair2.pk);
+
   Model copyWith({
     Uri convexServerUri,
     Address convexityAddress,
