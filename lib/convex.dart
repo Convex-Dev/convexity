@@ -148,9 +148,9 @@ Uint8List sign(Uint8List hash, Uint8List secretKey) =>
 String langString(Lang lang) {
   switch (lang) {
     case Lang.convexLisp:
-      return 'convex-lisp';
+      return 'convexLisp';
     case Lang.convexScript:
-      return 'convex-scrypt';
+      return 'convexScrypt';
   }
 
   return '';
@@ -657,6 +657,40 @@ class ConvexClient {
 
     var resultValue = bodyDecoded['value'];
     var resultErrorCode = bodyDecoded['error-code'];
+
+    if (resultErrorCode != null) {
+      logger.w('Query Result has an error: $resultErrorCode');
+    }
+
+    return Result(
+      value: resultValue,
+      errorCode: resultErrorCode,
+    );
+  }
+
+  Future<Result> query2({
+    @required String source,
+    @required Address2 caller,
+    Lang lang = Lang.convexLisp,
+  }) async {
+    final uri = _uri('api/v1/query');
+
+    var body = convert.jsonEncode({
+      'source': source,
+      'address': caller.value,
+      'lang': langString(lang),
+    });
+
+    if (config.isDebug()) {
+      logger.d(body);
+    }
+
+    var response = await client.post(uri, body: body);
+
+    var bodyDecoded = convert.jsonDecode(response.body);
+
+    var resultValue = bodyDecoded['value'];
+    var resultErrorCode = bodyDecoded['errorCode'];
 
     if (resultErrorCode != null) {
       logger.w('Query Result has an error: $resultErrorCode');
