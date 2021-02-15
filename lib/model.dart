@@ -252,7 +252,6 @@ class Model {
   final Set<AAsset> myTokens;
   final List<Activity> activities;
   final Set<Contact> contacts;
-  final Set<Address> whitelist;
   final Map<Address2, KeyPair> keyring;
   final Address2 activeAddress2;
 
@@ -265,7 +264,6 @@ class Model {
     this.myTokens = const {},
     this.activities = const [],
     this.contacts = const {},
-    this.whitelist = const {},
     this.keyring = const {},
     this.activeAddress2,
   });
@@ -308,7 +306,6 @@ class Model {
         myTokens: myTokens ?? this.myTokens,
         activities: activities ?? this.activities,
         contacts: contacts ?? this.contacts,
-        whitelist: whitelist ?? this.whitelist,
         keyring: keyring ?? this.keyring,
         activeAddress2: activeAddress2 ?? this.activeAddress2,
       );
@@ -338,7 +335,6 @@ void bootstrap({
     final myTokens = p.readMyTokens(preferences);
     final activities = p.readActivities(preferences);
     final contacts = p.readContacts(preferences);
-    final whitelists = p.readWhitelist(preferences);
 
     final _model = Model(
       convexServerUri: convexWorldUri,
@@ -349,7 +345,6 @@ void bootstrap({
       myTokens: myTokens,
       activities: activities,
       contacts: contacts,
-      whitelist: whitelists,
     );
 
     logger.d(_model.toString());
@@ -505,49 +500,6 @@ class AppState with ChangeNotifier {
     );
   }
 
-  /// Add a new Address to Whitelist.
-  void addToWhitelist(Address address, {bool isPersistent = false}) {
-    var whitelist = Set<Address>.from(model.whitelist)..add(address);
-
-    if (isPersistent) {
-      SharedPreferences.getInstance().then(
-        (preferences) => p.writeWhitelist(preferences, whitelist),
-      );
-    }
-
-    setState((model) => model.copyWith(whitelist: whitelist));
-  }
-
-  /// Add a new KeyPair `k`, and persist it to disk if `isPersistent` is true.
-  ///
-  /// This method is usually called whenever a new Account is created.
-  void addKeyPair(KeyPair k, {bool isPersistent = false}) {
-    if (isPersistent) {
-      SharedPreferences.getInstance()
-          .then((preferences) => p.addKeyPair(preferences, k));
-    }
-
-    setState(
-      (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
-    );
-  }
-
-  /// Remove KeyPair [k].
-  void removeKeyPair(KeyPair k, {bool isPersistent = false}) {
-    final keyPairs = List<KeyPair>.from(model.allKeyPairs)..remove(k);
-
-    if (isPersistent) {
-      SharedPreferences.getInstance()
-          .then((preferences) => p.writeKeyPairs(preferences, keyPairs));
-    }
-
-    setState(
-      (m) {
-        return m.copyWith(allKeyPairs: keyPairs);
-      },
-    );
-  }
-
   /// Reset app state.
   void reset(BuildContext context) {
     SharedPreferences.getInstance().then((preferences) {
@@ -570,10 +522,6 @@ class AppState with ChangeNotifier {
   Contact findContact2(Address2 address) => model.contacts.firstWhere(
         (_contact) => _contact.address == address,
         orElse: () => null,
-      );
-
-  bool isAddressMine(Address address) => model.allKeyPairs.any(
-        (_keypair) => Address.fromKeyPair(_keypair) == address,
       );
 
   bool isAddressMine2(Address2 address) => model.keyring.containsKey(address);

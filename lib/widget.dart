@@ -618,52 +618,6 @@ class _SelectAccountState extends State<_SelectAccount> {
   }
 }
 
-class ActiveAccount extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
-
-    return Card(
-      child: Column(
-        children: [
-          AddressTile(address: appState.model.activeAddress),
-          FutureBuilder<Account>(
-            future: appState
-                .convexClient()
-                .account(address: appState.model.activeAddress),
-            builder: (context, snapshot) {
-              var animatedChild;
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                animatedChild = SizedBox(
-                  height: 63,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'loading...',
-                      style: TextStyle(color: Colors.black38),
-                    ),
-                  ),
-                );
-              } else {
-                animatedChild = Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: AccountTable(account: snapshot.data),
-                );
-              }
-
-              return AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
-                child: animatedChild,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class ActiveAccount2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -706,73 +660,6 @@ class ActiveAccount2 extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class AddressTile extends StatelessWidget {
-  final Address address;
-  final void Function() onTap;
-
-  const AddressTile({
-    Key key,
-    this.address,
-    this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
-
-    final contact = appState.findContact(address);
-
-    final isAddressMine = appState.isAddressMine(address);
-
-    final title = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            contact == null ? 'Unnamed' : '${contact.name}',
-            style: Theme.of(context).textTheme.bodyText2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        if (isAddressMine)
-          Text(
-            '(Owned by me)',
-            style: Theme.of(context).textTheme.overline,
-          ),
-      ],
-    );
-
-    return ListTile(
-      leading: aidenticon(address),
-      trailing: IconButton(
-        icon: Icon(Icons.copy),
-        onPressed: () {
-          Clipboard.setData(
-            ClipboardData(
-              text: address.toString(),
-            ),
-          );
-
-          Scaffold.of(context)
-            ..removeCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text('Copied $address'),
-              ),
-            );
-        },
-      ),
-      title: title,
-      subtitle: Text(
-        address.toString(),
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.caption,
-      ),
-      onTap: onTap,
     );
   }
 }
