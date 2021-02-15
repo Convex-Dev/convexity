@@ -723,23 +723,6 @@ class ConvexClient {
     return result;
   }
 
-  Future<Result> _transact2({
-    @required Address2 caller,
-    @required Uint8List callerSecretKey,
-    @required String source,
-    Lang lang = Lang.convexLisp,
-  }) {
-    var result = null;
-
-    if (config.isDebug()) {
-      logger.d(
-        '[TRANSACT] Source: $source, Address: $caller, Lang: $lang',
-      );
-    }
-
-    return result;
-  }
-
   Future<Account> account({
     @required Address address,
   }) =>
