@@ -593,6 +593,20 @@ class AppState with ChangeNotifier {
     });
   }
 
+  void removeAddress(Address2 address, {bool isPersistent = false}) {
+    final _keyring = Map<Address2, KeyPair>.from(model.keyring)
+      ..remove(address);
+
+    // TODO
+    if (isPersistent) {}
+
+    setState(
+      (m) {
+        return m.copyWith(keyring: _keyring);
+      },
+    );
+  }
+
   void setActiveAddress2(
     Address2 address, {
     bool isPersistent = false,
