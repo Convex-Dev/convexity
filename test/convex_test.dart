@@ -21,13 +21,6 @@ Future<http.Response> _query({
       address: address,
     );
 
-Future<http.Response> _account({
-  String address = _TEST_ADDRESS,
-}) =>
-    convex.getAccountRaw(
-      address: convex.Address.fromHex(address),
-    );
-
 Future<http.Response> _faucet({
   String address,
   int amount,
