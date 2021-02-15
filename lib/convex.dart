@@ -562,15 +562,13 @@ class ConvexClient {
   }
 
   Future<Address2> createAccount({@required AccountKey accountKey}) async {
-    if (config.isDebug()) {
-      logger.d(
-        'Create Account with Account Key: $accountKey',
-      );
-    }
-
     var body = convert.jsonEncode({
       'accountKey': accountKey.value,
     });
+
+    if (config.isDebug()) {
+      logger.d(body);
+    }
 
     final response = await client.post(
       _uri('api/v1/createAccount'),
@@ -613,6 +611,24 @@ class ConvexClient {
     );
 
     return response.statusCode == 200;
+  }
+
+  Future<http.Response> faucet2({
+    @required Address2 address,
+    @required int amount,
+  }) async {
+    final uri = _uri('api/v1/faucet');
+
+    var body = convert.jsonEncode({
+      'address': address.value,
+      'amount': amount,
+    });
+
+    if (config.isDebug()) {
+      logger.d(body);
+    }
+
+    return client.post(uri, body: body);
   }
 
   /// **Executes code on the Convex Network just to compute the result.**

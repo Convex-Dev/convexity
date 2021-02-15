@@ -21,15 +21,6 @@ Future<http.Response> _query({
       address: address,
     );
 
-Future<http.Response> _faucet({
-  String address,
-  int amount,
-}) =>
-    convex.faucet(
-      address: address,
-      amount: amount,
-    );
-
 void main() {
   final convexClient = ConvexClient(
     server: convexWorldUri,
@@ -37,7 +28,7 @@ void main() {
   );
 
   group('Convex Client', () {
-    test('Create Account & Check Details', () async {
+    test('Create Account, check details, top up', () async {
       final generatedKeyPair = CryptoSign.randomKeys();
 
       final generatedAddress = await convexClient.createAccount(
@@ -50,6 +41,20 @@ void main() {
 
       expect(account.type, AccountType.user);
       expect(account.address2, generatedAddress);
+
+      final faucetResponse = await convexClient.faucet2(
+        address: account.address2,
+        amount: 1000000,
+      );
+
+      final faucetResponseBody = convert.jsonDecode(faucetResponse.body);
+
+      expect(faucetResponse.statusCode, 200);
+      expect(faucetResponseBody.keys.toSet(), {
+        'address',
+        'amount',
+        'value',
+      });
     });
 
     test('Prepare & Submit Transaction', () async {
@@ -137,24 +142,6 @@ void main() {
 
       expect(response.statusCode, 200);
       expect(convert.jsonDecode(response.body), {'value': _TEST_ADDRESS});
-    });
-  });
-
-  test('Faucet', () async {
-    var response = await _faucet(
-      address: _TEST_ADDRESS,
-      amount: 1000,
-    );
-
-    expect(response.statusCode, 200);
-
-    Map body = convert.jsonDecode(response.body);
-
-    expect(body.keys.toSet(), {
-      'address',
-      'amount',
-      'id',
-      'value',
     });
   });
 }
