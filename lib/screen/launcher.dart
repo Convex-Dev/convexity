@@ -116,9 +116,9 @@ class _LauncherScreenState extends State<LauncherScreen> {
           isPersistent: false,
         );
 
-        appState.convexClient().requestForFaucet(
-              address: Address.fromHex(Sodium.bin2hex(generatedKeyPair.pk)),
-              amount: 10000000,
+        appState.convexClient().faucet2(
+              address: generatedAddress,
+              amount: 100000000,
             );
       } else {
         logger.e('Failed to create Account.');
