@@ -291,17 +291,29 @@ Widget nonFungibleTokenCard({
       );
     });
 
+// ignore: must_be_immutable
 class AssetsCollection extends StatefulWidget {
-  final Set<AAsset> assets;
-  final Map<AAsset, Future> balanceCache;
-  final String empty;
+  final Set<AAsset> assets = {};
+  final Map<AAsset, Future> balanceCache = {};
 
-  const AssetsCollection({
+  String empty;
+
+  AssetsCollection({
     Key key,
-    @required this.assets,
-    this.balanceCache = const {},
-    this.empty = 'Nothing to show',
-  }) : super(key: key);
+    @required assets,
+    balanceCache,
+    empty,
+  }) : super(key: key) {
+    this.empty = empty ?? 'Nothing to show';
+
+    if (assets != null) {
+      this.assets.addAll(Set.from(assets));
+    }
+
+    if (balanceCache != null) {
+      this.balanceCache.addAll(Map.from(balanceCache));
+    }
+  }
 
   @override
   _AssetsCollectionState createState() => _AssetsCollectionState();
