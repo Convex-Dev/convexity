@@ -624,7 +624,7 @@ class ActiveAccount2 extends StatelessWidget {
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
-                .account2(address: appState.model.activeAddress),
+                .accountDetails(appState.model.activeAddress),
             builder: (context, snapshot) {
               var animatedChild;
 

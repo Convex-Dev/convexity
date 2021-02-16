@@ -107,7 +107,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
       return;
     }
 
-    final transferInProgress = appState.convexClient().prepareTransact(
+    final transferInProgress = appState.convexClient().transact(
           address: appState.model.activeAddress,
           accountKey: appState.model.activeAccountKey,
           secretKey: appState.model.activeKeyPair.sk,

@@ -319,7 +319,7 @@ void bootstrap({
       contacts: contacts,
     );
 
-    logger.d(_model.toString());
+    logger.d(_model);
 
     context.read<AppState>().setState((_) => _model);
   } catch (e, s) {

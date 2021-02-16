@@ -115,7 +115,7 @@ class ConvexityClient {
     var source =
         '(call ${this.actor.value} (request-registry ${fungible.address} $metadataStr))';
 
-    return convexClient.prepareTransact(
+    return convexClient.transact(
       address: holder,
       accountKey: holderAccountKey,
       secretKey: holderSecretKey,

@@ -22,7 +22,7 @@ void main() {
 
       expect(generatedAddress != null, true);
 
-      final account = await convexClient.account2(address: generatedAddress);
+      final account = await convexClient.accountDetails(generatedAddress);
 
       expect(account.type, AccountType.user);
       expect(account.address2, generatedAddress);
@@ -43,8 +43,8 @@ void main() {
     });
 
     test('Prepare & Submit Transaction', () async {
-      final prepareResponse = await convexClient.prepareTransaction2(
-        address: Address2(9),
+      final prepareResponse = await convexClient.prepareTransaction(
+        address: Address(9),
         source: '(inc 1)',
       );
 
@@ -59,8 +59,8 @@ void main() {
         'hash',
       });
 
-      final submitResponse = await convexClient.submitTransaction2(
-        address: Address2(9),
+      final submitResponse = await convexClient.submitTransaction(
+        address: Address(9),
         accountKey: AccountKey(''),
         hash: prepared['hash'],
         sig: '',
@@ -78,7 +78,7 @@ void main() {
   group('Query - Convex Lisp', () {
     test('Inc', () async {
       final result = await convexClient.query2(
-        address: Address2(9),
+        address: Address(9),
         source: '(inc 1)',
       );
 
@@ -87,7 +87,7 @@ void main() {
 
     test('Self Address', () async {
       final result = await convexClient.query2(
-        address: Address2(9),
+        address: Address(9),
         source: '*address*',
       );
 
@@ -96,7 +96,7 @@ void main() {
 
     test('Error - UNDECLARED', () async {
       final result = await convexClient.query2(
-        address: Address2(9),
+        address: Address(9),
         source: '(incc 1)',
       );
 
@@ -105,7 +105,7 @@ void main() {
 
     test('Error - CAST', () async {
       final result = await convexClient.query2(
-        address: Address2(9),
+        address: Address(9),
         source: '(map inc 1)',
       );
 
@@ -116,7 +116,7 @@ void main() {
   group('Query - Convex Scrypt', () {
     test('Inc', () async {
       var result = await convexClient.query2(
-        address: Address2(9),
+        address: Address(9),
         source: 'inc(1)',
         lang: Lang.convexScript,
       );
@@ -126,7 +126,7 @@ void main() {
 
     test('Self Address', () async {
       final result = await convexClient.query2(
-        address: Address2(9),
+        address: Address(9),
         source: '_address_',
         lang: Lang.convexScript,
       );

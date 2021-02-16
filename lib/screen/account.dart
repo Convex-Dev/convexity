@@ -70,10 +70,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   void initState() {
     super.initState();
 
-    account = context
-        .read<AppState>()
-        .convexClient()
-        .account2(address: widget.address);
+    account =
+        context.read<AppState>().convexClient().accountDetails(widget.address);
   }
 
   @override

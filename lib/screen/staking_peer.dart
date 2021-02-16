@@ -50,7 +50,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
 
     final appState = context.read<AppState>();
     _account =
-        appState.convexClient().account2(address: appState.model.activeAddress);
+        appState.convexClient().accountDetails(appState.model.activeAddress);
   }
 
   @override
@@ -344,7 +344,7 @@ class _TransactStakeState extends State<_TransactStake> {
 
       final appState = context.read<AppState>();
 
-      return await appState.convexClient().prepareTransact(
+      return await appState.convexClient().transact(
             address: appState.model.activeAddress,
             accountKey: appState.model.activeAccountKey,
             secretKey: appState.model.activeKeyPair.sk,

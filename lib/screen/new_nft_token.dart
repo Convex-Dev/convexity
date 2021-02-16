@@ -158,7 +158,7 @@ class _CreateTokenState extends State<_CreateToken> {
       final _uri =
           widget.newToken.uri == null ? 'nil' : '"${widget.newToken.uri}"';
 
-      myTokenResult = await appState.convexClient().prepareTransact(
+      myTokenResult = await appState.convexClient().transact(
             address: appState.model.activeAddress,
             accountKey: appState.model.activeAccountKey,
             secretKey: appState.model.activeKeyPair.sk,

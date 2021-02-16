@@ -298,7 +298,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           isPersistent: false,
         );
 
-        appState.convexClient().faucet2(
+        appState.convexClient().faucet(
               address: generatedAddress,
               amount: 100000000,
             );

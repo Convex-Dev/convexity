@@ -116,7 +116,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
           isPersistent: false,
         );
 
-        appState.convexClient().faucet2(
+        appState.convexClient().faucet(
               address: generatedAddress,
               amount: 100000000,
             );
