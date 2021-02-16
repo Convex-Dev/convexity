@@ -648,7 +648,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
     return appState.assetLibrary().balance(
           asset: widget.aasset.asset.address,
-          owner: appState.model.activeAddress2,
+          owner: appState.model.activeAddress,
         );
   }
 

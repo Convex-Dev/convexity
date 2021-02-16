@@ -8,13 +8,13 @@ import '../model.dart';
 import '../widget.dart';
 
 class AccountScreen extends StatelessWidget {
-  final Address2 address;
+  final Address address;
 
   const AccountScreen({Key key, this.address}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Address2 _address =
+    final Address _address =
         address ?? ModalRoute.of(context).settings.arguments;
 
     final contacts = context
@@ -25,8 +25,8 @@ class AccountScreen extends StatelessWidget {
       orElse: () => null,
     );
 
-    final activeAddress = context.select<AppState, Address2>(
-      (appState) => appState.model.activeAddress2,
+    final activeAddress = context.select<AppState, Address>(
+      (appState) => appState.model.activeAddress,
     );
 
     final isMine = activeAddress == _address;
@@ -55,7 +55,7 @@ class AccountScreen extends StatelessWidget {
 }
 
 class AccountScreenBody extends StatefulWidget {
-  final Address2 address;
+  final Address address;
 
   const AccountScreenBody({Key key, this.address}) : super(key: key);
 
@@ -168,7 +168,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
     );
   }
 
-  void _addToAddressBook(BuildContext context, {Address2 address}) async {
+  void _addToAddressBook(BuildContext context, {Address address}) async {
     String alias;
 
     var confirmation = await showModalBottomSheet(

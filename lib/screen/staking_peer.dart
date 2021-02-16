@@ -49,9 +49,8 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
     super.initState();
 
     final appState = context.read<AppState>();
-    _account = appState
-        .convexClient()
-        .account2(address: appState.model.activeAddress2);
+    _account =
+        appState.convexClient().account2(address: appState.model.activeAddress);
   }
 
   @override
@@ -75,7 +74,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
           ),
           Tuple2<String, int>(
             'Owned Stake',
-            widget.peer.stakes[appState.model.activeAddress2] ?? 0,
+            widget.peer.stakes[appState.model.activeAddress] ?? 0,
           ),
         ],
       ),
@@ -124,7 +123,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                     _cell(
                       context,
                       text: NumberFormat().format(
-                          widget.peer.stakes[appState.model.activeAddress2] ??
+                          widget.peer.stakes[appState.model.activeAddress] ??
                               0),
                     ),
                   ],
@@ -346,9 +345,9 @@ class _TransactStakeState extends State<_TransactStake> {
       final appState = context.read<AppState>();
 
       return await appState.convexClient().prepareTransact(
-            address: appState.model.activeAddress2,
+            address: appState.model.activeAddress,
             accountKey: appState.model.activeAccountKey,
-            secretKey: appState.model.activeKeypair2.sk,
+            secretKey: appState.model.activeKeyPair.sk,
             source: '(stake ${widget.peer.address} $amount)',
           );
     } finally {

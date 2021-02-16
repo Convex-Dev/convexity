@@ -40,7 +40,7 @@ Widget identicon(
     );
 
 Widget aidenticon(
-  Address2 address, {
+  Address address, {
   double width,
   double height,
 }) =>
@@ -63,7 +63,7 @@ class Identicon extends StatelessWidget {
 }
 
 class Identicon2 extends StatelessWidget {
-  final convex.Address2 address;
+  final convex.Address address;
   final bool isAddressVisible;
   final int size;
 
@@ -125,14 +125,7 @@ class IdenticonDropdown extends StatelessWidget {
             ),
           )
           .toList(),
-      onChanged: (_pk) {
-        var selectedKeyPair = allKeyPairs
-            .firstWhere((_keyPair) => _pk == Sodium.bin2hex(_keyPair.pk));
-
-        context
-            .read<AppState>()
-            .setActiveKeyPair(selectedKeyPair, isPersistent: true);
-      },
+      onChanged: (_pk) {},
     );
   }
 }
@@ -356,7 +349,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
         final balance = widget.balanceCache[aasset] ??
             appState.assetLibrary().balance(
                   asset: aasset.asset.address,
-                  owner: appState.model.activeAddress2,
+                  owner: appState.model.activeAddress,
                 );
 
         if (aasset.type == AssetType.fungible) {
@@ -444,7 +437,7 @@ class _ContactItem implements _AWidget {
 
 /// A [_AWidget] that contains data to display an [Address].
 class _AddressItem implements _AWidget {
-  final convex.Address2 address;
+  final convex.Address address;
 
   _AddressItem(this.address);
 
@@ -459,8 +452,8 @@ class _AddressItem implements _AWidget {
 }
 
 /// Shows a Modal Bottom Sheet UI to select an Account.
-Future<convex.Address2> selectAccountModal(BuildContext context) =>
-    showModalBottomSheet<convex.Address2>(
+Future<convex.Address> selectAccountModal(BuildContext context) =>
+    showModalBottomSheet<convex.Address>(
       context: context,
       builder: (context) => _SelectAccount(),
     );
@@ -601,7 +594,7 @@ class _SelectAccountState extends State<_SelectAccount> {
                     if (isNotEmpty) {
                       Navigator.pop(
                         context,
-                        convex.Address2.fromStr(_addressStr),
+                        convex.Address.fromStr(_addressStr),
                       );
                     }
                   },
@@ -627,11 +620,11 @@ class ActiveAccount2 extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          AddressTile2(address: appState.model.activeAddress2),
+          AddressTile2(address: appState.model.activeAddress),
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
-                .account2(address: appState.model.activeAddress2),
+                .account2(address: appState.model.activeAddress),
             builder: (context, snapshot) {
               var animatedChild;
 
@@ -666,7 +659,7 @@ class ActiveAccount2 extends StatelessWidget {
 }
 
 class AddressTile2 extends StatelessWidget {
-  final Address2 address;
+  final Address address;
   final void Function() onTap;
 
   const AddressTile2({

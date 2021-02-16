@@ -14,18 +14,9 @@ import '../crypto.dart' as crypto;
 class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Convex Wallet'),
-        actions: [
-          if (appState.model.allKeyPairs.isNotEmpty)
-            IdenticonDropdown(
-              activeKeyPair: appState.model.activeKeyPairOrDefault(),
-              allKeyPairs: appState.model.allKeyPairs,
-            ),
-        ],
       ),
       body: WalletScreenBody(),
     );
@@ -57,8 +48,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   Widget addressCard(
     BuildContext context, {
-    Address2 activeAddress,
-    Address2 otherAddress,
+    Address activeAddress,
+    Address otherAddress,
   }) {
     final isActive = activeAddress == otherAddress;
 
@@ -135,7 +126,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                           onPressed: () {
                             final appState = context.read<AppState>();
 
-                            if (otherAddress == appState.model.activeAddress2) {
+                            if (otherAddress == appState.model.activeAddress) {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
@@ -193,7 +184,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final activeAddress = appState.model.activeAddress2;
+    final activeAddress = appState.model.activeAddress;
     final allAddresses = appState.model.keyring.keys;
 
     final widgets = [
@@ -321,7 +312,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     }
   }
 
-  void _remove(BuildContext context, {Address2 address}) async {
+  void _remove(BuildContext context, {Address address}) async {
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) => _Remove(address: address),
@@ -336,7 +327,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 }
 
 class _Remove extends StatefulWidget {
-  final Address2 address;
+  final Address address;
 
   const _Remove({Key key, this.address}) : super(key: key);
 

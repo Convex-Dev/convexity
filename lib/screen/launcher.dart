@@ -36,7 +36,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    var isSignedIn = appState.model.activeAddress2 != null;
+    var isSignedIn = appState.model.activeAddress != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -133,7 +133,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget body(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    if (appState.model.activeAddress2 == null) {
+    if (appState.model.activeAddress == null) {
       return Container(
         padding: EdgeInsets.all(30),
         child: Column(
@@ -174,7 +174,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
       case 1:
         return WalletScreenBody();
       case 2:
-        return AccountScreenBody(address: appState.model.activeAddress2);
+        return AccountScreenBody(address: appState.model.activeAddress);
       default:
         return HomeScreenBody();
     }

@@ -76,9 +76,9 @@ class _CreateTokenState extends State<_CreateToken> {
     // Step 1 - deploy.
     try {
       _result = await appState.fungibleLibrary().createToken(
-            holder: appState.model.activeAddress2,
+            holder: appState.model.activeAddress,
             accountKey: appState.model.activeAccountKey,
-            secretKey: appState.model.activeKeypair2.sk,
+            secretKey: appState.model.activeKeyPair.sk,
             supply:
                 _newFungibleToken.supply * pow(10, _newFungibleToken.decimals),
           );
@@ -116,7 +116,7 @@ class _CreateTokenState extends State<_CreateToken> {
     );
 
     var fungible = FungibleToken(
-      address: Address2(_result.value),
+      address: Address(_result.value),
       metadata: metadata,
     );
 
@@ -133,9 +133,9 @@ class _CreateTokenState extends State<_CreateToken> {
 
     try {
       registerResult = await appState.convexityClient().requestToRegister(
-            holder: appState.model.activeAddress2,
+            holder: appState.model.activeAddress,
             holderAccountKey: appState.model.activeAccountKey,
-            holderSecretKey: appState.model.activeKeypair2.sk,
+            holderSecretKey: appState.model.activeKeyPair.sk,
             aasset: aasset,
           );
     } on Exception catch (e) {

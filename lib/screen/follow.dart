@@ -90,7 +90,7 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
-  var _balanceCache = <Address2, Future>{};
+  var _balanceCache = <Address, Future>{};
 
   void initState() {
     super.initState();
@@ -112,10 +112,10 @@ class _RecommendedState extends State<_Recommended> {
               )
               .map(
                 (aasset) => MapEntry(
-                  aasset.asset.address as Address2,
+                  aasset.asset.address as Address,
                   appState.assetLibrary().balance(
                         asset: aasset.asset.address,
-                        owner: appState.model.activeAddress2,
+                        owner: appState.model.activeAddress,
                       ),
                 ),
               );
@@ -124,7 +124,7 @@ class _RecommendedState extends State<_Recommended> {
             () {
               _isLoading = false;
               _assets = xs;
-              _balanceCache = Map<Address2, Future>.fromEntries(fungibles);
+              _balanceCache = Map<Address, Future>.fromEntries(fungibles);
             },
           );
         }
@@ -219,7 +219,7 @@ class _ScanQRCode extends StatefulWidget {
 class _ScanQRCodeState extends State<_ScanQRCode> {
   _ScanQRCodeStatus status = _ScanQRCodeStatus.ready;
 
-  Address2 scannedAddress;
+  Address scannedAddress;
   AAsset aasset;
 
   void scan() async {
@@ -227,7 +227,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
     var rawContent = r.rawContent ?? "";
 
     if (rawContent.isNotEmpty) {
-      var scannedAddress = Address2.fromStr(rawContent);
+      var scannedAddress = Address.fromStr(rawContent);
 
       setState(() {
         this.scannedAddress = scannedAddress;
@@ -334,7 +334,7 @@ class _AssetIDState extends State<_AssetID> {
                       fungible: aasset.asset,
                       balance: appState.assetLibrary().balance(
                             asset: aasset.asset.address,
-                            owner: appState.model.activeAddress2,
+                            owner: appState.model.activeAddress,
                           ),
                     )
                   : nonFungibleTokenCard(
@@ -409,7 +409,7 @@ class _AssetIDState extends State<_AssetID> {
                   context
                       .read<AppState>()
                       .convexityClient()
-                      .asset(Address2.fromStr(address))
+                      .asset(Address.fromStr(address))
                       .then(
                     (_assetMetadata) {
                       // It's important to check wether the Widget is mounted,

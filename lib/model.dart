@@ -15,7 +15,7 @@ import 'route.dart' as route;
 @immutable
 class Contact {
   final String name;
-  final Address2 address;
+  final Address address;
 
   Contact({
     @required this.name,
@@ -24,7 +24,7 @@ class Contact {
 
   Contact.fromJson(Map<String, dynamic> json)
       : name = json['name'],
-        address = Address2.fromJson(json['address']);
+        address = Address.fromJson(json['address']);
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -47,7 +47,7 @@ class Peer {
   final int stake;
   final int delegatedStake;
   final Uri uri;
-  final Map<Address2, int> stakes;
+  final Map<Address, int> stakes;
 
   Peer({
     this.address,
@@ -72,8 +72,8 @@ class Peer {
         'stakes': stakes.toString(),
       };
 
-  static Map<Address2, int> _decodeStakes(Map<String, dynamic> json) =>
-      json.map((key, value) => MapEntry(Address2.fromStr(key), value as int));
+  static Map<Address, int> _decodeStakes(Map<String, dynamic> json) =>
+      json.map((key, value) => MapEntry(Address.fromStr(key), value as int));
 
   @override
   bool operator ==(o) => o is Peer && o.address == address;
@@ -145,8 +145,8 @@ class Activity {
 /// Immutable data class to encode a 'Transfer Activity' - a Fungible Token transfer in particular.
 @immutable
 class FungibleTransferActivity {
-  final Address2 from;
-  final Address2 to;
+  final Address from;
+  final Address to;
   final FungibleToken token;
   final int amount;
   final DateTime timestamp;
@@ -160,8 +160,8 @@ class FungibleTransferActivity {
   });
 
   FungibleTransferActivity.fromJson(Map<String, dynamic> json)
-      : from = Address2.fromJson(json['from']),
-        to = Address2.fromJson(json['to']),
+      : from = Address.fromJson(json['from']),
+        to = Address.fromJson(json['to']),
         token = FungibleToken.fromJson(json['token']),
         amount = json['amount'] as int,
         timestamp = DateTime.parse(json['timestamp']);
@@ -235,7 +235,7 @@ enum AddressInputOption {
   scan,
 }
 
-final convexityAddress = Address2(1369);
+final convexityAddress = Address(1369);
 
 /// Immutable Model data class.
 ///
@@ -243,77 +243,60 @@ final convexityAddress = Address2(1369);
 @immutable
 class Model {
   final Uri convexServerUri;
-  final Address2 convexityAddress;
-  final KeyPair activeKeyPair;
-  final List<KeyPair> allKeyPairs;
+  final Address convexityAddress;
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
   final List<Activity> activities;
   final Set<Contact> contacts;
-  final Map<Address2, KeyPair> keyring;
-  final Address2 activeAddress2;
+  final Map<Address, KeyPair> keyring;
+  final Address activeAddress;
 
   const Model({
     this.convexServerUri,
     this.convexityAddress,
-    this.activeKeyPair,
-    this.allKeyPairs = const [],
     this.following = const {},
     this.myTokens = const {},
     this.activities = const [],
     this.contacts = const {},
     this.keyring = const {},
-    this.activeAddress2,
+    this.activeAddress,
   });
 
-  KeyPair activeKeyPairOrDefault() {
-    if (activeKeyPair != null) {
-      return activeKeyPair;
-    }
+  KeyPair get activeKeyPair => keyring[activeAddress];
 
-    return allKeyPairs.isNotEmpty ? allKeyPairs.last : null;
-  }
-
-  KeyPair get activeKeypair2 => keyring[activeAddress2];
-
-  AccountKey get activeAccountKey => AccountKey.fromBin(activeKeypair2.pk);
+  AccountKey get activeAccountKey => AccountKey.fromBin(activeKeyPair.pk);
 
   Model copyWith({
     Uri convexServerUri,
-    Address2 convexityAddress,
+    Address convexityAddress,
     KeyPair activeKeyPair,
-    List<KeyPair> allKeyPairs,
     Set<AAsset> following,
     Set<AAsset> myTokens,
     List<Activity> activities,
     Set<Contact> contacts,
-    Map<Address2, KeyPair> keyring,
-    Address2 activeAddress2,
+    Map<Address, KeyPair> keyring,
+    Address activeAddress,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
         convexityAddress: convexityAddress ?? this.convexityAddress,
-        activeKeyPair: activeKeyPair ?? this.activeKeyPair,
-        allKeyPairs: allKeyPairs ?? this.allKeyPairs,
         following: following ?? this.following,
         myTokens: myTokens ?? this.myTokens,
         activities: activities ?? this.activities,
         contacts: contacts ?? this.contacts,
         keyring: keyring ?? this.keyring,
-        activeAddress2: activeAddress2 ?? this.activeAddress2,
+        activeAddress: activeAddress ?? this.activeAddress,
       );
 
   String toString() => {
         'convexServerUri': convexServerUri.toString(),
         'convexityAddress': convexityAddress.toString(),
-        'activeKeyPair': activeKeyPair.toString(),
-        'allKeyPairs': allKeyPairs.toString(),
         'following': following.toString(),
         'myTokens': myTokens.toString(),
         'activities': activities.toString(),
         'contacts': contacts.toString(),
         'keyring': keyring.toString(),
-        'activeAddress2': activeAddress2.toString(),
+        'activeAddress': activeAddress.toString(),
       }.toString();
 }
 
@@ -322,8 +305,6 @@ void bootstrap({
   @required SharedPreferences preferences,
 }) {
   try {
-    final allKeyPairs = p.readKeyPairs(preferences);
-    final activeKeyPair = p.activeKeyPair(preferences);
     final following = p.readFollowing(preferences);
     final myTokens = p.readMyTokens(preferences);
     final activities = p.readActivities(preferences);
@@ -332,8 +313,6 @@ void bootstrap({
     final _model = Model(
       convexServerUri: convexWorldUri,
       convexityAddress: convexityAddress,
-      allKeyPairs: allKeyPairs,
-      activeKeyPair: activeKeyPair,
       following: following,
       myTokens: myTokens,
       activities: activities,
@@ -398,24 +377,6 @@ class AppState with ChangeNotifier {
     var following = model.following.where((e) => e != aasset).toSet();
 
     setFollowing(following, isPersistent: isPersistent);
-  }
-
-  /// Set KeyPair `active` as active, and persist it to disk if `isPersistent` is true.
-  ///
-  /// This method is usually called whenever a new Account is created.
-  void setActiveKeyPair(KeyPair active, {bool isPersistent = false}) {
-    if (isPersistent) {
-      SharedPreferences.getInstance()
-          .then((preferences) => p.setActiveKeyPair(preferences, active));
-    }
-
-    setState((m) => m.copyWith(activeKeyPair: active));
-  }
-
-  void setKeyPairs(List<KeyPair> keyPairs) {
-    setState(
-      (m) => m.copyWith(allKeyPairs: keyPairs),
-    );
   }
 
   /// Add a new Token to 'My Tokens'.
@@ -507,31 +468,30 @@ class AppState with ChangeNotifier {
     });
   }
 
-  Contact findContact2(Address2 address) => model.contacts.firstWhere(
+  Contact findContact2(Address address) => model.contacts.firstWhere(
         (_contact) => _contact.address == address,
         orElse: () => null,
       );
 
-  bool isAddressMine2(Address2 address) => model.keyring.containsKey(address);
+  bool isAddressMine2(Address address) => model.keyring.containsKey(address);
 
   void addToKeyring({
-    Address2 address,
+    Address address,
     KeyPair keyPair,
     bool isPersistent = false,
   }) {
     if (isPersistent) {}
 
     setState((m) {
-      final _keyring = Map<Address2, KeyPair>.from(m.keyring);
+      final _keyring = Map<Address, KeyPair>.from(m.keyring);
       _keyring[address] = keyPair;
 
       return m.copyWith(keyring: _keyring);
     });
   }
 
-  void removeAddress(Address2 address, {bool isPersistent = false}) {
-    final _keyring = Map<Address2, KeyPair>.from(model.keyring)
-      ..remove(address);
+  void removeAddress(Address address, {bool isPersistent = false}) {
+    final _keyring = Map<Address, KeyPair>.from(model.keyring)..remove(address);
 
     // TODO
     if (isPersistent) {}
@@ -544,11 +504,11 @@ class AppState with ChangeNotifier {
   }
 
   void setActiveAddress2(
-    Address2 address, {
+    Address address, {
     bool isPersistent = false,
   }) {
     if (isPersistent) {}
 
-    setState((m) => m.copyWith(activeAddress2: address));
+    setState((m) => m.copyWith(activeAddress: address));
   }
 }

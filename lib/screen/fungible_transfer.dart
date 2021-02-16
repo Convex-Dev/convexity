@@ -96,8 +96,8 @@ class _FungibleTransferScreenBodyState
   final _receiverTextController = TextEditingController();
   int _amount;
 
-  Address2 get _receiver => _receiverTextController.text.isNotEmpty
-      ? Address2.fromStr(_receiverTextController.text)
+  Address get _receiver => _receiverTextController.text.isNotEmpty
+      ? Address.fromStr(_receiverTextController.text)
       : null;
 
   void send(BuildContext context) async {
@@ -138,7 +138,7 @@ class _FungibleTransferScreenBodyState
                     ),
                     if (contact == null) ...[
                       aidenticon(
-                        Address2.fromStr(_receiverTextController.text),
+                        Address.fromStr(_receiverTextController.text),
                         width: 30,
                         height: 30,
                       ),
@@ -175,7 +175,7 @@ class _FungibleTransferScreenBodyState
 
     var transferInProgress = appState.fungibleLibrary().transfer(
           token: widget.token.address,
-          holder: appState.model.activeAddress2,
+          holder: appState.model.activeAddress,
           holderSecretKey: appState.model.activeKeyPair.sk,
           holderAccountKey: appState.model.activeAccountKey,
           receiver: _receiver,
@@ -252,7 +252,7 @@ class _FungibleTransferScreenBodyState
                           ),
                           if (contact == null) ...[
                             aidenticon(
-                              Address2.fromStr(_receiverTextController.text),
+                              Address.fromStr(_receiverTextController.text),
                               width: 30,
                               height: 30,
                             ),
@@ -276,7 +276,7 @@ class _FungibleTransferScreenBodyState
                         var activity = Activity(
                           type: ActivityType.transfer,
                           payload: FungibleTransferActivity(
-                            from: appState.model.activeAddress2,
+                            from: appState.model.activeAddress,
                             to: _receiver,
                             amount: _amount,
                             token: widget.token,

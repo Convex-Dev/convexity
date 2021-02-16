@@ -17,14 +17,14 @@ enum Lang {
   convexScript,
 }
 
-class Address2 {
+class Address {
   final int value;
 
-  Address2(this.value);
+  Address(this.value);
 
-  Address2.fromStr(String s) : value = int.parse(s.replaceAll('#', ''));
+  Address.fromStr(String s) : value = int.parse(s.replaceAll('#', ''));
 
-  Address2.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
+  Address.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
 
   @override
   String toString() {
@@ -32,7 +32,7 @@ class Address2 {
   }
 
   @override
-  bool operator ==(o) => o is Address2 && o.value == value;
+  bool operator ==(o) => o is Address && o.value == value;
 
   @override
   int get hashCode => value.hashCode;
@@ -73,7 +73,7 @@ AccountType accountType(String s) {
 
 class Account {
   final int sequence;
-  final Address2 address2;
+  final Address address2;
   final AccountType type;
   final int balance;
   final int memorySize;
@@ -93,7 +93,7 @@ class Account {
 
     return Account(
       sequence: m['sequence'],
-      address2: Address2(m['address']),
+      address2: Address(m['address']),
       balance: m['balance'],
       type: accountType(m['type']),
       memorySize: m['memorySize'],
@@ -286,7 +286,7 @@ Future<http.Response> getAccountRaw2({
   String scheme = 'https',
   String host = CONVEX_WORLD_HOST,
   int port = 443,
-  Address2 address,
+  Address address,
 }) {
   var uri = Uri(
     scheme: scheme,
@@ -307,7 +307,7 @@ Future<Account> getAccount2({
   String scheme = 'https',
   String host = CONVEX_WORLD_HOST,
   int port = 443,
-  Address2 address,
+  Address address,
 }) async {
   var response = await getAccountRaw2(
     client: client,
@@ -372,7 +372,7 @@ class ConvexClient {
       );
 
   Future<http.Response> prepareTransaction2({
-    @required Address2 address,
+    @required Address address,
     @required String source,
     int sequence,
     Lang lang = Lang.convexLisp,
@@ -399,7 +399,7 @@ class ConvexClient {
   }
 
   Future<http.Response> submitTransaction2({
-    @required Address2 address,
+    @required Address address,
     @required AccountKey accountKey,
     @required String hash,
     @required String sig,
@@ -423,7 +423,7 @@ class ConvexClient {
   }
 
   Future<Result> prepareTransact({
-    @required Address2 address,
+    @required Address address,
     @required String source,
     @required AccountKey accountKey,
     @required Uint8List secretKey,
@@ -468,7 +468,7 @@ class ConvexClient {
     );
   }
 
-  Future<Address2> createAccount({@required AccountKey accountKey}) async {
+  Future<Address> createAccount({@required AccountKey accountKey}) async {
     final body = convert.jsonEncode({
       'accountKey': accountKey.value,
     });
@@ -496,13 +496,13 @@ class ConvexClient {
       logger.d(bodyDecoded);
     }
 
-    final address = Address2(bodyDecoded['address'] as int);
+    final address = Address(bodyDecoded['address'] as int);
 
     return address;
   }
 
   Future<http.Response> faucet2({
-    @required Address2 address,
+    @required Address address,
     @required int amount,
   }) async {
     final uri = _uri('api/v1/faucet');
@@ -522,7 +522,7 @@ class ConvexClient {
   /// **Executes code on the Convex Network just to compute the result.**
   Future<Result> query2({
     @required String source,
-    Address2 address,
+    Address address,
     Lang lang = Lang.convexLisp,
   }) async {
     final uri = _uri('api/v1/query');
@@ -559,7 +559,7 @@ class ConvexClient {
   }
 
   Future<Account> account2({
-    @required Address2 address,
+    @required Address address,
   }) =>
       getAccount2(
         client: client,
@@ -611,7 +611,7 @@ class FungibleTokenMetadata {
 
 @immutable
 class FungibleToken implements Asset {
-  final Address2 address;
+  final Address address;
   final FungibleTokenMetadata metadata;
 
   FungibleToken({
@@ -620,7 +620,7 @@ class FungibleToken implements Asset {
   });
 
   FungibleToken.fromJson(Map<String, dynamic> json)
-      : address = Address2.fromJson(json['address']),
+      : address = Address.fromJson(json['address']),
         metadata = FungibleTokenMetadata.fromJson(json['metadata']);
 
   Map<String, dynamic> toJson() => {
@@ -667,7 +667,7 @@ class NonFungibleTokenMetadata implements Asset {
 
 @immutable
 class NonFungibleToken implements Asset {
-  final Address2 address;
+  final Address address;
   final NonFungibleTokenMetadata metadata;
 
   NonFungibleToken({
@@ -676,7 +676,7 @@ class NonFungibleToken implements Asset {
   });
 
   NonFungibleToken.fromJson(Map<String, dynamic> json)
-      : address = Address2.fromJson(json['address']),
+      : address = Address.fromJson(json['address']),
         metadata = NonFungibleTokenMetadata.fromJson(json['metadata']);
 
   Map<String, dynamic> toJson() => {
@@ -731,11 +731,11 @@ class FungibleLibrary {
   /// It's the process of signing the data with a private key and generated hash in the prepare step,
   /// and sending the code one more time to 'commit' the Transaction.
   Future<Result> transfer({
-    @required Address2 token,
-    @required Address2 holder,
+    @required Address token,
+    @required Address holder,
     @required AccountKey holderAccountKey,
     @required Uint8List holderSecretKey,
-    @required Address2 receiver,
+    @required Address receiver,
     @required int amount,
   }) =>
       convexClient.prepareTransact(
@@ -750,7 +750,7 @@ class FungibleLibrary {
   ///
   /// Returns the Address of the deployed Token.
   Future<Result> createToken({
-    @required Address2 holder,
+    @required Address holder,
     @required AccountKey accountKey,
     @required Uint8List secretKey,
     @required int supply,
@@ -770,7 +770,7 @@ class NonFungibleLibrary {
   NonFungibleLibrary({@required this.convexClient});
 
   Future<Result> createToken({
-    @required Address2 caller,
+    @required Address caller,
     @required AccountKey callerAccountKey,
     @required Uint8List callerSecretKey,
     Map<String, dynamic> attributes,
@@ -807,8 +807,8 @@ class AssetLibrary {
   /// It returns a number for Fungible Tokens,
   /// but a set of numbers (IDs) for Non-Fungible Tokens.
   Future<dynamic> balance({
-    @required Address2 asset,
-    @required Address2 owner,
+    @required Address asset,
+    @required Address owner,
   }) async {
     var source = '(import convex.asset :as asset)'
         '(asset/balance $asset $owner)';
@@ -825,11 +825,11 @@ class AssetLibrary {
   }
 
   Future<Result> transferNonFungible({
-    @required Address2 holder,
+    @required Address holder,
     @required Uint8List holderSecretKey,
     @required AccountKey holderAccountKey,
-    @required Address2 receiver,
-    @required Address2 nft,
+    @required Address receiver,
+    @required Address nft,
     @required Set<int> tokens,
   }) {
     var _source = '(import convex.asset :as asset)'
@@ -844,11 +844,11 @@ class AssetLibrary {
   }
 
   Future<Result> transferFungible({
-    @required Address2 holder,
+    @required Address holder,
     @required AccountKey holderAccountKey,
     @required Uint8List holderSecretKey,
-    @required Address2 receiver,
-    @required Address2 token,
+    @required Address receiver,
+    @required Address token,
     @required double amount,
   }) {
     var _source = '(import convex.asset :as asset)'

@@ -38,7 +38,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   var targetController = TextEditingController();
   var amountController = TextEditingController();
 
-  Address2 target;
+  Address target;
 
   void scan() async {
     var result = await BarcodeScanner.scan();
@@ -50,7 +50,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   void transfer({
     BuildContext context,
-    convex.Address2 to,
+    convex.Address to,
     int amount,
   }) async {
     final appState = context.read<AppState>();
@@ -108,9 +108,9 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     }
 
     final transferInProgress = appState.convexClient().prepareTransact(
-          address: appState.model.activeAddress2,
+          address: appState.model.activeAddress,
           accountKey: appState.model.activeAccountKey,
-          secretKey: appState.model.activeKeypair2.sk,
+          secretKey: appState.model.activeKeyPair.sk,
           source: '(transfer $to $amount)',
         );
 
@@ -213,11 +213,11 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final fromContact = appState.findContact2(appState.model.activeAddress2);
+    final fromContact = appState.findContact2(appState.model.activeAddress);
 
     fromController.text = fromContact != null
         ? fromContact.name
-        : appState.model.activeAddress2.toString();
+        : appState.model.activeAddress.toString();
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -256,10 +256,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                   if (selectedAddress != null) {
                     final targetContact = context
                         .read<AppState>()
-                        .findContact2(selectedAddress as Address2);
+                        .findContact2(selectedAddress as Address);
 
                     setState(() {
-                      target = selectedAddress as Address2;
+                      target = selectedAddress as Address;
 
                       targetController.text = targetContact != null
                           ? targetContact.name

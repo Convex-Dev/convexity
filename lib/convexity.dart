@@ -7,7 +7,7 @@ import 'model.dart';
 
 class ConvexityClient {
   final convex.ConvexClient convexClient;
-  final convex.Address2 actor;
+  final convex.Address actor;
 
   ConvexityClient({
     @required this.convexClient,
@@ -17,7 +17,7 @@ class ConvexityClient {
   /// Query Asset by its Address.
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
-  Future<AAsset> asset(convex.Address2 addr) async {
+  Future<AAsset> asset(convex.Address addr) async {
     var source = '(call ${this.actor} (asset-metadata $addr))';
 
     var result = await convexClient.query2(source: source);
@@ -61,7 +61,7 @@ class ConvexityClient {
 
     var tokens = (result.value as Map<String, dynamic>).entries.map(
       (entry) {
-        final address = convex.Address2.fromStr(entry.key);
+        final address = convex.Address.fromStr(entry.key);
         final metadata = entry.value as Map<String, dynamic>;
         final tokenType = metadata['type'] == 'fungible'
             ? AssetType.fungible
@@ -96,7 +96,7 @@ class ConvexityClient {
   }
 
   Future<convex.Result> requestToRegister({
-    convex.Address2 holder,
+    convex.Address holder,
     convex.AccountKey holderAccountKey,
     Uint8List holderSecretKey,
     AAsset aasset,

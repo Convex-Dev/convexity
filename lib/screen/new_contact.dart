@@ -27,8 +27,8 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
 
   String _name;
 
-  Address2 get _address => _addressTextController.text.isNotEmpty
-      ? Address2.fromStr(_addressTextController.text)
+  Address get _address => _addressTextController.text.isNotEmpty
+      ? Address.fromStr(_addressTextController.text)
       : null;
 
   @override
