@@ -208,7 +208,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
               ),
               QrImage(
-                data: widget.aasset.asset.address,
+                data: widget.aasset.asset.address.value.toString(),
                 version: QrVersions.auto,
                 size: 80,
               ),
