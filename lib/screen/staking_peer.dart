@@ -49,8 +49,9 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
     super.initState();
 
     final appState = context.read<AppState>();
-    _account =
-        appState.convexClient().account(address: appState.model.activeAddress);
+    _account = appState
+        .convexClient()
+        .account2(address: appState.model.activeAddress2);
   }
 
   @override

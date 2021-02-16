@@ -105,12 +105,6 @@ class HomeScreenBody extends StatelessWidget {
         onTap: () => nav.pushMyTokens(context),
       ),
       ListTile(
-        leading: Icon(Icons.view_list),
-        title: Text('Whitelist'),
-        subtitle: Text('Manage trusted Accounts'),
-        onTap: () => nav.pushWhitelist(context),
-      ),
-      ListTile(
         leading: Icon(Icons.send),
         title: Text('Transfer'),
         subtitle: Text('Transfer Convex coins'),

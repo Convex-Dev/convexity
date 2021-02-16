@@ -590,25 +590,6 @@ class ConvexClient {
     return address;
   }
 
-  /// **Requests for Faucet.**
-  ///
-  /// Returns true if the request was successful, false otherwise.
-  Future<bool> requestForFaucet({
-    @required Address address,
-    @required int amount,
-  }) async {
-    var response = await faucet(
-      client: client,
-      scheme: server.scheme,
-      host: server.host,
-      port: server.port,
-      address: address.hex,
-      amount: amount,
-    );
-
-    return response.statusCode == 200;
-  }
-
   Future<http.Response> faucet2({
     @required Address2 address,
     @required int amount,
@@ -665,15 +646,15 @@ class ConvexClient {
   }
 
   Future<Result> query2({
+    @required Address2 address,
     @required String source,
-    @required Address2 caller,
     Lang lang = Lang.convexLisp,
   }) async {
     final uri = _uri('api/v1/query');
 
     var body = convert.jsonEncode({
       'source': source,
-      'address': caller.value,
+      'address': address.value,
       'lang': langString(lang),
     });
 
@@ -683,10 +664,14 @@ class ConvexClient {
 
     var response = await client.post(uri, body: body);
 
-    var bodyDecoded = convert.jsonDecode(response.body);
+    var responseDecoded = convert.jsonDecode(response.body);
 
-    var resultValue = bodyDecoded['value'];
-    var resultErrorCode = bodyDecoded['errorCode'];
+    if (config.isDebug()) {
+      logger.d(responseDecoded);
+    }
+
+    var resultValue = responseDecoded['value'];
+    var resultErrorCode = responseDecoded['errorCode'];
 
     if (resultErrorCode != null) {
       logger.w('Query Result has an error: $resultErrorCode');
