@@ -183,7 +183,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                             'Transfered $amount to ',
                           ),
                           if (contact == null)
-                            aidenticon2(to)
+                            aidenticon(to)
                           else
                             Text(contact.name + '.'),
                         ],

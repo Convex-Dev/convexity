@@ -48,7 +48,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                 Gap(4),
                 Row(
                   children: [
-                    aidenticon2(
+                    aidenticon(
                       fungibleTransferActivity.from,
                       height: 30,
                       width: 30,
@@ -76,7 +76,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                     Gap(10),
                     Icon(Icons.arrow_right_alt),
                     Gap(10),
-                    aidenticon2(
+                    aidenticon(
                       fungibleTransferActivity.to,
                       height: 30,
                       width: 30,
@@ -494,7 +494,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                     '(call ${widget.aasset.asset.address} (get-token-data ${entry.value}))';
 
                                 final data =
-                                    convexClient.query(source: dataSource);
+                                    convexClient.query2(source: dataSource);
 
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,

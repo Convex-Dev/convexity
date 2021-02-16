@@ -43,7 +43,7 @@ class Contact {
 
 @immutable
 class Peer {
-  final Address address;
+  final String address;
   final int stake;
   final int delegatedStake;
   final Uri uri;
@@ -58,14 +58,14 @@ class Peer {
   });
 
   Peer.fromJson(Map<String, dynamic> json)
-      : address = Address.fromHex(json['address']),
+      : address = json['address'],
         stake = json['stake'],
         delegatedStake = json['delegated-stake'],
         uri = Uri.parse(json['uri'] ?? ''),
         stakes = _decodeStakes(json['stakes']);
 
   Map<String, dynamic> toJson() => {
-        'address': address.toJson(),
+        'address': address,
         'stake': stake,
         'delegated-stake': delegatedStake,
         'uri': uri.toString(),
@@ -266,10 +266,6 @@ class Model {
     this.activeAddress2,
   });
 
-  Address get activeAddress => activeKeyPair != null
-      ? Address.fromHex(Sodium.bin2hex(activeKeyPair.pk))
-      : null;
-
   KeyPair activeKeyPairOrDefault() {
     if (activeKeyPair != null) {
       return activeKeyPair;
@@ -291,7 +287,6 @@ class Model {
     Set<AAsset> myTokens,
     List<Activity> activities,
     Set<Contact> contacts,
-    Set<Address> whitelist,
     Map<Address2, KeyPair> keyring,
     Address2 activeAddress2,
   }) =>
@@ -511,11 +506,6 @@ class AppState with ChangeNotifier {
       Navigator.popUntil(context, ModalRoute.withName(route.launcher));
     });
   }
-
-  Contact findContact(Address address) => model.contacts.firstWhere(
-        (_contact) => _contact.address == address,
-        orElse: () => null,
-      );
 
   Contact findContact2(Address2 address) => model.contacts.firstWhere(
         (_contact) => _contact.address == address,

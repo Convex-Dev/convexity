@@ -187,7 +187,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Gap(20),
-                  aidenticon2(widget.address, width: 80, height: 80),
+                  aidenticon(widget.address, width: 80, height: 80),
                   Gap(5),
                   Text(
                     widget.address.toString(),

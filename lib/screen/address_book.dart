@@ -165,7 +165,7 @@ class _EditState extends State<_Edit> {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Gap(20),
-                aidenticon2(widget.contact.address, width: 80, height: 80),
+                aidenticon(widget.contact.address, width: 80, height: 80),
                 Gap(5),
                 Text(
                   widget.contact.address.toString(),
@@ -240,7 +240,7 @@ class _RemoveState extends State<_Remove> {
                 style: Theme.of(context).textTheme.headline6,
               ),
               Gap(20),
-              aidenticon2(widget.contact.address, width: 80, height: 80),
+              aidenticon(widget.contact.address, width: 80, height: 80),
               Gap(5),
               Text(
                 widget.contact.address.toString(),

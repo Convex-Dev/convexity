@@ -90,7 +90,7 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
-  var _balanceCache = <Address, Future>{};
+  var _balanceCache = <Address2, Future>{};
 
   void initState() {
     super.initState();
@@ -112,7 +112,7 @@ class _RecommendedState extends State<_Recommended> {
               )
               .map(
                 (aasset) => MapEntry(
-                  aasset.asset.address as Address,
+                  aasset.asset.address as Address2,
                   appState.assetLibrary().balance(
                         asset: aasset.asset.address,
                         owner: appState.model.activeAddress2,
@@ -124,7 +124,7 @@ class _RecommendedState extends State<_Recommended> {
             () {
               _isLoading = false;
               _assets = xs;
-              _balanceCache = Map<Address, Future>.fromEntries(fungibles);
+              _balanceCache = Map<Address2, Future>.fromEntries(fungibles);
             },
           );
         }

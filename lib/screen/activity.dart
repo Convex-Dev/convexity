@@ -104,7 +104,7 @@ class ActivityScreenBody extends StatelessWidget {
                   children: [
                     TableCell(
                       child: TextButton.icon(
-                        icon: aidenticon2(a.from, width: 30, height: 30),
+                        icon: aidenticon(a.from, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
                             appState.findContact2(a.from)?.name ??
@@ -119,7 +119,7 @@ class ActivityScreenBody extends StatelessWidget {
                     ),
                     TableCell(
                       child: TextButton.icon(
-                        icon: aidenticon2(a.to, width: 30, height: 30),
+                        icon: aidenticon(a.to, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
                             appState.findContact2(a.to)?.name ??

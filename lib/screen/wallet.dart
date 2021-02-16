@@ -363,7 +363,7 @@ class _RemoveState extends State<_Remove> {
                 style: Theme.of(context).textTheme.headline6,
               ),
               Gap(20),
-              aidenticon2(
+              aidenticon(
                 widget.address,
                 width: 80,
                 height: 80,

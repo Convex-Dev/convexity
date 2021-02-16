@@ -12,7 +12,7 @@ void pushLauncher(BuildContext context) => Navigator.pushReplacementNamed(
       route.launcher,
     );
 
-void pushAccount(BuildContext context, convex.Address address) =>
+void pushAccount(BuildContext context, convex.Address2 address) =>
     Navigator.pushNamed(
       context,
       route.account,

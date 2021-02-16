@@ -97,7 +97,7 @@ class _NonFungibleTransferScreenBodyState
                       'Transfer Token ID ${widget.tokenId} to ',
                     ),
                     Identicon2(
-                      address: Address.fromHex(_receiverTextController.text),
+                      address: Address2.fromStr(_receiverTextController.text),
                       isAddressVisible: true,
                       size: 30,
                     ),
@@ -205,7 +205,7 @@ class _NonFungibleTransferScreenBodyState
                           Text(
                             'Transfered Token ID ${widget.tokenId} to ',
                           ),
-                          aidenticon2(
+                          aidenticon(
                             _receiver,
                             width: 30,
                             height: 30,
@@ -252,7 +252,7 @@ class _NonFungibleTransferScreenBodyState
               replacement: replacement,
               child: _receiver == null
                   ? replacement
-                  : aidenticon2(
+                  : aidenticon(
                       _receiver,
                       height: 120,
                       width: 120,

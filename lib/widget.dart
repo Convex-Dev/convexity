@@ -40,17 +40,6 @@ Widget identicon(
     );
 
 Widget aidenticon(
-  Address address, {
-  double width,
-  double height,
-}) =>
-    identicon(
-      address.hex.toLowerCase(),
-      width: width,
-      height: height,
-    );
-
-Widget aidenticon2(
   Address2 address, {
   double width,
   double height,
@@ -74,7 +63,7 @@ class Identicon extends StatelessWidget {
 }
 
 class Identicon2 extends StatelessWidget {
-  final convex.Address address;
+  final convex.Address2 address;
   final bool isAddressVisible;
   final int size;
 
@@ -90,7 +79,7 @@ class Identicon2 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SvgPicture.string(
-            Jdenticon.toSvg(address.hex, size: size),
+            Jdenticon.toSvg(address.value.toString(), size: size),
             fit: BoxFit.contain,
           ),
           if (isAddressVisible)
@@ -432,7 +421,7 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon2(contact.address),
+        leading: aidenticon(contact.address),
         title: Text(contact.name),
         subtitle: Text(contact.address.toString()),
         onTap: () {
@@ -448,7 +437,7 @@ class _AddressItem implements _AWidget {
   _AddressItem(this.address);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon2(address),
+        leading: aidenticon(address),
         title: Text('Not in Address Book'),
         subtitle: Text(address.toString()),
         onTap: () {
@@ -458,8 +447,8 @@ class _AddressItem implements _AWidget {
 }
 
 /// Shows a Modal Bottom Sheet UI to select an Account.
-Future<convex.Address> selectAccountModal(BuildContext context) =>
-    showModalBottomSheet<convex.Address>(
+Future<convex.Address2> selectAccountModal(BuildContext context) =>
+    showModalBottomSheet<convex.Address2>(
       context: context,
       builder: (context) => _SelectAccount(),
     );
@@ -701,7 +690,7 @@ class AddressTile2 extends StatelessWidget {
     );
 
     return ListTile(
-      leading: aidenticon2(address),
+      leading: aidenticon(address),
       trailing: IconButton(
         icon: Icon(Icons.copy),
         onPressed: () {

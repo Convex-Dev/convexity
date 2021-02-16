@@ -53,38 +53,6 @@ class AccountKey {
   String toString() => value;
 }
 
-class Address {
-  final String hex;
-
-  Address.fromHex(String hex) : hex = Address.trim0x(hex).toLowerCase();
-
-  Address.fromJson(Map<String, dynamic> m)
-      : hex = Address.trim0x(m['hex']).toLowerCase();
-
-  Address.fromKeyPair(
-    sodium.KeyPair keyPair,
-  ) : hex = sodium.Sodium.bin2hex(keyPair.pk);
-
-  Map<String, dynamic> toJson() => {'hex': hex};
-
-  @override
-  String toString() => '0x$hex';
-
-  @override
-  bool operator ==(o) => o is Address && o.hex == hex;
-
-  @override
-  int get hashCode => hex.hashCode;
-
-  static String trim0x(String s) {
-    if (s.startsWith('0x')) {
-      return s.replaceFirst('0x', '');
-    }
-
-    return s;
-  }
-}
-
 enum AccountType {
   user,
   library,
@@ -105,7 +73,6 @@ AccountType accountType(String s) {
 
 class Account {
   final int sequence;
-  final Address address;
   final Address2 address2;
   final AccountType type;
   final int balance;
@@ -114,7 +81,6 @@ class Account {
 
   Account({
     this.sequence,
-    this.address,
     this.address2,
     this.balance,
     this.type,
@@ -127,8 +93,6 @@ class Account {
 
     return Account(
       sequence: m['sequence'],
-      // TODO Remove.
-      address: null,
       address2: Address2(m['address']),
       balance: m['balance'],
       type: accountType(m['type']),
@@ -137,8 +101,6 @@ class Account {
     );
   }
 }
-
-String prefix0x(String s) => '0x$s';
 
 sodium.KeyPair randomKeyPair() => sodium.CryptoSign.randomKeys();
 
@@ -319,27 +281,6 @@ Future<Result> transact2({
   );
 }
 
-Future<http.Response> getAccountRaw({
-  http.Client client,
-  String scheme = 'https',
-  String host = CONVEX_WORLD_HOST,
-  int port = 443,
-  Address address,
-}) {
-  var uri = Uri(
-    scheme: scheme,
-    host: host,
-    port: port,
-    path: 'api/v1/accounts/' + address.hex,
-  );
-
-  if (client == null) {
-    return http.get(uri);
-  }
-
-  return client.get(uri);
-}
-
 Future<http.Response> getAccountRaw2({
   http.Client client,
   String scheme = 'https',
@@ -359,34 +300,6 @@ Future<http.Response> getAccountRaw2({
   }
 
   return client.get(uri);
-}
-
-Future<Account> getAccount({
-  http.Client client,
-  String scheme = 'https',
-  String host = CONVEX_WORLD_HOST,
-  int port = 443,
-  Address address,
-}) async {
-  var response = await getAccountRaw(
-    client: client,
-    scheme: scheme,
-    host: host,
-    port: port,
-    address: address,
-  );
-
-  if (response.statusCode != 200) {
-    return null;
-  }
-
-  if (config.isDebug()) {
-    logger.d(
-      '[ACCOUNT] ${response.body}',
-    );
-  }
-
-  return Account.fromJson(response.body);
 }
 
 Future<Account> getAccount2({
@@ -607,42 +520,6 @@ class ConvexClient {
   }
 
   /// **Executes code on the Convex Network just to compute the result.**
-  Future<Result> query({
-    @required String source,
-    Address caller,
-    Lang lang = Lang.convexLisp,
-  }) async {
-    var response = await queryRaw(
-      client: client,
-      scheme: server.scheme,
-      host: server.host,
-      port: server.port,
-      source: source,
-      address: caller?.hex,
-      lang: lang,
-    );
-
-    var bodyDecoded = convert.jsonDecode(response.body);
-
-    if (config.isDebug()) {
-      logger.d(
-        '[QUERY] Source: $source, Address: $caller, Lang: $lang, Result: $bodyDecoded',
-      );
-    }
-
-    var resultValue = bodyDecoded['value'];
-    var resultErrorCode = bodyDecoded['error-code'];
-
-    if (resultErrorCode != null) {
-      logger.w('Query Result has an error: $resultErrorCode');
-    }
-
-    return Result(
-      value: resultValue,
-      errorCode: resultErrorCode,
-    );
-  }
-
   Future<Result> query2({
     @required String source,
     Address2 address,
@@ -680,42 +557,6 @@ class ConvexClient {
       errorCode: resultErrorCode,
     );
   }
-
-  Future<Result> transact({
-    @required Address caller,
-    @required Uint8List callerSecretKey,
-    @required String source,
-    Lang lang = Lang.convexLisp,
-  }) {
-    var result = transact2(
-      client: client,
-      scheme: server.scheme,
-      host: server.host,
-      port: server.port,
-      source: source,
-      address: caller.hex,
-      secretKey: callerSecretKey,
-    );
-
-    if (config.isDebug()) {
-      logger.d(
-        '[TRANSACT] Source: $source, Address: $caller, Lang: $lang',
-      );
-    }
-
-    return result;
-  }
-
-  Future<Account> account({
-    @required Address address,
-  }) =>
-      getAccount(
-        client: client,
-        scheme: server.scheme,
-        host: server.host,
-        port: server.port,
-        address: address,
-      );
 
   Future<Account> account2({
     @required Address2 address,
@@ -929,7 +770,8 @@ class NonFungibleLibrary {
   NonFungibleLibrary({@required this.convexClient});
 
   Future<Result> createToken({
-    @required Address caller,
+    @required Address2 caller,
+    @required AccountKey callerAccountKey,
     @required Uint8List callerSecretKey,
     Map<String, dynamic> attributes,
   }) {
@@ -947,9 +789,10 @@ class NonFungibleLibrary {
     var _source = '(import convex.nft-tokens :as nft)'
         '(deploy (nft/create-token $_data nil) )';
 
-    return convexClient.transact(
-      caller: caller,
-      callerSecretKey: callerSecretKey,
+    return convexClient.prepareTransact(
+      address: caller,
+      accountKey: callerAccountKey,
+      secretKey: callerSecretKey,
       source: _source,
     );
   }
@@ -970,7 +813,7 @@ class AssetLibrary {
     var source = '(import convex.asset :as asset)'
         '(asset/balance $asset $owner)';
 
-    var result = await convexClient.query(source: source);
+    var result = await convexClient.query2(source: source);
 
     if (result.errorCode != null) {
       logger.e('Failed to query balance: ${result.value}');
@@ -1001,18 +844,20 @@ class AssetLibrary {
   }
 
   Future<Result> transferFungible({
-    @required Address holder,
+    @required Address2 holder,
+    @required AccountKey holderAccountKey,
     @required Uint8List holderSecretKey,
-    @required Address receiver,
-    @required Address token,
+    @required Address2 receiver,
+    @required Address2 token,
     @required double amount,
   }) {
     var _source = '(import convex.asset :as asset)'
-        '(asset/transfer 0x${receiver.hex} [ 0x${token.hex}, $amount ])';
+        '(asset/transfer $receiver [ $token, $amount ])';
 
-    return convexClient.transact(
-      caller: holder,
-      callerSecretKey: holderSecretKey,
+    return convexClient.prepareTransact(
+      address: holder,
+      accountKey: holderAccountKey,
+      secretKey: holderSecretKey,
       source: _source,
     );
   }

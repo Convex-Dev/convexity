@@ -138,7 +138,7 @@ class _FungibleTransferScreenBodyState
                     ),
                     if (contact == null) ...[
                       aidenticon(
-                        Address.fromHex(_receiverTextController.text),
+                        Address2.fromStr(_receiverTextController.text),
                         width: 30,
                         height: 30,
                       ),
@@ -252,7 +252,7 @@ class _FungibleTransferScreenBodyState
                           ),
                           if (contact == null) ...[
                             aidenticon(
-                              Address.fromHex(_receiverTextController.text),
+                              Address2.fromStr(_receiverTextController.text),
                               width: 30,
                               height: 30,
                             ),
@@ -326,7 +326,7 @@ class _FungibleTransferScreenBodyState
                     width: 120,
                     height: 120,
                   )
-                : aidenticon2(
+                : aidenticon(
                     _receiver,
                     height: 120,
                     width: 120,
