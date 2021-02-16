@@ -355,7 +355,7 @@ class _AssetsCollectionState extends State<AssetsCollection> {
         final balance = widget.balanceCache[aasset] ??
             appState.assetLibrary().balance(
                   asset: aasset.asset.address,
-                  owner: appState.model.activeAddress,
+                  owner: appState.model.activeAddress2,
                 );
 
         if (aasset.type == AssetType.fungible) {
@@ -443,12 +443,12 @@ class _ContactItem implements _AWidget {
 
 /// A [_AWidget] that contains data to display an [Address].
 class _AddressItem implements _AWidget {
-  final convex.Address address;
+  final convex.Address2 address;
 
   _AddressItem(this.address);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon(address),
+        leading: aidenticon2(address),
         title: Text('Not in Address Book'),
         subtitle: Text(address.toString()),
         onTap: () {

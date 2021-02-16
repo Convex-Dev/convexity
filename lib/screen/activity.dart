@@ -104,30 +104,31 @@ class ActivityScreenBody extends StatelessWidget {
                   children: [
                     TableCell(
                       child: TextButton.icon(
-                        icon: aidenticon(a.from, width: 30, height: 30),
+                        icon: aidenticon2(a.from, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
-                            appState.findContact(a.from)?.name ??
+                            appState.findContact2(a.from)?.name ??
                                 a.from.toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         onPressed: () {
-                          nav.pushAccount(context, a.from);
+                          nav.pushAccount2(context, a.from);
                         },
                       ),
                     ),
                     TableCell(
                       child: TextButton.icon(
-                        icon: aidenticon(a.to, width: 30, height: 30),
+                        icon: aidenticon2(a.to, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
-                            appState.findContact(a.to)?.name ?? a.to.toString(),
+                            appState.findContact2(a.to)?.name ??
+                                a.to.toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         onPressed: () {
-                          nav.pushAccount(context, a.to);
+                          nav.pushAccount2(context, a.to);
                         },
                       ),
                     ),

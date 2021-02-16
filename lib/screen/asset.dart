@@ -48,7 +48,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                 Gap(4),
                 Row(
                   children: [
-                    aidenticon(
+                    aidenticon2(
                       fungibleTransferActivity.from,
                       height: 30,
                       width: 30,
@@ -60,7 +60,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                         children: [
                           Text(
                             appState
-                                    .findContact(fungibleTransferActivity.from)
+                                    .findContact2(fungibleTransferActivity.from)
                                     ?.name ??
                                 'Not in Address Book',
                             overflow: TextOverflow.ellipsis,
@@ -76,7 +76,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                     Gap(10),
                     Icon(Icons.arrow_right_alt),
                     Gap(10),
-                    aidenticon(
+                    aidenticon2(
                       fungibleTransferActivity.to,
                       height: 30,
                       width: 30,
@@ -88,7 +88,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                         children: [
                           Text(
                             appState
-                                    .findContact(fungibleTransferActivity.to)
+                                    .findContact2(fungibleTransferActivity.to)
                                     ?.name ??
                                 'Not in Address Book',
                             overflow: TextOverflow.ellipsis,
@@ -208,7 +208,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
               ),
               QrImage(
-                data: widget.aasset.asset.address.hex,
+                data: widget.aasset.asset.address,
                 version: QrVersions.auto,
                 size: 80,
               ),
@@ -491,7 +491,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             children: ids.asMap().entries.map(
                               (entry) {
                                 final dataSource =
-                                    '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}))';
+                                    '(call ${widget.aasset.asset.address} (get-token-data ${entry.value}))';
 
                                 final data =
                                     convexClient.query(source: dataSource);
@@ -648,7 +648,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
     return appState.assetLibrary().balance(
           asset: widget.aasset.asset.address,
-          owner: appState.model.activeAddress,
+          owner: appState.model.activeAddress2,
         );
   }
 

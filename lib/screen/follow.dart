@@ -115,7 +115,7 @@ class _RecommendedState extends State<_Recommended> {
                   aasset.asset.address as Address,
                   appState.assetLibrary().balance(
                         asset: aasset.asset.address,
-                        owner: appState.model.activeAddress,
+                        owner: appState.model.activeAddress2,
                       ),
                 ),
               );
@@ -219,7 +219,7 @@ class _ScanQRCode extends StatefulWidget {
 class _ScanQRCodeState extends State<_ScanQRCode> {
   _ScanQRCodeStatus status = _ScanQRCodeStatus.ready;
 
-  Address scannedAddress;
+  Address2 scannedAddress;
   AAsset aasset;
 
   void scan() async {
@@ -227,7 +227,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
     var rawContent = r.rawContent ?? "";
 
     if (rawContent.isNotEmpty) {
-      var scannedAddress = Address.fromHex(rawContent);
+      var scannedAddress = Address2.fromStr(rawContent);
 
       setState(() {
         this.scannedAddress = scannedAddress;
@@ -269,14 +269,14 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
       case _ScanQRCodeStatus.loading:
         return Column(
           children: [
-            Text(scannedAddress.hex),
+            Text(scannedAddress.toString()),
             CircularProgressIndicator(),
           ],
         );
       case _ScanQRCodeStatus.loaded:
         return Column(
           children: [
-            Text(scannedAddress.hex),
+            Text(scannedAddress.toString()),
           ],
         );
       default:
@@ -334,7 +334,7 @@ class _AssetIDState extends State<_AssetID> {
                       fungible: aasset.asset,
                       balance: appState.assetLibrary().balance(
                             asset: aasset.asset.address,
-                            owner: appState.model.activeAddress,
+                            owner: appState.model.activeAddress2,
                           ),
                     )
                   : nonFungibleTokenCard(
@@ -380,7 +380,7 @@ class _AssetIDState extends State<_AssetID> {
           ),
           onChanged: (value) {
             setState(() {
-              address = Address.trim0x(value);
+              address = value;
               status = AssetMetadataQueryStatus.ready;
             });
           },
@@ -409,7 +409,7 @@ class _AssetIDState extends State<_AssetID> {
                   context
                       .read<AppState>()
                       .convexityClient()
-                      .asset(Address.fromHex(address))
+                      .asset(Address2.fromStr(address))
                       .then(
                     (_assetMetadata) {
                       // It's important to check wether the Widget is mounted,

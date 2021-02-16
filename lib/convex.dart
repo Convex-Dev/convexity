@@ -409,9 +409,7 @@ Future<Account> getAccount2({
   }
 
   if (config.isDebug()) {
-    logger.d(
-      'Account JSON ${response.body}',
-    );
+    logger.d(response.body);
   }
 
   return Account.fromJson(response.body);
@@ -558,7 +556,7 @@ class ConvexClient {
   }
 
   Future<Address2> createAccount({@required AccountKey accountKey}) async {
-    var body = convert.jsonEncode({
+    final body = convert.jsonEncode({
       'accountKey': accountKey.value,
     });
 
@@ -581,11 +579,11 @@ class ConvexClient {
 
     var bodyDecoded = convert.jsonDecode(response.body);
 
-    final address = Address2(bodyDecoded['address'] as int);
+    if (config.isDebug()) {
+      logger.d(bodyDecoded);
+    }
 
-    logger.d(
-      'Created Account: Address $address, Account Key $accountKey',
-    );
+    final address = Address2(bodyDecoded['address'] as int);
 
     return address;
   }
@@ -646,15 +644,15 @@ class ConvexClient {
   }
 
   Future<Result> query2({
-    @required Address2 address,
     @required String source,
+    Address2 address,
     Lang lang = Lang.convexLisp,
   }) async {
     final uri = _uri('api/v1/query');
 
     var body = convert.jsonEncode({
       'source': source,
-      'address': address.value,
+      'address': address?.value,
       'lang': langString(lang),
     });
 
@@ -772,7 +770,7 @@ class FungibleTokenMetadata {
 
 @immutable
 class FungibleToken implements Asset {
-  final Address address;
+  final Address2 address;
   final FungibleTokenMetadata metadata;
 
   FungibleToken({
@@ -781,7 +779,7 @@ class FungibleToken implements Asset {
   });
 
   FungibleToken.fromJson(Map<String, dynamic> json)
-      : address = Address.fromJson(json['address']),
+      : address = Address2.fromJson(json['address']),
         metadata = FungibleTokenMetadata.fromJson(json['metadata']);
 
   Map<String, dynamic> toJson() => {
@@ -793,7 +791,7 @@ class FungibleToken implements Asset {
   bool operator ==(o) => o is FungibleToken && o.address == address;
 
   @override
-  int get hashCode => address.hex.hashCode;
+  int get hashCode => address.hashCode;
 
   @override
   String toString() {
@@ -828,7 +826,7 @@ class NonFungibleTokenMetadata implements Asset {
 
 @immutable
 class NonFungibleToken implements Asset {
-  final Address address;
+  final Address2 address;
   final NonFungibleTokenMetadata metadata;
 
   NonFungibleToken({
@@ -837,7 +835,7 @@ class NonFungibleToken implements Asset {
   });
 
   NonFungibleToken.fromJson(Map<String, dynamic> json)
-      : address = Address.fromJson(json['address']),
+      : address = Address2.fromJson(json['address']),
         metadata = NonFungibleTokenMetadata.fromJson(json['metadata']);
 
   Map<String, dynamic> toJson() => {
@@ -849,7 +847,7 @@ class NonFungibleToken implements Asset {
   bool operator ==(o) => o is NonFungibleToken && o.address == address;
 
   @override
-  int get hashCode => address.hex.hashCode;
+  int get hashCode => address.hashCode;
 
   @override
   String toString() {
@@ -892,30 +890,34 @@ class FungibleLibrary {
   /// It's the process of signing the data with a private key and generated hash in the prepare step,
   /// and sending the code one more time to 'commit' the Transaction.
   Future<Result> transfer({
-    @required Address token,
-    @required Address holder,
+    @required Address2 token,
+    @required Address2 holder,
+    @required AccountKey holderAccountKey,
     @required Uint8List holderSecretKey,
-    @required Address receiver,
+    @required Address2 receiver,
     @required int amount,
   }) =>
-      convexClient.transact(
-        caller: holder,
-        callerSecretKey: holderSecretKey,
+      convexClient.prepareTransact(
+        address: holder,
+        secretKey: holderSecretKey,
+        accountKey: holderAccountKey,
         source: '(import convex.fungible :as fungible)'
-            '(fungible/transfer 0x${token.hex}  0x${receiver.hex} $amount)',
+            '(fungible/transfer $token $receiver $amount)',
       );
 
   /// **Creates (deploys) a Fungible Token on the Convex Network.**
   ///
   /// Returns the Address of the deployed Token.
   Future<Result> createToken({
-    @required Address holder,
-    @required Uint8List holderSecretKey,
+    @required Address2 holder,
+    @required AccountKey accountKey,
+    @required Uint8List secretKey,
     @required int supply,
   }) =>
-      convexClient.transact(
-        caller: holder,
-        callerSecretKey: holderSecretKey,
+      convexClient.prepareTransact(
+        address: holder,
+        accountKey: accountKey,
+        secretKey: secretKey,
         source: '(import convex.fungible :as fungible)'
             '(deploy (fungible/build-token {:supply $supply}))',
       );
@@ -962,11 +964,11 @@ class AssetLibrary {
   /// It returns a number for Fungible Tokens,
   /// but a set of numbers (IDs) for Non-Fungible Tokens.
   Future<dynamic> balance({
-    @required Address asset,
-    @required Address owner,
+    @required Address2 asset,
+    @required Address2 owner,
   }) async {
     var source = '(import convex.asset :as asset)'
-        '(asset/balance 0x${asset.hex} 0x${owner.hex})';
+        '(asset/balance $asset $owner)';
 
     var result = await convexClient.query(source: source);
 
@@ -980,18 +982,20 @@ class AssetLibrary {
   }
 
   Future<Result> transferNonFungible({
-    @required Address holder,
+    @required Address2 holder,
     @required Uint8List holderSecretKey,
-    @required Address receiver,
-    @required Address nft,
+    @required AccountKey holderAccountKey,
+    @required Address2 receiver,
+    @required Address2 nft,
     @required Set<int> tokens,
   }) {
     var _source = '(import convex.asset :as asset)'
-        '(asset/transfer 0x${receiver.hex} [ 0x${nft.hex}, #{ ${tokens.join(",")} } ])';
+        '(asset/transfer $receiver [ $nft, #{ ${tokens.join(",")} } ])';
 
-    return convexClient.transact(
-      caller: holder,
-      callerSecretKey: holderSecretKey,
+    return convexClient.prepareTransact(
+      address: holder,
+      accountKey: holderAccountKey,
+      secretKey: holderSecretKey,
       source: _source,
     );
   }

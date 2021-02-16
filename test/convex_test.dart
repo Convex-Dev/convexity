@@ -78,7 +78,7 @@ void main() {
   group('Query - Convex Lisp', () {
     test('Inc', () async {
       final result = await convexClient.query2(
-        caller: Address2(9),
+        address: Address2(9),
         source: '(inc 1)',
       );
 
@@ -87,7 +87,7 @@ void main() {
 
     test('Self Address', () async {
       final result = await convexClient.query2(
-        caller: Address2(9),
+        address: Address2(9),
         source: '*address*',
       );
 
@@ -96,7 +96,7 @@ void main() {
 
     test('Error - UNDECLARED', () async {
       final result = await convexClient.query2(
-        caller: Address2(9),
+        address: Address2(9),
         source: '(incc 1)',
       );
 
@@ -105,7 +105,7 @@ void main() {
 
     test('Error - CAST', () async {
       final result = await convexClient.query2(
-        caller: Address2(9),
+        address: Address2(9),
         source: '(map inc 1)',
       );
 
@@ -116,7 +116,7 @@ void main() {
   group('Query - Convex Scrypt', () {
     test('Inc', () async {
       var result = await convexClient.query2(
-        caller: Address2(9),
+        address: Address2(9),
         source: 'inc(1)',
         lang: Lang.convexScript,
       );
@@ -126,7 +126,7 @@ void main() {
 
     test('Self Address', () async {
       final result = await convexClient.query2(
-        caller: Address2(9),
+        address: Address2(9),
         source: '_address_',
         lang: Lang.convexScript,
       );

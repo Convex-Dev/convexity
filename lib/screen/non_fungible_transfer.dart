@@ -65,8 +65,8 @@ class _NonFungibleTransferScreenBodyState
   final _formKey = GlobalKey<FormState>();
   final _receiverTextController = TextEditingController();
 
-  Address get _receiver => _receiverTextController.text.isNotEmpty
-      ? Address.fromHex(_receiverTextController.text)
+  Address2 get _receiver => _receiverTextController.text.isNotEmpty
+      ? Address2.fromStr(_receiverTextController.text)
       : null;
 
   void _send(BuildContext context) async {
@@ -126,8 +126,9 @@ class _NonFungibleTransferScreenBodyState
 
     // Asset transfer.
     var transferInProgress = appState.assetLibrary().transferNonFungible(
-      holder: appState.model.activeAddress,
+      holder: appState.model.activeAddress2,
       holderSecretKey: appState.model.activeKeyPair.sk,
+      holderAccountKey: appState.model.activeAccountKey,
       receiver: _receiver,
       nft: widget.nonFungibleToken.address,
       tokens: {
@@ -204,10 +205,10 @@ class _NonFungibleTransferScreenBodyState
                           Text(
                             'Transfered Token ID ${widget.tokenId} to ',
                           ),
-                          Identicon2(
-                            address: _receiver,
-                            isAddressVisible: true,
-                            size: 30,
+                          aidenticon2(
+                            _receiver,
+                            width: 30,
+                            height: 30,
                           ),
                         ],
                       ),
@@ -251,7 +252,7 @@ class _NonFungibleTransferScreenBodyState
               replacement: replacement,
               child: _receiver == null
                   ? replacement
-                  : aidenticon(
+                  : aidenticon2(
                       _receiver,
                       height: 120,
                       width: 120,

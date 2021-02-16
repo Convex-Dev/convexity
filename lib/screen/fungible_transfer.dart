@@ -96,8 +96,8 @@ class _FungibleTransferScreenBodyState
   final _receiverTextController = TextEditingController();
   int _amount;
 
-  Address get _receiver => _receiverTextController.text.isNotEmpty
-      ? Address.fromHex(_receiverTextController.text)
+  Address2 get _receiver => _receiverTextController.text.isNotEmpty
+      ? Address2.fromStr(_receiverTextController.text)
       : null;
 
   void send(BuildContext context) async {
@@ -175,8 +175,9 @@ class _FungibleTransferScreenBodyState
 
     var transferInProgress = appState.fungibleLibrary().transfer(
           token: widget.token.address,
-          holder: appState.model.activeAddress,
+          holder: appState.model.activeAddress2,
           holderSecretKey: appState.model.activeKeyPair.sk,
+          holderAccountKey: appState.model.activeAccountKey,
           receiver: _receiver,
           amount: _amount,
         );
@@ -275,7 +276,7 @@ class _FungibleTransferScreenBodyState
                         var activity = Activity(
                           type: ActivityType.transfer,
                           payload: FungibleTransferActivity(
-                            from: appState.model.activeAddress,
+                            from: appState.model.activeAddress2,
                             to: _receiver,
                             amount: _amount,
                             token: widget.token,
@@ -325,7 +326,7 @@ class _FungibleTransferScreenBodyState
                     width: 120,
                     height: 120,
                   )
-                : aidenticon(
+                : aidenticon2(
                     _receiver,
                     height: 120,
                     width: 120,

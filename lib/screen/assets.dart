@@ -26,7 +26,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
           aasset,
           assetLibrary.balance(
             asset: aasset.asset.address,
-            owner: appState.model.activeAddress,
+            owner: appState.model.activeAddress2,
           )),
     ));
   }

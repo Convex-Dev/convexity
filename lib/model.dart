@@ -145,8 +145,8 @@ class Activity {
 /// Immutable data class to encode a 'Transfer Activity' - a Fungible Token transfer in particular.
 @immutable
 class FungibleTransferActivity {
-  final Address from;
-  final Address to;
+  final Address2 from;
+  final Address2 to;
   final FungibleToken token;
   final int amount;
   final DateTime timestamp;
@@ -160,8 +160,8 @@ class FungibleTransferActivity {
   });
 
   FungibleTransferActivity.fromJson(Map<String, dynamic> json)
-      : from = Address.fromJson(json['from']),
-        to = Address.fromJson(json['to']),
+      : from = Address2.fromJson(json['from']),
+        to = Address2.fromJson(json['to']),
         token = FungibleToken.fromJson(json['token']),
         amount = json['amount'] as int,
         timestamp = DateTime.parse(json['timestamp']);
@@ -235,9 +235,7 @@ enum AddressInputOption {
   scan,
 }
 
-final convexityAddress = Address.fromHex(
-  '0xc797058Ce310cDD0679819715C097D6257Ebf3E2aB531926d8F4D1c2BE87C5ae',
-);
+final convexityAddress = Address2(1369);
 
 /// Immutable Model data class.
 ///
@@ -245,7 +243,7 @@ final convexityAddress = Address.fromHex(
 @immutable
 class Model {
   final Uri convexServerUri;
-  final Address convexityAddress;
+  final Address2 convexityAddress;
   final KeyPair activeKeyPair;
   final List<KeyPair> allKeyPairs;
   final Set<AAsset> following;
@@ -286,7 +284,7 @@ class Model {
 
   Model copyWith({
     Uri convexServerUri,
-    Address convexityAddress,
+    Address2 convexityAddress,
     KeyPair activeKeyPair,
     List<KeyPair> allKeyPairs,
     Set<AAsset> following,
