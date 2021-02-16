@@ -47,7 +47,7 @@ class Peer {
   final int stake;
   final int delegatedStake;
   final Uri uri;
-  final Map<Address, int> stakes;
+  final Map<Address2, int> stakes;
 
   Peer({
     this.address,
@@ -72,8 +72,8 @@ class Peer {
         'stakes': stakes.toString(),
       };
 
-  static Map<Address, int> _decodeStakes(Map<String, dynamic> json) =>
-      json.map((key, value) => MapEntry(Address.fromHex(key), value as int));
+  static Map<Address2, int> _decodeStakes(Map<String, dynamic> json) =>
+      json.map((key, value) => MapEntry(Address2.fromStr(key), value as int));
 
   @override
   bool operator ==(o) => o is Peer && o.address == address;
