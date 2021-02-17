@@ -60,6 +60,13 @@ void main() {
     });
   });
 
+  test('Account Type', () {
+    expect(accountType('user'), AccountType.user);
+    expect(accountType('library'), AccountType.library);
+    expect(accountType('actor'), AccountType.actor);
+    expect(accountType(''), null);
+  });
+
   group('Convex Client', () {
     test('Create Account, check details, top up', () async {
       final generatedKeyPair = CryptoSign.randomKeys();

@@ -84,11 +84,11 @@ enum AccountType {
 
 AccountType accountType(String s) {
   switch (s.toLowerCase()) {
-    case "user":
+    case 'user':
       return AccountType.user;
-    case "library":
+    case 'library':
       return AccountType.library;
-    case "actor":
+    case 'actor':
       return AccountType.actor;
   }
 
