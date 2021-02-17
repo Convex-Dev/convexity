@@ -38,7 +38,7 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
 
     final appState = context.read<AppState>();
 
-    peers = appState.convexClient().query2(
+    peers = appState.convexClient().query(
           address: appState.model.activeAddress,
           source: '(:peers *state*)',
         );

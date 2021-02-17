@@ -20,7 +20,7 @@ class ConvexityClient {
   Future<AAsset> asset(convex.Address addr) async {
     var source = '(call ${this.actor} (asset-metadata $addr))';
 
-    var result = await convexClient.query2(source: source);
+    var result = await convexClient.query(source: source);
 
     if (result.errorCode != null) {
       return null;
@@ -49,7 +49,7 @@ class ConvexityClient {
   Future<Set<AAsset>> assets() async {
     var source = '(call ${this.actor} (all-assets))';
 
-    var result = await convexClient.query2(source: source);
+    var result = await convexClient.query(source: source);
 
     if (result.errorCode != null) {
       return null;

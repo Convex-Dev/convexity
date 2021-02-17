@@ -5,6 +5,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:meta/meta.dart';
 
+// import 'package:convex/client'
+// import 'package:convex/asset'
+// import 'package:convex/exchange'
+// import 'package:convex/trust'
+
 import 'config.dart' as config;
 import 'logger.dart';
 
@@ -54,6 +59,7 @@ class Address {
 
 @immutable
 class AccountKey {
+  // String of HEX characters.
   final String value;
 
   AccountKey(this.value);
@@ -63,7 +69,7 @@ class AccountKey {
   Uint8List toBin() => sodium.Sodium.hex2bin(value);
 
   @override
-  String toString() => value;
+  String toString() => '0x$value';
 }
 
 enum AccountType {
@@ -88,7 +94,7 @@ AccountType accountType(String s) {
 @immutable
 class Account {
   final int sequence;
-  final Address address2;
+  final Address address;
   final AccountType type;
   final int balance;
   final int memorySize;
@@ -96,7 +102,7 @@ class Account {
 
   Account({
     this.sequence,
-    this.address2,
+    this.address,
     this.balance,
     this.type,
     this.memorySize,
@@ -108,7 +114,7 @@ class Account {
 
     return Account(
       sequence: m['sequence'],
-      address2: Address(m['address']),
+      address: Address(m['address']),
       balance: m['balance'],
       type: accountType(m['type']),
       memorySize: m['memorySize'],
@@ -303,7 +309,7 @@ class ConvexClient {
   }
 
   /// **Executes code on the Convex Network just to compute the result.**
-  Future<Result> query2({
+  Future<Result> query({
     @required String source,
     Address address,
     Lang lang = Lang.convexLisp,
@@ -594,10 +600,10 @@ class AssetLibrary {
     @required Address asset,
     @required Address owner,
   }) async {
-    var source = '(import convex.asset :as asset)'
+    final source = '(import convex.asset :as asset)'
         '(asset/balance $asset $owner)';
 
-    var result = await convexClient.query2(source: source);
+    final result = await convexClient.query(source: source);
 
     if (result.errorCode != null) {
       logger.e('Failed to query balance: ${result.value}');

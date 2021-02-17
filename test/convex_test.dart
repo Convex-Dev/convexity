@@ -25,10 +25,10 @@ void main() {
       final account = await convexClient.accountDetails(generatedAddress);
 
       expect(account.type, AccountType.user);
-      expect(account.address2, generatedAddress);
+      expect(account.address, generatedAddress);
 
-      final faucetResponse = await convexClient.faucet2(
-        address: account.address2,
+      final faucetResponse = await convexClient.faucet(
+        address: account.address,
         amount: 1000000,
       );
 
@@ -77,7 +77,7 @@ void main() {
 
   group('Query - Convex Lisp', () {
     test('Inc', () async {
-      final result = await convexClient.query2(
+      final result = await convexClient.query(
         address: Address(9),
         source: '(inc 1)',
       );
@@ -86,7 +86,7 @@ void main() {
     });
 
     test('Self Address', () async {
-      final result = await convexClient.query2(
+      final result = await convexClient.query(
         address: Address(9),
         source: '*address*',
       );
@@ -95,7 +95,7 @@ void main() {
     });
 
     test('Error - UNDECLARED', () async {
-      final result = await convexClient.query2(
+      final result = await convexClient.query(
         address: Address(9),
         source: '(incc 1)',
       );
@@ -104,7 +104,7 @@ void main() {
     });
 
     test('Error - CAST', () async {
-      final result = await convexClient.query2(
+      final result = await convexClient.query(
         address: Address(9),
         source: '(map inc 1)',
       );
@@ -115,7 +115,7 @@ void main() {
 
   group('Query - Convex Scrypt', () {
     test('Inc', () async {
-      var result = await convexClient.query2(
+      var result = await convexClient.query(
         address: Address(9),
         source: 'inc(1)',
         lang: Lang.convexScript,
@@ -125,7 +125,7 @@ void main() {
     });
 
     test('Self Address', () async {
-      final result = await convexClient.query2(
+      final result = await convexClient.query(
         address: Address(9),
         source: '_address_',
         lang: Lang.convexScript,
