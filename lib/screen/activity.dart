@@ -107,7 +107,7 @@ class ActivityScreenBody extends StatelessWidget {
                         icon: aidenticon(a.from, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
-                            appState.findContact2(a.from)?.name ??
+                            appState.findContact(a.from)?.name ??
                                 a.from.toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -122,8 +122,7 @@ class ActivityScreenBody extends StatelessWidget {
                         icon: aidenticon(a.to, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
-                            appState.findContact2(a.to)?.name ??
-                                a.to.toString(),
+                            appState.findContact(a.to)?.name ?? a.to.toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),

@@ -60,7 +60,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                         children: [
                           Text(
                             appState
-                                    .findContact2(fungibleTransferActivity.from)
+                                    .findContact(fungibleTransferActivity.from)
                                     ?.name ??
                                 'Not in Address Book',
                             overflow: TextOverflow.ellipsis,
@@ -88,7 +88,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                         children: [
                           Text(
                             appState
-                                    .findContact2(fungibleTransferActivity.to)
+                                    .findContact(fungibleTransferActivity.to)
                                     ?.name ??
                                 'Not in Address Book',
                             overflow: TextOverflow.ellipsis,

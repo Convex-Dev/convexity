@@ -672,7 +672,7 @@ class AddressTile2 extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final contact = appState.findContact2(address);
+    final contact = appState.findContact(address);
 
     final isAddressMine = appState.isAddressMine2(address);
 

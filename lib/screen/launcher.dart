@@ -100,20 +100,15 @@ class _LauncherScreenState extends State<LauncherScreen> {
         appState.addToKeyring(
           address: generatedAddress,
           keyPair: generatedKeyPair,
-          // TODO Persistence.
-          isPersistent: false,
         );
 
-        // TODO Persistence.
-        appState.setActiveAddress2(generatedAddress, isPersistent: false);
+        appState.setActiveAddress(generatedAddress);
 
-        // TODO Persistence.
         appState.addContact(
           Contact(
             name: 'Account ${appState.model.keyring.length}',
             address: generatedAddress,
           ),
-          isPersistent: false,
         );
 
         appState.convexClient().faucet(

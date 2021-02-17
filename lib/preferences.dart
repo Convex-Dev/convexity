@@ -1,18 +1,20 @@
 import 'dart:convert';
 
+import 'package:convex_wallet/convex.dart';
 import 'package:convex_wallet/logger.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model.dart';
+import 'crypto.dart' as crypto;
 
 const PREF_FOLLOWING = 'FOLLOWING';
-const PREF_ALL_KEYPAIRS = 'ALL_KEYPAIRS';
-const PREF_ACTIVE_KEYPAIR = 'ACTIVE_KEYPAIR';
+const PREF_KEYRING = 'KEYRING';
 const PREF_MY_TOKENS = 'MY_TOKENS';
 const PREF_ACTIVITIES = 'ACTIVITIES';
 const PREF_CONTACTS = 'CONTACTS';
 const PREF_WHITELISTS = 'WHITELISTS';
+const PREF_ACTIVE_ADDRESS = 'ACTIVE_ADDRESS';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -26,50 +28,51 @@ KeyPair decodeKeyPair(String s) {
   );
 }
 
-/// Returns a list of persisted KeyPairs.
-List<KeyPair> readKeyPairs(SharedPreferences preferences) {
-  List<String> wallet = preferences.getStringList(PREF_ALL_KEYPAIRS) ?? [];
+Map<Address, KeyPair> readKeyring(SharedPreferences preferences) {
+  final encoded = preferences.getString(PREF_KEYRING);
 
-  return wallet.map(decodeKeyPair).toList();
+  logger.d(encoded);
+
+  if (encoded != null) {
+    return crypto.keyringFromJson(
+      jsonDecode(preferences.getString(PREF_KEYRING)),
+    );
+  }
+
+  return {};
 }
 
-void writeKeyPairs(
+Future<bool> writeKeyring(
   SharedPreferences preferences,
-  Iterable<KeyPair> keyPairs,
+  Map<Address, KeyPair> keyring,
 ) {
-  final _keyPairs = keyPairs ?? [];
+  final encoded = jsonEncode(crypto.keyringToJson(keyring ?? {}));
 
-  preferences.setStringList(
-    PREF_ALL_KEYPAIRS,
-    _keyPairs.map(encodeKeyPair).toList(),
-  );
+  logger.d(encoded);
+
+  return preferences.setString(PREF_KEYRING, encoded);
 }
 
-/// Persists a new KeyPair.
-///
-/// Adds to the existing list of KeyPairs.
-void addKeyPair(SharedPreferences preferences, KeyPair keyPair) {
-  List<String> wallet = preferences.getStringList(PREF_ALL_KEYPAIRS) ?? [];
+/// Returns the active Address, or null if there isn't one.
+Address readActiveAddress(SharedPreferences preferences) {
+  var encoded = preferences.getString(PREF_ACTIVE_ADDRESS);
 
-  wallet.add(encodeKeyPair(keyPair));
+  logger.d(encoded);
 
-  preferences.setStringList(PREF_ALL_KEYPAIRS, wallet);
-}
-
-/// Persists the active KeyPair.
-void setActiveKeyPair(SharedPreferences preferences, KeyPair keyPair) {
-  preferences.setString(PREF_ACTIVE_KEYPAIR, encodeKeyPair(keyPair));
-}
-
-/// Returns the active KeyPair, or null if there isn't one.
-KeyPair activeKeyPair(SharedPreferences preferences) {
-  var s = preferences.getString(PREF_ACTIVE_KEYPAIR);
-
-  if (s != null) {
-    return decodeKeyPair(s);
+  if (encoded != null) {
+    return Address.fromJson(jsonDecode(encoded));
   }
 
   return null;
+}
+
+/// Persists the active Address.
+void writeActiveAddress(SharedPreferences preferences, Address activeAddress) {
+  final encoded = jsonEncode(activeAddress.toJson());
+
+  logger.d(encoded);
+
+  preferences.setString(PREF_ACTIVE_ADDRESS, encoded);
 }
 
 /// Reads the set of following Assets.

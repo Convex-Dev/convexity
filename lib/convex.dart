@@ -44,9 +44,7 @@ class Address {
   Address.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
 
   @override
-  String toString() {
-    return '#$value';
-  }
+  String toString() => '#$value';
 
   @override
   bool operator ==(o) => o is Address && o.value == value;

@@ -305,6 +305,8 @@ void bootstrap({
   @required SharedPreferences preferences,
 }) {
   try {
+    final keyring = p.readKeyring(preferences);
+    final activeAddress = p.readActiveAddress(preferences);
     final following = p.readFollowing(preferences);
     final myTokens = p.readMyTokens(preferences);
     final activities = p.readActivities(preferences);
@@ -313,6 +315,8 @@ void bootstrap({
     final _model = Model(
       convexServerUri: convexWorldUri,
       convexityAddress: convexityAddress,
+      keyring: keyring,
+      activeAddress: activeAddress,
       following: following,
       myTokens: myTokens,
       activities: activities,
@@ -414,7 +418,7 @@ class AppState with ChangeNotifier {
   }
 
   /// Add a new Contact to Address Book.
-  void addContact(Contact contact, {bool isPersistent = false}) {
+  void addContact(Contact contact, {bool isPersistent = true}) {
     var contacts = Set<Contact>.from(model.contacts);
 
     if (contacts.contains(contact)) {
@@ -468,7 +472,7 @@ class AppState with ChangeNotifier {
     });
   }
 
-  Contact findContact2(Address address) => model.contacts.firstWhere(
+  Contact findContact(Address address) => model.contacts.firstWhere(
         (_contact) => _contact.address == address,
         orElse: () => null,
       );
@@ -478,14 +482,18 @@ class AppState with ChangeNotifier {
   void addToKeyring({
     Address address,
     KeyPair keyPair,
-    bool isPersistent = false,
+    bool isPersistent = true,
   }) {
-    if (isPersistent) {}
+    final _keyring = Map<Address, KeyPair>.from(model.keyring);
+    _keyring[address] = keyPair;
+
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeKeyring(preferences, _keyring),
+      );
+    }
 
     setState((m) {
-      final _keyring = Map<Address, KeyPair>.from(m.keyring);
-      _keyring[address] = keyPair;
-
       return m.copyWith(keyring: _keyring);
     });
   }
@@ -503,11 +511,15 @@ class AppState with ChangeNotifier {
     );
   }
 
-  void setActiveAddress2(
+  void setActiveAddress(
     Address address, {
-    bool isPersistent = false,
+    bool isPersistent = true,
   }) {
-    if (isPersistent) {}
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeActiveAddress(preferences, address),
+      );
+    }
 
     setState((m) => m.copyWith(activeAddress: address));
   }

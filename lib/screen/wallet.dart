@@ -89,7 +89,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                       ),
                     ),
                     onPressed: () {
-                      context.read<AppState>().setActiveAddress2(
+                      context.read<AppState>().setActiveAddress(
                             otherAddress,
                             isPersistent: true,
                           );
@@ -289,14 +289,10 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           isPersistent: false,
         );
 
-        // TODO Persistence.
-        appState.addContact(
-          Contact(
-            name: 'Account ${appState.model.keyring.length}',
-            address: generatedAddress,
-          ),
-          isPersistent: false,
-        );
+        appState.addContact(Contact(
+          name: 'Account ${appState.model.keyring.length}',
+          address: generatedAddress,
+        ));
 
         appState.convexClient().faucet(
               address: generatedAddress,
@@ -339,7 +335,7 @@ class _RemoveState extends State<_Remove> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final contact = appState.findContact2(widget.address);
+    final contact = appState.findContact(widget.address);
 
     return SafeArea(
       child: SingleChildScrollView(
