@@ -285,8 +285,6 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         appState.addToKeyring(
           address: generatedAddress,
           keyPair: generatedKeyPair,
-          // TODO Persistence.
-          isPersistent: false,
         );
 
         appState.addContact(Contact(
@@ -317,7 +315,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     if (confirmation == true) {
       final appState = context.read<AppState>();
 
-      appState.removeAddress(address, isPersistent: true);
+      appState.removeAddress(address);
     }
   }
 }

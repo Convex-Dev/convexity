@@ -498,11 +498,14 @@ class AppState with ChangeNotifier {
     });
   }
 
-  void removeAddress(Address address, {bool isPersistent = false}) {
+  void removeAddress(Address address, {bool isPersistent = true}) {
     final _keyring = Map<Address, KeyPair>.from(model.keyring)..remove(address);
 
-    // TODO
-    if (isPersistent) {}
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeKeyring(preferences, _keyring),
+      );
+    }
 
     setState(
       (m) {
