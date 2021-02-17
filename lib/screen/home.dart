@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:provider/provider.dart';
 import 'package:gap/gap.dart';
 
-import '../model.dart';
 import '../route.dart' as route;
 import '../nav.dart' as nav;
 import '../widget.dart';
@@ -11,18 +9,9 @@ import '../widget.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Convexity'),
-        actions: [
-          if (appState.model.allKeyPairs.isNotEmpty)
-            IdenticonDropdown(
-              activeKeyPair: appState.model.activeKeyPairOrDefault(),
-              allKeyPairs: appState.model.allKeyPairs,
-            ),
-        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -85,7 +74,7 @@ class HomeScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final widgets = [
-      ActiveAccount(),
+      ActiveAccount2(),
       ListTile(
         leading: Icon(Icons.videogame_asset_rounded),
         title: Text('Digital Assets'),
@@ -103,12 +92,6 @@ class HomeScreenBody extends StatelessWidget {
         title: Text('Personal Tokens'),
         subtitle: Text('View and create Fungible Tokens'),
         onTap: () => nav.pushMyTokens(context),
-      ),
-      ListTile(
-        leading: Icon(Icons.view_list),
-        title: Text('Whitelist'),
-        subtitle: Text('Manage trusted Accounts'),
-        onTap: () => nav.pushWhitelist(context),
       ),
       ListTile(
         leading: Icon(Icons.send),

@@ -18,7 +18,7 @@ class ConvexityClient {
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
   Future<AAsset> asset(convex.Address addr) async {
-    var source = '(call 0x${this.actor.hex} (asset-metadata 0x${addr.hex}))';
+    var source = '(call ${this.actor} (asset-metadata $addr))';
 
     var result = await convexClient.query(source: source);
 
@@ -47,7 +47,7 @@ class ConvexityClient {
 
   /// Query all Assets in the registry.
   Future<Set<AAsset>> assets() async {
-    var source = '(call 0x${this.actor.hex} (all-assets))';
+    var source = '(call ${this.actor} (all-assets))';
 
     var result = await convexClient.query(source: source);
 
@@ -61,7 +61,7 @@ class ConvexityClient {
 
     var tokens = (result.value as Map<String, dynamic>).entries.map(
       (entry) {
-        final address = convex.Address.fromHex(entry.key);
+        final address = convex.Address.fromStr(entry.key);
         final metadata = entry.value as Map<String, dynamic>;
         final tokenType = metadata['type'] == 'fungible'
             ? AssetType.fungible
@@ -97,6 +97,7 @@ class ConvexityClient {
 
   Future<convex.Result> requestToRegister({
     convex.Address holder,
+    convex.AccountKey holderAccountKey,
     Uint8List holderSecretKey,
     AAsset aasset,
   }) {
@@ -112,11 +113,12 @@ class ConvexityClient {
         '}';
 
     var source =
-        '(call 0x${this.actor.hex} (request-registry 0x${fungible.address.hex} $metadataStr))';
+        '(call ${this.actor.value} (request-registry ${fungible.address} $metadataStr))';
 
     return convexClient.transact(
-      caller: holder,
-      callerSecretKey: holderSecretKey,
+      address: holder,
+      accountKey: holderAccountKey,
+      secretKey: holderSecretKey,
       source: source,
     );
   }

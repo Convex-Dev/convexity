@@ -113,7 +113,7 @@ class ActivityScreenBody extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          nav.pushAccount(context, a.from);
+                          nav.pushAccount2(context, a.from);
                         },
                       ),
                     ),
@@ -127,7 +127,7 @@ class ActivityScreenBody extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          nav.pushAccount(context, a.to);
+                          nav.pushAccount2(context, a.to);
                         },
                       ),
                     ),

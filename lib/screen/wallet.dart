@@ -14,18 +14,9 @@ import '../crypto.dart' as crypto;
 class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Convex Wallet'),
-        actions: [
-          if (appState.model.allKeyPairs.isNotEmpty)
-            IdenticonDropdown(
-              activeKeyPair: appState.model.activeKeyPairOrDefault(),
-              allKeyPairs: appState.model.allKeyPairs,
-            ),
-        ],
       ),
       body: WalletScreenBody(),
     );
@@ -55,13 +46,12 @@ class WalletScreenBody extends StatefulWidget {
 class _WalletScreenBodyState extends State<WalletScreenBody> {
   var isCreatingAccount = false;
 
-  Widget keyPairCard(
+  Widget addressCard(
     BuildContext context, {
-    KeyPair keyPair,
-    KeyPair activeKeyPair,
+    Address activeAddress,
+    Address otherAddress,
   }) {
-    final isActive =
-        Address.fromKeyPair(keyPair) == Address.fromKeyPair(activeKeyPair);
+    final isActive = activeAddress == otherAddress;
 
     return Card(
       child: Stack(
@@ -83,12 +73,10 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           Column(
             children: [
               AddressTile(
-                address: Address.fromKeyPair(keyPair),
-                onTap: () => nav.pushAccount(
+                address: otherAddress,
+                onTap: () => nav.pushAccount2(
                   context,
-                  Address.fromHex(
-                    Sodium.bin2hex(keyPair.pk),
-                  ),
+                  otherAddress,
                 ),
               ),
               Row(
@@ -101,8 +89,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                       ),
                     ),
                     onPressed: () {
-                      context.read<AppState>().setActiveKeyPair(
-                            keyPair,
+                      context.read<AppState>().setActiveAddress(
+                            otherAddress,
                             isPersistent: true,
                           );
                     },
@@ -138,8 +126,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                           onPressed: () {
                             final appState = context.read<AppState>();
 
-                            if (Address.fromKeyPair(keyPair) ==
-                                appState.model.activeAddress) {
+                            if (otherAddress == appState.model.activeAddress) {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
@@ -179,7 +166,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                               return;
                             }
 
-                            _remove(context, keyPair: keyPair);
+                            _remove(context, address: otherAddress);
                           },
                         ),
                       ],
@@ -196,9 +183,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
-    var activeKeyPair = appState.model.activeKeyPair;
-    var allKeyPairs = appState.model.allKeyPairs;
+    final appState = context.watch<AppState>();
+    final activeAddress = appState.model.activeAddress;
+    final allAddresses = appState.model.keyring.keys;
 
     final widgets = [
       Padding(
@@ -216,12 +203,12 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
               .copyWith(color: Colors.black54),
         ),
       ),
-      ...(allKeyPairs
+      ...(allAddresses
           .map(
-            (_keypair) => keyPairCard(
+            (_address) => addressCard(
               context,
-              keyPair: _keypair,
-              activeKeyPair: activeKeyPair,
+              otherAddress: _address,
+              activeAddress: activeAddress,
             ),
           )
           .toList()),
@@ -286,24 +273,29 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         isCreatingAccount = true;
       });
 
-      var randomKeyPair = CryptoSign.randomKeys();
+      final generatedKeyPair = CryptoSign.randomKeys();
 
-      var appState = context.read<AppState>();
+      final appState = context.read<AppState>();
 
-      var b = await appState.convexClient().requestForFaucet(
-            address: Address.fromHex(Sodium.bin2hex(randomKeyPair.pk)),
-            amount: 10000000,
+      final generatedAddress = await appState.convexClient().createAccount(
+            accountKey: AccountKey.fromBin(generatedKeyPair.pk),
           );
 
-      if (b) {
-        appState.addKeyPair(randomKeyPair, isPersistent: true);
-        appState.addContact(
-          Contact(
-            name: 'Account ${appState.model.allKeyPairs.length}',
-            address: Address.fromKeyPair(randomKeyPair),
-          ),
-          isPersistent: true,
+      if (generatedAddress != null) {
+        appState.addToKeyring(
+          address: generatedAddress,
+          keyPair: generatedKeyPair,
         );
+
+        appState.addContact(Contact(
+          name: 'Account ${appState.model.keyring.length}',
+          address: generatedAddress,
+        ));
+
+        appState.convexClient().faucet(
+              address: generatedAddress,
+              amount: 100000000,
+            );
       } else {
         logger.e('Failed to create Account.');
       }
@@ -314,24 +306,24 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     }
   }
 
-  void _remove(BuildContext context, {KeyPair keyPair}) async {
+  void _remove(BuildContext context, {Address address}) async {
     var confirmation = await showModalBottomSheet(
       context: context,
-      builder: (context) => _Remove(keyPair: keyPair),
+      builder: (context) => _Remove(address: address),
     );
 
     if (confirmation == true) {
       final appState = context.read<AppState>();
 
-      appState.removeKeyPair(keyPair, isPersistent: true);
+      appState.removeAddress(address);
     }
   }
 }
 
 class _Remove extends StatefulWidget {
-  final KeyPair keyPair;
+  final Address address;
 
-  const _Remove({Key key, this.keyPair}) : super(key: key);
+  const _Remove({Key key, this.address}) : super(key: key);
 
   @override
   _RemoveState createState() => _RemoveState();
@@ -341,8 +333,7 @@ class _RemoveState extends State<_Remove> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final address = Address.fromKeyPair(widget.keyPair);
-    final contact = appState.findContact(address);
+    final contact = appState.findContact(widget.address);
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -353,18 +344,18 @@ class _RemoveState extends State<_Remove> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                'Remove ${contact?.name ?? address.toString()}?',
+                'Remove ${contact?.name ?? widget.address.toString()}?',
                 style: Theme.of(context).textTheme.headline6,
               ),
               Gap(20),
               aidenticon(
-                Address.fromKeyPair(widget.keyPair),
+                widget.address,
                 width: 80,
                 height: 80,
               ),
               Gap(5),
               Text(
-                Address.fromKeyPair(widget.keyPair).toString(),
+                widget.address.toString(),
                 style: Theme.of(context).textTheme.caption,
                 overflow: TextOverflow.ellipsis,
               ),

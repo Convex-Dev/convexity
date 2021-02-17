@@ -97,7 +97,7 @@ class _FungibleTransferScreenBodyState
   int _amount;
 
   Address get _receiver => _receiverTextController.text.isNotEmpty
-      ? Address.fromHex(_receiverTextController.text)
+      ? Address.fromStr(_receiverTextController.text)
       : null;
 
   void send(BuildContext context) async {
@@ -138,7 +138,7 @@ class _FungibleTransferScreenBodyState
                     ),
                     if (contact == null) ...[
                       aidenticon(
-                        Address.fromHex(_receiverTextController.text),
+                        Address.fromStr(_receiverTextController.text),
                         width: 30,
                         height: 30,
                       ),
@@ -177,6 +177,7 @@ class _FungibleTransferScreenBodyState
           token: widget.token.address,
           holder: appState.model.activeAddress,
           holderSecretKey: appState.model.activeKeyPair.sk,
+          holderAccountKey: appState.model.activeAccountKey,
           receiver: _receiver,
           amount: _amount,
         );
@@ -251,7 +252,7 @@ class _FungibleTransferScreenBodyState
                           ),
                           if (contact == null) ...[
                             aidenticon(
-                              Address.fromHex(_receiverTextController.text),
+                              Address.fromStr(_receiverTextController.text),
                               width: 30,
                               height: 30,
                             ),

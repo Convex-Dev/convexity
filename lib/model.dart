@@ -43,7 +43,7 @@ class Contact {
 
 @immutable
 class Peer {
-  final Address address;
+  final String address;
   final int stake;
   final int delegatedStake;
   final Uri uri;
@@ -58,14 +58,14 @@ class Peer {
   });
 
   Peer.fromJson(Map<String, dynamic> json)
-      : address = Address.fromHex(json['address']),
+      : address = json['address'],
         stake = json['stake'],
         delegatedStake = json['delegated-stake'],
         uri = Uri.parse(json['uri'] ?? ''),
         stakes = _decodeStakes(json['stakes']);
 
   Map<String, dynamic> toJson() => {
-        'address': address.toJson(),
+        'address': address,
         'stake': stake,
         'delegated-stake': delegatedStake,
         'uri': uri.toString(),
@@ -73,7 +73,7 @@ class Peer {
       };
 
   static Map<Address, int> _decodeStakes(Map<String, dynamic> json) =>
-      json.map((key, value) => MapEntry(Address.fromHex(key), value as int));
+      json.map((key, value) => MapEntry(Address.fromStr(key), value as int));
 
   @override
   bool operator ==(o) => o is Peer && o.address == address;
@@ -235,11 +235,7 @@ enum AddressInputOption {
   scan,
 }
 
-final convexWorldUri = Uri.parse('https://convex.world');
-
-final convexityAddress = Address.fromHex(
-  '0xc797058Ce310cDD0679819715C097D6257Ebf3E2aB531926d8F4D1c2BE87C5ae',
-);
+final convexityAddress = Address(1369);
 
 /// Immutable Model data class.
 ///
@@ -248,70 +244,59 @@ final convexityAddress = Address.fromHex(
 class Model {
   final Uri convexServerUri;
   final Address convexityAddress;
-  final KeyPair activeKeyPair;
-  final List<KeyPair> allKeyPairs;
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
   final List<Activity> activities;
   final Set<Contact> contacts;
-  final Set<Address> whitelist;
+  final Map<Address, KeyPair> keyring;
+  final Address activeAddress;
 
   const Model({
     this.convexServerUri,
     this.convexityAddress,
-    this.activeKeyPair,
-    this.allKeyPairs = const [],
     this.following = const {},
     this.myTokens = const {},
     this.activities = const [],
     this.contacts = const {},
-    this.whitelist = const {},
+    this.keyring = const {},
+    this.activeAddress,
   });
 
-  Address get activeAddress => activeKeyPair != null
-      ? Address.fromHex(Sodium.bin2hex(activeKeyPair.pk))
-      : null;
+  KeyPair get activeKeyPair => keyring[activeAddress];
 
-  KeyPair activeKeyPairOrDefault() {
-    if (activeKeyPair != null) {
-      return activeKeyPair;
-    }
-
-    return allKeyPairs.isNotEmpty ? allKeyPairs.last : null;
-  }
+  AccountKey get activeAccountKey => AccountKey.fromBin(activeKeyPair.pk);
 
   Model copyWith({
     Uri convexServerUri,
     Address convexityAddress,
     KeyPair activeKeyPair,
-    List<KeyPair> allKeyPairs,
     Set<AAsset> following,
     Set<AAsset> myTokens,
     List<Activity> activities,
     Set<Contact> contacts,
-    Set<Address> whitelist,
+    Map<Address, KeyPair> keyring,
+    Address activeAddress,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
         convexityAddress: convexityAddress ?? this.convexityAddress,
-        activeKeyPair: activeKeyPair ?? this.activeKeyPair,
-        allKeyPairs: allKeyPairs ?? this.allKeyPairs,
         following: following ?? this.following,
         myTokens: myTokens ?? this.myTokens,
         activities: activities ?? this.activities,
         contacts: contacts ?? this.contacts,
-        whitelist: whitelist ?? this.whitelist,
+        keyring: keyring ?? this.keyring,
+        activeAddress: activeAddress ?? this.activeAddress,
       );
 
   String toString() => {
         'convexServerUri': convexServerUri.toString(),
         'convexityAddress': convexityAddress.toString(),
-        'activeKeyPair': activeKeyPair.toString(),
-        'allKeyPairs': allKeyPairs.toString(),
         'following': following.toString(),
         'myTokens': myTokens.toString(),
         'activities': activities.toString(),
         'contacts': contacts.toString(),
+        'keyring': keyring.toString(),
+        'activeAddress': activeAddress.toString(),
       }.toString();
 }
 
@@ -320,27 +305,25 @@ void bootstrap({
   @required SharedPreferences preferences,
 }) {
   try {
-    final allKeyPairs = p.readKeyPairs(preferences);
-    final activeKeyPair = p.activeKeyPair(preferences);
+    final keyring = p.readKeyring(preferences);
+    final activeAddress = p.readActiveAddress(preferences);
     final following = p.readFollowing(preferences);
     final myTokens = p.readMyTokens(preferences);
     final activities = p.readActivities(preferences);
     final contacts = p.readContacts(preferences);
-    final whitelists = p.readWhitelist(preferences);
 
     final _model = Model(
       convexServerUri: convexWorldUri,
       convexityAddress: convexityAddress,
-      allKeyPairs: allKeyPairs,
-      activeKeyPair: activeKeyPair,
+      keyring: keyring,
+      activeAddress: activeAddress,
       following: following,
       myTokens: myTokens,
       activities: activities,
       contacts: contacts,
-      whitelist: whitelists,
     );
 
-    logger.d(_model.toString());
+    logger.d(_model);
 
     context.read<AppState>().setState((_) => _model);
   } catch (e, s) {
@@ -400,24 +383,6 @@ class AppState with ChangeNotifier {
     setFollowing(following, isPersistent: isPersistent);
   }
 
-  /// Set KeyPair `active` as active, and persist it to disk if `isPersistent` is true.
-  ///
-  /// This method is usually called whenever a new Account is created.
-  void setActiveKeyPair(KeyPair active, {bool isPersistent = false}) {
-    if (isPersistent) {
-      SharedPreferences.getInstance()
-          .then((preferences) => p.setActiveKeyPair(preferences, active));
-    }
-
-    setState((m) => m.copyWith(activeKeyPair: active));
-  }
-
-  void setKeyPairs(List<KeyPair> keyPairs) {
-    setState(
-      (m) => m.copyWith(allKeyPairs: keyPairs),
-    );
-  }
-
   /// Add a new Token to 'My Tokens'.
   void addMyToken(AAsset myToken, {bool isPersistent = false}) {
     var myTokens = Set<AAsset>.from(model.myTokens)..add(myToken);
@@ -453,7 +418,7 @@ class AppState with ChangeNotifier {
   }
 
   /// Add a new Contact to Address Book.
-  void addContact(Contact contact, {bool isPersistent = false}) {
+  void addContact(Contact contact, {bool isPersistent = true}) {
     var contacts = Set<Contact>.from(model.contacts);
 
     if (contacts.contains(contact)) {
@@ -493,49 +458,6 @@ class AppState with ChangeNotifier {
     );
   }
 
-  /// Add a new Address to Whitelist.
-  void addToWhitelist(Address address, {bool isPersistent = false}) {
-    var whitelist = Set<Address>.from(model.whitelist)..add(address);
-
-    if (isPersistent) {
-      SharedPreferences.getInstance().then(
-        (preferences) => p.writeWhitelist(preferences, whitelist),
-      );
-    }
-
-    setState((model) => model.copyWith(whitelist: whitelist));
-  }
-
-  /// Add a new KeyPair `k`, and persist it to disk if `isPersistent` is true.
-  ///
-  /// This method is usually called whenever a new Account is created.
-  void addKeyPair(KeyPair k, {bool isPersistent = false}) {
-    if (isPersistent) {
-      SharedPreferences.getInstance()
-          .then((preferences) => p.addKeyPair(preferences, k));
-    }
-
-    setState(
-      (m) => m.copyWith(allKeyPairs: List<KeyPair>.from(m.allKeyPairs)..add(k)),
-    );
-  }
-
-  /// Remove KeyPair [k].
-  void removeKeyPair(KeyPair k, {bool isPersistent = false}) {
-    final keyPairs = List<KeyPair>.from(model.allKeyPairs)..remove(k);
-
-    if (isPersistent) {
-      SharedPreferences.getInstance()
-          .then((preferences) => p.writeKeyPairs(preferences, keyPairs));
-    }
-
-    setState(
-      (m) {
-        return m.copyWith(allKeyPairs: keyPairs);
-      },
-    );
-  }
-
   /// Reset app state.
   void reset(BuildContext context) {
     SharedPreferences.getInstance().then((preferences) {
@@ -555,7 +477,53 @@ class AppState with ChangeNotifier {
         orElse: () => null,
       );
 
-  bool isAddressMine(Address address) => model.allKeyPairs.any(
-        (_keypair) => Address.fromKeyPair(_keypair) == address,
+  bool isAddressMine2(Address address) => model.keyring.containsKey(address);
+
+  void addToKeyring({
+    Address address,
+    KeyPair keyPair,
+    bool isPersistent = true,
+  }) {
+    final _keyring = Map<Address, KeyPair>.from(model.keyring);
+    _keyring[address] = keyPair;
+
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeKeyring(preferences, _keyring),
       );
+    }
+
+    setState((m) {
+      return m.copyWith(keyring: _keyring);
+    });
+  }
+
+  void removeAddress(Address address, {bool isPersistent = true}) {
+    final _keyring = Map<Address, KeyPair>.from(model.keyring)..remove(address);
+
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeKeyring(preferences, _keyring),
+      );
+    }
+
+    setState(
+      (m) {
+        return m.copyWith(keyring: _keyring);
+      },
+    );
+  }
+
+  void setActiveAddress(
+    Address address, {
+    bool isPersistent = true,
+  }) {
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeActiveAddress(preferences, address),
+      );
+    }
+
+    setState((m) => m.copyWith(activeAddress: address));
+  }
 }

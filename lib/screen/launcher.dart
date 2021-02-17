@@ -36,7 +36,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    var isSignedIn = appState.model.activeKeyPair != null;
+    var isSignedIn = appState.model.activeAddress != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -88,25 +88,33 @@ class _LauncherScreenState extends State<LauncherScreen> {
         isCreatingAccount = true;
       });
 
-      var randomKeyPair = CryptoSign.randomKeys();
+      var generatedKeyPair = CryptoSign.randomKeys();
 
       var appState = context.read<AppState>();
 
-      var b = await appState.convexClient().requestForFaucet(
-            address: Address.fromHex(Sodium.bin2hex(randomKeyPair.pk)),
-            amount: 10000000,
+      final generatedAddress = await appState.convexClient().createAccount(
+            accountKey: AccountKey.fromBin(generatedKeyPair.pk),
           );
 
-      if (b) {
-        appState.addKeyPair(randomKeyPair, isPersistent: true);
-        appState.setActiveKeyPair(randomKeyPair, isPersistent: true);
+      if (generatedAddress != null) {
+        appState.addToKeyring(
+          address: generatedAddress,
+          keyPair: generatedKeyPair,
+        );
+
+        appState.setActiveAddress(generatedAddress);
+
         appState.addContact(
           Contact(
-            name: 'Account ${appState.model.allKeyPairs.length}',
-            address: Address.fromKeyPair(randomKeyPair),
+            name: 'Account ${appState.model.keyring.length}',
+            address: generatedAddress,
           ),
-          isPersistent: true,
         );
+
+        appState.convexClient().faucet(
+              address: generatedAddress,
+              amount: 100000000,
+            );
       } else {
         logger.e('Failed to create Account.');
       }
@@ -120,7 +128,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
   Widget body(BuildContext context) {
     var appState = context.watch<AppState>();
 
-    if (appState.model.activeKeyPair == null) {
+    if (appState.model.activeAddress == null) {
       return Container(
         padding: EdgeInsets.all(30),
         child: Column(
@@ -161,11 +169,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
       case 1:
         return WalletScreenBody();
       case 2:
-        return AccountScreenBody(
-          address: Address.fromKeyPair(
-            appState.model.activeKeyPair,
-          ),
-        );
+        return AccountScreenBody(address: appState.model.activeAddress);
       default:
         return HomeScreenBody();
     }

@@ -45,7 +45,7 @@ Widget aidenticon(
   double height,
 }) =>
     identicon(
-      address.hex.toLowerCase(),
+      address.value.toString(),
       width: width,
       height: height,
     );
@@ -79,7 +79,7 @@ class Identicon2 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SvgPicture.string(
-            Jdenticon.toSvg(address.hex, size: size),
+            Jdenticon.toSvg(address.value.toString(), size: size),
             fit: BoxFit.contain,
           ),
           if (isAddressVisible)
@@ -125,14 +125,7 @@ class IdenticonDropdown extends StatelessWidget {
             ),
           )
           .toList(),
-      onChanged: (_pk) {
-        var selectedKeyPair = allKeyPairs
-            .firstWhere((_keyPair) => _pk == Sodium.bin2hex(_keyPair.pk));
-
-        context
-            .read<AppState>()
-            .setActiveKeyPair(selectedKeyPair, isPersistent: true);
-      },
+      onChanged: (_pk) {},
     );
   }
 }
@@ -291,17 +284,29 @@ Widget nonFungibleTokenCard({
       );
     });
 
+// ignore: must_be_immutable
 class AssetsCollection extends StatefulWidget {
-  final Set<AAsset> assets;
-  final Map<AAsset, Future> balanceCache;
-  final String empty;
+  final Set<AAsset> assets = {};
+  final Map<AAsset, Future> balanceCache = {};
 
-  const AssetsCollection({
+  String empty;
+
+  AssetsCollection({
     Key key,
-    @required this.assets,
-    this.balanceCache = const {},
-    this.empty = 'Nothing to show',
-  }) : super(key: key);
+    @required assets,
+    balanceCache,
+    empty,
+  }) : super(key: key) {
+    this.empty = empty ?? 'Nothing to show';
+
+    if (assets != null) {
+      this.assets.addAll(Set.from(assets));
+    }
+
+    if (balanceCache != null) {
+      this.balanceCache.addAll(Map.from(balanceCache));
+    }
+  }
 
   @override
   _AssetsCollectionState createState() => _AssetsCollectionState();
@@ -493,7 +498,7 @@ class _SelectAccount extends StatefulWidget {
 }
 
 class _SelectAccountState extends State<_SelectAccount> {
-  String _addressHex;
+  String _addressStr;
 
   @override
   Widget build(BuildContext context) {
@@ -576,7 +581,7 @@ class _SelectAccountState extends State<_SelectAccount> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      _addressHex = value;
+                      _addressStr = value;
                     });
                   },
                 ),
@@ -584,12 +589,12 @@ class _SelectAccountState extends State<_SelectAccount> {
                 ElevatedButton(
                   child: Text('Confirm'),
                   onPressed: () {
-                    final isNotEmpty = _addressHex?.isNotEmpty ?? false;
+                    final isNotEmpty = _addressStr?.isNotEmpty ?? false;
 
                     if (isNotEmpty) {
                       Navigator.pop(
                         context,
-                        convex.Address.fromHex(_addressHex),
+                        convex.Address.fromStr(_addressStr),
                       );
                     }
                   },
@@ -607,7 +612,7 @@ class _SelectAccountState extends State<_SelectAccount> {
   }
 }
 
-class ActiveAccount extends StatelessWidget {
+class ActiveAccount2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -619,7 +624,7 @@ class ActiveAccount extends StatelessWidget {
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
-                .account(address: appState.model.activeAddress),
+                .accountDetails(appState.model.activeAddress),
             builder: (context, snapshot) {
               var animatedChild;
 
@@ -669,7 +674,7 @@ class AddressTile extends StatelessWidget {
 
     final contact = appState.findContact(address);
 
-    final isAddressMine = appState.isAddressMine(address);
+    final isAddressMine = appState.isAddressMine2(address);
 
     final title = Row(
       crossAxisAlignment: CrossAxisAlignment.center,

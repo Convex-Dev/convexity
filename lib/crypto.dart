@@ -6,6 +6,36 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:asn1lib/asn1lib.dart';
+import 'package:flutter_sodium/flutter_sodium.dart';
+
+import 'convex.dart';
+
+extension KeyPairJsonEncoding on KeyPair {
+  Map<String, dynamic> toJson() => {
+        'sk': Sodium.bin2hex(this.sk),
+        'pk': Sodium.bin2hex(this.pk),
+      };
+}
+
+KeyPair keyPairFromJson(Map<String, dynamic> json) => KeyPair(
+      pk: Sodium.hex2bin(json['pk']),
+      sk: Sodium.hex2bin(json['sk']),
+    );
+
+Map<String, dynamic> keyringToJson(Map<Address, KeyPair> keyring) =>
+    keyring.map(
+      (key, value) => MapEntry(
+        key.toString(),
+        value.toJson(),
+      ),
+    );
+
+Map<Address, KeyPair> keyringFromJson(Map<String, dynamic> json) => json.map(
+      (key, value) => MapEntry(
+        Address.fromStr(key),
+        keyPairFromJson(value),
+      ),
+    );
 
 final idCurve25519ObjectIdentifier = ASN1ObjectIdentifier([1, 3, 101, 112]);
 

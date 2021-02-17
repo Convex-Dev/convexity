@@ -227,7 +227,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
     var rawContent = r.rawContent ?? "";
 
     if (rawContent.isNotEmpty) {
-      var scannedAddress = Address.fromHex(rawContent);
+      var scannedAddress = Address.fromStr(rawContent);
 
       setState(() {
         this.scannedAddress = scannedAddress;
@@ -269,14 +269,14 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
       case _ScanQRCodeStatus.loading:
         return Column(
           children: [
-            Text(scannedAddress.hex),
+            Text(scannedAddress.toString()),
             CircularProgressIndicator(),
           ],
         );
       case _ScanQRCodeStatus.loaded:
         return Column(
           children: [
-            Text(scannedAddress.hex),
+            Text(scannedAddress.toString()),
           ],
         );
       default:
@@ -380,7 +380,7 @@ class _AssetIDState extends State<_AssetID> {
           ),
           onChanged: (value) {
             setState(() {
-              address = Address.trim0x(value);
+              address = value;
               status = AssetMetadataQueryStatus.ready;
             });
           },
@@ -409,7 +409,7 @@ class _AssetIDState extends State<_AssetID> {
                   context
                       .read<AppState>()
                       .convexityClient()
-                      .asset(Address.fromHex(address))
+                      .asset(Address.fromStr(address))
                       .then(
                     (_assetMetadata) {
                       // It's important to check wether the Widget is mounted,

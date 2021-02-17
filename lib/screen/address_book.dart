@@ -62,7 +62,7 @@ class AddressBookScreenBody extends StatelessWidget {
             AddressTile(
               address: contacts[index].address,
               onTap: () {
-                nav.pushAccount(context, contacts[index].address);
+                nav.pushAccount2(context, contacts[index].address);
               },
             ),
             Row(

@@ -19,6 +19,13 @@ void pushAccount(BuildContext context, convex.Address address) =>
       arguments: address,
     );
 
+void pushAccount2(BuildContext context, convex.Address address) =>
+    Navigator.pushNamed(
+      context,
+      route.account,
+      arguments: address,
+    );
+
 void pushSettings(BuildContext context) => Navigator.pushNamed(
       context,
       route.settings,

@@ -1,182 +1,137 @@
 import 'dart:convert' as convert;
 
+import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
-import '../lib/convex.dart' as convex;
-
-const _TEST_ADDRESS =
-    '7E66429CA9c10e68eFae2dCBF1804f0F6B3369c7164a3187D6233683c258710f';
-
-Future<http.Response> _query({
-  String address = _TEST_ADDRESS,
-  String source,
-  convex.Lang lang = convex.Lang.convexLisp,
-}) =>
-    convex.queryRaw(
-      source: source,
-      lang: lang,
-      address: address,
-    );
-
-Future<http.Response> _account({
-  String address = _TEST_ADDRESS,
-}) =>
-    convex.getAccountRaw(
-      address: convex.Address.fromHex(address),
-    );
-
-Future<http.Response> _faucet({
-  String address,
-  int amount,
-}) =>
-    convex.faucet(
-      address: address,
-      amount: amount,
-    );
-
-Future<http.Response> _prepareTransaction({
-  String source,
-  convex.Address address,
-}) =>
-    convex.prepareTransaction(
-      source: source,
-      address: address.hex,
-    );
+import '../lib/convex.dart';
 
 void main() {
-  // test('Sign', () {
-  //   var randomKeyPair = convex.randomKeyPair();
+  final convexClient = ConvexClient(
+    server: convexWorldUri,
+    client: http.Client(),
+  );
 
-  //   var signed = convex.sign(
-  //     sodium.Sodium.hex2bin(
-  //       'badb861fc51d49e0212c0304b1890da42e4a4b54228986be17de8d7dccd845e2',
-  //     ),
-  //     randomKeyPair.sk,
-  //   );
+  group('Convex Client', () {
+    test('Create Account, check details, top up', () async {
+      final generatedKeyPair = CryptoSign.randomKeys();
 
-  //   expect(sodium.Sodium.bin2hex(signed), '');
-  // });
+      final generatedAddress = await convexClient.createAccount(
+        accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+      );
 
-  group('Account', () {
-    test('Details', () async {
-      var response = await _account(address: _TEST_ADDRESS);
+      expect(generatedAddress != null, true);
 
-      Map body = convert.jsonDecode(response.body);
+      final account = await convexClient.accountDetails(generatedAddress);
 
-      expect(response.statusCode, 200);
-      expect(body.keys.toSet(), {
-        'environment',
+      expect(account.type, AccountType.user);
+      expect(account.address, generatedAddress);
+
+      final faucetResponse = await convexClient.faucet(
+        address: account.address,
+        amount: 1000000,
+      );
+
+      final faucetResponseBody = convert.jsonDecode(faucetResponse.body);
+
+      expect(faucetResponse.statusCode, 200);
+      expect(faucetResponseBody.keys.toSet(), {
         'address',
-        'is_library',
-        'is_actor',
-        'memory_size',
-        'balance',
-        'allowance',
-        'sequence',
-        'type',
+        'amount',
+        'value',
       });
     });
 
-    test('Not found', () async {
-      var response = await _account(
-          address:
-              '7E66429CA9c10e68eFae2dCBF1804f0F6B3369c7164a3187D6233683c258710d');
-
-      expect(response.statusCode, 404);
-    });
-  });
-
-  group('Query - Convex Lisp', () {
-    test('Inc', () async {
-      var response = await _query(source: '(inc 1)');
-
-      expect(response.statusCode, 200);
-      expect(convert.jsonDecode(response.body), {'value': 2});
-    });
-
-    test('Self Address', () async {
-      var response = await _query(source: '*address*');
-
-      expect(response.statusCode, 200);
-      expect(
-        convert.jsonDecode(response.body),
-        {'value': _TEST_ADDRESS},
-      );
-    });
-
-    test('Error - UNDECLARED', () async {
-      var response = await _query(source: '(incc 1)');
-
-      expect(response.statusCode, 200);
-      expect(convert.jsonDecode(response.body)['error-code'], 'UNDECLARED');
-    });
-
-    test('Error - CAST', () async {
-      var response = await _query(source: '(map inc 1)');
-
-      expect(response.statusCode, 200);
-      expect(convert.jsonDecode(response.body)['error-code'], 'CAST');
-    });
-  });
-
-  group('Query - Convex Scrypt', () {
-    test('Inc', () async {
-      var response = await _query(
-        source: 'inc(1)',
-        lang: convex.Lang.convexScript,
-      );
-
-      expect(response.statusCode, 200);
-      expect(convert.jsonDecode(response.body), {'value': 2});
-    });
-
-    test('Self Address', () async {
-      var response = await _query(
-        source: '_address_',
-        lang: convex.Lang.convexScript,
-      );
-
-      expect(response.statusCode, 200);
-      expect(convert.jsonDecode(response.body), {'value': _TEST_ADDRESS});
-    });
-  });
-
-  group('Transaction', () {
-    test('Prepare', () async {
-      var response = await _prepareTransaction(
-        address: convex.Address.fromHex(_TEST_ADDRESS),
+    test('Prepare & Submit Transaction', () async {
+      final prepareResponse = await convexClient.prepareTransaction(
+        address: Address(9),
         source: '(inc 1)',
       );
 
-      Map body = convert.jsonDecode(response.body);
+      Map<String, dynamic> prepared = convert.jsonDecode(prepareResponse.body);
 
-      expect(response.statusCode, 200);
-      expect(body.keys.toSet(), {
-        'sequence_number',
+      expect(prepareResponse.statusCode, 200);
+      expect(prepared.keys.toSet(), {
+        'sequence',
         'address',
         'source',
         'lang',
         'hash',
       });
+
+      final submitResponse = await convexClient.submitTransaction(
+        address: Address(9),
+        accountKey: AccountKey(''),
+        hash: prepared['hash'],
+        sig: '',
+      );
+
+      Map<String, dynamic> submitted = convert.jsonDecode(submitResponse.body);
+
+      expect(submitResponse.statusCode, 400);
+      expect(submitted['errorCode'], 'INCORRECT');
+      expect(submitted['value'], 'Invalid signature.');
+      expect(submitted['source'], 'Server');
     });
   });
 
-  test('Faucet', () async {
-    var response = await _faucet(
-      address: _TEST_ADDRESS,
-      amount: 1000,
-    );
+  group('Query - Convex Lisp', () {
+    test('Inc', () async {
+      final result = await convexClient.query(
+        address: Address(9),
+        source: '(inc 1)',
+      );
 
-    expect(response.statusCode, 200);
+      expect(result.value, 2);
+    });
 
-    Map body = convert.jsonDecode(response.body);
+    test('Self Address', () async {
+      final result = await convexClient.query(
+        address: Address(9),
+        source: '*address*',
+      );
 
-    expect(body.keys.toSet(), {
-      'address',
-      'amount',
-      'id',
-      'value',
+      expect(result.value, 9);
+    });
+
+    test('Error - UNDECLARED', () async {
+      final result = await convexClient.query(
+        address: Address(9),
+        source: '(incc 1)',
+      );
+
+      expect(result.errorCode, 'UNDECLARED');
+    });
+
+    test('Error - CAST', () async {
+      final result = await convexClient.query(
+        address: Address(9),
+        source: '(map inc 1)',
+      );
+
+      expect(result.errorCode, 'CAST');
+    });
+  });
+
+  group('Query - Convex Scrypt', () {
+    test('Inc', () async {
+      var result = await convexClient.query(
+        address: Address(9),
+        source: 'inc(1)',
+        lang: Lang.convexScript,
+      );
+
+      expect(result.value, 2);
+    });
+
+    test('Self Address', () async {
+      final result = await convexClient.query(
+        address: Address(9),
+        source: '_address_',
+        lang: Lang.convexScript,
+      );
+
+      expect(result.value, 9);
     });
   });
 }

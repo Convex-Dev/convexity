@@ -38,6 +38,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   var targetController = TextEditingController();
   var amountController = TextEditingController();
 
+  Address target;
+
   void scan() async {
     var result = await BarcodeScanner.scan();
 
@@ -53,10 +55,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   }) async {
     final appState = context.read<AppState>();
 
-    final contact = appState.model.contacts.firstWhere(
-      (contact) => contact.address == to,
-      orElse: () => null,
-    );
+    final contact = appState.findContact(to);
 
     var confirmation = await showModalBottomSheet(
       context: context,
@@ -82,11 +81,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                       'Transfer $amount to ',
                     ),
                     if (contact == null)
-                      Identicon2(
-                        address: to,
-                        isAddressVisible: true,
-                        size: 30,
-                      )
+                      Text(to.toString())
                     else
                       Text(contact.name),
                     Text(
@@ -113,9 +108,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     }
 
     final transferInProgress = appState.convexClient().transact(
-          caller: appState.model.activeAddress,
-          callerSecretKey: appState.model.activeKeyPair.sk,
-          source: '(transfer 0x${to.hex} $amount)',
+          address: appState.model.activeAddress,
+          accountKey: appState.model.activeAccountKey,
+          secretKey: appState.model.activeKeyPair.sk,
+          source: '(transfer $to $amount)',
         );
 
     showModalBottomSheet(
@@ -187,11 +183,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                             'Transfered $amount to ',
                           ),
                           if (contact == null)
-                            Identicon2(
-                              address: to,
-                              isAddressVisible: true,
-                              size: 30,
-                            )
+                            aidenticon(to)
                           else
                             Text(contact.name + '.'),
                         ],
@@ -221,7 +213,11 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    fromController.text = appState.model.activeAddress.toString();
+    final fromContact = appState.findContact(appState.model.activeAddress);
+
+    fromController.text = fromContact != null
+        ? fromContact.name
+        : appState.model.activeAddress.toString();
 
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -258,8 +254,16 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                   params: SelectAccountParams(title: 'Payee'),
                 ).then((selectedAddress) {
                   if (selectedAddress != null) {
+                    final targetContact = context
+                        .read<AppState>()
+                        .findContact(selectedAddress as Address);
+
                     setState(() {
-                      targetController.text = selectedAddress.toString();
+                      target = selectedAddress as Address;
+
+                      targetController.text = targetContact != null
+                          ? targetContact.name
+                          : selectedAddress.toString();
                     });
                   }
                 });
@@ -296,7 +300,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                   if (formKey.currentState.validate()) {
                     transfer(
                       context: context,
-                      to: convex.Address.fromHex(targetController.text),
+                      to: target,
                       amount: int.parse(amountController.text),
                     );
                   }

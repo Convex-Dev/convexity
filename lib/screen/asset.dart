@@ -208,7 +208,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
               ),
               QrImage(
-                data: widget.aasset.asset.address.hex,
+                data: widget.aasset.asset.address.value.toString(),
                 version: QrVersions.auto,
                 size: 80,
               ),
@@ -491,7 +491,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             children: ids.asMap().entries.map(
                               (entry) {
                                 final dataSource =
-                                    '(call 0x${widget.aasset.asset.address.hex} (get-token-data ${entry.value}))';
+                                    '(call ${widget.aasset.asset.address} (get-token-data ${entry.value}))';
 
                                 final data =
                                     convexClient.query(source: dataSource);

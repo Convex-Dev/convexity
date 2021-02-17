@@ -25,8 +25,9 @@ class AccountScreen extends StatelessWidget {
       orElse: () => null,
     );
 
-    final activeAddress = context
-        .select<AppState, Address>((appState) => appState.model.activeAddress);
+    final activeAddress = context.select<AppState, Address>(
+      (appState) => appState.model.activeAddress,
+    );
 
     final isMine = activeAddress == _address;
 
@@ -69,10 +70,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   void initState() {
     super.initState();
 
-    account = context
-        .read<AppState>()
-        .convexClient()
-        .account(address: widget.address);
+    account =
+        context.read<AppState>().convexClient().accountDetails(widget.address);
   }
 
   @override
@@ -116,7 +115,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   children: [
                     QrImage(
                       data:
-                          'https://convex.world/explorer/accounts/${widget.address.hex}',
+                          'https://convex.world/explorer/accounts/${widget.address.value}',
                       version: QrVersions.auto,
                       size: 140,
                     ),
