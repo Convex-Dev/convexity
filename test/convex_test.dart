@@ -44,6 +44,22 @@ void main() {
     });
   });
 
+  group('AccountKey', () {
+    test('AccountKey value', () {
+      expect(AccountKey(null).value, null);
+      expect(AccountKey('').value, '');
+      expect(AccountKey('ABC').value, 'ABC');
+    });
+
+    test('AccountKey toString', () {
+      expect(AccountKey('ABC').toString(), '0xABC');
+    });
+
+    test('AccountKey identity', () {
+      expect(true, AccountKey('ABC') == AccountKey('ABC'));
+    });
+  });
+
   group('Convex Client', () {
     test('Create Account, check details, top up', () async {
       final generatedKeyPair = CryptoSign.randomKeys();

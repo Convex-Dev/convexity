@@ -68,6 +68,12 @@ class AccountKey {
 
   @override
   String toString() => '0x$value';
+
+  @override
+  bool operator ==(o) => o is AccountKey && o.value == value;
+
+  @override
+  int get hashCode => value.hashCode;
 }
 
 enum AccountType {
