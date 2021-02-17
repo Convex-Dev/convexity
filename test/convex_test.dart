@@ -12,6 +12,38 @@ void main() {
     client: http.Client(),
   );
 
+  group('Address', () {
+    test('Address value', () {
+      expect(Address(null).value, null);
+      expect(Address(1).value, 1);
+      expect(Address.fromStr('1').value, 1);
+      expect(Address.fromStr('#1').value, 1);
+      expect(Address.fromStr('##1').value, 1);
+      expect(Address.fromStr('#1#').value, 1);
+      expect(Address.fromJson({'value': 1}).value, 1);
+
+      // Error cases.
+      expect(() => Address.fromStr('').value, throwsFormatException);
+      expect(() => Address.fromStr('a').value, throwsFormatException);
+    });
+
+    test('Address toString', () {
+      expect(Address(1).toString(), '#1');
+    });
+
+    test('Address identity', () {
+      expect(true, Address(1) == Address.fromStr('#1'));
+    });
+
+    test('Address toJson', () {
+      expect(Address(1).toJson(), {'value': 1});
+    });
+
+    test('Address fromJson', () {
+      expect(Address(1), Address.fromJson({'value': 1}));
+    });
+  });
+
   group('Convex Client', () {
     test('Create Account, check details, top up', () async {
       final generatedKeyPair = CryptoSign.randomKeys();
