@@ -72,7 +72,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           ),
           Column(
             children: [
-              AddressTile2(
+              AddressTile(
                 address: otherAddress,
                 onTap: () => nav.pushAccount2(
                   context,

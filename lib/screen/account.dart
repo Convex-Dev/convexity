@@ -125,7 +125,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                         padding: const EdgeInsets.all(8),
                         child: Column(
                           children: [
-                            AddressTile2(address: widget.address),
+                            AddressTile(address: widget.address),
                             AccountTable(account: account),
                           ],
                         ),

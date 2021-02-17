@@ -620,7 +620,7 @@ class ActiveAccount2 extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          AddressTile2(address: appState.model.activeAddress),
+          AddressTile(address: appState.model.activeAddress),
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
@@ -658,11 +658,11 @@ class ActiveAccount2 extends StatelessWidget {
   }
 }
 
-class AddressTile2 extends StatelessWidget {
+class AddressTile extends StatelessWidget {
   final Address address;
   final void Function() onTap;
 
-  const AddressTile2({
+  const AddressTile({
     Key key,
     this.address,
     this.onTap,

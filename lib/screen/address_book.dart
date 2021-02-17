@@ -59,7 +59,7 @@ class AddressBookScreenBody extends StatelessWidget {
       itemBuilder: (context, index) => Card(
         child: Column(
           children: [
-            AddressTile2(
+            AddressTile(
               address: contacts[index].address,
               onTap: () {
                 nav.pushAccount2(context, contacts[index].address);
