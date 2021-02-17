@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_sodium: ^0.1.10
+  flutter_sodium: ^0.1.11
   http: 0.12.2
   flutter_svg: ^0.19.1
   jdenticon_dart: ^1.2.1+1
