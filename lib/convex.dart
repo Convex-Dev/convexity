@@ -132,19 +132,17 @@ Uint8List sign(Uint8List hash, Uint8List secretKey) =>
 
 @immutable
 class Result {
-  final int id;
   final dynamic value;
   final String errorCode;
 
   Result({
-    this.id,
     this.value,
     this.errorCode,
   });
 
   @override
   String toString() {
-    return 'Result[id: $id, errorCode: $errorCode, value: $value]';
+    return 'Result[errorCode: $errorCode, value: $value]';
   }
 }
 
