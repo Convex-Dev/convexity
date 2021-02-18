@@ -7,8 +7,30 @@ import 'dart:convert' as convert;
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:tuple/tuple.dart';
 
 import '../lib/convex.dart';
+
+Future<Tuple2<Address, KeyPair>> _setupNewAccount(
+  ConvexClient convexClient,
+) async {
+  final generatedKeyPair = CryptoSign.randomKeys();
+
+  final generatedAddress = await convexClient.createAccount(
+    accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+  );
+
+  final faucetResponse = await convexClient.faucet(
+    address: generatedAddress,
+    amount: 100000000,
+  );
+
+  if (faucetResponse.statusCode != 200) {
+    throw Exception('Failed to setup new Account.');
+  }
+
+  return Tuple2(generatedAddress, generatedKeyPair);
+}
 
 void main() {
   final convexClient = ConvexClient(
@@ -21,23 +43,12 @@ void main() {
   );
 
   test('Create a Fungible Token', () async {
-    final generatedKeyPair = CryptoSign.randomKeys();
-
-    final generatedAddress = await convexClient.createAccount(
-      accountKey: AccountKey.fromBin(generatedKeyPair.pk),
-    );
-
-    final faucetResponse = await convexClient.faucet(
-      address: generatedAddress,
-      amount: 100000000,
-    );
-
-    expect(faucetResponse.statusCode, 200);
+    final newAccount = await _setupNewAccount(convexClient);
 
     final result = await fungibleLibrary.createToken(
-      holder: generatedAddress,
-      accountKey: AccountKey.fromBin(generatedKeyPair.pk),
-      secretKey: generatedKeyPair.sk,
+      holder: newAccount.item1,
+      accountKey: AccountKey.fromBin(newAccount.item2.pk),
+      secretKey: newAccount.item2.sk,
       supply: 100,
     );
 
