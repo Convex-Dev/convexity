@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../logger.dart';
 import '../route.dart' as route;
+import '../convex.dart';
+import '../model.dart';
 
 enum _NewTokenStatus {
   creatingToken,

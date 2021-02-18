@@ -1,5 +1,4 @@
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +7,7 @@ import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
 import '../widget.dart';
+import '../model.dart';
 
 class StakingPeerScreen extends StatelessWidget {
   final Peer peer;

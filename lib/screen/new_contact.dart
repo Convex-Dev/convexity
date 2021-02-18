@@ -1,10 +1,10 @@
-import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
 import '../widget.dart';
+import '../convex.dart';
 
 class NewContactScreen extends StatelessWidget {
   @override

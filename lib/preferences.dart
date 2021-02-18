@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/logger.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model.dart';
 import 'crypto.dart' as crypto;
+import 'convex.dart';
+import 'logger.dart';
 
 const PREF_FOLLOWING = 'FOLLOWING';
 const PREF_KEYRING = 'KEYRING';

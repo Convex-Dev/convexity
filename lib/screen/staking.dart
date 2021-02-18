@@ -1,11 +1,11 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../convex.dart';
+import '../model.dart';
 
 class StakingScreen extends StatelessWidget {
   const StakingScreen({Key key}) : super(key: key);

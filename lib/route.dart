@@ -1,7 +1,7 @@
-import 'package:convex_wallet/screen/staking_peer.dart';
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 
+import 'widget.dart';
+import 'screen/staking_peer.dart';
 import 'screen/launcher.dart';
 import 'screen/home.dart';
 import 'screen/wallet.dart';

@@ -1,4 +1,3 @@
-import 'package:convex_wallet/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tuple/tuple.dart';
@@ -6,6 +5,7 @@ import 'package:tuple/tuple.dart';
 import 'convex.dart' as convex;
 import 'model.dart';
 import 'route.dart' as route;
+import 'widget.dart';
 
 void pushLauncher(BuildContext context) => Navigator.pushReplacementNamed(
       context,

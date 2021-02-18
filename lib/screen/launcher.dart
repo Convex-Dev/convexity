@@ -1,5 +1,3 @@
-import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:gap/gap.dart';
@@ -11,6 +9,8 @@ import './wallet.dart';
 import './account.dart';
 import '../nav.dart' as nav;
 import '../logger.dart';
+import '../convex.dart';
+import '../model.dart';
 
 enum _PopupChoice {
   settings,
