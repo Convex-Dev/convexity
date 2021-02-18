@@ -67,7 +67,7 @@ void main() {
       description: 'Description of Sample Token ${DateTime.now()}.',
       symbol: 'ST',
       currencySymbol: 'ST\$',
-      decimals: 1000,
+      decimals: 2,
     );
 
     final fungible = FungibleToken(
