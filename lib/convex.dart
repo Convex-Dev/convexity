@@ -39,7 +39,7 @@ class Address {
 
   Address(this.value);
 
-  Address.fromStr(String s) : value = int.parse(s.replaceAll('#', ''));
+  Address.fromStr(String s) : value = int.parse(s.replaceFirst('#', ''));
 
   Address.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
 

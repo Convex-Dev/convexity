@@ -21,14 +21,17 @@ void main() {
       expect(Address(null).value, null);
       expect(Address(1).value, 1);
       expect(Address.fromStr('1').value, 1);
+      expect(Address.fromStr(' 1').value, 1);
+      expect(Address.fromStr('1 ').value, 1);
       expect(Address.fromStr('#1').value, 1);
-      expect(Address.fromStr('##1').value, 1);
-      expect(Address.fromStr('#1#').value, 1);
+      expect(Address.fromStr('# 1').value, 1);
       expect(Address.fromJson({'value': 1}).value, 1);
 
       // Error cases.
-      expect(() => Address.fromStr('').value, throwsFormatException);
-      expect(() => Address.fromStr('a').value, throwsFormatException);
+      expect(() => Address.fromStr('##1'), throwsFormatException);
+      expect(() => Address.fromStr('#1#'), throwsFormatException);
+      expect(() => Address.fromStr(''), throwsFormatException);
+      expect(() => Address.fromStr('a'), throwsFormatException);
     });
 
     test('Address toString', () {
