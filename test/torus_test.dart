@@ -1,7 +1,3 @@
-// REQUIREMENTS
-// 'libsodium' must be installed on your lachine to be able to run these tests.
-// On macOS: brew install libsodium
-
 import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -94,5 +90,14 @@ void main() {
 
     logger.d('Liquidity1 $liquidity1');
     logger.d('Liquidity2 $liquidity2');
+
+    final bought = await torus.buy(
+      credentials: credentials,
+      ofToken: token1,
+      amount: 100,
+      withToken: token2,
+    );
+
+    logger.d('Bought $bought');
   });
 }
