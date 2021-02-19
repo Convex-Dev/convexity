@@ -11,6 +11,7 @@ import '../lib/convex.dart';
 import '../lib/model.dart';
 import '../lib/convexity.dart';
 import '../lib/logger.dart';
+import '../lib/torus.dart';
 
 Future<Tuple2<Address, KeyPair>> _setupNewAccount(
   ConvexClient convexClient,
@@ -47,6 +48,8 @@ void main() {
     convexClient: convexClient,
     actor: convexityAddress,
   );
+
+  final torus = TorusLibrary(convexClient: convexClient);
 
   test('Create a Market', () async {
     final newAccount = await _setupNewAccount(convexClient);
@@ -91,27 +94,24 @@ void main() {
     expect(result2.errorCode, null);
     expect(result2.value != null, true);
 
-    final market = await convexClient.transact(
+    final market = await torus.createMarket(
       address: newAccountAddress,
       accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
       secretKey: newAccountKeyPair.sk,
-      source:
-          '(import torus.exchange :as torus) (torus/create-market ${fungible.address})',
+      token: fungible.address,
     );
 
-    logger.d(market.toJson());
+    logger.d('Market $market');
 
-    expect(market.errorCode, null);
-
-    final liquidity = await convexClient.transact(
+    final liquidity = await torus.addLiquidity(
       address: newAccountAddress,
       accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
       secretKey: newAccountKeyPair.sk,
-      source: '(torus/add-liquidity ${fungible.address} 1000 1000000)',
+      token: fungible.address,
+      tokenAmount: 1000,
+      cvxAmount: 10000000,
     );
 
-    logger.d(liquidity.toJson());
-
-    expect(liquidity.errorCode, null);
+    logger.d('Liquidity $liquidity');
   });
 }
