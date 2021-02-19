@@ -567,6 +567,27 @@ class FungibleLibrary {
         source: '(import convex.fungible :as fungible)'
             '(deploy (fungible/build-token {:supply $supply}))',
       );
+
+  /// **Creates (deploys) a Fungible Token on the Convex Network.**
+  ///
+  /// Returns the Address of the deployed Token.
+  Future<Address> createToken2({
+    @required Credentials credentials,
+    @required int supply,
+  }) async {
+    final result = await convexClient.transact(
+      address: credentials.address,
+      accountKey: credentials.accountKey,
+      secretKey: credentials.secretKey,
+      source: '(import convex.fungible :as fungible)'
+          '(deploy (fungible/build-token {:supply $supply}))',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return Address(result.value);
+  }
 }
 
 class NonFungibleLibrary {

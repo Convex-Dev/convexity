@@ -7,10 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
 
-import '../lib/convex.dart';
-import '../lib/model.dart';
-import '../lib/convexity.dart';
 import '../lib/logger.dart';
+import '../lib/convex.dart';
 import '../lib/torus.dart';
 
 Future<Tuple2<Address, KeyPair>> _setupNewAccount(
@@ -44,11 +42,6 @@ void main() {
     convexClient: convexClient,
   );
 
-  final convexityClient = ConvexityClient(
-    convexClient: convexClient,
-    actor: convexityAddress,
-  );
-
   final torus = TorusLibrary(convexClient: convexClient);
 
   test('Create a Market', () async {
@@ -62,58 +55,44 @@ void main() {
       secretKey: newAccountKeyPair.sk,
     );
 
-    final result = await fungibleLibrary.createToken(
-      holder: newAccountAddress,
-      accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      secretKey: newAccountKeyPair.sk,
+    final token1 = await fungibleLibrary.createToken2(
+      credentials: credentials,
       supply: 1000,
     );
 
-    expect(result.errorCode, null);
-    expect(result.value != null, true);
-
-    final metadata = FungibleTokenMetadata(
-      name: 'Sample Token ${DateTime.now()}',
-      description: 'Description of Sample Token ${DateTime.now()}.',
-      symbol: 'ST',
-      currencySymbol: 'ST\$',
-      decimals: 2,
-    );
-
-    final fungible = FungibleToken(
-      address: Address(result.value),
-      metadata: metadata,
-    );
-
-    final aasset = AAsset(
-      type: AssetType.fungible,
-      asset: fungible,
-    );
-
-    final result2 = await convexityClient.requestToRegister(
-      holder: newAccountAddress,
-      holderAccountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      holderSecretKey: newAccountKeyPair.sk,
-      aasset: aasset,
-    );
-
-    expect(result2.errorCode, null);
-    expect(result2.value != null, true);
-
-    final market = await torus.createMarket(
+    final token2 = await fungibleLibrary.createToken2(
       credentials: credentials,
-      token: fungible.address,
+      supply: 1000000,
     );
 
-    logger.d('Market $market');
-
-    final liquidity = await torus.addLiquidity(
+    final market1 = await torus.createMarket(
       credentials: credentials,
-      token: fungible.address,
+      token: token1,
+    );
+
+    final market2 = await torus.createMarket(
+      credentials: credentials,
+      token: token2,
+    );
+
+    logger.d('Market1 $market1');
+    logger.d('Market2 $market2');
+
+    final liquidity1 = await torus.addLiquidity(
+      credentials: credentials,
+      token: token1,
       tokenAmount: 1000,
       cvxAmount: 10000000,
     );
 
-    logger.d('Liquidity $liquidity');
+    final liquidity2 = await torus.addLiquidity(
+      credentials: credentials,
+      token: token2,
+      tokenAmount: 1000000,
+      cvxAmount: 5000000,
+    );
+
+    logger.d('Liquidity1 $liquidity1');
+    logger.d('Liquidity2 $liquidity2');
   });
 }
