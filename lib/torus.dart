@@ -45,4 +45,42 @@ class TorusLibrary {
 
     return result.value;
   }
+
+  Future<int> buy({
+    @required Credentials credentials,
+    @required Address ofToken,
+    @required int amount,
+    @required Address withToken,
+  }) async {
+    final result = await convexClient.transact(
+      address: credentials.address,
+      accountKey: credentials.accountKey,
+      secretKey: credentials.secretKey,
+      source: '$_import (torus/buy $ofToken $amount $withToken)',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
+
+  Future<int> sell({
+    @required Credentials credentials,
+    @required Address ofToken,
+    @required int amount,
+    @required Address withToken,
+  }) async {
+    final result = await convexClient.transact(
+      address: credentials.address,
+      accountKey: credentials.accountKey,
+      secretKey: credentials.secretKey,
+      source: '$_import (torus/sell $ofToken $amount $withToken)',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
 }
