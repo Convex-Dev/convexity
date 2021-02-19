@@ -144,6 +144,11 @@ class Result {
   String toString() {
     return 'Result[errorCode: $errorCode, value: $value]';
   }
+
+  Map<String, dynamic> toJson() => {
+        'errorCode': errorCode,
+        'value': value,
+      };
 }
 
 class ConvexClient {
@@ -221,33 +226,33 @@ class ConvexClient {
     int sequence,
     Lang lang = Lang.convexLisp,
   }) async {
-    var prepareResponse = await prepareTransaction(
+    final prepareResponse = await prepareTransaction(
       source: source,
       address: address,
       sequence: sequence,
       lang: lang,
     );
 
-    var prepareBody = convert.jsonDecode(prepareResponse.body);
+    final prepareBody = convert.jsonDecode(prepareResponse.body);
 
     if (prepareResponse.statusCode != 200) {
       throw Exception(prepareBody['errorCode']);
     }
 
-    var hashHex = prepareBody['hash'];
-    var hashBin = sodium.Sodium.hex2bin(hashHex);
+    final hashHex = prepareBody['hash'];
+    final hashBin = sodium.Sodium.hex2bin(hashHex);
 
-    var sigBin = sign(hashBin, secretKey);
-    var sigHex = sodium.Sodium.bin2hex(sigBin);
+    final sigBin = sign(hashBin, secretKey);
+    final sigHex = sodium.Sodium.bin2hex(sigBin);
 
-    var submitResponse = await submitTransaction(
+    final submitResponse = await submitTransaction(
       address: address,
       accountKey: accountKey,
       hash: hashHex,
       sig: sigHex,
     );
 
-    var submitBody = convert.jsonDecode(submitResponse.body);
+    final submitBody = convert.jsonDecode(submitResponse.body);
 
     if (submitResponse.statusCode != 200) {
       throw Exception(submitBody['errorCode']);
