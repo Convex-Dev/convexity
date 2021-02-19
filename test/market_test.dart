@@ -56,6 +56,12 @@ void main() {
     final newAccountAddress = newAccount.item1;
     final newAccountKeyPair = newAccount.item2;
 
+    final credentials = Credentials(
+      address: newAccountAddress,
+      accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
+      secretKey: newAccountKeyPair.sk,
+    );
+
     final result = await fungibleLibrary.createToken(
       holder: newAccountAddress,
       accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
@@ -95,18 +101,14 @@ void main() {
     expect(result2.value != null, true);
 
     final market = await torus.createMarket(
-      address: newAccountAddress,
-      accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      secretKey: newAccountKeyPair.sk,
+      credentials: credentials,
       token: fungible.address,
     );
 
     logger.d('Market $market');
 
     final liquidity = await torus.addLiquidity(
-      address: newAccountAddress,
-      accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      secretKey: newAccountKeyPair.sk,
+      credentials: credentials,
       token: fungible.address,
       tokenAmount: 1000,
       cvxAmount: 10000000,

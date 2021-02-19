@@ -5,11 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:meta/meta.dart';
 
-// import 'package:convex/client'
-// import 'package:convex/asset'
-// import 'package:convex/exchange'
-// import 'package:convex/trust'
-
 import 'config.dart' as config;
 import 'logger.dart';
 
@@ -93,6 +88,19 @@ AccountType accountType(String s) {
   }
 
   return null;
+}
+
+@immutable
+class Credentials {
+  final Address address;
+  final AccountKey accountKey;
+  final Uint8List secretKey;
+
+  Credentials({
+    this.address,
+    this.accountKey,
+    this.secretKey,
+  });
 }
 
 @immutable

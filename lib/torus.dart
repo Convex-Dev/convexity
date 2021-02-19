@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:meta/meta.dart';
 
 import 'convex.dart';
@@ -13,15 +11,13 @@ class TorusLibrary {
 
   /// Gets or creates the canonical market for a token.
   Future<Address> createMarket({
-    @required Address address,
-    @required AccountKey accountKey,
-    @required Uint8List secretKey,
+    @required Credentials credentials,
     @required Address token,
   }) async {
     final result = await convexClient.transact(
-      address: address,
-      accountKey: accountKey,
-      secretKey: secretKey,
+      address: credentials.address,
+      accountKey: credentials.accountKey,
+      secretKey: credentials.secretKey,
       source: '$_import (torus/create-market $token)',
     );
 
@@ -32,17 +28,15 @@ class TorusLibrary {
   }
 
   Future<int> addLiquidity({
-    @required Address address,
-    @required AccountKey accountKey,
-    @required Uint8List secretKey,
+    @required Credentials credentials,
     @required Address token,
     @required int tokenAmount,
     @required int cvxAmount,
   }) async {
     final result = await convexClient.transact(
-      address: address,
-      accountKey: accountKey,
-      secretKey: secretKey,
+      address: credentials.address,
+      accountKey: credentials.accountKey,
+      secretKey: credentials.secretKey,
       source: '$_import (torus/add-liquidity $token $tokenAmount $cvxAmount)',
     );
 
