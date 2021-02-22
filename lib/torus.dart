@@ -83,4 +83,23 @@ class TorusLibrary {
 
     return result.value;
   }
+
+  Future<double> price({
+    @required Credentials credentials,
+    @required Address ofToken,
+    Address withToken,
+  }) async {
+    final result = await convexClient.transact(
+      address: credentials.address,
+      accountKey: credentials.accountKey,
+      secretKey: credentials.secretKey,
+      source:
+          '$_import (torus/price $ofToken ${withToken != null ? withToken : ''})',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
 }
