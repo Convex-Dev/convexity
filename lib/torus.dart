@@ -11,13 +11,9 @@ class TorusLibrary {
 
   /// Gets or creates the canonical market for a token.
   Future<Address> createMarket({
-    @required Credentials credentials,
     @required Address token,
   }) async {
     final result = await convexClient.transact(
-      address: credentials.address,
-      accountKey: credentials.accountKey,
-      secretKey: credentials.secretKey,
       source: '$_import (torus/create-market $token)',
     );
 
@@ -28,15 +24,11 @@ class TorusLibrary {
   }
 
   Future<int> addLiquidity({
-    @required Credentials credentials,
     @required Address token,
     @required int tokenAmount,
     @required int cvxAmount,
   }) async {
     final result = await convexClient.transact(
-      address: credentials.address,
-      accountKey: credentials.accountKey,
-      secretKey: credentials.secretKey,
       source: '$_import (torus/add-liquidity $token $tokenAmount $cvxAmount)',
     );
 
@@ -47,15 +39,11 @@ class TorusLibrary {
   }
 
   Future<int> buy({
-    @required Credentials credentials,
     @required Address ofToken,
     @required int amount,
     @required Address withToken,
   }) async {
     final result = await convexClient.transact(
-      address: credentials.address,
-      accountKey: credentials.accountKey,
-      secretKey: credentials.secretKey,
       source: '$_import (torus/buy $ofToken $amount $withToken)',
     );
 
@@ -66,15 +54,11 @@ class TorusLibrary {
   }
 
   Future<int> sell({
-    @required Credentials credentials,
     @required Address ofToken,
     @required int amount,
     @required Address withToken,
   }) async {
     final result = await convexClient.transact(
-      address: credentials.address,
-      accountKey: credentials.accountKey,
-      secretKey: credentials.secretKey,
       source: '$_import (torus/sell $ofToken $amount $withToken)',
     );
 
@@ -85,14 +69,10 @@ class TorusLibrary {
   }
 
   Future<double> price({
-    @required Credentials credentials,
     @required Address ofToken,
     Address withToken,
   }) async {
     final result = await convexClient.transact(
-      address: credentials.address,
-      accountKey: credentials.accountKey,
-      secretKey: credentials.secretKey,
       source:
           '$_import (torus/price $ofToken ${withToken != null ? withToken : ''})',
     );

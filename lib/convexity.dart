@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:meta/meta.dart';
 
 import 'convex.dart' as convex;
@@ -96,9 +94,6 @@ class ConvexityClient {
   }
 
   Future<convex.Result> requestToRegister({
-    convex.Address holder,
-    convex.AccountKey holderAccountKey,
-    Uint8List holderSecretKey,
     AAsset aasset,
   }) {
     var fungible = aasset.asset as convex.FungibleToken;
@@ -115,11 +110,6 @@ class ConvexityClient {
     var source =
         '(call ${this.actor.value} (request-registry ${fungible.address} $metadataStr))';
 
-    return convexClient.transact(
-      address: holder,
-      accountKey: holderAccountKey,
-      secretKey: holderSecretKey,
-      source: source,
-    );
+    return convexClient.transact(source: source);
   }
 }

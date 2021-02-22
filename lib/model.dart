@@ -264,7 +264,8 @@ class Model {
 
   KeyPair get activeKeyPair => keyring[activeAddress];
 
-  AccountKey get activeAccountKey => AccountKey.fromBin(activeKeyPair.pk);
+  AccountKey get activeAccountKey =>
+      activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair.pk) : null;
 
   Model copyWith({
     Uri convexServerUri,
@@ -341,6 +342,11 @@ class AppState with ChangeNotifier {
   ConvexClient convexClient() => ConvexClient(
         client: client,
         server: model.convexServerUri,
+        credentials: Credentials(
+          address: model.activeAddress,
+          accountKey: model.activeAccountKey,
+          secretKey: model.activeKeyPair?.sk,
+        ),
       );
 
   FungibleLibrary fungibleLibrary() =>

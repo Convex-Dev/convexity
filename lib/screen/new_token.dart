@@ -76,9 +76,6 @@ class _CreateTokenState extends State<_CreateToken> {
     // Step 1 - deploy.
     try {
       _result = await appState.fungibleLibrary().createToken(
-            holder: appState.model.activeAddress,
-            accountKey: appState.model.activeAccountKey,
-            secretKey: appState.model.activeKeyPair.sk,
             supply:
                 _newFungibleToken.supply * pow(10, _newFungibleToken.decimals),
           );
@@ -132,12 +129,8 @@ class _CreateTokenState extends State<_CreateToken> {
     Result registerResult;
 
     try {
-      registerResult = await appState.convexityClient().requestToRegister(
-            holder: appState.model.activeAddress,
-            holderAccountKey: appState.model.activeAccountKey,
-            holderSecretKey: appState.model.activeKeyPair.sk,
-            aasset: aasset,
-          );
+      registerResult =
+          await appState.convexityClient().requestToRegister(aasset: aasset);
     } on Exception catch (e) {
       print('Failed to register Token: $e');
 

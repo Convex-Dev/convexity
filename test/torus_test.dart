@@ -29,62 +29,60 @@ Future<Tuple2<Address, KeyPair>> _setupNewAccount(
 }
 
 void main() {
-  final convexClient = ConvexClient(
+  var convexClient = ConvexClient(
     server: convexWorldUri,
     client: http.Client(),
   );
-
-  final fungibleLibrary = FungibleLibrary(
-    convexClient: convexClient,
-  );
-
-  final assetLibrary = AssetLibrary(
-    convexClient: convexClient,
-  );
-
-  final torus = TorusLibrary(convexClient: convexClient);
 
   test('Market - Buy & sell', () async {
     final newAccount = await _setupNewAccount(convexClient);
     final newAccountAddress = newAccount.item1;
     final newAccountKeyPair = newAccount.item2;
 
-    final credentials = Credentials(
-      address: newAccountAddress,
-      accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      secretKey: newAccountKeyPair.sk,
+    // // Update credentials.
+    convexClient.setCredentials(
+      Credentials(
+        address: newAccountAddress,
+        accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
+        secretKey: newAccountKeyPair.sk,
+      ),
     );
 
+    final fungibleLibrary = FungibleLibrary(
+      convexClient: convexClient,
+    );
+
+    final assetLibrary = AssetLibrary(
+      convexClient: convexClient,
+    );
+
+    final torus = TorusLibrary(convexClient: convexClient);
+
     final token1 = await fungibleLibrary.createToken2(
-      credentials: credentials,
       supply: 1000000,
     );
 
     logger.d('Token1 $token1');
 
     final token2 = await fungibleLibrary.createToken2(
-      credentials: credentials,
       supply: 1000000,
     );
 
     logger.d('Token2 $token2');
 
     final market1 = await torus.createMarket(
-      credentials: credentials,
       token: token1,
     );
 
     logger.d('Market1 $market1 (Token $token1)');
 
     final market2 = await torus.createMarket(
-      credentials: credentials,
       token: token2,
     );
 
     logger.d('Market2 $market2 (Token $token2)');
 
     final liquidity1 = await torus.addLiquidity(
-      credentials: credentials,
       token: token1,
       tokenAmount: 80000,
       cvxAmount: 5000000,
@@ -93,7 +91,6 @@ void main() {
     logger.d('Liquidity1 (Token1 $token1): $liquidity1');
 
     final liquidity2 = await torus.addLiquidity(
-      credentials: credentials,
       token: token2,
       tokenAmount: 80000,
       cvxAmount: 5000000,
@@ -102,14 +99,12 @@ void main() {
     logger.d('Liquidity2 (Token2 $token2): $liquidity2');
 
     final price1 = await torus.price(
-      credentials: credentials,
       ofToken: token1,
     );
 
     logger.d('Token1 $token1 price: $price1');
 
     final price2 = await torus.price(
-      credentials: credentials,
       ofToken: token1,
       withToken: token2,
     );
@@ -117,7 +112,6 @@ void main() {
     logger.d('Token2 $token1 with $token2 price: $price2');
 
     final pricePaid = await torus.buy(
-      credentials: credentials,
       ofToken: token1,
       amount: 1,
       withToken: token2,
@@ -133,7 +127,6 @@ void main() {
     logger.d('Token1 $token1 balance: $token1Balance');
 
     final sellToken1Price = await torus.sell(
-      credentials: credentials,
       ofToken: token1,
       amount: 100,
       withToken: token2,
@@ -142,7 +135,6 @@ void main() {
     logger.d('Token1 $token1 sell price: $sellToken1Price');
 
     final sellToken2Price = await torus.sell(
-      credentials: credentials,
       ofToken: token2,
       amount: 50,
       withToken: token1,

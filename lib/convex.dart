@@ -163,10 +163,17 @@ class ConvexClient {
   final Uri server;
   final http.Client client;
 
+  // Credentials can change over time.
+  Credentials credentials;
+
   ConvexClient({
     @required this.server,
     @required this.client,
+    this.credentials,
   });
+
+  void setCredentials(Credentials credentials) =>
+      this.credentials = credentials;
 
   Uri _uri(String path) => Uri(
         scheme: server.scheme,
@@ -176,16 +183,18 @@ class ConvexClient {
       );
 
   Future<http.Response> prepareTransaction({
-    @required Address address,
     @required String source,
     int sequence,
     Lang lang = Lang.convexLisp,
   }) {
+    if (credentials == null || credentials.address == null)
+      throw Exception('Missing credentials.');
+
     final uri = _uri('api/v1/transaction/prepare');
 
     Map<String, dynamic> body = {
       'source': source,
-      'address': address.value,
+      'address': credentials.address.value,
       'lang': langString(lang),
     };
 
@@ -203,16 +212,18 @@ class ConvexClient {
   }
 
   Future<http.Response> submitTransaction({
-    @required Address address,
-    @required AccountKey accountKey,
     @required String hash,
     @required String sig,
   }) {
+    if (credentials == null ||
+        credentials.address == null ||
+        credentials.accountKey == null) throw Exception('Missing credentials.');
+
     final uri = _uri('api/v1/transaction/submit');
 
     Map<String, dynamic> body = {
-      'address': address.value,
-      'accountKey': accountKey.value,
+      'address': credentials.address.value,
+      'accountKey': credentials.accountKey.value,
       'hash': hash,
       'sig': sig,
     };
@@ -227,35 +238,29 @@ class ConvexClient {
   }
 
   Future<Result> transact({
-    @required Address address,
     @required String source,
-    @required AccountKey accountKey,
-    @required Uint8List secretKey,
     int sequence,
     Lang lang = Lang.convexLisp,
   }) async {
-    final prepareResponse = await prepareTransaction(
+    final prepared = await prepareTransaction(
       source: source,
-      address: address,
       sequence: sequence,
       lang: lang,
     );
 
-    final prepareBody = convert.jsonDecode(prepareResponse.body);
+    final preparedBody = convert.jsonDecode(prepared.body);
 
-    if (prepareResponse.statusCode != 200) {
-      throw Exception(prepareBody['errorCode']);
+    if (prepared.statusCode != 200) {
+      throw Exception(preparedBody['errorCode']);
     }
 
-    final hashHex = prepareBody['hash'];
+    final hashHex = preparedBody['hash'];
     final hashBin = sodium.Sodium.hex2bin(hashHex);
 
-    final sigBin = sign(hashBin, secretKey);
+    final sigBin = sign(hashBin, credentials.secretKey);
     final sigHex = sodium.Sodium.bin2hex(sigBin);
 
     final submitResponse = await submitTransaction(
-      address: address,
-      accountKey: accountKey,
       hash: hashHex,
       sig: sigHex,
     );
@@ -306,13 +311,13 @@ class ConvexClient {
   }
 
   Future<http.Response> faucet({
-    @required Address address,
+    Address address,
     @required int amount,
   }) async {
     final uri = _uri('api/v1/faucet');
 
     var body = convert.jsonEncode({
-      'address': address.value,
+      'address': address != null ? address.value : credentials.address.value,
       'amount': amount,
     });
 
@@ -362,8 +367,13 @@ class ConvexClient {
     );
   }
 
-  Future<Account> accountDetails(Address address) async {
-    final uri = _uri('api/v1/accounts/${address.value}');
+  Future<Account> accountDetails([Address address]) async {
+    if (address == null && credentials?.address == null)
+      throw Exception('Missing credentials.');
+
+    final uri = _uri(
+      'api/v1/accounts/${address != null ? address.value : credentials.address.value}',
+    );
 
     final response = await client.get(uri);
 
@@ -373,6 +383,12 @@ class ConvexClient {
 
     return Account.fromJson(response.body);
   }
+
+  ConvexClient copyWith({Credentials credentials}) => ConvexClient(
+        server: this.server,
+        client: this.client,
+        credentials: credentials ?? this.credentials,
+      );
 }
 
 abstract class Asset {}
@@ -544,9 +560,6 @@ class FungibleLibrary {
     @required int amount,
   }) =>
       convexClient.transact(
-        address: holder,
-        secretKey: holderSecretKey,
-        accountKey: holderAccountKey,
         source: '(import convex.fungible :as fungible)'
             '(fungible/transfer $token $receiver $amount)',
       );
@@ -555,15 +568,9 @@ class FungibleLibrary {
   ///
   /// Returns the Address of the deployed Token.
   Future<Result> createToken({
-    @required Address holder,
-    @required AccountKey accountKey,
-    @required Uint8List secretKey,
     @required int supply,
   }) =>
       convexClient.transact(
-        address: holder,
-        accountKey: accountKey,
-        secretKey: secretKey,
         source: '(import convex.fungible :as fungible)'
             '(deploy (fungible/build-token {:supply $supply}))',
       );
@@ -572,13 +579,9 @@ class FungibleLibrary {
   ///
   /// Returns the Address of the deployed Token.
   Future<Address> createToken2({
-    @required Credentials credentials,
     @required int supply,
   }) async {
     final result = await convexClient.transact(
-      address: credentials.address,
-      accountKey: credentials.accountKey,
-      secretKey: credentials.secretKey,
       source: '(import convex.fungible :as fungible)'
           '(deploy (fungible/build-token {:supply $supply}))',
     );
@@ -616,9 +619,6 @@ class NonFungibleLibrary {
         '(deploy (nft/create-token $_data nil) )';
 
     return convexClient.transact(
-      address: caller,
-      accountKey: callerAccountKey,
-      secretKey: callerSecretKey,
       source: _source,
     );
   }
@@ -662,9 +662,6 @@ class AssetLibrary {
         '(asset/transfer $receiver [ $nft, #{ ${tokens.join(",")} } ])';
 
     return convexClient.transact(
-      address: holder,
-      accountKey: holderAccountKey,
-      secretKey: holderSecretKey,
       source: _source,
     );
   }
@@ -681,9 +678,6 @@ class AssetLibrary {
         '(asset/transfer $receiver [ $token, $amount ])';
 
     return convexClient.transact(
-      address: holder,
-      accountKey: holderAccountKey,
-      secretKey: holderSecretKey,
       source: _source,
     );
   }

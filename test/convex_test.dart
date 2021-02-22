@@ -75,24 +75,59 @@ void main() {
   });
 
   group('Convex Client', () {
+    test('Missing credentials', () async {
+      final convexClient = ConvexClient(
+        server: convexWorldUri,
+        client: http.Client(),
+      );
+
+      expect(
+        () async => await convexClient.accountDetails(),
+        throwsException,
+      );
+
+      expect(
+        () async => await convexClient.prepareTransaction(source: ''),
+        throwsException,
+      );
+
+      expect(
+        () async => await convexClient.submitTransaction(hash: '', sig: ''),
+        throwsException,
+      );
+
+      expect(
+        () async => await convexClient.transact(source: ''),
+        throwsException,
+      );
+    });
+
     test('Create Account, check details, top up', () async {
       final generatedKeyPair = CryptoSign.randomKeys();
 
+      final generatedAccountKey = AccountKey.fromBin(generatedKeyPair.pk);
+
       final generatedAddress = await convexClient.createAccount(
-        accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+        accountKey: generatedAccountKey,
       );
 
       expect(generatedAddress != null, true);
 
-      final account = await convexClient.accountDetails(generatedAddress);
+      // Update credentials.
+      convexClient.setCredentials(
+        Credentials(
+          address: generatedAddress,
+          accountKey: generatedAccountKey,
+          secretKey: generatedKeyPair.sk,
+        ),
+      );
+
+      final account = await convexClient.accountDetails();
 
       expect(account.type, AccountType.user);
       expect(account.address, generatedAddress);
 
-      final faucetResponse = await convexClient.faucet(
-        address: account.address,
-        amount: 1000000,
-      );
+      final faucetResponse = await convexClient.faucet(amount: 1000000);
 
       final faucetResponseBody = convert.jsonDecode(faucetResponse.body);
 
@@ -106,7 +141,6 @@ void main() {
 
     test('Prepare & Submit Transaction', () async {
       final prepareResponse = await convexClient.prepareTransaction(
-        address: Address(9),
         source: '(inc 1)',
       );
 
@@ -122,8 +156,6 @@ void main() {
       });
 
       final submitResponse = await convexClient.submitTransaction(
-        address: Address(9),
-        accountKey: AccountKey(''),
         hash: prepared['hash'],
         sig: '',
       );
