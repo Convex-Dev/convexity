@@ -12,6 +12,11 @@ import 'logger.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
 
+enum ExchangeAction {
+  buy,
+  sell,
+}
+
 @immutable
 class Contact {
   final String name;
