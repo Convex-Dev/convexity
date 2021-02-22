@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'widget.dart';
+import 'screen/exchange.dart';
 import 'screen/staking_peer.dart';
 import 'screen/launcher.dart';
 import 'screen/home.dart';
@@ -47,6 +48,7 @@ const String nonFungibleTransfer = '/nonFungibleTransfer';
 const String activity = '/activity';
 const String staking = '/staking';
 const String stakingPeer = '/stakingPeer';
+const String exchange = '/exchange';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -71,4 +73,5 @@ Map<String, WidgetBuilder> routes() => {
       activity: (context) => ActivityScreen(),
       staking: (context) => StakingScreen(),
       stakingPeer: (context) => StakingPeerScreen(),
+      exchange: (context) => ExchangeScreen(),
     };

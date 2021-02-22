@@ -172,3 +172,8 @@ Future<dynamic> pushStakingPeer(
       route.stakingPeer,
       arguments: peer,
     );
+
+Future<dynamic> pushExchange(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.exchange,
+    );
