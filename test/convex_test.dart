@@ -82,6 +82,11 @@ void main() {
       );
 
       expect(
+        () async => await convexClient.createAccount(),
+        throwsException,
+      );
+
+      expect(
         () async => await convexClient.accountDetails(),
         throwsException,
       );
@@ -108,7 +113,7 @@ void main() {
       final generatedAccountKey = AccountKey.fromBin(generatedKeyPair.pk);
 
       final generatedAddress = await convexClient.createAccount(
-        accountKey: generatedAccountKey,
+        generatedAccountKey,
       );
 
       expect(generatedAddress != null, true);

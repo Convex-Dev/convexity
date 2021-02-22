@@ -277,9 +277,12 @@ class ConvexClient {
     );
   }
 
-  Future<Address> createAccount({@required AccountKey accountKey}) async {
+  Future<Address> createAccount([AccountKey accountKey]) async {
+    if (accountKey == null && credentials?.accountKey == null)
+      throw Exception('Missing AccountKey.');
+
     final body = convert.jsonEncode({
-      'accountKey': accountKey.value,
+      'accountKey': accountKey?.value ?? credentials.accountKey.value,
     });
 
     if (config.isDebug()) {

@@ -13,7 +13,7 @@ Future<Tuple2<Address, KeyPair>> _setupNewAccount(
   final generatedKeyPair = CryptoSign.randomKeys();
 
   final generatedAddress = await convexClient.createAccount(
-    accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+    AccountKey.fromBin(generatedKeyPair.pk),
   );
 
   final faucetResponse = await convexClient.faucet(
