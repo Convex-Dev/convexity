@@ -290,10 +290,12 @@ class AssetsCollection extends StatefulWidget {
   final Map<AAsset, Future> balanceCache = {};
 
   String empty;
+  void Function(AAsset) onAssetTap;
 
   AssetsCollection({
     Key key,
     @required assets,
+    void Function(AAsset) onAssetTap,
     balanceCache,
     empty,
   }) : super(key: key) {
@@ -302,6 +304,8 @@ class AssetsCollection extends StatefulWidget {
     if (assets != null) {
       this.assets.addAll(Set.from(assets));
     }
+
+    this.onAssetTap = onAssetTap;
 
     if (balanceCache != null) {
       this.balanceCache.addAll(Map.from(balanceCache));
@@ -367,6 +371,17 @@ class _AssetsCollectionState extends State<AssetsCollection> {
                 type: AssetType.fungible,
                 asset: fungible,
               );
+
+              // On tap behavior is conditional to having explicitly
+              // set a callback for when tapping on a Asset.
+              // If it is set, call the callback and return.
+              // Otherwise, push the Asset screen.
+
+              if (widget.onAssetTap != null) {
+                widget.onAssetTap(asset);
+
+                return;
+              }
 
               final result = nav.pushAsset(
                 context,

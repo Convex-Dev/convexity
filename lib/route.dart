@@ -23,6 +23,7 @@ import 'screen/non_fungible_token.dart';
 import 'screen/non_fungible_transfer.dart';
 import 'screen/activity.dart';
 import 'screen/staking.dart';
+import 'screen/select_fungible.dart';
 
 const String dev = '/dev';
 const String launcher = '/launcher';
@@ -49,6 +50,7 @@ const String activity = '/activity';
 const String staking = '/staking';
 const String stakingPeer = '/stakingPeer';
 const String exchange = '/exchange';
+const String selectFungible = '/selectFungigle';
 
 Map<String, WidgetBuilder> routes() => {
       dev: (context) => DevScreen(),
@@ -74,4 +76,5 @@ Map<String, WidgetBuilder> routes() => {
       staking: (context) => StakingScreen(),
       stakingPeer: (context) => StakingPeerScreen(),
       exchange: (context) => ExchangeScreen(),
+      selectFungible: (context) => SelectFungibleScreen(),
     };

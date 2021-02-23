@@ -1,9 +1,10 @@
-import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../convex.dart';
 import '../model.dart';
 import '../widget.dart';
+import '../nav.dart' as nav;
 
 class ExchangeScreen extends StatelessWidget {
   @override
@@ -40,7 +41,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   ExchangeAction action;
 
   FungibleToken ofToken = FungibleToken(
-    address: Address(1),
+    address: Address(-1),
     metadata: FungibleTokenMetadata(
       name: 'CVX',
       description: 'Convex Coin',
@@ -53,7 +54,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   int amount;
 
   FungibleToken withToken = FungibleToken(
-    address: Address(1),
+    address: Address(-1),
     metadata: FungibleTokenMetadata(
       name: 'CVX',
       description: 'Convex Coin',
@@ -127,14 +128,24 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             constraints: BoxConstraints.tightFor(width: 60, height: 60),
             child: ElevatedButton(
               child: Text(
-                'CVX',
+                ofToken.metadata.symbol,
                 style: Theme.of(context)
                     .textTheme
                     .caption
                     .copyWith(color: Colors.white),
                 overflow: TextOverflow.ellipsis,
               ),
-              onPressed: () {},
+              onPressed: () {
+                nav.pushSelectFungible(context).then(
+                  (fungible) {
+                    if (fungible != null) {
+                      setState(() {
+                        ofToken = fungible;
+                      });
+                    }
+                  },
+                );
+              },
               style: ElevatedButton.styleFrom(
                 primary: Colors.orange,
                 shape: CircleBorder(),

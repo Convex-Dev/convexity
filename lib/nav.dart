@@ -182,3 +182,8 @@ Future<dynamic> pushExchange(
       route.exchange,
       arguments: action,
     );
+
+Future<dynamic> pushSelectFungible(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.selectFungible,
+    );
