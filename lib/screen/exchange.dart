@@ -294,7 +294,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            'Sorry. It was not possible to buy ${ofToken.metadata.symbol}.',
+                            'Sorry. It was not possible to buy ${ofToken.metadata.symbol}.\n\n${snapshot.error}',
                           ),
                         ),
                         Gap(10),
