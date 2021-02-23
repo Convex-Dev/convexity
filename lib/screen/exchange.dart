@@ -12,14 +12,14 @@ import '../route.dart' as route;
 class ExchangeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeAction action = ModalRoute.of(context).settings.arguments;
+    final ExchangeParams params = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
       body: Container(
         padding: defaultScreenPadding,
         child: ExchangeScreenBody(
-          action: action,
+          params: params,
         ),
       ),
     );
@@ -27,13 +27,13 @@ class ExchangeScreen extends StatelessWidget {
 }
 
 class ExchangeScreenBody extends StatefulWidget {
-  final ExchangeAction action;
+  final ExchangeParams params;
 
-  const ExchangeScreenBody({Key key, this.action}) : super(key: key);
+  const ExchangeScreenBody({Key key, this.params}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ExchangeScreenBodyState(
-        action: action,
+        params: params,
       );
 }
 
@@ -41,9 +41,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   final buyIndex = 0;
   final sellIndex = 1;
 
-  ExchangeAction action;
-
-  FungibleToken ofToken = FungibleToken(
+  final cvx = FungibleToken(
     address: Address(-1),
     metadata: FungibleTokenMetadata(
       name: 'CVX',
@@ -54,21 +52,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     ),
   );
 
-  int amount;
+  ExchangeParams params;
 
-  FungibleToken withToken = FungibleToken(
-    address: Address(-1),
-    metadata: FungibleTokenMetadata(
-      name: 'CVX',
-      description: 'Convex Coin',
-      symbol: 'CVX',
-      currencySymbol: '\$',
-      decimals: 2,
-    ),
-  );
-
-  _ExchangeScreenBodyState({ExchangeAction action}) {
-    this.action = action ?? ExchangeAction.buy;
+  _ExchangeScreenBodyState({ExchangeParams params}) {
+    this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
 
   @override
@@ -87,7 +74,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               width: double.infinity,
               child: ElevatedButton(
                 child: Text(actionText()),
-                onPressed: amount != null ? confirm : null,
+                onPressed: params.amount != null ? confirm : null,
               ),
             )
           ],
@@ -97,7 +84,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   }
 
   String actionText() {
-    switch (action) {
+    switch (params.action) {
       case ExchangeAction.buy:
         return 'Buy';
       case ExchangeAction.sell:
@@ -113,12 +100,14 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           Text('Sell'),
         ],
         isSelected: [
-          action == ExchangeAction.buy,
-          action == ExchangeAction.sell,
+          params.action == ExchangeAction.buy,
+          params.action == ExchangeAction.sell,
         ],
         onPressed: (i) {
           setState(() {
-            action = i == 0 ? ExchangeAction.buy : ExchangeAction.sell;
+            params = params.copyWith(
+              action: i == 0 ? ExchangeAction.buy : ExchangeAction.sell,
+            );
           });
         },
       );
@@ -131,7 +120,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             constraints: BoxConstraints.tightFor(width: 60, height: 60),
             child: ElevatedButton(
               child: Text(
-                ofToken.metadata.symbol,
+                params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
                 style: Theme.of(context)
                     .textTheme
                     .caption
@@ -143,7 +132,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   (fungible) {
                     if (fungible != null) {
                       setState(() {
-                        ofToken = fungible;
+                        params = params.copyWith(ofToken: fungible);
                       });
                     }
                   },
@@ -162,7 +151,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             child: TextField(
               onChanged: (s) {
                 setState(() {
-                  amount = int.tryParse(s);
+                  params = params.copyWith(amount: int.tryParse(s));
                 });
               },
             ),
@@ -178,7 +167,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             constraints: BoxConstraints.tightFor(width: 60, height: 60),
             child: ElevatedButton(
               child: Text(
-                withToken.metadata.symbol,
+                params.withToken?.metadata?.symbol ?? cvx.metadata.symbol,
                 style: Theme.of(context)
                     .textTheme
                     .caption
@@ -190,7 +179,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   (fungible) {
                     if (fungible != null) {
                       setState(() {
-                        withToken = fungible;
+                        params = params.copyWith(withToken: fungible);
                       });
                     }
                   },
@@ -227,7 +216,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${actionText()} $amount ${ofToken.metadata.name} with  ${withToken.metadata.name}?',
+                      '${actionText()} $params.amount ${params.ofToken.metadata.name} with  ${params.withToken.metadata.name}?',
                     ),
                   ],
                 ),
@@ -251,11 +240,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     final appState = context.read<AppState>();
 
-    if (action == ExchangeAction.buy) {
+    if (params.action == ExchangeAction.buy) {
       final bought = appState.torus().buy(
-            ofToken: ofToken.address,
-            amount: amount,
-            withToken: withToken.address,
+            ofToken: params.ofToken.address,
+            amount: params.amount,
+            withToken: params.withToken.address,
           );
 
       showModalBottomSheet(
@@ -294,7 +283,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            'Sorry. It was not possible to buy ${ofToken.metadata.symbol}.\n\n${snapshot.error}',
+                            'Sorry. It was not possible to buy ${params.ofToken.metadata.symbol}.\n\n${snapshot.error}',
                           ),
                         ),
                         Gap(10),
@@ -324,7 +313,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Bought $amount.',
+                              'Bought ${params.amount}.',
                             ),
                           ],
                         ),

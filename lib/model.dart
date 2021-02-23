@@ -19,6 +19,34 @@ enum ExchangeAction {
 }
 
 @immutable
+class ExchangeParams {
+  final ExchangeAction action;
+  final FungibleToken ofToken;
+  final int amount;
+  final FungibleToken withToken;
+
+  ExchangeParams({
+    this.action,
+    this.ofToken,
+    this.amount,
+    this.withToken,
+  });
+
+  ExchangeParams copyWith({
+    ExchangeAction action,
+    FungibleToken ofToken,
+    int amount,
+    FungibleToken withToken,
+  }) =>
+      ExchangeParams(
+        action: action ?? this.action,
+        ofToken: ofToken ?? this.ofToken,
+        amount: amount ?? this.amount,
+        withToken: withToken ?? this.withToken,
+      );
+}
+
+@immutable
 class Contact {
   final String name;
   final Address address;

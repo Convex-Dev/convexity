@@ -362,7 +362,10 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           onPressed: () {
                             nav.pushExchange(
                               context,
-                              action: ExchangeAction.buy,
+                              params: ExchangeParams(
+                                action: ExchangeAction.buy,
+                                ofToken: widget.aasset.asset,
+                              ),
                             );
                           },
                         ),
@@ -372,7 +375,10 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           onPressed: () {
                             nav.pushExchange(
                               context,
-                              action: ExchangeAction.sell,
+                              params: ExchangeParams(
+                                action: ExchangeAction.buy,
+                                ofToken: widget.aasset.asset,
+                              ),
                             );
                           },
                         ),
