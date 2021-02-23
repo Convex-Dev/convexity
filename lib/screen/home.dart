@@ -82,6 +82,12 @@ class HomeScreenBody extends StatelessWidget {
         onTap: () => nav.pushAssets(context),
       ),
       ListTile(
+        leading: Icon(Icons.shopping_bag_sharp),
+        title: Text('Exchange'),
+        subtitle: Text('Buy and sell Tokens'),
+        onTap: () => nav.pushExchange(context),
+      ),
+      ListTile(
         leading: Icon(Icons.contacts),
         title: Text('Address Book'),
         subtitle: Text('Manage trusted contacts'),
