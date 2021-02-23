@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
+import 'torus.dart';
 import 'convex.dart';
 import 'convexity.dart';
 import 'logger.dart';
@@ -358,6 +359,8 @@ class AppState with ChangeNotifier {
       FungibleLibrary(convexClient: convexClient());
 
   AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
+
+  TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
 
   ConvexityClient convexityClient() => model.convexityAddress != null
       ? ConvexityClient(

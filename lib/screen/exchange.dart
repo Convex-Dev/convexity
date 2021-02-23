@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../convex.dart';
+import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../route.dart' as route;
 
 class ExchangeScreen extends StatelessWidget {
   @override
@@ -203,7 +206,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   void confirm() async {
-    var confirmation = await showModalBottomSheet(
+    final confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
         return Container(
@@ -241,5 +244,109 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         );
       },
     );
+
+    if (confirmation != true) {
+      return;
+    }
+
+    final appState = context.read<AppState>();
+
+    if (action == ExchangeAction.buy) {
+      final bought = appState.torus().buy(
+            ofToken: ofToken.address,
+            amount: amount,
+            withToken: withToken.address,
+          );
+
+      showModalBottomSheet(
+        context: context,
+        isDismissible: false,
+        enableDrag: false,
+        builder: (BuildContext context) {
+          return Container(
+            height: 300,
+            child: Center(
+              child: FutureBuilder(
+                future: bought,
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<int> snapshot,
+                ) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+
+                  if (snapshot.hasError) {
+                    logger.e(
+                      'Failed to buy: ${snapshot.error}',
+                    );
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.error,
+                          size: 80,
+                          color: Colors.black12,
+                        ),
+                        Gap(10),
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Text(
+                            'Sorry. It was not possible to buy ${ofToken.metadata.symbol}.',
+                          ),
+                        ),
+                        Gap(10),
+                        ElevatedButton(
+                          child: const Text('Okay'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.check,
+                        size: 80,
+                        color: Colors.green,
+                      ),
+                      Gap(10),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Bought $amount.',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Done'),
+                        onPressed: () {
+                          Navigator.popUntil(
+                            context,
+                            ModalRoute.withName(route.asset),
+                          );
+                        },
+                      )
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }
