@@ -175,14 +175,24 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             constraints: BoxConstraints.tightFor(width: 60, height: 60),
             child: ElevatedButton(
               child: Text(
-                'CVX',
+                withToken.metadata.symbol,
                 style: Theme.of(context)
                     .textTheme
                     .caption
                     .copyWith(color: Colors.white),
                 overflow: TextOverflow.ellipsis,
               ),
-              onPressed: () {},
+              onPressed: () {
+                nav.pushSelectFungible(context).then(
+                  (fungible) {
+                    if (fungible != null) {
+                      setState(() {
+                        withToken = fungible;
+                      });
+                    }
+                  },
+                );
+              },
               style: ElevatedButton.styleFrom(
                 primary: Colors.orange,
                 shape: CircleBorder(),
