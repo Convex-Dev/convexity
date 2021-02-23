@@ -38,9 +38,30 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   final sellIndex = 1;
 
   ExchangeAction action;
-  Address ofToken;
+
+  FungibleToken ofToken = FungibleToken(
+    address: Address(1),
+    metadata: FungibleTokenMetadata(
+      name: 'CVX',
+      description: 'Convex Coin',
+      symbol: 'CVX',
+      currencySymbol: '\$',
+      decimals: 2,
+    ),
+  );
+
   int amount;
-  Address withToken;
+
+  FungibleToken withToken = FungibleToken(
+    address: Address(1),
+    metadata: FungibleTokenMetadata(
+      name: 'CVX',
+      description: 'Convex Coin',
+      symbol: 'CVX',
+      currencySymbol: '\$',
+      decimals: 2,
+    ),
+  );
 
   _ExchangeScreenBodyState({ExchangeAction action}) {
     this.action = action ?? ExchangeAction.buy;
@@ -62,7 +83,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               width: double.infinity,
               child: ElevatedButton(
                 child: Text(actionText()),
-                onPressed: () {},
+                onPressed: amount != null ? confirm : null,
               ),
             )
           ],
@@ -159,4 +180,45 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           ),
         ],
       );
+
+  void confirm() async {
+    var confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${actionText()} $amount ${ofToken.metadata.name} with  ${withToken.metadata.name}?',
+                    ),
+                  ],
+                ),
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: const Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
