@@ -197,8 +197,8 @@ class _CreateTokenState extends State<_CreateToken> {
               size: 80,
               color: Colors.black12,
             ),
-            const Text(
-              'Sorry. It was not possible to create your Token.',
+            Text(
+              'Sorry. It was not possible to create your Token.\n\n${_newTokenResult?.errorCode} ${_newTokenResult?.value}',
             ),
             if (_newTokenResult != null)
               Text(

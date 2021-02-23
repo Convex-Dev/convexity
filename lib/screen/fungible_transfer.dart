@@ -218,7 +218,7 @@ class _FungibleTransferScreenBodyState
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Text(
-                          'Sorry. Your transfer could not be completed.',
+                          'Sorry. Your transfer could not be completed.\n\n${snapshot.data.errorCode} ${snapshot.data.value}',
                         ),
                       ),
                       Gap(10),
