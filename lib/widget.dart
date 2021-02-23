@@ -285,14 +285,14 @@ Widget nonFungibleTokenCard({
     });
 
 // ignore: must_be_immutable
-class AssetsCollection extends StatefulWidget {
+class AssetCollection extends StatefulWidget {
   final Set<AAsset> assets = {};
   final Map<AAsset, Future> balanceCache = {};
 
   String empty;
   void Function(AAsset) onAssetTap;
 
-  AssetsCollection({
+  AssetCollection({
     Key key,
     @required assets,
     void Function(AAsset) onAssetTap,
@@ -313,10 +313,10 @@ class AssetsCollection extends StatefulWidget {
   }
 
   @override
-  _AssetsCollectionState createState() => _AssetsCollectionState();
+  _AssetCollectionState createState() => _AssetCollectionState();
 }
 
-class _AssetsCollectionState extends State<AssetsCollection> {
+class _AssetCollectionState extends State<AssetCollection> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();

@@ -27,7 +27,7 @@ class _SelectFungibleScreenBody extends StatelessWidget {
       (element) => element.type == AssetType.fungible,
     );
 
-    return AssetsCollection(
+    return AssetCollection(
       assets: fungibles,
       onAssetTap: (asset) {
         Navigator.pop(context, asset.asset as FungibleToken);
