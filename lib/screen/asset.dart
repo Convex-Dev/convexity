@@ -376,7 +376,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             nav.pushExchange(
                               context,
                               params: ExchangeParams(
-                                action: ExchangeAction.buy,
+                                action: ExchangeAction.sell,
                                 ofToken: widget.aasset.asset,
                               ),
                             );
