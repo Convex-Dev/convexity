@@ -9,6 +9,22 @@ class TorusLibrary {
 
   TorusLibrary({@required this.convexClient});
 
+  /// Gets the canonical market for a token. Returns nil if the market does not exist.
+  Future<Address> getMarket({@required Address token}) async {
+    final result = await convexClient.transact(
+      source: '$_import (torus/get-market $token)',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    if (result.value != null) {
+      return Address(result.value);
+    }
+
+    return null;
+  }
+
   /// Gets or creates the canonical market for a token.
   Future<Address> createMarket({
     @required Address token,
