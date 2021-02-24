@@ -156,7 +156,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                   );
                 },
-              );
+              ).then((value) {
+                if (value != null) {
+                  setState(() {
+                    this.ofTokenPrice = context
+                        .read<AppState>()
+                        .torus()
+                        .price(ofToken: params.ofToken.address);
+                  });
+                }
+              });
             },
           ),
         ],
@@ -404,73 +413,109 @@ class _TokenLiquidity extends StatefulWidget {
 class _TokenLiquidityState extends State<_TokenLiquidity> {
   int tokenAmount;
   int cvxAmount;
+  Future<int> liquidity;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: defaultScreenPadding,
-      child: Column(
-        children: <Widget>[
-          Text(
-            widget.token.metadata.symbol,
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          Text(
-            widget.token.metadata.name,
-            style: Theme.of(context).textTheme.caption,
-          ),
-          Gap(20),
-          TextField(
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: 'Amount of ${widget.token.metadata.symbol}',
-              helperText: 'Helper text',
+      child: liquidity != null
+          ? FutureBuilder<int>(
+              future: liquidity,
+              builder: (context, snapshot) {
+                if (ConnectionState.waiting == snapshot.connectionState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    Text(
+                      '${snapshot.hasError ? snapshot.error : snapshot.data}',
+                    ),
+                    Gap(20),
+                    ElevatedButton(
+                      child: Text('Done'),
+                      onPressed: () => Navigator.pop(context, snapshot.data),
+                    )
+                  ],
+                );
+              },
+            )
+          : Column(
+              children: <Widget>[
+                Text(
+                  widget.token.metadata.symbol,
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+                Text(
+                  widget.token.metadata.name,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Gap(20),
+                TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: 'Amount of ${widget.token.metadata.symbol}',
+                    helperText: 'Helper text',
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      tokenAmount = int.tryParse(value) ?? 0;
+                    });
+                  },
+                ),
+                Gap(20),
+                TextField(
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    labelText: 'Amount of CVX',
+                    helperText: 'Helper text',
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      cvxAmount = int.tryParse(value) ?? 0;
+                    });
+                  },
+                ),
+                Gap(30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: Text('Confirm'),
+                      onPressed: tokenAmount != null &&
+                              tokenAmount > 0 &&
+                              cvxAmount != null &&
+                              cvxAmount > 0
+                          ? () {
+                              setState(() {
+                                liquidity = context
+                                    .read<AppState>()
+                                    .torus()
+                                    .addLiquidity(
+                                      token: widget.token.address,
+                                      tokenAmount: tokenAmount,
+                                      cvxAmount: cvxAmount,
+                                    );
+                              });
+                            }
+                          : null,
+                    ),
+                  ],
+                )
+              ],
             ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                tokenAmount = int.tryParse(value) ?? 0;
-              });
-            },
-          ),
-          Gap(20),
-          TextField(
-            autofocus: false,
-            decoration: InputDecoration(
-              labelText: 'Amount of CVX',
-              helperText: 'Helper text',
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                cvxAmount = int.tryParse(value) ?? 0;
-              });
-            },
-          ),
-          Gap(30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              Gap(10),
-              ElevatedButton(
-                child: Text('Confirm'),
-                onPressed: tokenAmount != null &&
-                        tokenAmount > 0 &&
-                        cvxAmount != null &&
-                        cvxAmount > 0
-                    ? () {}
-                    : null,
-              ),
-            ],
-          )
-        ],
-      ),
     );
   }
 }

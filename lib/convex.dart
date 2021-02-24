@@ -271,10 +271,16 @@ class ConvexClient {
       throw Exception(submitBody['errorCode']);
     }
 
-    return Result(
+    final result = Result(
       value: submitBody['value'],
       errorCode: submitBody['errorCode'],
     );
+
+    if (config.isDebug()) {
+      logger.d(result.toJson());
+    }
+
+    return result;
   }
 
   Future<Address> createAccount([AccountKey accountKey]) async {
