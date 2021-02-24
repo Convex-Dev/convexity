@@ -53,31 +53,51 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   );
 
   ExchangeParams params;
+  Future<double> ofTokenPrice;
 
   _ExchangeScreenBodyState({ExchangeParams params}) {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    if (params.ofToken?.address != null) {
+      ofTokenPrice = context
+          .read<AppState>()
+          .torus()
+          .price(ofToken: params.ofToken.address);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SafeArea(
-        child: Column(
-          children: [
-            Center(child: actionToggle()),
-            Gap(40),
-            buyOrSellAmount(),
-            Gap(30),
-            buyOrSellWith(),
-            Gap(50),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                child: Text(actionText()),
-                onPressed: params.amount != null ? confirm : null,
-              ),
-            )
-          ],
+        child: FutureBuilder(
+          future: ofTokenPrice,
+          builder: (context, snapshot) {
+            return Column(
+              children: [
+                Center(child: actionToggle()),
+                Gap(40),
+                snapshot.connectionState == ConnectionState.waiting
+                    ? CircularProgressIndicator()
+                    : buyOrSellAmount(ofTokenPrice: snapshot.data),
+                Gap(30),
+                buyOrSellWith(),
+                Gap(50),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text(actionText()),
+                    onPressed: params.amount != null ? confirm : null,
+                  ),
+                )
+              ],
+            );
+          },
         ),
       ),
     );
@@ -112,52 +132,84 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
 
-  Widget buyOrSellAmount() => Row(
+  Widget buyOrSellAmount({double ofTokenPrice}) {
+    if (ofTokenPrice == null) {
+      return Row(
         children: [
-          Text(actionText()),
-          Gap(20),
-          ConstrainedBox(
-            constraints: BoxConstraints.tightFor(width: 60, height: 60),
-            child: ElevatedButton(
-              child: Text(
-                params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    .copyWith(color: Colors.white),
-                overflow: TextOverflow.ellipsis,
-              ),
-              onPressed: () {
-                nav.pushSelectFungible(context).then(
-                  (fungible) {
-                    if (fungible != null) {
-                      setState(() {
-                        params = params.copyWith(ofToken: fungible);
-                      });
-                    }
-                  },
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.orange,
-                shape: CircleBorder(),
-              ),
-            ),
+          Text(
+            'There is no liquidity for ${params.ofToken?.metadata?.symbol ?? ''}.',
           ),
-          Gap(30),
-          Text('Amount'),
           Gap(10),
-          Expanded(
-            child: TextField(
-              onChanged: (s) {
-                setState(() {
-                  params = params.copyWith(amount: int.tryParse(s));
-                });
-              },
-            ),
+          ElevatedButton(
+            child: Text('Add liquidity'),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Container(
+                    child: SingleChildScrollView(
+                      child: SafeArea(
+                        child: _TokenLiquidity(
+                          token: params.ofToken,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
         ],
       );
+    }
+
+    return Row(
+      children: [
+        Text(actionText()),
+        Gap(20),
+        ConstrainedBox(
+          constraints: BoxConstraints.tightFor(width: 60, height: 60),
+          child: ElevatedButton(
+            child: Text(
+              params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
+              style: Theme.of(context)
+                  .textTheme
+                  .caption
+                  .copyWith(color: Colors.white),
+              overflow: TextOverflow.ellipsis,
+            ),
+            onPressed: () {
+              nav.pushSelectFungible(context).then(
+                (fungible) {
+                  if (fungible != null) {
+                    setState(() {
+                      params = params.copyWith(ofToken: fungible);
+                    });
+                  }
+                },
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.orange,
+              shape: CircleBorder(),
+            ),
+          ),
+        ),
+        Gap(30),
+        Text('Amount'),
+        Gap(10),
+        Expanded(
+          child: TextField(
+            onChanged: (s) {
+              setState(() {
+                params = params.copyWith(amount: int.tryParse(s));
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget buyOrSellWith() => Row(
         children: [
@@ -337,5 +389,88 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
     }
+  }
+}
+
+class _TokenLiquidity extends StatefulWidget {
+  final FungibleToken token;
+
+  const _TokenLiquidity({Key key, this.token}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _TokenLiquidityState();
+}
+
+class _TokenLiquidityState extends State<_TokenLiquidity> {
+  int tokenAmount;
+  int cvxAmount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: defaultScreenPadding,
+      child: Column(
+        children: <Widget>[
+          Text(
+            widget.token.metadata.symbol,
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          Text(
+            widget.token.metadata.name,
+            style: Theme.of(context).textTheme.caption,
+          ),
+          Gap(20),
+          TextField(
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: 'Amount of ${widget.token.metadata.symbol}',
+              helperText: 'Helper text',
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              setState(() {
+                tokenAmount = int.tryParse(value) ?? 0;
+              });
+            },
+          ),
+          Gap(20),
+          TextField(
+            autofocus: false,
+            decoration: InputDecoration(
+              labelText: 'Amount of CVX',
+              helperText: 'Helper text',
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              setState(() {
+                cvxAmount = int.tryParse(value) ?? 0;
+              });
+            },
+          ),
+          Gap(30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: Text('Confirm'),
+                onPressed: tokenAmount != null &&
+                        tokenAmount > 0 &&
+                        cvxAmount != null &&
+                        cvxAmount > 0
+                    ? () {}
+                    : null,
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
