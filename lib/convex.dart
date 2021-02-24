@@ -334,14 +334,13 @@ class ConvexClient {
   /// **Executes code on the Convex Network just to compute the result.**
   Future<Result> query({
     @required String source,
-    Address address,
     Lang lang = Lang.convexLisp,
   }) async {
     final uri = _uri('api/v1/query');
 
     var body = convert.jsonEncode({
       'source': source,
-      'address': address?.value,
+      'address': credentials.address.value,
       'lang': langString(lang),
     });
 

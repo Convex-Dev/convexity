@@ -177,7 +177,6 @@ void main() {
   group('Query - Convex Lisp', () {
     test('Inc', () async {
       final result = await convexClient.query(
-        address: Address(9),
         source: '(inc 1)',
       );
 
@@ -186,16 +185,14 @@ void main() {
 
     test('Self Address', () async {
       final result = await convexClient.query(
-        address: Address(9),
         source: '*address*',
       );
 
-      expect(result.value, 9);
+      expect(result.value, convexClient.credentials.address.value);
     });
 
     test('Error - UNDECLARED', () async {
       final result = await convexClient.query(
-        address: Address(9),
         source: '(incc 1)',
       );
 
@@ -204,7 +201,6 @@ void main() {
 
     test('Error - CAST', () async {
       final result = await convexClient.query(
-        address: Address(9),
         source: '(map inc 1)',
       );
 
@@ -215,7 +211,6 @@ void main() {
   group('Query - Convex Scrypt', () {
     test('Inc', () async {
       var result = await convexClient.query(
-        address: Address(9),
         source: 'inc(1)',
         lang: Lang.convexScript,
       );
@@ -225,12 +220,11 @@ void main() {
 
     test('Self Address', () async {
       final result = await convexClient.query(
-        address: Address(9),
         source: '_address_',
         lang: Lang.convexScript,
       );
 
-      expect(result.value, 9);
+      expect(result.value, convexClient.credentials.address.value);
     });
   });
 }
