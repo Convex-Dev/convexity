@@ -88,7 +88,7 @@ class TorusLibrary {
     @required Address ofToken,
     Address withToken,
   }) async {
-    final result = await convexClient.transact(
+    final result = await convexClient.query(
       source:
           '$_import (torus/price $ofToken ${withToken != null ? withToken : ''})',
     );
