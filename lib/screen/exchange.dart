@@ -172,50 +172,60 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
     }
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(actionText()),
-        Gap(20),
-        ConstrainedBox(
-          constraints: BoxConstraints.tightFor(width: 60, height: 60),
-          child: ElevatedButton(
-            child: Text(
-              params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
-              style: Theme.of(context)
-                  .textTheme
-                  .caption
-                  .copyWith(color: Colors.white),
-              overflow: TextOverflow.ellipsis,
-            ),
-            onPressed: () {
-              nav.pushSelectFungible(context).then(
-                (fungible) {
-                  if (fungible != null) {
-                    setState(() {
-                      params = params.copyWith(ofToken: fungible);
-                    });
-                  }
+        Row(
+          children: [
+            Text(actionText()),
+            Gap(20),
+            ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: 60, height: 60),
+              child: ElevatedButton(
+                child: Text(
+                  params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption
+                      .copyWith(color: Colors.white),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onPressed: () {
+                  nav.pushSelectFungible(context).then(
+                    (fungible) {
+                      if (fungible != null) {
+                        setState(() {
+                          params = params.copyWith(ofToken: fungible);
+                        });
+                      }
+                    },
+                  );
                 },
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              primary: Colors.orange,
-              shape: CircleBorder(),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.orange,
+                  shape: CircleBorder(),
+                ),
+              ),
             ),
-          ),
+            Gap(30),
+            Text('Amount'),
+            Gap(10),
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (s) {
+                  setState(() {
+                    params = params.copyWith(amount: int.tryParse(s));
+                  });
+                },
+              ),
+            ),
+          ],
         ),
-        Gap(30),
-        Text('Amount'),
-        Gap(10),
-        Expanded(
-          child: TextField(
-            onChanged: (s) {
-              setState(() {
-                params = params.copyWith(amount: int.tryParse(s));
-              });
-            },
-          ),
-        ),
+        Gap(5),
+        Text('Price $ofTokenPrice'),
       ],
     );
   }
@@ -259,6 +269,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     final confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
+        final withToken = params.withToken ?? cvx;
+
         return Container(
           height: 300,
           child: Column(
@@ -277,7 +289,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${actionText()} $params.amount ${params.ofToken.metadata.name} with  ${params.withToken.metadata.name}?',
+                      '${actionText()} ${params.amount} ${params.ofToken.metadata.name} with  ${withToken.metadata.name}?',
                     ),
                   ],
                 ),
@@ -301,11 +313,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     final appState = context.read<AppState>();
 
+    final withToken = params.withToken ?? cvx;
+
     if (params.action == ExchangeAction.buy) {
       final bought = appState.torus().buy(
             ofToken: params.ofToken.address,
             amount: params.amount,
-            withToken: params.withToken.address,
+            withToken: withToken.address,
           );
 
       showModalBottomSheet(
@@ -397,6 +411,107 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           );
         },
       );
+    } else {
+      final sold = params.withToken == null
+          ? appState.torus().sellCVX(
+                ofToken: params.ofToken.address,
+                amount: params.amount,
+              )
+          : appState.torus().sell(
+                ofToken: params.ofToken.address,
+                amount: params.amount,
+                withToken: params.withToken?.address,
+              );
+
+      showModalBottomSheet(
+        context: context,
+        isDismissible: false,
+        enableDrag: false,
+        builder: (BuildContext context) {
+          return Container(
+            height: 300,
+            child: Center(
+              child: FutureBuilder<int>(
+                future: sold,
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<int> snapshot,
+                ) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+
+                  if (snapshot.hasError) {
+                    logger.e(
+                      'Failed to sell: ${snapshot.error}',
+                    );
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.error,
+                          size: 80,
+                          color: Colors.black12,
+                        ),
+                        Gap(10),
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Text(
+                            'Sorry. It was not possible to sell ${params.ofToken.metadata.symbol}.\n\n${snapshot.error}',
+                          ),
+                        ),
+                        Gap(10),
+                        ElevatedButton(
+                          child: const Text('Okay'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.check,
+                        size: 80,
+                        color: Colors.green,
+                      ),
+                      Gap(10),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Sold ${snapshot.data}.',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Done'),
+                        onPressed: () {
+                          Navigator.popUntil(
+                            context,
+                            ModalRoute.withName(route.asset),
+                          );
+                        },
+                      )
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 }
@@ -459,6 +574,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   decoration: InputDecoration(
                     labelText: 'Amount of ${widget.token.metadata.symbol}',
                     helperText: 'Helper text',
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
@@ -473,6 +589,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   decoration: InputDecoration(
                     labelText: 'Amount of CVX',
                     helperText: 'Helper text',
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
