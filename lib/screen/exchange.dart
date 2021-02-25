@@ -48,7 +48,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       description: 'Convex Coin',
       symbol: 'CVX',
       currencySymbol: '\$',
-      decimals: 2,
+      decimals: 0,
     ),
   );
 
@@ -84,7 +84,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 Gap(40),
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
-                    : buyOrSellAmount(ofTokenPrice: snapshot.data),
+                    : buyOrSellOf(ofTokenPrice: snapshot.data),
                 Gap(30),
                 buyOrSellWith(),
                 Gap(50),
@@ -132,7 +132,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
 
-  Widget buyOrSellAmount({double ofTokenPrice}) {
+  Widget buyOrSellOf({double ofTokenPrice}) {
     if (ofTokenPrice == null) {
       return Row(
         children: [
@@ -147,6 +147,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 context: context,
                 builder: (context) {
                   return Container(
+                    padding: EdgeInsets.all(16),
                     child: SingleChildScrollView(
                       child: SafeArea(
                         child: _TokenLiquidity(
@@ -173,7 +174,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
@@ -225,7 +226,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           ],
         ),
         Gap(5),
-        Text('Price $ofTokenPrice'),
+        Text('Marginal Price $ofTokenPrice'),
       ],
     );
   }
@@ -234,6 +235,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         children: [
           Text('With'),
           Gap(20),
+          // Select 'with' Token and query price.
           ConstrainedBox(
             constraints: BoxConstraints.tightFor(width: 60, height: 60),
             child: ElevatedButton(
@@ -251,6 +253,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     if (fungible != null) {
                       setState(() {
                         params = params.copyWith(withToken: fungible);
+                        ofTokenPrice = context.read<AppState>().torus().price(
+                              ofToken: params.ofToken.address,
+                              withToken: fungible.address,
+                            );
                       });
                     }
                   },
@@ -262,6 +268,29 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ),
             ),
           ),
+          Gap(10),
+          // Reset 'with' Token and query price for CVX.
+          if (params.withToken != null)
+            ElevatedButton(
+              child: Text(
+                'Reset',
+                style: Theme.of(context)
+                    .textTheme
+                    .caption
+                    .copyWith(color: Colors.white),
+                overflow: TextOverflow.ellipsis,
+              ),
+              onPressed: () {
+                setState(() {
+                  params = params.copyWith(withToken: null);
+
+                  ofTokenPrice = context
+                      .read<AppState>()
+                      .torus()
+                      .price(ofToken: params.ofToken.address);
+                });
+              },
+            ),
         ],
       );
 
@@ -413,7 +442,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
     } else {
       final sold = params.withToken == null
-          ? appState.torus().sellCVX(
+          ? appState.torus().sellTokens(
                 ofToken: params.ofToken.address,
                 amount: params.amount,
               )
@@ -561,14 +590,29 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
           : Column(
               children: <Widget>[
                 Text(
-                  widget.token.metadata.symbol,
-                  style: Theme.of(context).textTheme.headline5,
+                  'Add liquidity for ${widget.token.metadata.symbol}',
+                  style: Theme.of(context).textTheme.headline6,
                 ),
                 Text(
-                  widget.token.metadata.name,
+                  'Explanatory text.',
                   style: Theme.of(context).textTheme.caption,
                 ),
-                Gap(20),
+                Gap(40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${widget.token.metadata.symbol} BALANCE',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    Gap(8),
+                    Text(
+                      '${widget.token.metadata.currencySymbol}10',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                  ],
+                ),
+                Gap(5),
                 TextField(
                   autofocus: true,
                   decoration: InputDecoration(
@@ -584,6 +628,21 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   },
                 ),
                 Gap(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'CVX BALANCE',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    Gap(5),
+                    Text(
+                      '\$10',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                  ],
+                ),
+                Gap(5),
                 TextField(
                   autofocus: false,
                   decoration: InputDecoration(
@@ -599,10 +658,59 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   },
                 ),
                 Gap(30),
+                Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Text(
+                            '1 ${widget.token.metadata.symbol}',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            '=',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            '0.001 CVX',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Text(
+                            '1 CVX',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            '=',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            '1000 ${widget.token.metadata.symbol}',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Gap(30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
+                    OutlineButton(
                       child: Text('Cancel'),
                       onPressed: () {
                         Navigator.pop(context);
