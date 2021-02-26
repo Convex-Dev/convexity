@@ -555,9 +555,15 @@ class _TokenLiquidity extends StatefulWidget {
 }
 
 class _TokenLiquidityState extends State<_TokenLiquidity> {
-  int tokenAmount;
-  int cvxAmount;
+  int tokenAmount = 0;
+  int cvxAmount = 0;
   Future<int> liquidity;
+
+  double get tokenPrice =>
+      tokenAmount > 0 && cvxAmount > 0 ? tokenAmount / cvxAmount : null;
+
+  double get cvxPrice =>
+      tokenAmount > 0 && cvxAmount > 0 ? cvxAmount / tokenAmount : null;
 
   @override
   Widget build(BuildContext context) {
@@ -676,7 +682,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         ),
                         TableCell(
                           child: Text(
-                            '0.001 CVX',
+                            cvxPrice != null ? '$cvxPrice CVX' : '-',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
@@ -698,7 +704,9 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         ),
                         TableCell(
                           child: Text(
-                            '1000 ${widget.token.metadata.symbol}',
+                            tokenPrice != null
+                                ? '$tokenPrice ${widget.token.metadata.symbol}'
+                                : '-',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
