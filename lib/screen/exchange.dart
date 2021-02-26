@@ -138,46 +138,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   Widget buyOrSellOf({double ofTokenPrice}) {
-    if (ofTokenPrice == null) {
-      return Row(
-        children: [
-          Text(
-            'There is no liquidity for ${params.ofToken?.metadata?.symbol ?? ''}.',
-          ),
-          Gap(10),
-          ElevatedButton(
-            child: Text('Add liquidity'),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      child: SafeArea(
-                        child: _TokenLiquidity(
-                          token: params.ofToken,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ).then((value) {
-                if (value != null) {
-                  setState(() {
-                    this.ofTokenPrice = context
-                        .read<AppState>()
-                        .torus()
-                        .price(ofToken: params.ofToken.address);
-                  });
-                }
-              });
-            },
-          ),
-        ],
-      );
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -201,7 +161,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     (fungible) {
                       if (fungible != null) {
                         setState(() {
-                          params = params.copyWith(ofToken: fungible);
+                          this.params = params.copyWith(ofToken: fungible);
+                          this.ofTokenPrice = context
+                              .read<AppState>()
+                              .torus()
+                              .price(ofToken: params.ofToken.address);
                         });
                       }
                     },
@@ -213,25 +177,65 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 ),
               ),
             ),
-            Gap(30),
-            Text('Amount'),
-            Gap(10),
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
+            if (ofTokenPrice != null) ...[
+              Gap(30),
+              Text('Amount'),
+              Gap(10),
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (s) {
+                    setState(() {
+                      params = params.copyWith(amount: int.tryParse(s));
+                    });
+                  },
                 ),
-                onChanged: (s) {
-                  setState(() {
-                    params = params.copyWith(amount: int.tryParse(s));
-                  });
-                },
-              ),
-            ),
+              )
+            ] else ...[
+              Gap(20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ElevatedButton(
+                    child: Text('Add liquidity'),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            padding: EdgeInsets.all(16),
+                            child: SingleChildScrollView(
+                              child: SafeArea(
+                                child: _TokenLiquidity(
+                                  token: params.ofToken,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ).then((value) {
+                        if (value != null) {
+                          setState(() {
+                            this.ofTokenPrice = context
+                                .read<AppState>()
+                                .torus()
+                                .price(ofToken: params.ofToken.address);
+                          });
+                        }
+                      });
+                    },
+                  ),
+                  Text(
+                    'There is no liquidity for ${params.ofToken?.metadata?.symbol ?? ''}.',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ],
+              )
+            ]
           ],
         ),
-        Gap(5),
-        Text('Marginal Price $ofTokenPrice'),
       ],
     );
   }

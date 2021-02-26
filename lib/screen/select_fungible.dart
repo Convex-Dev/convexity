@@ -9,7 +9,7 @@ class SelectFungibleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Select Fungible')),
+      appBar: AppBar(title: Text('Tokens')),
       body: Container(
         padding: defaultScreenPadding,
         child: _SelectFungibleScreenBody(),
