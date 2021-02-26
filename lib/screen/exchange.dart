@@ -78,6 +78,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         child: FutureBuilder(
           future: ofTokenPrice,
           builder: (context, snapshot) {
+            final isOfPriceAvailable =
+                snapshot.connectionState != ConnectionState.waiting &&
+                    snapshot.data != null;
+
             return Column(
               children: [
                 Center(child: actionToggle()),
@@ -86,15 +90,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ? CircularProgressIndicator()
                     : buyOrSellOf(ofTokenPrice: snapshot.data),
                 Gap(30),
-                buyOrSellWith(),
+                if (isOfPriceAvailable) buyOrSellWith(),
                 Gap(50),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: Text(actionText()),
-                    onPressed: params.amount != null ? confirm : null,
-                  ),
-                )
+                if (isOfPriceAvailable)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      child: Text(actionText()),
+                      onPressed: params.amount != null ? confirm : null,
+                    ),
+                  )
               ],
             );
           },
@@ -643,7 +648,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                     ),
                     Gap(5),
                     Text(
-                      '\$10',
+                      '1,000,000',
                       style: Theme.of(context).textTheme.bodyText2,
                     ),
                   ],
