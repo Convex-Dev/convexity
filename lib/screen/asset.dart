@@ -360,26 +360,34 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                         _action(
                           label: 'Buy',
                           onPressed: () {
-                            nav.pushExchange(
+                            nav
+                                .pushExchange(
                               context,
                               params: ExchangeParams(
                                 action: ExchangeAction.buy,
                                 ofToken: widget.aasset.asset,
                               ),
-                            );
+                            )
+                                .then((value) {
+                              _balance = queryBalance(context);
+                            });
                           },
                         ),
                         Gap(30),
                         _action(
                           label: 'Sell',
                           onPressed: () {
-                            nav.pushExchange(
+                            nav
+                                .pushExchange(
                               context,
                               params: ExchangeParams(
                                 action: ExchangeAction.sell,
                                 ofToken: widget.aasset.asset,
                               ),
-                            );
+                            )
+                                .then((value) {
+                              _balance = queryBalance(context);
+                            });
                           },
                         ),
                         Gap(30),

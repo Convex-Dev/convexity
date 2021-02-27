@@ -22,7 +22,7 @@ enum ExchangeAction {
 class ExchangeParams {
   final ExchangeAction action;
   final FungibleToken ofToken;
-  final int amount;
+  final String amount;
   final FungibleToken withToken;
 
   ExchangeParams({
@@ -35,7 +35,7 @@ class ExchangeParams {
   ExchangeParams copyWith({
     ExchangeAction action,
     FungibleToken ofToken,
-    int amount,
+    String amount,
     FungibleToken withToken,
   }) =>
       ExchangeParams(

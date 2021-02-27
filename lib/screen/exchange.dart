@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import '../convex.dart';
 import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../format.dart' as format;
 import '../route.dart' as route;
 
 class ExchangeScreen extends StatelessWidget {
@@ -89,7 +93,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
                     : buyOrSellOf(ofTokenPrice: snapshot.data),
-                Gap(30),
+                Gap(50),
                 if (isOfPriceAvailable) buyOrSellWith(),
                 Gap(50),
                 if (isOfPriceAvailable)
@@ -143,7 +147,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       children: [
         Row(
           children: [
-            Text(actionText()),
+            Text(actionText() + ' '),
             Gap(20),
             ConstrainedBox(
               constraints: BoxConstraints.tightFor(width: 60, height: 60),
@@ -188,7 +192,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   ),
                   onChanged: (s) {
                     setState(() {
-                      params = params.copyWith(amount: int.tryParse(s));
+                      params = params.copyWith(amount: s);
                     });
                   },
                 ),
@@ -236,6 +240,22 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             ]
           ],
         ),
+        if (ofTokenPrice != null) ...[
+          Gap(10),
+          Row(
+            children: [
+              Text(
+                'Marginal Price',
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Gap(4),
+              Text(
+                '${NumberFormat().format(ofTokenPrice)}',
+                style: Theme.of(context).textTheme.bodyText2,
+              )
+            ],
+          )
+        ],
       ],
     );
   }
@@ -353,11 +373,15 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     final withToken = params.withToken ?? cvx;
 
+    final int amountOf = format.readFungibleCurrency(
+      metadata: params.ofToken.metadata,
+      s: params.amount,
+    );
+
     if (params.action == ExchangeAction.buy) {
-      final bought = appState.torus().buy(
+      final bought = appState.torus().buyTokens(
             ofToken: params.ofToken.address,
-            amount: params.amount,
-            withToken: withToken.address,
+            amount: amountOf,
           );
 
       showModalBottomSheet(
@@ -453,11 +477,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       final sold = params.withToken == null
           ? appState.torus().sellTokens(
                 ofToken: params.ofToken.address,
-                amount: params.amount,
+                amount: amountOf,
               )
           : appState.torus().sell(
                 ofToken: params.ofToken.address,
-                amount: params.amount,
+                amount: amountOf,
                 withToken: params.withToken?.address,
               );
 
@@ -691,7 +715,9 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         ),
                         TableCell(
                           child: Text(
-                            cvxPrice != null ? '$cvxPrice CVX' : '-',
+                            cvxPrice != null
+                                ? '${NumberFormat().format(cvxPrice)} CVX'
+                                : '-',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),

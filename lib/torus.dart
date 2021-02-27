@@ -69,6 +69,20 @@ class TorusLibrary {
     return result.value;
   }
 
+  Future<int> buyTokens({
+    @required Address ofToken,
+    @required int amount,
+  }) async {
+    final result = await convexClient.transact(
+      source: '$_import (torus/buy-tokens $ofToken $amount)',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
+
   Future<int> sell({
     @required Address ofToken,
     @required int amount,
