@@ -175,12 +175,13 @@ Future<dynamic> pushStakingPeer(
 
 Future<dynamic> pushExchange(
   BuildContext context, {
+  Future tokenBalance,
   ExchangeParams params,
 }) =>
     Navigator.pushNamed(
       context,
       route.exchange,
-      arguments: params,
+      arguments: Tuple2(tokenBalance, params),
     );
 
 Future<dynamic> pushSelectFungible(BuildContext context) => Navigator.pushNamed(

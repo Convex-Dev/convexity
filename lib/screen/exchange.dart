@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
+import '../format.dart';
 import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
@@ -16,14 +18,16 @@ import '../route.dart' as route;
 class ExchangeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeParams params = ModalRoute.of(context).settings.arguments;
+    final Tuple2<Future, ExchangeParams> t2 =
+        ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
       body: Container(
         padding: defaultScreenPadding,
         child: ExchangeScreenBody(
-          params: params,
+          balance: t2.item1,
+          params: t2.item2,
         ),
       ),
     );
@@ -31,9 +35,14 @@ class ExchangeScreen extends StatelessWidget {
 }
 
 class ExchangeScreenBody extends StatefulWidget {
+  final Future balance;
   final ExchangeParams params;
 
-  const ExchangeScreenBody({Key key, this.params}) : super(key: key);
+  const ExchangeScreenBody({
+    Key key,
+    this.balance,
+    this.params,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ExchangeScreenBodyState(
@@ -89,6 +98,39 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             return Column(
               children: [
                 Center(child: actionToggle()),
+                Gap(40),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    FutureBuilder(
+                      future: widget.balance,
+                      builder: (context, snapshot) {
+                        return snapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                formatFungibleCurrency(
+                                  metadata: params.ofToken.metadata,
+                                  number: snapshot.data,
+                                ),
+                                style: Theme.of(context).textTheme.headline5,
+                              );
+                      },
+                    ),
+                    Gap(4),
+                    Text(
+                      'Balance',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
+                ),
                 Gap(40),
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
