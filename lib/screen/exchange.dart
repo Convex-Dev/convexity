@@ -77,6 +77,19 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
 
+  /// If no 'with token' is selected, it defaults to CVX,
+  /// so token balance is the user's balance.
+  Future getWithTokenBalance(
+    BuildContext context,
+    ExchangeParams params,
+  ) =>
+      params.withToken?.address != null
+          ? context
+              .read<AppState>()
+              .torus()
+              .price(ofToken: params.withToken.address)
+          : context.read<AppState>().convexClient().balance();
+
   @override
   void initState() {
     super.initState();
@@ -93,14 +106,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     if (params.withToken?.address != null) {
       withTokenPrice =
           appState.torus().price(ofToken: params.withToken.address);
-
-      withTokenBalance =
-          appState.assetLibrary().balance(asset: params.withToken.address);
-    } else {
-      // If no 'with token' is selected, it defaults to CVX,
-      // so token balance is the user's balance.
-      withTokenBalance = appState.convexClient().balance();
     }
+
+    withTokenBalance = getWithTokenBalance(context, this.params);
   }
 
   @override
@@ -221,7 +229,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   style: Theme.of(context)
                       .textTheme
                       .caption
-                      .copyWith(color: Colors.white),
+                      .copyWith(color: Colors.black87),
                   overflow: TextOverflow.ellipsis,
                 ),
                 onPressed: () {
@@ -346,7 +354,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     style: Theme.of(context)
                         .textTheme
                         .caption
-                        .copyWith(color: Colors.white),
+                        .copyWith(color: Colors.black87),
                     overflow: TextOverflow.ellipsis,
                   ),
                   onPressed: () {
@@ -363,9 +371,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                                   withToken: fungible.address,
                                 );
 
-                            this.withTokenBalance = appState
-                                .assetLibrary()
-                                .balance(asset: fungible.address);
+                            withTokenBalance =
+                                getWithTokenBalance(context, this.params);
                           });
                         }
                       },
@@ -397,6 +404,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           .read<AppState>()
                           .torus()
                           .price(ofToken: params.ofToken.address);
+
+                      withTokenBalance =
+                          getWithTokenBalance(context, this.params);
                     });
                   },
                 ),
@@ -903,7 +913,10 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                                     .torus()
                                     .addLiquidity(
                                       token: widget.token.address,
-                                      tokenAmount: tokenAmount,
+                                      tokenAmount: format.readFungibleCurrency(
+                                        metadata: widget.token.metadata,
+                                        s: tokenAmount.toString(),
+                                      ),
                                       cvxAmount: cvxAmount,
                                     );
                               });
