@@ -627,7 +627,7 @@ class _SelectAccountState extends State<_SelectAccount> {
   }
 }
 
-class ActiveAccount2 extends StatelessWidget {
+class ActiveAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();

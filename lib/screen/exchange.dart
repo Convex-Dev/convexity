@@ -66,7 +66,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   );
 
   ExchangeParams params;
+
   Future<double> ofTokenPrice;
+  Future ofTokenBalance;
+
+  Future<double> withTokenPrice;
+  Future withTokenBalance;
 
   _ExchangeScreenBodyState({ExchangeParams params}) {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
@@ -76,11 +81,25 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   void initState() {
     super.initState();
 
+    final appState = context.read<AppState>();
+
     if (params.ofToken?.address != null) {
-      ofTokenPrice = context
-          .read<AppState>()
-          .torus()
-          .price(ofToken: params.ofToken.address);
+      ofTokenPrice = appState.torus().price(ofToken: params.ofToken.address);
+
+      ofTokenBalance =
+          appState.assetLibrary().balance(asset: params.ofToken.address);
+    }
+
+    if (params.withToken?.address != null) {
+      withTokenPrice =
+          appState.torus().price(ofToken: params.withToken.address);
+
+      withTokenBalance =
+          appState.assetLibrary().balance(asset: params.withToken.address);
+    } else {
+      // If no 'with token' is selected, it defaults to CVX,
+      // so token balance is the user's balance.
+      withTokenBalance = appState.convexClient().balance();
     }
   }
 
@@ -210,11 +229,17 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     (fungible) {
                       if (fungible != null) {
                         setState(() {
+                          final appState = context.read<AppState>();
+
                           this.params = params.copyWith(ofToken: fungible);
-                          this.ofTokenPrice = context
-                              .read<AppState>()
+
+                          this.ofTokenPrice = appState
                               .torus()
                               .price(ofToken: params.ofToken.address);
+
+                          this.ofTokenBalance = appState
+                              .assetLibrary()
+                              .balance(asset: fungible.address);
                         });
                       }
                     },
@@ -305,66 +330,126 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     );
   }
 
-  Widget buyOrSellWith() => Row(
+  Widget buyOrSellWith() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('With'),
-          Gap(20),
-          // Select 'with' Token and query price.
-          ConstrainedBox(
-            constraints: BoxConstraints.tightFor(width: 60, height: 60),
-            child: ElevatedButton(
-              child: Text(
-                params.withToken?.metadata?.symbol ?? cvx.metadata.symbol,
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    .copyWith(color: Colors.white),
-                overflow: TextOverflow.ellipsis,
-              ),
-              onPressed: () {
-                nav.pushSelectFungible(context).then(
-                  (fungible) {
-                    if (fungible != null) {
-                      setState(() {
-                        params = params.copyWith(withToken: fungible);
-                        ofTokenPrice = context.read<AppState>().torus().price(
-                              ofToken: params.ofToken.address,
-                              withToken: fungible.address,
-                            );
-                      });
-                    }
+          Row(
+            children: [
+              Text('With'),
+              Gap(20),
+              // Select 'with' Token and query price.
+              ConstrainedBox(
+                constraints: BoxConstraints.tightFor(width: 60, height: 60),
+                child: ElevatedButton(
+                  child: Text(
+                    params.withToken?.metadata?.symbol ?? cvx.metadata.symbol,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption
+                        .copyWith(color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onPressed: () {
+                    nav.pushSelectFungible(context).then(
+                      (fungible) {
+                        if (fungible != null) {
+                          setState(() {
+                            final appState = context.read<AppState>();
+
+                            this.params = params.copyWith(withToken: fungible);
+
+                            this.withTokenPrice = appState.torus().price(
+                                  ofToken: fungible.address,
+                                  withToken: fungible.address,
+                                );
+
+                            this.withTokenBalance = appState
+                                .assetLibrary()
+                                .balance(asset: fungible.address);
+                          });
+                        }
+                      },
+                    );
                   },
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.orange,
-                shape: CircleBorder(),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.orange,
+                    shape: CircleBorder(),
+                  ),
+                ),
               ),
-            ),
+              Gap(10),
+              // Reset 'with' Token and query price for CVX.
+              if (params.withToken != null)
+                ElevatedButton(
+                  child: Text(
+                    'Reset',
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption
+                        .copyWith(color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      params = params.resetWith();
+
+                      ofTokenPrice = context
+                          .read<AppState>()
+                          .torus()
+                          .price(ofToken: params.ofToken.address);
+                    });
+                  },
+                ),
+            ],
           ),
           Gap(10),
-          // Reset 'with' Token and query price for CVX.
-          if (params.withToken != null)
-            ElevatedButton(
-              child: Text(
-                'Reset',
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    .copyWith(color: Colors.white),
-                overflow: TextOverflow.ellipsis,
-              ),
-              onPressed: () {
-                setState(() {
-                  params = params.resetWith();
+          FutureBuilder(
+            future: withTokenBalance,
+            builder: (context, snapshot) {
+              if (ConnectionState.waiting == snapshot.connectionState) {
+                return SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                );
+              }
 
-                  ofTokenPrice = context
-                      .read<AppState>()
-                      .torus()
-                      .price(ofToken: params.ofToken.address);
-                });
-              },
-            ),
+              if (params.withToken != null) {
+                return Row(
+                  children: [
+                    Text(
+                      'Balance',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    Gap(4),
+                    Text(
+                      format.formatFungibleCurrency(
+                        metadata: params.withToken.metadata,
+                        number: snapshot.data,
+                      ),
+                      style: Theme.of(context).textTheme.bodyText2,
+                    )
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Text(
+                    'Balance',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  Gap(4),
+                  Text(
+                    format.formatCVX(snapshot.data),
+                    style: Theme.of(context).textTheme.bodyText2,
+                  )
+                ],
+              );
+            },
+          ),
         ],
       );
 

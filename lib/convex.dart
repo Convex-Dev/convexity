@@ -392,6 +392,25 @@ class ConvexClient {
     return Account.fromJson(response.body);
   }
 
+  Future<int> balance([Address address]) async {
+    if (address == null && credentials?.address == null)
+      throw Exception('Missing credentials.');
+
+    final uri = _uri(
+      'api/v1/accounts/${address != null ? address.value : credentials.address.value}',
+    );
+
+    final response = await client.get(uri);
+
+    if (config.isDebug()) {
+      logger.d(response.body);
+    }
+
+    final a = Account.fromJson(response.body);
+
+    return a.balance;
+  }
+
   ConvexClient copyWith({Credentials credentials}) => ConvexClient(
         server: this.server,
         client: this.client,
@@ -642,10 +661,10 @@ class AssetLibrary {
   /// but a set of numbers (IDs) for Non-Fungible Tokens.
   Future<dynamic> balance({
     @required Address asset,
-    @required Address owner,
+    Address owner,
   }) async {
     final source = '(import convex.asset :as asset)'
-        '(asset/balance $asset $owner)';
+        '(asset/balance $asset ${owner != null ? owner : convexClient.credentials.address})';
 
     final result = await convexClient.query(source: source);
 

@@ -50,3 +50,5 @@ int readFungibleCurrency({
     readWithDecimals(s, metadata.decimals);
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
+
+String formatCVX(int n) => NumberFormat().format(n);
