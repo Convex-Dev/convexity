@@ -672,7 +672,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
   /// Check the user's balance for this Token.
   Future<dynamic> queryBalance(BuildContext context) {
-    var appState = context.read<AppState>();
+    final appState = context.read<AppState>();
 
     return appState.assetLibrary().balance(
           asset: widget.aasset.asset.address,

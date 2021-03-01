@@ -26,7 +26,7 @@ class ExchangeScreen extends StatelessWidget {
       body: Container(
         padding: defaultScreenPadding,
         child: ExchangeScreenBody(
-          balance: t2.item1,
+          tokenBalance: t2.item1,
           params: t2.item2,
         ),
       ),
@@ -35,12 +35,12 @@ class ExchangeScreen extends StatelessWidget {
 }
 
 class ExchangeScreenBody extends StatefulWidget {
-  final Future balance;
+  final Future tokenBalance;
   final ExchangeParams params;
 
   const ExchangeScreenBody({
     Key key,
-    this.balance,
+    this.tokenBalance,
     this.params,
   }) : super(key: key);
 
@@ -86,6 +86,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   @override
   Widget build(BuildContext context) {
+    final gap = Gap(40);
+
     return SingleChildScrollView(
       child: SafeArea(
         child: FutureBuilder(
@@ -98,46 +100,15 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             return Column(
               children: [
                 Center(child: actionToggle()),
-                Gap(40),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FutureBuilder(
-                      future: widget.balance,
-                      builder: (context, snapshot) {
-                        return snapshot.connectionState ==
-                                ConnectionState.waiting
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                formatFungibleCurrency(
-                                  metadata: params.ofToken.metadata,
-                                  number: snapshot.data,
-                                ),
-                                style: Theme.of(context).textTheme.headline5,
-                              );
-                      },
-                    ),
-                    Gap(2),
-                    Text(
-                      'BALANCE',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                  ],
-                ),
-                Gap(40),
+                gap,
+                balance(),
+                gap,
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
                     : buyOrSellOf(ofTokenPrice: snapshot.data),
-                Gap(50),
+                gap,
                 if (isOfPriceAvailable) buyOrSellWith(),
-                Gap(50),
+                gap,
                 if (isOfPriceAvailable)
                   SizedBox(
                     width: double.infinity,
@@ -164,6 +135,38 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     return '?';
   }
+
+  Widget balance() => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          FutureBuilder(
+            future: widget.tokenBalance,
+            builder: (context, snapshot) {
+              return snapshot.connectionState == ConnectionState.waiting
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      formatFungibleCurrency(
+                        metadata: params.ofToken.metadata,
+                        number: snapshot.data,
+                      ),
+                      style: Theme.of(context).textTheme.headline5,
+                    );
+            },
+          ),
+          Gap(2),
+          Text(
+            'BALANCE',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.caption,
+          ),
+        ],
+      );
 
   Widget actionToggle() => ToggleButtons(
         children: [
@@ -353,7 +356,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ),
               onPressed: () {
                 setState(() {
-                  params = params.copyWith(withToken: null);
+                  params = params.resetWith();
 
                   ofTokenPrice = context
                       .read<AppState>()

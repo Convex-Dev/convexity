@@ -32,6 +32,13 @@ class ExchangeParams {
     this.withToken,
   });
 
+  ExchangeParams resetWith() => ExchangeParams(
+        action: this.action,
+        ofToken: this.ofToken,
+        amount: this.amount,
+        withToken: null,
+      );
+
   ExchangeParams copyWith({
     ExchangeAction action,
     FungibleToken ofToken,
