@@ -65,6 +65,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   Future<double> ofTokenPrice;
   Future ofTokenBalance;
+  Future ofExchangeLiquidity;
 
   Future<double> withTokenPrice;
   Future withTokenBalance;
@@ -123,6 +124,29 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               .price(ofToken: params.withToken.address)
           : null;
 
+  Future getExchangeLiquidity({
+    BuildContext context,
+    Address tokenAddress,
+  }) async {
+    final appState = context.read<AppState>();
+
+    final market = await appState.torus().getMarket(token: tokenAddress);
+
+    return appState.assetLibrary().balance(
+          asset: tokenAddress,
+          owner: market,
+        );
+  }
+
+  // ignore: non_constant_identifier_names
+  Widget Spinner() => SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      );
+
   // ignore: non_constant_identifier_names
   Widget Balance(
     Future balance, {
@@ -132,19 +156,45 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         future: balance,
         builder: (context, snapshot) {
           if (ConnectionState.waiting == snapshot.connectionState) {
-            return SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-              ),
-            );
+            return Spinner();
           }
 
-          return Row(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Balance',
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Gap(4),
+              Text(
+                formatter != null
+                    ? formatter(snapshot.data)
+                    : snapshot.data.toString(),
+                style: Theme.of(context).textTheme.bodyText2,
+              )
+            ],
+          );
+        },
+      );
+
+  // ignore: non_constant_identifier_names
+  Widget ExchangeLiquidity(
+    Future exchangeLiquidity, {
+    String Function(dynamic data) formatter,
+  }) =>
+      FutureBuilder(
+        future: exchangeLiquidity,
+        builder: (context, snapshot) {
+          if (ConnectionState.waiting == snapshot.connectionState) {
+            return Spinner();
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Exchange Liquidity',
                 style: Theme.of(context).textTheme.caption,
               ),
               Gap(4),
@@ -175,6 +225,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     }
 
     ofTokenBalance = getOfTokenBalance(context, params);
+
+    ofExchangeLiquidity = getExchangeLiquidity(
+      context: context,
+      tokenAddress: params.ofToken.address,
+    );
+
     withTokenBalance = getWithTokenBalance(context, params);
   }
 
@@ -367,22 +423,37 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             ]
           ],
         ),
-        if (ofTokenBalance != null) ...[
-          Gap(10),
-          Balance(
-            ofTokenBalance,
-            formatter: (data) {
-              if (params.ofToken == null) {
-                return format.formatCVX(data);
-              }
+        Gap(15),
+        Row(
+          children: [
+            if (ofTokenBalance != null)
+              Balance(
+                ofTokenBalance,
+                formatter: (data) {
+                  if (params.ofToken == null) {
+                    return format.formatCVX(data);
+                  }
 
-              return format.formatFungibleCurrency(
-                metadata: params.ofToken.metadata,
-                number: data,
-              );
-            },
-          ),
-        ],
+                  return format.formatFungibleCurrency(
+                    metadata: params.ofToken.metadata,
+                    number: data,
+                  );
+                },
+              ),
+            if (ofExchangeLiquidity != null) ...[
+              Gap(20),
+              ExchangeLiquidity(
+                ofExchangeLiquidity,
+                formatter: (data) {
+                  return format.formatFungibleCurrency(
+                    metadata: params.ofToken.metadata,
+                    number: data,
+                  );
+                },
+              ),
+            ],
+          ],
+        ),
       ],
     );
   }
@@ -461,7 +532,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 ),
             ],
           ),
-          Gap(10),
+          Gap(15),
           Balance(withTokenBalance, formatter: (data) {
             if (params.withToken == null) {
               return format.formatCVX(data);
