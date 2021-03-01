@@ -18,16 +18,14 @@ import '../route.dart' as route;
 class ExchangeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Tuple2<Future, ExchangeParams> t2 =
-        ModalRoute.of(context).settings.arguments;
+    final ExchangeParams params = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
       body: Container(
         padding: defaultScreenPadding,
         child: ExchangeScreenBody(
-          tokenBalance: t2.item1,
-          params: t2.item2,
+          params: params,
         ),
       ),
     );
@@ -35,12 +33,10 @@ class ExchangeScreen extends StatelessWidget {
 }
 
 class ExchangeScreenBody extends StatefulWidget {
-  final Future tokenBalance;
   final ExchangeParams params;
 
   const ExchangeScreenBody({
     Key key,
-    this.tokenBalance,
     this.params,
   }) : super(key: key);
 
@@ -77,6 +73,31 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
 
+  /// Returns null if there's no 'of token' selected.
+  Future getOfTokenPrice(
+    BuildContext context,
+    ExchangeParams params,
+  ) =>
+      params.ofToken?.address != null
+          ? context
+              .read<AppState>()
+              .torus()
+              .price(ofToken: params.ofToken.address)
+          : null;
+
+  /// If no 'of token' is selected, it defaults to CVX,
+  /// so token balance is the user's balance.
+  Future getOfTokenBalance(
+    BuildContext context,
+    ExchangeParams params,
+  ) =>
+      params.ofToken?.address != null
+          ? context
+              .read<AppState>()
+              .assetLibrary()
+              .balance(asset: params.ofToken?.address)
+          : context.read<AppState>().convexClient().balance();
+
   /// If no 'with token' is selected, it defaults to CVX,
   /// so token balance is the user's balance.
   Future getWithTokenBalance(
@@ -86,9 +107,57 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       params.withToken?.address != null
           ? context
               .read<AppState>()
+              .assetLibrary()
+              .balance(asset: params.withToken?.address)
+          : context.read<AppState>().convexClient().balance();
+
+  /// Returns null if there's no 'with token' selected.
+  Future getWithTokenPrice(
+    BuildContext context,
+    ExchangeParams params,
+  ) =>
+      params.withToken?.address != null
+          ? context
+              .read<AppState>()
               .torus()
               .price(ofToken: params.withToken.address)
-          : context.read<AppState>().convexClient().balance();
+          : null;
+
+  // ignore: non_constant_identifier_names
+  Widget Balance(
+    Future balance, {
+    String Function(dynamic data) formatter,
+  }) =>
+      FutureBuilder(
+        future: balance,
+        builder: (context, snapshot) {
+          if (ConnectionState.waiting == snapshot.connectionState) {
+            return SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            );
+          }
+
+          return Row(
+            children: [
+              Text(
+                'Balance',
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Gap(4),
+              Text(
+                formatter != null
+                    ? formatter(snapshot.data)
+                    : snapshot.data.toString(),
+                style: Theme.of(context).textTheme.bodyText2,
+              )
+            ],
+          );
+        },
+      );
 
   @override
   void initState() {
@@ -98,9 +167,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     if (params.ofToken?.address != null) {
       ofTokenPrice = appState.torus().price(ofToken: params.ofToken.address);
-
-      ofTokenBalance =
-          appState.assetLibrary().balance(asset: params.ofToken.address);
     }
 
     if (params.withToken?.address != null) {
@@ -108,7 +174,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           appState.torus().price(ofToken: params.withToken.address);
     }
 
-    withTokenBalance = getWithTokenBalance(context, this.params);
+    ofTokenBalance = getOfTokenBalance(context, params);
+    withTokenBalance = getWithTokenBalance(context, params);
   }
 
   @override
@@ -300,6 +367,22 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             ]
           ],
         ),
+        if (ofTokenBalance != null) ...[
+          Gap(10),
+          Balance(
+            ofTokenBalance,
+            formatter: (data) {
+              if (params.ofToken == null) {
+                return format.formatCVX(data);
+              }
+
+              return format.formatFungibleCurrency(
+                metadata: params.ofToken.metadata,
+                number: data,
+              );
+            },
+          ),
+        ],
       ],
     );
   }
@@ -379,50 +462,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             ],
           ),
           Gap(10),
-          FutureBuilder(
-            future: withTokenBalance,
-            builder: (context, snapshot) {
-              if (ConnectionState.waiting == snapshot.connectionState) {
-                return SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                  ),
-                );
-              }
+          Balance(withTokenBalance, formatter: (data) {
+            if (params.withToken == null) {
+              return format.formatCVX(data);
+            }
 
-              if (params.withToken != null) {
-                return Row(
-                  children: [
-                    Text(
-                      'Balance',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    Gap(4),
-                    Text(
-                      snapshot.data.toString(),
-                      style: Theme.of(context).textTheme.bodyText2,
-                    )
-                  ],
-                );
-              }
-
-              return Row(
-                children: [
-                  Text(
-                    'Balance',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  Gap(4),
-                  Text(
-                    format.formatCVX(snapshot.data),
-                    style: Theme.of(context).textTheme.bodyText2,
-                  )
-                ],
-              );
-            },
-          ),
+            return format.formatFungibleCurrency(
+              metadata: params.withToken.metadata,
+              number: data,
+            );
+          }),
         ],
       );
 

@@ -362,7 +362,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           onPressed: () {
                             final future = nav.pushExchange(
                               context,
-                              tokenBalance: balance,
                               params: ExchangeParams(
                                 action: ExchangeAction.buy,
                                 ofToken: widget.aasset.asset,
@@ -382,7 +381,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           onPressed: () {
                             final future = nav.pushExchange(
                               context,
-                              tokenBalance: balance,
                               params: ExchangeParams(
                                 action: ExchangeAction.sell,
                                 ofToken: widget.aasset.asset,
