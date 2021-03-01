@@ -123,9 +123,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                               );
                       },
                     ),
-                    Gap(4),
+                    Gap(2),
                     Text(
-                      'Balance',
+                      'BALANCE',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.caption,
                     ),
