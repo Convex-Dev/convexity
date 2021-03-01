@@ -128,8 +128,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               children: [
                 Center(child: actionToggle()),
                 gap,
-                balance(),
-                gap,
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
                     : buyOrSellOf(ofTokenPrice: snapshot.data),
@@ -163,38 +161,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     return '?';
   }
 
-  Widget balance() => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          FutureBuilder(
-            future: widget.tokenBalance,
-            builder: (context, snapshot) {
-              return snapshot.connectionState == ConnectionState.waiting
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      formatFungibleCurrency(
-                        metadata: params.ofToken.metadata,
-                        number: snapshot.data,
-                      ),
-                      style: Theme.of(context).textTheme.headline5,
-                    );
-            },
-          ),
-          Gap(2),
-          Text(
-            'BALANCE',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.caption,
-          ),
-        ],
-      );
-
   Widget actionToggle() => ToggleButtons(
         children: [
           Text('Buy'),
@@ -217,6 +183,22 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (ofTokenPrice != null) ...[
+          Row(
+            children: [
+              Text(
+                'Marginal Price',
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Gap(4),
+              Text(
+                '${NumberFormat().format(ofTokenPrice)}',
+                style: Theme.of(context).textTheme.bodyText2,
+              )
+            ],
+          ),
+          Gap(10),
+        ],
         Row(
           children: [
             Text(actionText() + ' '),
@@ -318,22 +300,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             ]
           ],
         ),
-        if (ofTokenPrice != null) ...[
-          Gap(10),
-          Row(
-            children: [
-              Text(
-                'Marginal Price',
-                style: Theme.of(context).textTheme.caption,
-              ),
-              Gap(4),
-              Text(
-                '${NumberFormat().format(ofTokenPrice)}',
-                style: Theme.of(context).textTheme.bodyText2,
-              )
-            ],
-          )
-        ],
       ],
     );
   }
@@ -435,10 +401,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                     Gap(4),
                     Text(
-                      format.formatFungibleCurrency(
-                        metadata: params.withToken.metadata,
-                        number: snapshot.data,
-                      ),
+                      snapshot.data.toString(),
                       style: Theme.of(context).textTheme.bodyText2,
                     )
                   ],
