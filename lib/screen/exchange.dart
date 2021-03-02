@@ -65,10 +65,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   Future<double> ofTokenPrice;
   Future ofTokenBalance;
-  Future ofExchangeLiquidity;
 
   Future<double> withTokenPrice;
   Future withTokenBalance;
+
+  Future<Tuple2<int, int>> exchangeLiquidity;
 
   _ExchangeScreenBodyState({ExchangeParams params}) {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
@@ -124,18 +125,78 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               .price(ofToken: params.withToken.address)
           : null;
 
-  Future getExchangeLiquidity({
+  /// We want to know the liquidity pool of **of Token** and **with Token**.
+  ///
+  /// If a Token is missing, it's considered to be CVX.
+  ///
+  /// The liquidity pool of CVX is the balance of the Market (Actor).
+  ///
+  /// Returns a [Tuple2<int, int>] with 'of liquidity pool' and 'with liquidity pool' respectively.
+  Future<Tuple2<int, int>> getExchangeLiquidity({
     BuildContext context,
-    Address tokenAddress,
+    Address ofToken,
+    Address withToken,
   }) async {
+    // Assert that 'of Token' and 'with Token' are not the same.
+    assert(ofToken != withToken);
+
     final appState = context.read<AppState>();
 
-    final market = await appState.torus().getMarket(token: tokenAddress);
+    final ofMarket = ofToken != null
+        ? await appState.torus().getMarket(token: ofToken)
+        : null;
 
-    return appState.assetLibrary().balance(
-          asset: tokenAddress,
-          owner: market,
-        );
+    final withMarket = withToken != null
+        ? await appState.torus().getMarket(token: withToken)
+        : null;
+
+    // -- Buying/selling CVX
+    // 'of' is null, therefore, we are buying/selling CVX.
+    if (ofToken == null) {
+      final withBalance = withMarket != null
+          ? await appState.assetLibrary().balance(
+                asset: withToken,
+                owner: withMarket,
+              )
+          : null;
+
+      // 'with Market' must exist when we're buying/selling CVX.
+      // If there isn't a Market, 'of balance' will be null.
+      final ofBalance = withMarket != null
+          ? await appState.convexClient().balance(withMarket)
+          : null;
+
+      return Tuple2<int, int>(ofBalance, withBalance);
+    }
+
+    // -- Buying/selling Tokens
+    // 'of' is not null, therefore, we are buying/selling Tokens.
+
+    final ofBalance = ofMarket != null
+        ? await appState.assetLibrary().balance(
+              asset: ofToken,
+              owner: ofMarket,
+            )
+        : null;
+
+    final isMissingWithMarket = withToken != null && withMarket == null;
+
+    // When trading with Token, we need to query the balance of the 'of Market' too.
+    // It's possible to have a 'with' Token but not have a Market for it.
+    // Short circuits to null if there's a 'with' Token but doesn't have a Market for it.
+    //
+    // If there isn't a 'with' Token, we're exchanging for CVX, therefore,
+    // we must query the balance of the 'of' Market instead.
+    final withBalance = isMissingWithMarket
+        ? null
+        : withMarket != null
+            ? await appState.assetLibrary().balance(
+                  asset: withToken,
+                  owner: withMarket,
+                )
+            : await appState.convexClient().balance(ofMarket);
+
+    return Tuple2<int, int>(ofBalance, withBalance);
   }
 
   // ignore: non_constant_identifier_names
@@ -180,10 +241,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   // ignore: non_constant_identifier_names
   Widget ExchangeLiquidity(
-    Future exchangeLiquidity, {
-    String Function(dynamic data) formatter,
+    Future<Tuple2<int, int>> exchangeLiquidity, {
+    String Function(int data) ofFormatter,
+    String Function(int balance) withFormatter,
   }) =>
-      FutureBuilder(
+      FutureBuilder<Tuple2<int, int>>(
         future: exchangeLiquidity,
         builder: (context, snapshot) {
           if (ConnectionState.waiting == snapshot.connectionState) {
@@ -194,16 +256,50 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Exchange Liquidity',
+                'EXCHANGE LIQUIDITY',
                 style: Theme.of(context).textTheme.caption,
               ),
-              Gap(4),
-              Text(
-                formatter != null
-                    ? formatter(snapshot.data)
-                    : snapshot.data.toString(),
-                style: Theme.of(context).textTheme.bodyText2,
-              )
+              Gap(10),
+              Table(
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          '${params.ofToken?.metadata?.symbol ?? 'CVX'}',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          '${params.withToken?.metadata?.symbol ?? 'CVX'}',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          ofFormatter != null
+                              ? ofFormatter(snapshot.data.item1)
+                              : snapshot.data.item1.toString(),
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          withFormatter != null
+                              ? withFormatter(snapshot.data.item2)
+                              : snapshot.data.item2.toString(),
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           );
         },
@@ -225,13 +321,14 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     }
 
     ofTokenBalance = getOfTokenBalance(context, params);
-
-    ofExchangeLiquidity = getExchangeLiquidity(
-      context: context,
-      tokenAddress: params.ofToken.address,
-    );
-
     withTokenBalance = getWithTokenBalance(context, params);
+
+    // It also needs to be called whenever 'of' or 'with' changes.
+    exchangeLiquidity = getExchangeLiquidity(
+      context: context,
+      ofToken: params.ofToken?.address,
+      withToken: params.withToken?.address,
+    );
   }
 
   @override
@@ -257,6 +354,32 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 gap,
                 if (isOfPriceAvailable) buyOrSellWith(),
                 gap,
+                if (exchangeLiquidity != null) ...[
+                  ExchangeLiquidity(
+                    exchangeLiquidity,
+                    ofFormatter: (balance) {
+                      if (params.ofToken != null) {
+                        return format.formatFungibleCurrency(
+                          metadata: params.ofToken.metadata,
+                          number: balance,
+                        );
+                      }
+
+                      return format.formatCVX(balance);
+                    },
+                    withFormatter: (balance) {
+                      if (params.withToken != null) {
+                        return format.formatFungibleCurrency(
+                          metadata: params.withToken.metadata,
+                          number: balance,
+                        );
+                      }
+
+                      return format.formatCVX(balance);
+                    },
+                  ),
+                  gap,
+                ],
                 if (isOfPriceAvailable)
                   SizedBox(
                     width: double.infinity,
@@ -353,6 +476,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           this.ofTokenBalance = appState
                               .assetLibrary()
                               .balance(asset: fungible.address);
+
+                          this.exchangeLiquidity = getExchangeLiquidity(
+                            context: context,
+                            ofToken: params.ofToken?.address,
+                            withToken: params.withToken?.address,
+                          );
                         });
                       }
                     },
@@ -440,18 +569,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   );
                 },
               ),
-            if (ofExchangeLiquidity != null) ...[
-              Gap(20),
-              ExchangeLiquidity(
-                ofExchangeLiquidity,
-                formatter: (data) {
-                  return format.formatFungibleCurrency(
-                    metadata: params.ofToken.metadata,
-                    number: data,
-                  );
-                },
-              ),
-            ],
           ],
         ),
       ],
@@ -493,6 +610,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
                             withTokenBalance =
                                 getWithTokenBalance(context, this.params);
+
+                            this.exchangeLiquidity = getExchangeLiquidity(
+                              context: context,
+                              ofToken: params.ofToken?.address,
+                              withToken: params.withToken?.address,
+                            );
                           });
                         }
                       },
