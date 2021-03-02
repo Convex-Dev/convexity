@@ -305,7 +305,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
 
-  void _update(ExchangeParams exchangeParams) {
+  void _setState(ExchangeParams exchangeParams) {
     final appState = context.read<AppState>();
 
     params = exchangeParams;
@@ -351,7 +351,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   void initState() {
     super.initState();
 
-    _update(params);
+    _setState(params);
   }
 
   @override
@@ -377,32 +377,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 gap,
                 if (isOfPriceAvailable) buyOrSellWith(),
                 gap,
-                if (exchangeLiquidity != null) ...[
-                  ExchangeLiquidity(
-                    exchangeLiquidity,
-                    ofFormatter: (balance) {
-                      if (params.ofToken != null) {
-                        return format.formatFungibleCurrency(
-                          metadata: params.ofToken.metadata,
-                          number: balance,
-                        );
-                      }
-
-                      return format.formatCVX(balance);
-                    },
-                    withFormatter: (balance) {
-                      if (params.withToken != null) {
-                        return format.formatFungibleCurrency(
-                          metadata: params.withToken.metadata,
-                          number: balance,
-                        );
-                      }
-
-                      return format.formatCVX(balance);
-                    },
-                  ),
-                  gap,
-                ],
                 if (isOfPriceAvailable)
                   SizedBox(
                     width: double.infinity,
@@ -503,7 +477,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       (fungible) {
                         if (fungible != null) {
                           setState(() {
-                            _update(params.copyWith(ofToken: fungible));
+                            _setState(params.copyWith(ofToken: fungible));
                           });
                         }
                       },
@@ -555,12 +529,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           },
                         ).then((value) {
                           if (value != null) {
-                            setState(() {
-                              this.ofTokenPrice = context
-                                  .read<AppState>()
-                                  .torus()
-                                  .price(ofToken: params.ofToken.address);
-                            });
+                            _setState(params);
                           }
                         });
                       },
@@ -577,7 +546,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           Gap(15),
           Row(
             children: [
-              if (ofTokenBalance != null)
+              if (ofTokenBalance != null) ...[
                 Balance(
                   ofTokenBalance,
                   formatter: (data) {
@@ -591,6 +560,42 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     );
                   },
                 ),
+                Gap(20),
+                FutureBuilder<Tuple2<int, int>>(
+                  future: exchangeLiquidity,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Spinner();
+                    }
+
+                    final ofBalance = snapshot.data?.item1;
+
+                    final ofBalanceText = ofBalance != null
+                        ? params.ofToken != null
+                            ? format.formatFungibleCurrency(
+                                metadata: params.ofToken.metadata,
+                                number: ofBalance,
+                              )
+                            : format.formatCVX(ofBalance)
+                        : '-';
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'EXCHANGE LIQUIDITY',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        Gap(4),
+                        Text(
+                          ofBalanceText,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        )
+                      ],
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         ],
@@ -631,7 +636,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         (fungible) {
                           if (fungible != null) {
                             setState(() {
-                              _update(params.copyWith(withToken: fungible));
+                              _setState(params.copyWith(withToken: fungible));
                             });
                           }
                         },
@@ -657,23 +662,62 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _update(params.resetWith());
+                        _setState(params.resetWith());
                       });
                     },
                   ),
               ],
             ),
             Gap(15),
-            Balance(withTokenBalance, formatter: (data) {
-              if (params.withToken == null) {
-                return format.formatCVX(data);
-              }
+            Row(
+              children: [
+                Balance(withTokenBalance, formatter: (data) {
+                  if (params.withToken == null) {
+                    return format.formatCVX(data);
+                  }
 
-              return format.formatFungibleCurrency(
-                metadata: params.withToken.metadata,
-                number: data,
-              );
-            }),
+                  return format.formatFungibleCurrency(
+                    metadata: params.withToken.metadata,
+                    number: data,
+                  );
+                }),
+                Gap(20),
+                FutureBuilder<Tuple2<int, int>>(
+                  future: exchangeLiquidity,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Spinner();
+                    }
+
+                    final withBalance = snapshot.data?.item2;
+
+                    final withBalanceText = withBalance != null
+                        ? params.withToken != null
+                            ? format.formatFungibleCurrency(
+                                metadata: params.withToken.metadata,
+                                number: withBalance,
+                              )
+                            : format.formatCVX(withBalance)
+                        : '-';
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'EXCHANGE LIQUIDITY',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        Gap(4),
+                        Text(
+                          withBalanceText,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        )
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       );
