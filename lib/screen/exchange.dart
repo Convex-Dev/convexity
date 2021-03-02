@@ -305,30 +305,39 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
 
+  void _update(ExchangeParams exchangeParams) {
+    final appState = context.read<AppState>();
+
+    params = exchangeParams;
+
+    if (exchangeParams.ofToken != null) {
+      ofTokenPrice = appState.torus().price(
+            ofToken: exchangeParams.ofToken.address,
+          );
+    }
+
+    if (exchangeParams.withToken != null) {
+      withTokenPrice = appState.torus().price(
+            ofToken: exchangeParams.withToken.address,
+          );
+    }
+
+    ofTokenBalance = getOfTokenBalance(context, exchangeParams);
+
+    withTokenBalance = getWithTokenBalance(context, exchangeParams);
+
+    exchangeLiquidity = getExchangeLiquidity(
+      context: context,
+      ofToken: exchangeParams.ofToken?.address,
+      withToken: exchangeParams.withToken?.address,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
 
-    final appState = context.read<AppState>();
-
-    if (params.ofToken?.address != null) {
-      ofTokenPrice = appState.torus().price(ofToken: params.ofToken.address);
-    }
-
-    if (params.withToken?.address != null) {
-      withTokenPrice =
-          appState.torus().price(ofToken: params.withToken.address);
-    }
-
-    ofTokenBalance = getOfTokenBalance(context, params);
-    withTokenBalance = getWithTokenBalance(context, params);
-
-    // It also needs to be called whenever 'of' or 'with' changes.
-    exchangeLiquidity = getExchangeLiquidity(
-      context: context,
-      ofToken: params.ofToken?.address,
-      withToken: params.withToken?.address,
-    );
+    _update(params);
   }
 
   @override
@@ -465,23 +474,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     (fungible) {
                       if (fungible != null) {
                         setState(() {
-                          final appState = context.read<AppState>();
-
-                          this.params = params.copyWith(ofToken: fungible);
-
-                          this.ofTokenPrice = appState
-                              .torus()
-                              .price(ofToken: params.ofToken.address);
-
-                          this.ofTokenBalance = appState
-                              .assetLibrary()
-                              .balance(asset: fungible.address);
-
-                          this.exchangeLiquidity = getExchangeLiquidity(
-                            context: context,
-                            ofToken: params.ofToken?.address,
-                            withToken: params.withToken?.address,
-                          );
+                          _update(params.copyWith(ofToken: fungible));
                         });
                       }
                     },
@@ -599,23 +592,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       (fungible) {
                         if (fungible != null) {
                           setState(() {
-                            final appState = context.read<AppState>();
-
-                            this.params = params.copyWith(withToken: fungible);
-
-                            this.withTokenPrice = appState.torus().price(
-                                  ofToken: fungible.address,
-                                  withToken: fungible.address,
-                                );
-
-                            withTokenBalance =
-                                getWithTokenBalance(context, this.params);
-
-                            this.exchangeLiquidity = getExchangeLiquidity(
-                              context: context,
-                              ofToken: params.ofToken?.address,
-                              withToken: params.withToken?.address,
-                            );
+                            _update(params.copyWith(withToken: fungible));
                           });
                         }
                       },
