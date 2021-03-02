@@ -224,7 +224,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Balance',
+                'BALANCE',
                 style: Theme.of(context).textTheme.caption,
               ),
               Gap(4),
@@ -452,155 +452,46 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   Widget buyOrSellOf({double ofTokenPrice}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (ofTokenPrice != null) ...[
-          Row(
-            children: [
-              Text(
-                'Marginal Price',
-                style: Theme.of(context).textTheme.caption,
-              ),
-              Gap(4),
-              Text(
-                '${format.readFungibleCurrency(
-                  metadata: params.ofToken.metadata,
-                  s: ofTokenPrice.toString(),
-                )}',
-                style: Theme.of(context).textTheme.bodyText2,
-              )
-            ],
-          ),
-          Gap(10),
-        ],
-        Row(
-          children: [
-            Text(actionText() + ' '),
-            Gap(20),
-            ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: 60, height: 60),
-              child: ElevatedButton(
-                child: Text(
-                  params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption
-                      .copyWith(color: Colors.black87),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onPressed: () {
-                  nav.pushSelectFungible(context).then(
-                    (fungible) {
-                      if (fungible != null) {
-                        setState(() {
-                          _update(params.copyWith(ofToken: fungible));
-                        });
-                      }
-                    },
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.orange,
-                  shape: CircleBorder(),
-                ),
-              ),
-            ),
-            if (ofTokenPrice != null) ...[
-              Gap(30),
-              Text('Amount'),
-              Gap(10),
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                  ),
-                  onChanged: (s) {
-                    setState(() {
-                      params = params.copyWith(amount: s);
-                    });
-                  },
-                ),
-              )
-            ] else ...[
-              Gap(20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    child: Text('Add liquidity'),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            padding: EdgeInsets.all(16),
-                            child: SingleChildScrollView(
-                              child: SafeArea(
-                                child: _TokenLiquidity(
-                                  token: params.ofToken,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ).then((value) {
-                        if (value != null) {
-                          setState(() {
-                            this.ofTokenPrice = context
-                                .read<AppState>()
-                                .torus()
-                                .price(ofToken: params.ofToken.address);
-                          });
-                        }
-                      });
-                    },
-                  ),
-                  Text(
-                    'There is no liquidity for ${params.ofToken?.metadata?.symbol ?? ''}.',
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ],
-              )
-            ]
-          ],
-        ),
-        Gap(15),
-        Row(
-          children: [
-            if (ofTokenBalance != null)
-              Balance(
-                ofTokenBalance,
-                formatter: (data) {
-                  if (params.ofToken == null) {
-                    return format.formatCVX(data);
-                  }
-
-                  return format.formatFungibleCurrency(
-                    metadata: params.ofToken.metadata,
-                    number: data,
-                  );
-                },
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget buyOrSellWith() => Column(
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.black87),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (ofTokenPrice != null) ...[
+            Row(
+              children: [
+                Text(
+                  'Marginal Price',
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Gap(4),
+                Text(
+                  '${format.readFungibleCurrency(
+                    metadata: params.ofToken.metadata,
+                    s: ofTokenPrice.toString(),
+                  )}',
+                  style: Theme.of(context).textTheme.bodyText2,
+                )
+              ],
+            ),
+            Gap(10),
+          ],
           Row(
             children: [
-              Text(buyWithSellForText()),
+              Text(
+                actionText(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Gap(20),
-              // Select 'with' Token and query price.
               ConstrainedBox(
                 constraints: BoxConstraints.tightFor(width: 60, height: 60),
                 child: ElevatedButton(
                   child: Text(
-                    params.withToken?.metadata?.symbol ?? cvx.metadata.symbol,
+                    params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
                     style: Theme.of(context)
                         .textTheme
                         .caption
@@ -612,7 +503,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       (fungible) {
                         if (fungible != null) {
                           setState(() {
-                            _update(params.copyWith(withToken: fungible));
+                            _update(params.copyWith(ofToken: fungible));
                           });
                         }
                       },
@@ -624,38 +515,167 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   ),
                 ),
               ),
-              Gap(10),
-              // Reset 'with' Token and query price for CVX.
-              if (params.withToken != null)
-                ElevatedButton(
-                  child: Text(
-                    'Reset',
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption
-                        .copyWith(color: Colors.white),
-                    overflow: TextOverflow.ellipsis,
+              if (ofTokenPrice != null) ...[
+                Gap(30),
+                Text('Amount'),
+                Gap(10),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                    ),
+                    onChanged: (s) {
+                      setState(() {
+                        params = params.copyWith(amount: s);
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _update(params.resetWith());
-                    });
+                )
+              ] else ...[
+                Gap(20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ElevatedButton(
+                      child: Text('Add liquidity'),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              padding: EdgeInsets.all(16),
+                              child: SingleChildScrollView(
+                                child: SafeArea(
+                                  child: _TokenLiquidity(
+                                    token: params.ofToken,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ).then((value) {
+                          if (value != null) {
+                            setState(() {
+                              this.ofTokenPrice = context
+                                  .read<AppState>()
+                                  .torus()
+                                  .price(ofToken: params.ofToken.address);
+                            });
+                          }
+                        });
+                      },
+                    ),
+                    Text(
+                      'There is no liquidity for ${params.ofToken?.metadata?.symbol ?? ''}.',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
+                )
+              ]
+            ],
+          ),
+          Gap(15),
+          Row(
+            children: [
+              if (ofTokenBalance != null)
+                Balance(
+                  ofTokenBalance,
+                  formatter: (data) {
+                    if (params.ofToken == null) {
+                      return format.formatCVX(data);
+                    }
+
+                    return format.formatFungibleCurrency(
+                      metadata: params.ofToken.metadata,
+                      number: data,
+                    );
                   },
                 ),
             ],
           ),
-          Gap(15),
-          Balance(withTokenBalance, formatter: (data) {
-            if (params.withToken == null) {
-              return format.formatCVX(data);
-            }
-
-            return format.formatFungibleCurrency(
-              metadata: params.withToken.metadata,
-              number: data,
-            );
-          }),
         ],
+      ),
+    );
+  }
+
+  Widget buyOrSellWith() => Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black87),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  buyWithSellForText(),
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Gap(20),
+                // Select 'with' Token and query price.
+                ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: 60, height: 60),
+                  child: ElevatedButton(
+                    child: Text(
+                      params.withToken?.metadata?.symbol ?? cvx.metadata.symbol,
+                      style: Theme.of(context)
+                          .textTheme
+                          .caption
+                          .copyWith(color: Colors.black87),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onPressed: () {
+                      nav.pushSelectFungible(context).then(
+                        (fungible) {
+                          if (fungible != null) {
+                            setState(() {
+                              _update(params.copyWith(withToken: fungible));
+                            });
+                          }
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.orange,
+                      shape: CircleBorder(),
+                    ),
+                  ),
+                ),
+                Gap(10),
+                // Reset 'with' Token and query price for CVX.
+                if (params.withToken != null)
+                  ElevatedButton(
+                    child: Text(
+                      'Reset',
+                      style: Theme.of(context)
+                          .textTheme
+                          .caption
+                          .copyWith(color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _update(params.resetWith());
+                      });
+                    },
+                  ),
+              ],
+            ),
+            Gap(15),
+            Balance(withTokenBalance, formatter: (data) {
+              if (params.withToken == null) {
+                return format.formatCVX(data);
+              }
+
+              return format.formatFungibleCurrency(
+                metadata: params.withToken.metadata,
+                number: data,
+              );
+            }),
+          ],
+        ),
       );
 
   void confirm() async {
