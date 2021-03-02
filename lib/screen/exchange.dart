@@ -430,6 +430,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     return '?';
   }
 
+  String buyWithSellForText() =>
+      params.action == ExchangeAction.buy ? 'With' : 'For';
+
   Widget actionToggle() => ToggleButtons(
         children: [
           Text('Buy'),
@@ -590,7 +593,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         children: [
           Row(
             children: [
-              Text('With'),
+              Text(buyWithSellForText()),
               Gap(20),
               // Select 'with' Token and query price.
               ConstrainedBox(
