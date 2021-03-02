@@ -51,6 +51,13 @@ class ExchangeParams {
         amount: amount ?? this.amount,
         withToken: withToken ?? this.withToken,
       );
+
+  Map<String, dynamic> toJson() => {
+        'action': action?.toString(),
+        'ofToken': ofToken?.toJson(),
+        'withToken': withToken?.toJson(),
+        'amount': amount,
+      };
 }
 
 @immutable

@@ -310,16 +310,30 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     params = exchangeParams;
 
+    logger.d(exchangeParams.toJson());
+
     if (exchangeParams.ofToken != null) {
-      ofTokenPrice = appState.torus().price(
+      final _ofTokenPrice = appState.torus().price(
             ofToken: exchangeParams.ofToken.address,
           );
+
+      logger.d({
+        'ofToken': exchangeParams.ofToken.address,
+      });
+
+      ofTokenPrice = _ofTokenPrice;
     }
 
     if (exchangeParams.withToken != null) {
-      withTokenPrice = appState.torus().price(
+      final _withTokenPrice = appState.torus().price(
             ofToken: exchangeParams.withToken.address,
           );
+
+      logger.d({
+        'withToken.address': exchangeParams.withToken.address,
+      });
+
+      withTokenPrice = _withTokenPrice;
     }
 
     ofTokenBalance = getOfTokenBalance(context, exchangeParams);
@@ -447,7 +461,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ),
               Gap(4),
               Text(
-                '${NumberFormat().format(ofTokenPrice)}',
+                '${format.readFungibleCurrency(
+                  metadata: params.ofToken.metadata,
+                  s: ofTokenPrice.toString(),
+                )}',
                 style: Theme.of(context).textTheme.bodyText2,
               )
             ],
@@ -618,15 +635,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   ),
                   onPressed: () {
                     setState(() {
-                      params = params.resetWith();
-
-                      ofTokenPrice = context
-                          .read<AppState>()
-                          .torus()
-                          .price(ofToken: params.ofToken.address);
-
-                      withTokenBalance =
-                          getWithTokenBalance(context, this.params);
+                      _update(params.resetWith());
                     });
                   },
                 ),
