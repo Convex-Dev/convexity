@@ -345,9 +345,6 @@ class _TransactStakeState extends State<_TransactStake> {
       final appState = context.read<AppState>();
 
       return await appState.convexClient().transact(
-            address: appState.model.activeAddress,
-            accountKey: appState.model.activeAccountKey,
-            secretKey: appState.model.activeKeyPair.sk,
             source: '(stake ${widget.peer.address} $amount)',
           );
     } finally {

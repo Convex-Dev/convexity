@@ -17,7 +17,7 @@ Future<Tuple2<Address, KeyPair>> _setupNewAccount(
   final generatedKeyPair = CryptoSign.randomKeys();
 
   final generatedAddress = await convexClient.createAccount(
-    accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+    AccountKey.fromBin(generatedKeyPair.pk),
   );
 
   final faucetResponse = await convexClient.faucet(
@@ -33,18 +33,9 @@ Future<Tuple2<Address, KeyPair>> _setupNewAccount(
 }
 
 void main() {
-  final convexClient = ConvexClient(
+  var convexClient = ConvexClient(
     server: convexWorldUri,
     client: http.Client(),
-  );
-
-  final fungibleLibrary = FungibleLibrary(
-    convexClient: convexClient,
-  );
-
-  final convexityClient = ConvexityClient(
-    convexClient: convexClient,
-    actor: convexityAddress,
   );
 
   test('Create a Fungible Token', () async {
@@ -52,15 +43,22 @@ void main() {
     final newAccountAddress = newAccount.item1;
     final newAccountKeyPair = newAccount.item2;
 
-    final result = await fungibleLibrary.createToken(
-      holder: newAccountAddress,
-      accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      secretKey: newAccountKeyPair.sk,
-      supply: 100,
+    // Update credentials.
+    convexClient.setCredentials(
+      Credentials(
+        address: newAccountAddress,
+        accountKey: AccountKey.fromBin(newAccountKeyPair.pk),
+        secretKey: newAccountKeyPair.sk,
+      ),
     );
 
-    expect(result.errorCode, null);
-    expect(result.value != null, true);
+    final fungibleLibrary = FungibleLibrary(
+      convexClient: convexClient,
+    );
+
+    final token = await fungibleLibrary.createToken2(
+      supply: 100,
+    );
 
     final metadata = FungibleTokenMetadata(
       name: 'Sample Token ${DateTime.now()}',
@@ -71,7 +69,7 @@ void main() {
     );
 
     final fungible = FungibleToken(
-      address: Address(result.value),
+      address: token,
       metadata: metadata,
     );
 
@@ -80,12 +78,12 @@ void main() {
       asset: fungible,
     );
 
-    final result2 = await convexityClient.requestToRegister(
-      holder: newAccountAddress,
-      holderAccountKey: AccountKey.fromBin(newAccountKeyPair.pk),
-      holderSecretKey: newAccountKeyPair.sk,
-      aasset: aasset,
+    final convexityClient = ConvexityClient(
+      convexClient: convexClient,
+      actor: convexityAddress,
     );
+
+    final result2 = await convexityClient.requestToRegister(aasset: aasset);
 
     expect(result2.errorCode, null);
     expect(result2.value != null, true);

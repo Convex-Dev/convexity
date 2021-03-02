@@ -172,3 +172,18 @@ Future<dynamic> pushStakingPeer(
       route.stakingPeer,
       arguments: peer,
     );
+
+Future<dynamic> pushExchange(
+  BuildContext context, {
+  ExchangeParams params,
+}) =>
+    Navigator.pushNamed(
+      context,
+      route.exchange,
+      arguments: params,
+    );
+
+Future<dynamic> pushSelectFungible(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.selectFungible,
+    );

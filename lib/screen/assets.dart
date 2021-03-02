@@ -43,7 +43,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
           child: Column(
             children: [
               Expanded(
-                child: AssetsCollection(
+                child: AssetCollection(
                   assets: appState.model.following,
                   balanceCache: balancheCache,
                 ),

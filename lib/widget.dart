@@ -285,15 +285,17 @@ Widget nonFungibleTokenCard({
     });
 
 // ignore: must_be_immutable
-class AssetsCollection extends StatefulWidget {
+class AssetCollection extends StatefulWidget {
   final Set<AAsset> assets = {};
   final Map<AAsset, Future> balanceCache = {};
 
   String empty;
+  void Function(AAsset) onAssetTap;
 
-  AssetsCollection({
+  AssetCollection({
     Key key,
     @required assets,
+    void Function(AAsset) onAssetTap,
     balanceCache,
     empty,
   }) : super(key: key) {
@@ -303,16 +305,18 @@ class AssetsCollection extends StatefulWidget {
       this.assets.addAll(Set.from(assets));
     }
 
+    this.onAssetTap = onAssetTap;
+
     if (balanceCache != null) {
       this.balanceCache.addAll(Map.from(balanceCache));
     }
   }
 
   @override
-  _AssetsCollectionState createState() => _AssetsCollectionState();
+  _AssetCollectionState createState() => _AssetCollectionState();
 }
 
-class _AssetsCollectionState extends State<AssetsCollection> {
+class _AssetCollectionState extends State<AssetCollection> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -367,6 +371,17 @@ class _AssetsCollectionState extends State<AssetsCollection> {
                 type: AssetType.fungible,
                 asset: fungible,
               );
+
+              // On tap behavior is conditional to having explicitly
+              // set a callback for when tapping on a Asset.
+              // If it is set, call the callback and return.
+              // Otherwise, push the Asset screen.
+
+              if (widget.onAssetTap != null) {
+                widget.onAssetTap(asset);
+
+                return;
+              }
 
               final result = nav.pushAsset(
                 context,
@@ -612,7 +627,7 @@ class _SelectAccountState extends State<_SelectAccount> {
   }
 }
 
-class ActiveAccount2 extends StatelessWidget {
+class ActiveAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();

@@ -6,11 +6,59 @@ import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
+import 'torus.dart';
 import 'convex.dart';
 import 'convexity.dart';
 import 'logger.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
+
+enum ExchangeAction {
+  buy,
+  sell,
+}
+
+@immutable
+class ExchangeParams {
+  final ExchangeAction action;
+  final FungibleToken ofToken;
+  final String amount;
+  final FungibleToken withToken;
+
+  ExchangeParams({
+    this.action,
+    this.ofToken,
+    this.amount,
+    this.withToken,
+  });
+
+  ExchangeParams resetWith() => ExchangeParams(
+        action: this.action,
+        ofToken: this.ofToken,
+        amount: this.amount,
+        withToken: null,
+      );
+
+  ExchangeParams copyWith({
+    ExchangeAction action,
+    FungibleToken ofToken,
+    String amount,
+    FungibleToken withToken,
+  }) =>
+      ExchangeParams(
+        action: action ?? this.action,
+        ofToken: ofToken ?? this.ofToken,
+        amount: amount ?? this.amount,
+        withToken: withToken ?? this.withToken,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'action': action?.toString(),
+        'ofToken': ofToken?.toJson(),
+        'withToken': withToken?.toJson(),
+        'amount': amount,
+      };
+}
 
 @immutable
 class Contact {
@@ -235,7 +283,7 @@ enum AddressInputOption {
   scan,
 }
 
-final convexityAddress = Address(1693);
+final convexityAddress = Address(33);
 
 /// Immutable Model data class.
 ///
@@ -264,7 +312,8 @@ class Model {
 
   KeyPair get activeKeyPair => keyring[activeAddress];
 
-  AccountKey get activeAccountKey => AccountKey.fromBin(activeKeyPair.pk);
+  AccountKey get activeAccountKey =>
+      activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair.pk) : null;
 
   Model copyWith({
     Uri convexServerUri,
@@ -341,12 +390,19 @@ class AppState with ChangeNotifier {
   ConvexClient convexClient() => ConvexClient(
         client: client,
         server: model.convexServerUri,
+        credentials: Credentials(
+          address: model.activeAddress,
+          accountKey: model.activeAccountKey,
+          secretKey: model.activeKeyPair?.sk,
+        ),
       );
 
   FungibleLibrary fungibleLibrary() =>
       FungibleLibrary(convexClient: convexClient());
 
   AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
+
+  TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
 
   ConvexityClient convexityClient() => model.convexityAddress != null
       ? ConvexityClient(

@@ -93,7 +93,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
       var appState = context.read<AppState>();
 
       final generatedAddress = await appState.convexClient().createAccount(
-            accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+            AccountKey.fromBin(generatedKeyPair.pk),
           );
 
       if (generatedAddress != null) {

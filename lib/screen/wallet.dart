@@ -278,7 +278,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
       final appState = context.read<AppState>();
 
       final generatedAddress = await appState.convexClient().createAccount(
-            accountKey: AccountKey.fromBin(generatedKeyPair.pk),
+            AccountKey.fromBin(generatedKeyPair.pk),
           );
 
       if (generatedAddress != null) {

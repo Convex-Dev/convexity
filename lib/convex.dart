@@ -5,11 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:meta/meta.dart';
 
-// import 'package:convex/client'
-// import 'package:convex/asset'
-// import 'package:convex/exchange'
-// import 'package:convex/trust'
-
 import 'config.dart' as config;
 import 'logger.dart';
 
@@ -96,6 +91,19 @@ AccountType accountType(String s) {
 }
 
 @immutable
+class Credentials {
+  final Address address;
+  final AccountKey accountKey;
+  final Uint8List secretKey;
+
+  Credentials({
+    this.address,
+    this.accountKey,
+    this.secretKey,
+  });
+}
+
+@immutable
 class Account {
   final int sequence;
   final Address address;
@@ -144,16 +152,28 @@ class Result {
   String toString() {
     return 'Result[errorCode: $errorCode, value: $value]';
   }
+
+  Map<String, dynamic> toJson() => {
+        'errorCode': errorCode,
+        'value': value,
+      };
 }
 
 class ConvexClient {
   final Uri server;
   final http.Client client;
 
+  // Credentials can change over time.
+  Credentials credentials;
+
   ConvexClient({
     @required this.server,
     @required this.client,
+    this.credentials,
   });
+
+  void setCredentials(Credentials credentials) =>
+      this.credentials = credentials;
 
   Uri _uri(String path) => Uri(
         scheme: server.scheme,
@@ -163,16 +183,18 @@ class ConvexClient {
       );
 
   Future<http.Response> prepareTransaction({
-    @required Address address,
     @required String source,
     int sequence,
     Lang lang = Lang.convexLisp,
   }) {
+    if (credentials == null || credentials.address == null)
+      throw Exception('Missing credentials.');
+
     final uri = _uri('api/v1/transaction/prepare');
 
     Map<String, dynamic> body = {
       'source': source,
-      'address': address.value,
+      'address': credentials.address.value,
       'lang': langString(lang),
     };
 
@@ -190,16 +212,18 @@ class ConvexClient {
   }
 
   Future<http.Response> submitTransaction({
-    @required Address address,
-    @required AccountKey accountKey,
     @required String hash,
     @required String sig,
   }) {
+    if (credentials == null ||
+        credentials.address == null ||
+        credentials.accountKey == null) throw Exception('Missing credentials.');
+
     final uri = _uri('api/v1/transaction/submit');
 
     Map<String, dynamic> body = {
-      'address': address.value,
-      'accountKey': accountKey.value,
+      'address': credentials.address.value,
+      'accountKey': credentials.accountKey.value,
       'hash': hash,
       'sig': sig,
     };
@@ -214,54 +238,57 @@ class ConvexClient {
   }
 
   Future<Result> transact({
-    @required Address address,
     @required String source,
-    @required AccountKey accountKey,
-    @required Uint8List secretKey,
     int sequence,
     Lang lang = Lang.convexLisp,
   }) async {
-    var prepareResponse = await prepareTransaction(
+    final prepared = await prepareTransaction(
       source: source,
-      address: address,
       sequence: sequence,
       lang: lang,
     );
 
-    var prepareBody = convert.jsonDecode(prepareResponse.body);
+    final preparedBody = convert.jsonDecode(prepared.body);
 
-    if (prepareResponse.statusCode != 200) {
-      throw Exception(prepareBody['errorCode']);
+    if (prepared.statusCode != 200) {
+      throw Exception(preparedBody['errorCode']);
     }
 
-    var hashHex = prepareBody['hash'];
-    var hashBin = sodium.Sodium.hex2bin(hashHex);
+    final hashHex = preparedBody['hash'];
+    final hashBin = sodium.Sodium.hex2bin(hashHex);
 
-    var sigBin = sign(hashBin, secretKey);
-    var sigHex = sodium.Sodium.bin2hex(sigBin);
+    final sigBin = sign(hashBin, credentials.secretKey);
+    final sigHex = sodium.Sodium.bin2hex(sigBin);
 
-    var submitResponse = await submitTransaction(
-      address: address,
-      accountKey: accountKey,
+    final submitResponse = await submitTransaction(
       hash: hashHex,
       sig: sigHex,
     );
 
-    var submitBody = convert.jsonDecode(submitResponse.body);
+    final submitBody = convert.jsonDecode(submitResponse.body);
 
     if (submitResponse.statusCode != 200) {
       throw Exception(submitBody['errorCode']);
     }
 
-    return Result(
+    final result = Result(
       value: submitBody['value'],
       errorCode: submitBody['errorCode'],
     );
+
+    if (config.isDebug()) {
+      logger.d(result.toJson());
+    }
+
+    return result;
   }
 
-  Future<Address> createAccount({@required AccountKey accountKey}) async {
+  Future<Address> createAccount([AccountKey accountKey]) async {
+    if (accountKey == null && credentials?.accountKey == null)
+      throw Exception('Missing AccountKey.');
+
     final body = convert.jsonEncode({
-      'accountKey': accountKey.value,
+      'accountKey': accountKey?.value ?? credentials.accountKey.value,
     });
 
     if (config.isDebug()) {
@@ -293,13 +320,13 @@ class ConvexClient {
   }
 
   Future<http.Response> faucet({
-    @required Address address,
+    Address address,
     @required int amount,
   }) async {
     final uri = _uri('api/v1/faucet');
 
     var body = convert.jsonEncode({
-      'address': address.value,
+      'address': address != null ? address.value : credentials.address.value,
       'amount': amount,
     });
 
@@ -313,14 +340,13 @@ class ConvexClient {
   /// **Executes code on the Convex Network just to compute the result.**
   Future<Result> query({
     @required String source,
-    Address address,
     Lang lang = Lang.convexLisp,
   }) async {
     final uri = _uri('api/v1/query');
 
     var body = convert.jsonEncode({
       'source': source,
-      'address': address?.value,
+      'address': credentials.address.value,
       'lang': langString(lang),
     });
 
@@ -349,8 +375,13 @@ class ConvexClient {
     );
   }
 
-  Future<Account> accountDetails(Address address) async {
-    final uri = _uri('api/v1/accounts/${address.value}');
+  Future<Account> accountDetails([Address address]) async {
+    if (address == null && credentials?.address == null)
+      throw Exception('Missing credentials.');
+
+    final uri = _uri(
+      'api/v1/accounts/${address != null ? address.value : credentials.address.value}',
+    );
 
     final response = await client.get(uri);
 
@@ -360,6 +391,31 @@ class ConvexClient {
 
     return Account.fromJson(response.body);
   }
+
+  Future<int> balance([Address address]) async {
+    if (address == null && credentials?.address == null)
+      throw Exception('Missing credentials.');
+
+    final uri = _uri(
+      'api/v1/accounts/${address != null ? address.value : credentials.address.value}',
+    );
+
+    final response = await client.get(uri);
+
+    if (config.isDebug()) {
+      logger.d(response.body);
+    }
+
+    final a = Account.fromJson(response.body);
+
+    return a.balance;
+  }
+
+  ConvexClient copyWith({Credentials credentials}) => ConvexClient(
+        server: this.server,
+        client: this.client,
+        credentials: credentials ?? this.credentials,
+      );
 }
 
 abstract class Asset {}
@@ -531,9 +587,6 @@ class FungibleLibrary {
     @required int amount,
   }) =>
       convexClient.transact(
-        address: holder,
-        secretKey: holderSecretKey,
-        accountKey: holderAccountKey,
         source: '(import convex.fungible :as fungible)'
             '(fungible/transfer $token $receiver $amount)',
       );
@@ -542,18 +595,29 @@ class FungibleLibrary {
   ///
   /// Returns the Address of the deployed Token.
   Future<Result> createToken({
-    @required Address holder,
-    @required AccountKey accountKey,
-    @required Uint8List secretKey,
     @required int supply,
   }) =>
       convexClient.transact(
-        address: holder,
-        accountKey: accountKey,
-        secretKey: secretKey,
         source: '(import convex.fungible :as fungible)'
             '(deploy (fungible/build-token {:supply $supply}))',
       );
+
+  /// **Creates (deploys) a Fungible Token on the Convex Network.**
+  ///
+  /// Returns the Address of the deployed Token.
+  Future<Address> createToken2({
+    @required int supply,
+  }) async {
+    final result = await convexClient.transact(
+      source: '(import convex.fungible :as fungible)'
+          '(deploy (fungible/build-token {:supply $supply}))',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return Address(result.value);
+  }
 }
 
 class NonFungibleLibrary {
@@ -582,9 +646,6 @@ class NonFungibleLibrary {
         '(deploy (nft/create-token $_data nil) )';
 
     return convexClient.transact(
-      address: caller,
-      accountKey: callerAccountKey,
-      secretKey: callerSecretKey,
       source: _source,
     );
   }
@@ -600,10 +661,10 @@ class AssetLibrary {
   /// but a set of numbers (IDs) for Non-Fungible Tokens.
   Future<dynamic> balance({
     @required Address asset,
-    @required Address owner,
+    Address owner,
   }) async {
     final source = '(import convex.asset :as asset)'
-        '(asset/balance $asset $owner)';
+        '(asset/balance $asset ${owner != null ? owner : convexClient.credentials.address})';
 
     final result = await convexClient.query(source: source);
 
@@ -628,9 +689,6 @@ class AssetLibrary {
         '(asset/transfer $receiver [ $nft, #{ ${tokens.join(",")} } ])';
 
     return convexClient.transact(
-      address: holder,
-      accountKey: holderAccountKey,
-      secretKey: holderSecretKey,
       source: _source,
     );
   }
@@ -647,9 +705,6 @@ class AssetLibrary {
         '(asset/transfer $receiver [ $token, $amount ])';
 
     return convexClient.transact(
-      address: holder,
-      accountKey: holderAccountKey,
-      secretKey: holderSecretKey,
       source: _source,
     );
   }

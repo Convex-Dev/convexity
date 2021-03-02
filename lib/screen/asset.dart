@@ -359,12 +359,40 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       children: [
                         _action(
                           label: 'Buy',
-                          onPressed: () {},
+                          onPressed: () {
+                            final future = nav.pushExchange(
+                              context,
+                              params: ExchangeParams(
+                                action: ExchangeAction.buy,
+                                ofToken: widget.aasset.asset,
+                              ),
+                            );
+
+                            future.then((value) {
+                              setState(() {
+                                _balance = queryBalance(context);
+                              });
+                            });
+                          },
                         ),
                         Gap(30),
                         _action(
                           label: 'Sell',
-                          onPressed: () {},
+                          onPressed: () {
+                            final future = nav.pushExchange(
+                              context,
+                              params: ExchangeParams(
+                                action: ExchangeAction.sell,
+                                ofToken: widget.aasset.asset,
+                              ),
+                            );
+
+                            future.then((value) {
+                              setState(() {
+                                _balance = queryBalance(context);
+                              });
+                            });
+                          },
                         ),
                         Gap(30),
                         _action(
@@ -373,23 +401,21 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             final fungible =
                                 widget.aasset.asset as FungibleToken;
 
-                            var f = nav.pushFungibleTransfer(
+                            var future = nav.pushFungibleTransfer(
                               context,
                               fungible,
                               balance,
                             );
 
-                            f.then(
-                              (result) {
-                                // Transfer will pop with a false value
-                                // if the user didn't make a transfer.
-                                if (result != false) {
-                                  setState(() {
-                                    _balance = queryBalance(context);
-                                  });
-                                }
-                              },
-                            );
+                            future.then((result) {
+                              // Transfer will pop with a false value
+                              // if the user didn't make a transfer.
+                              if (result != false) {
+                                setState(() {
+                                  _balance = queryBalance(context);
+                                });
+                              }
+                            });
                           },
                         ),
                       ],
@@ -644,7 +670,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
   /// Check the user's balance for this Token.
   Future<dynamic> queryBalance(BuildContext context) {
-    var appState = context.read<AppState>();
+    final appState = context.read<AppState>();
 
     return appState.assetLibrary().balance(
           asset: widget.aasset.asset.address,

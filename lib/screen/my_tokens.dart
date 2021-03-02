@@ -20,7 +20,7 @@ class MyTokensScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: AssetsCollection(
+                child: AssetCollection(
                   assets: appState.model.myTokens,
                   empty: "You haven't created any fungible tokens yet",
                 ),
