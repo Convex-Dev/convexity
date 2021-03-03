@@ -71,6 +71,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   Future<Tuple2<int, int>> exchangeLiquidity;
 
+  Future quote;
+
   _ExchangeScreenBodyState({ExchangeParams params}) {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
@@ -124,6 +126,30 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               .torus()
               .price(ofToken: params.withToken.address)
           : null;
+
+  Future<int> getQuote(
+    BuildContext context,
+    ExchangeParams params,
+  ) {
+    final amount = format.readFungibleCurrency(
+      metadata: params.ofToken.metadata,
+      s: params.amount,
+    );
+
+    if (params.action == ExchangeAction.buy) {
+      return context.read<AppState>().torus().buyQuote(
+            ofToken: params.ofToken?.address,
+            amount: amount,
+            withToken: params.withToken?.address,
+          );
+    } else {
+      return context.read<AppState>().torus().sellQuote(
+            ofToken: params.ofToken?.address,
+            amount: amount,
+            withToken: params.withToken?.address,
+          );
+    }
+  }
 
   /// We want to know the liquidity pool of **of Token** and **with Token**.
   ///
@@ -228,7 +254,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 style: Theme.of(context).textTheme.overline,
               ),
               Gap(4),
-              Text(
+              SelectableText(
                 formatter != null
                     ? formatter(snapshot.data)
                     : snapshot.data.toString(),
@@ -435,6 +461,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             actionText(),
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          // Token price.
           if (ofTokenPrice != null) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -498,6 +525,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     onChanged: (s) {
                       setState(() {
                         params = params.copyWith(amount: s);
+
+                        quote = getQuote(context, params);
                       });
                     },
                   ),
@@ -540,6 +569,27 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ]
             ],
           ),
+          Gap(10),
+          FutureBuilder(
+            future: quote,
+            builder: (context, snapshot) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'QUOTE',
+                    style: Theme.of(context).textTheme.overline,
+                  ),
+                  Gap(4),
+                  Text(
+                    snapshot.hasData ? '${snapshot.data}' : '-',
+                    style: Theme.of(context).textTheme.bodyText2,
+                  )
+                ],
+              );
+            },
+          ),
+
           Gap(15),
           Row(
             children: [
@@ -858,10 +908,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       ElevatedButton(
                         child: const Text('Done'),
                         onPressed: () {
-                          Navigator.popUntil(
-                            context,
-                            ModalRoute.withName(route.asset),
-                          );
+                          Navigator.pop(context);
+
+                          setState(() {
+                            applyExchangeParams(params);
+                          });
                         },
                       )
                     ],
@@ -928,6 +979,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           child: const Text('Okay'),
                           onPressed: () {
                             Navigator.pop(context);
+
+                            setState(() {
+                              applyExchangeParams(params);
+                            });
                           },
                         )
                       ],
@@ -959,10 +1014,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       ElevatedButton(
                         child: const Text('Done'),
                         onPressed: () {
-                          Navigator.popUntil(
-                            context,
-                            ModalRoute.withName(route.asset),
-                          );
+                          Navigator.pop(context);
                         },
                       )
                     ],

@@ -131,8 +131,37 @@ class TorusLibrary {
     Address withToken,
   }) async {
     final result = await convexClient.query(
-      source:
-          '$_import (torus/price $ofToken ${withToken != null ? withToken : ''})',
+      source: '$_import (torus/price $ofToken ${withToken ?? ''})',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
+
+  Future<int> buyQuote({
+    Address ofToken,
+    Address withToken,
+    int amount,
+  }) async {
+    final result = await convexClient.query(
+      source: '$_import (torus/buy-quote $ofToken $amount ${withToken ?? ''})',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
+
+  Future<int> sellQuote({
+    Address ofToken,
+    Address withToken,
+    int amount,
+  }) async {
+    final result = await convexClient.query(
+      source: '$_import (torus/sell-quote $ofToken $amount ${withToken ?? ''})',
     );
 
     if (result.errorCode != null)
