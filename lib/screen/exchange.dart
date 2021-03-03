@@ -422,16 +422,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   String actionText() {
     switch (params.action) {
       case ExchangeAction.buy:
-        return 'BUY';
+        return 'Buy';
       case ExchangeAction.sell:
-        return 'SELL';
+        return 'Sell';
     }
 
     return '?';
   }
 
   String buyWithSellForText() =>
-      params.action == ExchangeAction.buy ? 'WITH' : 'FOR';
+      params.action == ExchangeAction.buy ? 'With' : 'For';
 
   Widget actionToggle() => ToggleButtons(
         children: [
@@ -458,7 +458,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            actionText(),
+            actionText().toUpperCase(),
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           // Token price.
@@ -660,7 +660,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           children: [
             // With or For text.
             Text(
-              buyWithSellForText(),
+              buyWithSellForText().toUpperCase(),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Gap(20),
