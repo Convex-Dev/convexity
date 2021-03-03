@@ -305,7 +305,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
 
-  void _setState(ExchangeParams exchangeParams) {
+  void applyExchangeParams(ExchangeParams exchangeParams) {
     final appState = context.read<AppState>();
 
     params = exchangeParams;
@@ -351,7 +351,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   void initState() {
     super.initState();
 
-    _setState(params);
+    applyExchangeParams(params);
   }
 
   @override
@@ -477,7 +477,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       (fungible) {
                         if (fungible != null) {
                           setState(() {
-                            _setState(params.copyWith(ofToken: fungible));
+                            applyExchangeParams(
+                                params.copyWith(ofToken: fungible));
                           });
                         }
                       },
@@ -528,9 +529,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                             );
                           },
                         ).then((value) {
-                          if (value != null) {
-                            _setState(params);
-                          }
+                          setState(() {
+                            applyExchangeParams(params);
+                          });
                         });
                       },
                     ),
@@ -636,7 +637,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         (fungible) {
                           if (fungible != null) {
                             setState(() {
-                              _setState(params.copyWith(withToken: fungible));
+                              applyExchangeParams(
+                                  params.copyWith(withToken: fungible));
                             });
                           }
                         },
@@ -662,7 +664,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _setState(params.resetWith());
+                        applyExchangeParams(params.resetWith());
                       });
                     },
                   ),
