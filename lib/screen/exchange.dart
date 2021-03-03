@@ -225,7 +225,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             children: [
               Text(
                 'BALANCE',
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.overline,
               ),
               Gap(4),
               Text(
@@ -368,13 +368,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     snapshot.data != null;
 
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(child: actionToggle()),
                 gap,
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
                     : buyOrSellOf(ofTokenPrice: snapshot.data),
-                gap,
                 if (isOfPriceAvailable) buyOrSellWith(),
                 gap,
                 if (isOfPriceAvailable)
@@ -396,16 +396,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   String actionText() {
     switch (params.action) {
       case ExchangeAction.buy:
-        return 'Buy';
+        return 'BUY';
       case ExchangeAction.sell:
-        return 'Sell';
+        return 'SELL';
     }
 
     return '?';
   }
 
   String buyWithSellForText() =>
-      params.action == ExchangeAction.buy ? 'With' : 'For';
+      params.action == ExchangeAction.buy ? 'WITH' : 'FOR';
 
   Widget actionToggle() => ToggleButtons(
         children: [
@@ -428,19 +428,20 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   Widget buyOrSellOf({double ofTokenPrice}) {
     return Container(
       padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.black87),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            actionText(),
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           if (ofTokenPrice != null) ...[
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  'Marginal Price',
-                  style: Theme.of(context).textTheme.caption,
+                  'MARGINAL PRICE',
+                  style: Theme.of(context).textTheme.overline,
                 ),
                 Gap(4),
                 Text(
@@ -456,20 +457,15 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           ],
           Row(
             children: [
-              Text(
-                actionText(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Gap(20),
               ConstrainedBox(
                 constraints: BoxConstraints.tightFor(width: 60, height: 60),
                 child: ElevatedButton(
                   child: Text(
                     params.ofToken?.metadata?.symbol ?? cvx.metadata.symbol,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption
-                        .copyWith(color: Colors.black87),
+                    style: Theme.of(context).textTheme.caption.copyWith(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   onPressed: () {
@@ -585,7 +581,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       children: [
                         Text(
                           'EXCHANGE LIQUIDITY',
-                          style: Theme.of(context).textTheme.caption,
+                          style: Theme.of(context).textTheme.overline,
                         ),
                         Gap(4),
                         Text(
@@ -608,28 +604,29 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black87),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // With or For text.
+            Text(
+              buyWithSellForText(),
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Gap(20),
+            // Select 'with' Token.
             Row(
               children: [
-                Text(
-                  buyWithSellForText(),
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Gap(20),
                 // Select 'with' Token and query price.
                 ConstrainedBox(
                   constraints: BoxConstraints.tightFor(width: 60, height: 60),
                   child: ElevatedButton(
                     child: Text(
                       params.withToken?.metadata?.symbol ?? cvx.metadata.symbol,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption
-                          .copyWith(color: Colors.black87),
+                      style: Theme.of(context).textTheme.caption.copyWith(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                       overflow: TextOverflow.ellipsis,
                     ),
                     onPressed: () {
@@ -671,6 +668,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ],
             ),
             Gap(15),
+            // Balance, Exchange Liquidity.
             Row(
               children: [
                 Balance(withTokenBalance, formatter: (data) {
@@ -707,7 +705,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       children: [
                         Text(
                           'EXCHANGE LIQUIDITY',
-                          style: Theme.of(context).textTheme.caption,
+                          style: Theme.of(context).textTheme.overline,
                         ),
                         Gap(4),
                         Text(
