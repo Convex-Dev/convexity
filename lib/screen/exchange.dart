@@ -573,16 +573,23 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           FutureBuilder(
             future: quote,
             builder: (context, snapshot) {
+              final quoteFormatted = params.withToken != null
+                  ? format.formatFungibleCurrency(
+                      metadata: params.ofToken.metadata,
+                      number: snapshot.data ?? 0,
+                    )
+                  : format.formatCVX(snapshot.data ?? 0);
+
               return Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'QUOTE',
+                    snapshot.hasData ? 'QUOTE' : '',
                     style: Theme.of(context).textTheme.overline,
                   ),
                   Gap(4),
                   Text(
-                    snapshot.hasData ? '${snapshot.data}' : '-',
+                    snapshot.hasData ? '$quoteFormatted' : '',
                     style: Theme.of(context).textTheme.bodyText2,
                   )
                 ],
