@@ -157,6 +157,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     }
   }
 
+  /// Returns quote formatted based on 'with Token'.
+  /// If 'with Token' is selected, it will be formated using its metadata.
+  /// If 'with Token' is null, it will be formatted as CVX.
+  String getQuoteText(int quote) => params.withToken != null
+      ? format.formatFungibleCurrency(
+          metadata: params.ofToken.metadata,
+          number: quote,
+        )
+      : format.formatCVX(quote);
+
   /// We want to know the liquidity pool of **of Token** and **with Token**.
   ///
   /// If a Token is missing, it's considered to be CVX.
@@ -580,13 +590,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             FutureBuilder(
               future: quote,
               builder: (context, snapshot) {
-                final q = params.withToken != null
-                    ? format.formatFungibleCurrency(
-                        metadata: params.ofToken.metadata,
-                        number: snapshot.data ?? 0,
-                      )
-                    : format.formatCVX(snapshot.data ?? 0);
-
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -596,7 +599,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                     Gap(4),
                     Text(
-                      snapshot.hasData ? '$q' : '',
+                      snapshot.hasData ? getQuoteText(snapshot.data) : '',
                       style: Theme.of(context).textTheme.bodyText2,
                     )
                   ],
@@ -1033,6 +1036,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         child: const Text('Done'),
                         onPressed: () {
                           Navigator.pop(context);
+
+                          setState(() {
+                            applyExchangeParams(params);
+                          });
                         },
                       )
                     ],
