@@ -131,6 +131,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     BuildContext context,
     ExchangeParams params,
   ) {
+    if (params.amount != null && params.amount.isEmpty) {
+      logger.d('Amount is blank. Will return null.');
+
+      return null;
+    }
+
     final amount = format.readFungibleCurrency(
       metadata: params.ofToken.metadata,
       s: params.amount,
@@ -570,33 +576,38 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             ],
           ),
           Gap(10),
-          FutureBuilder(
-            future: quote,
-            builder: (context, snapshot) {
-              final quoteFormatted = params.withToken != null
-                  ? format.formatFungibleCurrency(
-                      metadata: params.ofToken.metadata,
-                      number: snapshot.data ?? 0,
+          if (quote != null)
+            FutureBuilder(
+              future: quote,
+              builder: (context, snapshot) {
+                final q = params.withToken != null
+                    ? format.formatFungibleCurrency(
+                        metadata: params.ofToken.metadata,
+                        number: snapshot.data ?? 0,
+                      )
+                    : format.formatCVX(snapshot.data ?? 0);
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      snapshot.hasData ? 'QUOTE' : '',
+                      style: Theme.of(context).textTheme.overline,
+                    ),
+                    Gap(4),
+                    Text(
+                      snapshot.hasData ? '$q' : '',
+                      style: Theme.of(context).textTheme.bodyText2,
                     )
-                  : format.formatCVX(snapshot.data ?? 0);
-
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    snapshot.hasData ? 'QUOTE' : '',
-                    style: Theme.of(context).textTheme.overline,
-                  ),
-                  Gap(4),
-                  Text(
-                    snapshot.hasData ? '$quoteFormatted' : '',
-                    style: Theme.of(context).textTheme.bodyText2,
-                  )
-                ],
-              );
-            },
-          ),
-
+                  ],
+                );
+              },
+            )
+          else
+            Text(
+              '',
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
           Gap(15),
           Row(
             children: [
