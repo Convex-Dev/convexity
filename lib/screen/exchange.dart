@@ -283,6 +283,44 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   // ignore: non_constant_identifier_names
+  Widget MarketPrice({
+    ExchangeParams params,
+    Future<double> price,
+  }) =>
+      FutureBuilder<double>(
+        future: price,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text('');
+          }
+
+          final priceShifted = format.shiftDecimalPlace(
+            snapshot.data,
+            (params.ofToken?.metadata?.decimals ?? 0) -
+                (params.withToken?.metadata?.decimals ?? 0),
+          );
+
+          final priceText = params.withToken != null
+              ? '${params.withToken.metadata.currencySymbol}$priceShifted'
+              : priceShifted.toString();
+
+          return Column(
+            children: [
+              Text(
+                'MARKET PRICE',
+                style: Theme.of(context).textTheme.overline,
+              ),
+              Gap(4),
+              Text(
+                priceText,
+                style: Theme.of(context).textTheme.headline6,
+              )
+            ],
+          );
+        },
+      );
+
+  // ignore: non_constant_identifier_names
   Widget ExchangeLiquidity(
     Future<Tuple2<int, int>> exchangeLiquidity, {
     String Function(int data) ofFormatter,
@@ -395,7 +433,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(child: actionToggle()),
-                gap,
+                if (snapshot.data != null) ...[
+                  Gap(20),
+                  Center(
+                    child: MarketPrice(
+                      params: params,
+                      price: marketPrice,
+                    ),
+                  ),
+                  Gap(10),
+                ],
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
                     : buyOrSellOf(ofTokenPrice: snapshot.data),
@@ -469,24 +516,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             actionText().toUpperCase(),
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          // Token price.
-          if (ofTokenPrice != null) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  'MARKET PRICE',
-                  style: Theme.of(context).textTheme.overline,
-                ),
-                Gap(4),
-                Text(
-                  priceText,
-                  style: Theme.of(context).textTheme.bodyText2,
-                )
-              ],
-            ),
-            Gap(10),
-          ],
+          Gap(20),
           Row(
             children: [
               ConstrainedBox(
