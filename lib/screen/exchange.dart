@@ -78,6 +78,24 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
 
+  FungibleToken _ofToken() => params.ofToken ?? CVX;
+
+  String ofTokenAmountText(int amount) => params.ofToken == null
+      ? format.formatCVX(amount)
+      : format.formatFungibleCurrency(
+          metadata: params.ofToken.metadata,
+          number: amount,
+        );
+
+  FungibleToken _withToken() => params.withToken ?? CVX;
+
+  String withTokenAmountText(int amount) => params.withToken == null
+      ? format.formatCVX(amount)
+      : format.formatFungibleCurrency(
+          metadata: params.withToken.metadata,
+          number: amount,
+        );
+
   /// Returns null if there's no 'of token' selected.
   Future getOfTokenPrice(
     BuildContext context,
@@ -503,7 +521,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     width: double.infinity,
                     child: ElevatedButton(
                       child: Text(actionText()),
-                      onPressed: params.amount != null ? confirm : null,
+                      onPressed:
+                          (params.amount != null && params.amount.isNotEmpty)
+                              ? confirm
+                              : null,
                     ),
                   )
               ],
@@ -547,16 +568,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   Widget buyOrSellOf({double ofTokenPrice}) {
-    final price = format.shiftDecimalPlace(
-      ofTokenPrice,
-      (params.ofToken?.metadata?.decimals ?? 0) -
-          (params.withToken?.metadata?.decimals ?? 0),
-    );
-
-    final priceText = params.withToken != null
-        ? '${params.withToken.metadata.currencySymbol}$price'
-        : price.toString();
-
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -840,8 +851,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     final confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
-        final withToken = params.withToken ?? CVX;
-
         return Container(
           height: 300,
           child: Column(
@@ -856,13 +865,26 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               Gap(10),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${actionText()} ${params.amount} ${params.ofToken.metadata.name} with  ${withToken.metadata.name}?',
-                    ),
-                  ],
+                child: FutureBuilder(
+                  future: quote,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+
+                    // Example: Buy 1000 Token 1
+                    final buyingSellingText =
+                        '${actionText()} ${params.amount} ${params.ofToken.metadata.name}';
+
+                    // Example: 1,000 CVX
+                    final quoteText =
+                        '${getQuoteText(snapshot.data)} ${_withToken().metadata.name}';
+
+                    return Text(
+                      '$buyingSellingText ${buyWithSellForText().toLowerCase()} $quoteText?',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    );
+                  },
                 ),
               ),
               Gap(10),
@@ -884,18 +906,22 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     final appState = context.read<AppState>();
 
-    final withToken = params.withToken ?? CVX;
-
     final int amountOf = format.readFungibleCurrency(
       metadata: params.ofToken.metadata,
       s: params.amount,
     );
 
     if (params.action == ExchangeAction.buy) {
-      final bought = appState.torus().buyTokens(
-            ofToken: params.ofToken.address,
-            amount: amountOf,
-          );
+      final pricePaid = params.withToken == null
+          ? appState.torus().buyTokens(
+                ofToken: params.ofToken.address,
+                amount: amountOf,
+              )
+          : appState.torus().buy(
+                ofToken: params.ofToken.address,
+                amount: amountOf,
+                withToken: params.withToken.address,
+              );
 
       showModalBottomSheet(
         context: context,
@@ -906,7 +932,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             height: 300,
             child: Center(
               child: FutureBuilder(
-                future: bought,
+                future: pricePaid,
                 builder: (
                   BuildContext context,
                   AsyncSnapshot<int> snapshot,
@@ -963,7 +989,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Bought ${params.amount}.',
+                              'Bought ${params.amount} ${_ofToken().metadata.symbol} for ${snapshot.data} ${_withToken().metadata.symbol}.',
                             ),
                           ],
                         ),
@@ -1069,7 +1095,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Sold ${snapshot.data}.',
+                              'Sold ${params.amount} ${_ofToken().metadata.symbol} for ${snapshot.data} ${_withToken().metadata.symbol}.',
                             ),
                           ],
                         ),
