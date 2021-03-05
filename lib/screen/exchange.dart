@@ -350,7 +350,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   ),
                 ],
               ),
-              Gap(10),
               Text(
                 priceText,
                 style: Theme.of(context).textTheme.headline6,
