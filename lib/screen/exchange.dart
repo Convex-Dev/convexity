@@ -466,6 +466,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         child: FutureBuilder(
           future: marketPrice,
           builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
             final isOfPriceAvailable =
                 snapshot.connectionState != ConnectionState.waiting &&
                     snapshot.data != null;
