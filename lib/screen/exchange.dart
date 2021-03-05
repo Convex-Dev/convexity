@@ -653,32 +653,6 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ]
             ],
           ),
-          Gap(10),
-          if (quote != null)
-            FutureBuilder(
-              future: quote,
-              builder: (context, snapshot) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      snapshot.hasData ? 'QUOTE' : '',
-                      style: Theme.of(context).textTheme.overline,
-                    ),
-                    Gap(4),
-                    Text(
-                      snapshot.hasData ? getQuoteText(snapshot.data) : '',
-                      style: Theme.of(context).textTheme.bodyText2,
-                    )
-                  ],
-                );
-              },
-            )
-          else
-            Text(
-              '',
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
           Gap(15),
           Row(
             children: [
