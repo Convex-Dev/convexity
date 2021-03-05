@@ -1160,7 +1160,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                 return Column(
                   children: [
                     Text(
-                      '${snapshot.hasError ? snapshot.error : snapshot.data}',
+                      'Gained ${snapshot.hasError ? snapshot.error : snapshot.data} liquidity shares.',
                     ),
                     Gap(20),
                     ElevatedButton(
@@ -1307,10 +1307,8 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                     Gap(10),
                     ElevatedButton(
                       child: Text('Confirm'),
-                      onPressed: tokenAmount != null &&
-                              tokenAmount > 0 &&
-                              cvxAmount != null &&
-                              cvxAmount > 0
+                      onPressed: (tokenAmount != null && tokenAmount > 0) &&
+                              (cvxAmount != null && cvxAmount > 0)
                           ? () {
                               setState(() {
                                 liquidity = context
