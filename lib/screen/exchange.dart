@@ -301,9 +301,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 (params.withToken?.metadata?.decimals ?? 0),
           );
 
-          final priceText = params.withToken != null
-              ? '${params.withToken.metadata.currencySymbol}$priceShifted'
-              : priceShifted.toString();
+          final currencySymbol = params.withToken != null
+              ? params.withToken.metadata.currencySymbol
+              : '';
+
+          final priceText =
+              '$currencySymbol' + NumberFormat().format(priceShifted);
 
           return Column(
             children: [
