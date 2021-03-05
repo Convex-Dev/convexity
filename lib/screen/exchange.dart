@@ -72,7 +72,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   Future<Tuple2<int, int>> exchangeLiquidity;
 
-  Future quote;
+  Future<int> quote;
 
   _ExchangeScreenBodyState({ExchangeParams params}) {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
@@ -321,6 +321,26 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   // ignore: non_constant_identifier_names
+  Widget Quote(Future<int> quote) => FutureBuilder<int>(
+        future: quote,
+        builder: (context, snapshot) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                snapshot.hasData ? 'Quote' : '',
+              ),
+              Gap(10),
+              Text(
+                snapshot.hasData ? getQuoteText(snapshot.data) : '',
+                style: Theme.of(context).textTheme.headline5,
+              )
+            ],
+          );
+        },
+      );
+
+  // ignore: non_constant_identifier_names
   Widget ExchangeLiquidity(
     Future<Tuple2<int, int>> exchangeLiquidity, {
     String Function(int data) ofFormatter,
@@ -386,10 +406,12 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
 
-  void applyExchangeParams(ExchangeParams exchangeParams) {
+  void reset(ExchangeParams exchangeParams) {
     final appState = context.read<AppState>();
 
     params = exchangeParams;
+
+    quote = getQuote(context, params);
 
     logger.d(exchangeParams.toJson());
 
@@ -413,7 +435,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   void initState() {
     super.initState();
 
-    applyExchangeParams(params);
+    reset(params);
   }
 
   @override
@@ -535,8 +557,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       (fungible) {
                         if (fungible != null) {
                           setState(() {
-                            applyExchangeParams(
-                                params.copyWith(ofToken: fungible));
+                            reset(params.copyWith(ofToken: fungible));
                           });
                         }
                       },
@@ -590,7 +611,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           },
                         ).then((value) {
                           setState(() {
-                            applyExchangeParams(params);
+                            reset(params);
                           });
                         });
                       },
@@ -724,8 +745,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         (fungible) {
                           if (fungible != null) {
                             setState(() {
-                              applyExchangeParams(
-                                  params.copyWith(withToken: fungible));
+                              reset(params.copyWith(withToken: fungible));
                             });
                           }
                         },
@@ -737,7 +757,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                   ),
                 ),
-                Gap(10),
+                Gap(30),
+                if (quote != null) Quote(quote),
+                Gap(30),
                 // Reset 'with' Token and query price for CVX.
                 if (params.withToken != null)
                   ElevatedButton(
@@ -751,7 +773,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     ),
                     onPressed: () {
                       setState(() {
-                        applyExchangeParams(params.resetWith());
+                        reset(params.resetWith());
                       });
                     },
                   ),
@@ -951,7 +973,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           Navigator.pop(context);
 
                           setState(() {
-                            applyExchangeParams(params);
+                            reset(params.emptyAmount());
                           });
                         },
                       )
@@ -1021,7 +1043,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                             Navigator.pop(context);
 
                             setState(() {
-                              applyExchangeParams(params);
+                              reset(params);
                             });
                           },
                         )
@@ -1057,7 +1079,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           Navigator.pop(context);
 
                           setState(() {
-                            applyExchangeParams(params);
+                            reset(params.emptyAmount());
                           });
                         },
                       )

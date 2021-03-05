@@ -35,8 +35,15 @@ class ExchangeParams {
   ExchangeParams resetWith() => ExchangeParams(
         action: this.action,
         ofToken: this.ofToken,
-        amount: this.amount,
+        amount: '',
         withToken: null,
+      );
+
+  ExchangeParams emptyAmount() => ExchangeParams(
+        action: this.action,
+        ofToken: this.ofToken,
+        amount: '',
+        withToken: this.withToken,
       );
 
   ExchangeParams copyWith({
