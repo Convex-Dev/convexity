@@ -312,6 +312,24 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 style: Theme.of(context).textTheme.overline,
               ),
               Gap(4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    params.ofToken?.metadata?.symbol ?? CVX.metadata.symbol,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Icon(
+                    Icons.arrow_right,
+                    color: Colors.grey,
+                  ),
+                  Text(
+                    params.withToken?.metadata?.symbol ?? CVX.metadata.symbol,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Gap(10),
               Text(
                 priceText,
                 style: Theme.of(context).textTheme.headline6,
