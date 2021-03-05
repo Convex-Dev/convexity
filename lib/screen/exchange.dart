@@ -132,14 +132,15 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     BuildContext context,
     ExchangeParams params,
   ) {
-    if (params.amount != null && params.amount.isEmpty) {
+    if (params.amount == null || params.amount.isEmpty) {
       logger.d('Amount is blank. Will return null.');
 
       return null;
     }
 
     final amount = format.readFungibleCurrency(
-      metadata: params.ofToken.metadata,
+      // 'of' is null if buying/selling CVX.
+      metadata: params.ofToken?.metadata ?? CVX.metadata,
       s: params.amount,
     );
 
@@ -407,13 +408,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   void reset(ExchangeParams exchangeParams) {
+    logger.d(exchangeParams.toJson());
+
     final appState = context.read<AppState>();
 
     params = exchangeParams;
 
     quote = getQuote(context, params);
-
-    logger.d(exchangeParams.toJson());
 
     marketPrice = appState.torus().price(
           ofToken: exchangeParams.ofToken?.address,

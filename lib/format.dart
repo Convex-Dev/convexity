@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:decimal/decimal.dart';
@@ -46,8 +47,15 @@ int readWithDecimals(String s, int decimals) {
 int readFungibleCurrency({
   @required FungibleTokenMetadata metadata,
   @required String s,
-}) =>
-    readWithDecimals(s, metadata.decimals);
+}) {
+  try {
+    return readWithDecimals(s, metadata.decimals);
+  } catch (e, s) {
+    logger.e(s);
+
+    rethrow;
+  }
+}
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
 
