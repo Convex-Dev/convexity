@@ -1132,11 +1132,26 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
   int cvxAmount = 0;
   Future<int> liquidity;
 
+  Future<Result> balance;
+
   double get tokenPrice =>
       tokenAmount > 0 && cvxAmount > 0 ? tokenAmount / cvxAmount : null;
 
   double get cvxPrice =>
       tokenAmount > 0 && cvxAmount > 0 ? cvxAmount / tokenAmount : null;
+
+  void initState() {
+    super.initState();
+
+    final appState = context.read<AppState>();
+
+    final activeAddress = appState.model.activeAddress;
+
+    balance = appState.convexClient().query(
+          source: '(import convex.asset :as asset)'
+              '[(balance $activeAddress) (asset/balance ${widget.token.address} $activeAddress)]',
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1185,10 +1200,25 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       style: Theme.of(context).textTheme.caption,
                     ),
                     Gap(8),
-                    Text(
-                      '${widget.token.metadata.currencySymbol}10',
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
+                    FutureBuilder<Result>(
+                      future: balance,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+
+                        final tokenBalance = format.formatFungibleCurrency(
+                          metadata: widget.token.metadata,
+                          number: (snapshot.data.value[1]),
+                        );
+
+                        return Text(
+                          tokenBalance,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        );
+                      },
+                    )
                   ],
                 ),
                 Gap(5),
@@ -1215,10 +1245,23 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       style: Theme.of(context).textTheme.caption,
                     ),
                     Gap(5),
-                    Text(
-                      '1,000,000',
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
+                    FutureBuilder<Result>(
+                      future: balance,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+
+                        final userBalance =
+                            format.formatCVX(snapshot.data.value[0]);
+
+                        return Text(
+                          userBalance,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        );
+                      },
+                    )
                   ],
                 ),
                 Gap(5),
