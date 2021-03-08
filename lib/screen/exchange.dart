@@ -1293,7 +1293,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    OutlineButton(
+                    OutlinedButton(
                       child: Text('Cancel'),
                       onPressed: () {
                         Navigator.pop(context);

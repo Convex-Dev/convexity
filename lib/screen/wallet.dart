@@ -363,7 +363,7 @@ class _RemoveState extends State<_Remove> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: const Text('Cancel'),
                     onPressed: () {
                       Navigator.pop(context, false);

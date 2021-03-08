@@ -146,7 +146,7 @@ class _RecommendedState extends State<_Recommended> {
 
     context.read<AppState>().follow(aasset, isPersistent: true);
 
-    Scaffold.of(context)
+    ScaffoldMessenger.of(context)
       ..removeCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
@@ -391,7 +391,7 @@ class _AssetIDState extends State<_AssetID> {
               ? null
               : () {
                   if (context.read<AppState>().convexityClient() == null) {
-                    Scaffold.of(context).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
                           "Can't verify because Convexity Address is not set.",

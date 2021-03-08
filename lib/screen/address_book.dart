@@ -189,7 +189,7 @@ class _EditState extends State<_Edit> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    OutlineButton(
+                    OutlinedButton(
                       child: const Text('Cancel'),
                       onPressed: () {
                         Navigator.pop(context, false);
@@ -251,7 +251,7 @@ class _RemoveState extends State<_Remove> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: const Text('Cancel'),
                     onPressed: () {
                       Navigator.pop(context, false);

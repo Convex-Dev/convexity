@@ -720,7 +720,7 @@ class AddressTile extends StatelessWidget {
             ),
           );
 
-          Scaffold.of(context)
+          ScaffoldMessenger.of(context)
             ..removeCurrentSnackBar()
             ..showSnackBar(
               SnackBar(

@@ -206,7 +206,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      OutlineButton(
+                      OutlinedButton(
                         child: const Text('Cancel'),
                         onPressed: () {
                           Navigator.pop(context, false);
@@ -267,7 +267,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  OutlineButton(
+                  OutlinedButton(
                     child: const Text('Cancel'),
                     onPressed: () {
                       Navigator.pop(context, false);

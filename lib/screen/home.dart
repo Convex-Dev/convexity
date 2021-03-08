@@ -69,7 +69,9 @@ class HomeScreenBody extends StatelessWidget {
       );
 
   void showTodoSnackBar(BuildContext context) =>
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text('TODO')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('TODO')),
+      );
 
   @override
   Widget build(BuildContext context) {

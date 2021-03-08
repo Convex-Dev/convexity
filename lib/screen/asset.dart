@@ -252,7 +252,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
           onPressed: () {
             appState.follow(widget.aasset);
 
-            Scaffold.of(context)
+            ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
                 SnackBar(
@@ -272,12 +272,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   ) =>
       SizedBox(
         width: double.infinity,
-        child: OutlineButton(
+        child: OutlinedButton(
           child: Text('Unfollow'),
           onPressed: () {
             appState.unfollow(widget.aasset);
 
-            Scaffold.of(context)
+            ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()
               ..showSnackBar(
                 SnackBar(

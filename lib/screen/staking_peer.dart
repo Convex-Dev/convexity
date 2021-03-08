@@ -292,7 +292,7 @@ class _TransactStakeState extends State<_TransactStake> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              OutlineButton(
+              OutlinedButton(
                 child: Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context);
