@@ -1205,7 +1205,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return Spinner();
                         }
 
                         final tokenBalance = format.formatFungibleCurrency(
@@ -1250,7 +1250,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return CircularProgressIndicator();
+                          return Spinner();
                         }
 
                         final userBalance =

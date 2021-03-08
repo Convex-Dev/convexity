@@ -844,3 +844,12 @@ class AnimatedListView extends StatelessWidget {
     );
   }
 }
+
+// ignore: non_constant_identifier_names
+Widget Spinner() => SizedBox(
+      width: 20,
+      height: 20,
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+      ),
+    );
