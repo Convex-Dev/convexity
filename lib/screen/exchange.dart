@@ -619,9 +619,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 Gap(10),
                 Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                    ),
+                    inputFormatters: [],
                     onChanged: (s) {
                       setState(() {
                         params = params.copyWith(amount: s);
