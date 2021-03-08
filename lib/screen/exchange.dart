@@ -7,13 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
-import '../format.dart';
 import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
 import '../format.dart' as format;
-import '../route.dart' as route;
 
 class ExchangeScreen extends StatelessWidget {
   @override
