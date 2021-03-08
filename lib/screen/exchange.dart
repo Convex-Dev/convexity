@@ -333,21 +333,31 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '1 ' + params.ofToken?.metadata?.symbol ??
-                        CVX.metadata.symbol,
+                    '1 ',
                     style: Theme.of(context).textTheme.headline6,
+                  ),
+                  Text(
+                    params.ofToken?.metadata?.symbol ?? CVX.metadata.symbol,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        .copyWith(color: Colors.black54),
                   ),
                   Icon(
                     Icons.arrow_right,
                     color: Colors.grey,
                   ),
                   Text(
-                    priceText +
-                        ' ' +
-                        (params.withToken?.metadata?.symbol ??
-                            CVX.metadata.symbol),
+                    priceText + ' ',
                     style: Theme.of(context).textTheme.headline6,
                   ),
+                  Text(
+                    (params.withToken?.metadata?.symbol ?? CVX.metadata.symbol),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        .copyWith(color: Colors.black54),
+                  )
                 ],
               ),
             ],
