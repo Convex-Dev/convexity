@@ -122,9 +122,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               ],
             ),
             Gap(5),
+            // -- Of Token, or CVX, balance.
             Row(
               children: [
-                _OfBalance(ofToken: _params.ofToken),
+                _Balance(token: _params.ofToken),
               ],
             ),
             Container(
@@ -177,6 +178,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     });
                   },
                 ),
+              ],
+            ),
+            Gap(5),
+            // -- With Token, or CVX, balance.
+            Row(
+              children: [
+                _Balance(token: _params.withToken),
               ],
             ),
             Gap(60),
@@ -279,27 +287,27 @@ class _Dropdown<T> extends StatelessWidget {
   }
 }
 
-class _OfBalance extends StatelessWidget {
-  final FungibleToken ofToken;
+class _Balance extends StatelessWidget {
+  final FungibleToken token;
 
-  const _OfBalance({Key key, this.ofToken}) : super(key: key);
+  const _Balance({Key key, this.token}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
     return FutureBuilder(
-      future: ofToken == null
+      future: token == null
           ? appState.convexClient().balance()
-          : appState.assetLibrary().balance(asset: ofToken.address),
+          : appState.assetLibrary().balance(asset: token.address),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Spinner();
         } else {
-          final s = ofToken == null
+          final s = token == null
               ? format.formatCVX(snapshot.data)
               : format.formatFungibleCurrency(
-                  metadata: ofToken.metadata,
+                  metadata: token.metadata,
                   number: snapshot.data,
                 );
 
