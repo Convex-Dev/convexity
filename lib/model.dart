@@ -32,6 +32,27 @@ class ExchangeParams {
     this.withToken,
   });
 
+  ExchangeParams swap() => ExchangeParams(
+        action: this.action,
+        amount: this.amount,
+        ofToken: this.withToken,
+        withToken: this.ofToken,
+      );
+
+  ExchangeParams setOfToken(FungibleToken ofToken) => ExchangeParams(
+        action: this.action,
+        ofToken: ofToken,
+        amount: this.amount,
+        withToken: this.withToken,
+      );
+
+  ExchangeParams setWithToken(FungibleToken withToken) => ExchangeParams(
+        action: this.action,
+        ofToken: this.ofToken,
+        amount: this.amount,
+        withToken: withToken,
+      );
+
   ExchangeParams resetWith() => ExchangeParams(
         action: this.action,
         ofToken: this.ofToken,
