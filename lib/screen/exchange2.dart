@@ -40,6 +40,10 @@ class ExchangeScreenBody2 extends StatefulWidget {
 class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   ExchangeParams _params;
 
+  TextEditingController _ofController = TextEditingController();
+
+  TextEditingController _withController = TextEditingController();
+
   _ExchangeScreenBody2State(this._params);
 
   FungibleToken get _ofToken => _params.ofToken ?? _CVX;
@@ -62,119 +66,140 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
         .map((e) => e.asset as FungibleToken)
         .toList();
 
-    return Center(
-      child: Column(
-        children: [
-          _BuySellToggle(
-            selected: _params.action,
-            onPressed: (action) {
-              setState(() {
-                _params = _params.copyWith(action: action);
-              });
-            },
-          ),
-          Gap(30),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Center(
+          child: Column(
             children: [
-              Text(
-                'Of',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Gap(10),
-              Text(
-                _ofToken.metadata.name,
-                style: Theme.of(context).textTheme.overline,
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  autofocus: true,
-                ),
-              ),
-              Gap(40),
-              _Dropdown<FungibleToken>(
-                active: _params.ofToken ?? _CVX,
-                items: [_CVX, ...fungibles],
-                itemWidget: (fungible) => Text(fungible.metadata.name),
-                onChanged: (e) {
+              _BuySellToggle(
+                selected: _params.action,
+                onPressed: (action) {
                   setState(() {
-                    final ofToken = e == _CVX ? null : e;
+                    _params = _params.copyWith(action: action);
+                  });
+                },
+              ),
+              Gap(30),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Of',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Gap(10),
+                  Text(
+                    _ofToken.metadata.name,
+                    style: Theme.of(context).textTheme.overline,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _ofController,
+                      autofocus: true,
+                      onChanged: (s) {
+                        setState(() {
+                          _params = _params.copyWith(amount: s);
+                        });
+                      },
+                    ),
+                  ),
+                  Gap(40),
+                  _Dropdown<FungibleToken>(
+                    active: _params.ofToken ?? _CVX,
+                    items: [_CVX, ...fungibles],
+                    itemWidget: (fungible) => Text(fungible.metadata.name),
+                    onChanged: (e) {
+                      setState(() {
+                        final ofToken = e == _CVX ? null : e;
 
-                    _params = _params.setOfToken(ofToken);
-                  });
-                },
+                        _params = _params.setOfToken(ofToken);
+                      });
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
-            child: Center(
-              child: IconButton(
-                icon: Icon(
-                  Icons.swap_vert,
-                  color: Colors.black54,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _params = _params.swap();
-                  });
-                },
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              Text(
-                _actionWithForText,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Gap(10),
-              Text(
-                _withToken.metadata.name,
-                style: Theme.of(context).textTheme.overline,
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  readOnly: true,
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 30),
+                child: Center(
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.swap_vert,
+                      color: Colors.black54,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _params = _params.swap();
+                      });
+                    },
+                  ),
                 ),
               ),
-              Gap(40),
-              _Dropdown<FungibleToken>(
-                active: _params.withToken ?? _CVX,
-                items: [_CVX, ...fungibles],
-                itemWidget: (fungible) => Text(fungible.metadata.name),
-                onChanged: (e) {
-                  setState(() {
-                    final withToken = e == _CVX ? null : e;
+              Row(
+                children: [
+                  Text(
+                    _actionWithForText,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Gap(10),
+                  Text(
+                    _withToken.metadata.name,
+                    style: Theme.of(context).textTheme.overline,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _withController,
+                      readOnly: true,
+                    ),
+                  ),
+                  Gap(40),
+                  _Dropdown<FungibleToken>(
+                    active: _params.withToken ?? _CVX,
+                    items: [_CVX, ...fungibles],
+                    itemWidget: (fungible) => Text(fungible.metadata.name),
+                    onChanged: (e) {
+                      setState(() {
+                        final withToken = e == _CVX ? null : e;
 
-                    _params = _params.setWithToken(withToken);
-                  });
-                },
+                        _params = _params.setWithToken(withToken);
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Gap(60),
+              SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  child: Text(_actionText),
+                  onPressed:
+                      (_params.amount != null && _params.amount.isNotEmpty)
+                          ? () {}
+                          : null,
+                ),
               ),
             ],
           ),
-          Gap(30),
-          SizedBox(
-            width: double.infinity,
-            height: 60,
-            child: ElevatedButton(
-              child: Text(_actionText),
-              onPressed: (_params.amount != null && _params.amount.isNotEmpty)
-                  ? () {}
-                  : null,
-            ),
-          ),
-        ],
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _ofController.dispose();
+
+    _withController.dispose();
+
+    super.dispose();
   }
 }
 
