@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'screen/exchange2.dart';
 import 'widget.dart';
 import 'screen/exchange.dart';
 import 'screen/staking_peer.dart';
@@ -75,6 +76,6 @@ Map<String, WidgetBuilder> routes() => {
       activity: (context) => ActivityScreen(),
       staking: (context) => StakingScreen(),
       stakingPeer: (context) => StakingPeerScreen(),
-      exchange: (context) => ExchangeScreen(),
+      exchange: (context) => ExchangeScreen2(),
       selectFungible: (context) => SelectFungibleScreen(),
     };
