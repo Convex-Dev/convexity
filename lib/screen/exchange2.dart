@@ -47,6 +47,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   Future _ofBalance;
   Future _withBalance;
 
+  Future<int> _quote;
+
   _ExchangeScreenBody2State(this._params);
 
   FungibleToken get _ofToken => _params.ofToken ?? _CVX;
@@ -112,6 +114,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     onChanged: (s) {
                       setState(() {
                         _params = _params.copyWith(amount: s);
+
+                        _refreshQuote();
                       });
                     },
                   ),
@@ -128,6 +132,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       _params = _params.setOfToken(ofToken);
 
                       _refreshOfBalance();
+                      _refreshQuote();
                     });
                   },
                 ),
@@ -180,12 +185,29 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             ),
             Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _withController,
-                    readOnly: true,
+                if (_quote == null)
+                  Expanded(
+                    child: Text('-'),
+                  )
+                else
+                  FutureBuilder(
+                    future: _quote,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Expanded(
+                          child: Text('Estimating...'),
+                        );
+                      }
+
+                      final text = snapshot.hasData && !snapshot.hasError
+                          ? quoteText(snapshot.data) + ' (estimated)'
+                          : '';
+
+                      return Expanded(
+                        child: Text(text),
+                      );
+                    },
                   ),
-                ),
                 Gap(40),
                 _Dropdown<FungibleToken>(
                   active: _params.withToken ?? _CVX,
@@ -198,6 +220,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       _params = _params.setWithToken(withToken);
 
                       _refreshWithBalance();
+                      _refreshQuote();
                     });
                   },
                 ),
@@ -263,6 +286,44 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     _refreshOfBalance();
     _refreshWithBalance();
   }
+
+  /// Query quote for 'with Token'.
+  /// This method must be called whenever 'of Token' or 'with Token' changes.
+  void _refreshQuote() {
+    if (_params.amount == null || _params.amount.isEmpty) {
+      logger.d('Amount is blank. Will set quote to null.');
+
+      _quote = null;
+
+      return;
+    }
+
+    final torus = context.read<AppState>().torus();
+
+    if (_params.action == ExchangeAction.buy) {
+      _quote = torus.buyQuote(
+        ofToken: _params.ofToken?.address,
+        amount: _params.amountInt,
+        withToken: _params.withToken?.address,
+      );
+    } else {
+      _quote = torus.sellQuote(
+        ofToken: _params.ofToken?.address,
+        amount: _params.amountInt,
+        withToken: _params.withToken?.address,
+      );
+    }
+  }
+
+  /// Returns quote formatted based on 'with Token'.
+  /// If 'with Token' is selected, it will be formated using its metadata.
+  /// If 'with Token' is null, it will be formatted as CVX.
+  String quoteText(int quote) => _params.withToken != null
+      ? format.formatFungibleCurrency(
+          metadata: _params.withToken.metadata,
+          number: quote,
+        )
+      : format.formatCVX(quote);
 }
 
 // ignore: non_constant_identifier_names

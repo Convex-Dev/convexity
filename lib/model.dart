@@ -12,6 +12,7 @@ import 'convexity.dart';
 import 'logger.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
+import 'format.dart' as format;
 
 enum ExchangeAction {
   buy,
@@ -31,6 +32,10 @@ class ExchangeParams {
     this.amount,
     this.withToken,
   });
+
+  int get amountInt => ofToken == null
+      ? format.readCVX(amount)
+      : format.readFungibleCurrency(metadata: ofToken.metadata, s: amount);
 
   ExchangeParams swap() => ExchangeParams(
         action: this.action,
