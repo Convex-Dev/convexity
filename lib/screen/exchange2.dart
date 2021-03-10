@@ -46,6 +46,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Set by [_refreshWithBalance].
   Future _withBalance;
 
+  Future<double> _price;
+
   /// Set by [_refreshOfMarketPrice].
   Future<double> _ofMarketPrice;
 
@@ -72,16 +74,16 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     super.initState();
 
     _refreshBalance();
+    _refreshPrice();
     _refreshOfMarketPrice();
     _refreshWithMarketPrice();
   }
 
   @override
   Widget build(BuildContext context) {
-    final fungibles = context
-        .watch<AppState>()
-        .model
-        .following
+    final appState = context.watch<AppState>();
+
+    final fungibles = appState.model.following
         .where((e) => e.type == AssetType.fungible)
         .map((e) => e.asset as FungibleToken)
         .toList();
@@ -98,7 +100,11 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 });
               },
             ),
-            Gap(30),
+            Gap(20),
+            _MarketPrice(
+              params: _params,
+              price: _price,
+            ),
             Container(
               height: 60,
               child: Row(
@@ -120,6 +126,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       market: _ofMarketPrice,
                       onCreated: (shares) {
                         setState(() {
+                          _refreshPrice();
                           _refreshOfBalance();
                           _refreshOfMarketPrice();
                           _refreshQuote();
@@ -166,6 +173,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                           _params = _params.setOfToken(ofToken);
 
+                          _refreshPrice();
                           _refreshOfBalance();
                           _refreshOfMarketPrice();
                           _refreshQuote();
@@ -581,6 +589,19 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     _refreshWithBalance();
   }
 
+  void _refreshPrice() {
+    final torus = context.read<AppState>().torus();
+
+    if (_params.ofToken == null) {
+      return;
+    }
+
+    _price = torus.price(
+      ofToken: _params.ofToken?.address,
+      withToken: _params.withToken?.address,
+    );
+  }
+
   /// Query price for 'of Token'.
   ///
   /// Set it to `null` if 'of Token' is null.
@@ -848,6 +869,77 @@ class _MarketCheck extends StatelessWidget {
     if (shares != null) {
       onCreated(shares);
     }
+  }
+}
+
+class _MarketPrice extends StatelessWidget {
+  final ExchangeParams params;
+  final Future<double> price;
+
+  const _MarketPrice({Key key, this.params, this.price}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<double>(
+      future: price,
+      builder: (context, snapshot) {
+        final priceShifted = format.shiftDecimalPlace(
+          snapshot.data ?? 0,
+          (params.ofToken?.metadata?.decimals ?? 0) -
+              (params.withToken?.metadata?.decimals ?? 0),
+        );
+
+        final withPriceText = NumberFormat().format(priceShifted);
+
+        return Container(
+          height: 50,
+          child: Column(
+            children: [
+              Text(
+                'MARKET PRICE',
+                style: Theme.of(context).textTheme.overline,
+              ),
+              Gap(4),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                Text('Getting Price...')
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '1 ',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    Text(
+                      params.ofToken?.metadata?.symbol ?? _CVX.metadata.symbol,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(color: Colors.black54),
+                    ),
+                    Icon(
+                      Icons.arrow_right,
+                      color: Colors.grey,
+                    ),
+                    Text(
+                      withPriceText + ' ',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    Text(
+                      (params.withToken?.metadata?.symbol ??
+                          _CVX.metadata.symbol),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(color: Colors.black54),
+                    )
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
