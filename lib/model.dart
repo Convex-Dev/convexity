@@ -37,6 +37,20 @@ class ExchangeParams {
       ? format.readCVX(amount)
       : format.readFungibleCurrency(metadata: ofToken.metadata, s: amount);
 
+  bool get isAmountValid {
+    try {
+      if (amount == null || amount.isEmpty) {
+        return false;
+      }
+
+      int.parse(amount);
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   ExchangeParams swap() => ExchangeParams(
         action: this.action,
         amount: this.amount,

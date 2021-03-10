@@ -63,6 +63,9 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   String get _actionWithForText =>
       _params?.action == ExchangeAction.buy ? 'With' : 'For';
 
+  String get _buyWithSellForText =>
+      _params?.action == ExchangeAction.buy ? 'With' : 'For';
+
   @override
   void initState() {
     super.initState();
@@ -212,7 +215,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       return Expanded(
                         child: Row(
                           children: [
-                            Text(quoteText(snapshot.data)),
+                            Text(_quoteText(snapshot.data)),
                             Gap(5),
                             Text(
                               '(estimated)',
@@ -256,9 +259,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               height: 60,
               child: ElevatedButton(
                 child: Text(_actionText),
-                onPressed: (_params.amount != null && _params.amount.isNotEmpty)
-                    ? () {}
-                    : null,
+                onPressed: _params.isAmountValid ? _buySell : null,
               ),
             ),
           ],
@@ -272,6 +273,60 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     _ofController.dispose();
 
     super.dispose();
+  }
+
+  void _buySell() async {
+    final confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: FutureBuilder(
+                  future: _quote,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+
+                    // Example: Buy 1000 Token 1
+                    final buyingSellingText =
+                        '$_actionText ${_params.amount} ${_ofToken.metadata.name}';
+
+                    // Example: 1,000 CVX
+                    final quoteText =
+                        '${_quoteText(snapshot.data)} ${_withToken.metadata.name}';
+
+                    return Text(
+                      '$buyingSellingText ${_buyWithSellForText.toLowerCase()} $quoteText?',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    );
+                  },
+                ),
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: const Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _refreshOfBalance() {
@@ -340,7 +395,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Returns quote formatted based on 'with Token'.
   /// If 'with Token' is selected, it will be formated using its metadata.
   /// If 'with Token' is null, it will be formatted as CVX.
-  String quoteText(int quote) => _params.withToken != null
+  String _quoteText(int quote) => _params.withToken != null
       ? format.formatFungibleCurrency(
           metadata: _params.withToken.metadata,
           number: quote,
