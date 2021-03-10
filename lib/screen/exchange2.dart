@@ -42,8 +42,6 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
   TextEditingController _ofController = TextEditingController();
 
-  TextEditingController _withController = TextEditingController();
-
   Future _ofBalance;
   Future _withBalance;
 
@@ -268,8 +266,6 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   @override
   void dispose() {
     _ofController.dispose();
-
-    _withController.dispose();
 
     super.dispose();
   }
