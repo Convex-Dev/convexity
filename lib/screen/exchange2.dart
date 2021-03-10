@@ -42,9 +42,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
   TextEditingController _ofController = TextEditingController();
 
+  /// Set by [_refreshOfBalance].
   Future _ofBalance;
+
+  /// Set by [_refreshWithBalance].
   Future _withBalance;
 
+  /// Set by [_refreshQuote].
   Future<int> _quote;
 
   _ExchangeScreenBody2State(this._params);
