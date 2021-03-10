@@ -205,6 +205,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       _ofBalance = withBalance;
                       _withBalance = ofBalance;
 
+                      final ofMarketPrice = _ofMarketPrice;
+                      final withMarketPrice = _withMarketPrice;
+
+                      _ofMarketPrice = withMarketPrice;
+                      _withMarketPrice = ofMarketPrice;
+
                       _refreshQuote();
                     });
                   },
@@ -794,7 +800,7 @@ class _MarketCheck extends StatelessWidget {
           return Row(
             children: [
               Text(
-                "There isn't a Market for ${token.metadata.name}.",
+                "There isn't a Market yet.",
                 style: Theme.of(context).textTheme.caption,
                 overflow: TextOverflow.ellipsis,
               ),
