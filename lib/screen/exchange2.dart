@@ -355,6 +355,137 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
         );
       },
     );
+
+    if (confirmation != true) {
+      return;
+    }
+
+    final appState = context.read<AppState>();
+
+    final x = _params.action == ExchangeAction.buy
+        ? (_params.withToken == null
+            ? appState.torus().buyTokens(
+                  ofToken: _params.ofToken.address,
+                  amount: _params.amountInt,
+                )
+            : appState.torus().buy(
+                  ofToken: _params.ofToken.address,
+                  amount: _params.amountInt,
+                  withToken: _params.withToken.address,
+                ))
+        : (_params.withToken == null
+            ? appState.torus().sellTokens(
+                  ofToken: _params.ofToken.address,
+                  amount: _params.amountInt,
+                )
+            : appState.torus().sell(
+                  ofToken: _params.ofToken.address,
+                  amount: _params.amountInt,
+                  withToken: _params.withToken?.address,
+                ));
+
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          child: Center(
+            child: FutureBuilder(
+              future: x,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<int> snapshot,
+              ) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+
+                if (snapshot.hasError) {
+                  logger.e(
+                    'Failed to $_actionText: ${snapshot.error}',
+                  );
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        size: 80,
+                        color: Colors.black12,
+                      ),
+                      Gap(10),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Sorry. It was not possible to ${_actionText.toLowerCase()} ${_ofToken.metadata.symbol}.\n\n${snapshot.error}',
+                        ),
+                      ),
+                      Gap(10),
+                      ElevatedButton(
+                        child: const Text('Okay'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                }
+
+                final boughtOrSold =
+                    _params.action == ExchangeAction.buy ? 'Bought' : 'Sold';
+
+                // Example: 1,000 CVX
+                final quoteText =
+                    '${_quoteText(snapshot.data)} ${_withToken.metadata.name}';
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.check,
+                      size: 80,
+                      color: Colors.green,
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '$boughtOrSold ${_params.amount} ${_ofToken.metadata.symbol} ${_actionWithForText.toLowerCase()} $quoteText.',
+                          ),
+                        ],
+                      ),
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: const Text('Done'),
+                      onPressed: () {
+                        Navigator.pop(context);
+
+                        setState(() {
+                          _refreshBalance();
+
+                          // Clear quote.
+                          _ofController.text = '';
+                          _params = _params.emptyAmount();
+                          _quote = null;
+                        });
+                      },
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _refreshOfBalance() {
