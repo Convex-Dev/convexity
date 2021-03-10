@@ -44,6 +44,9 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
   TextEditingController _withController = TextEditingController();
 
+  Future _ofBalance;
+  Future _withBalance;
+
   _ExchangeScreenBody2State(this._params);
 
   FungibleToken get _ofToken => _params.ofToken ?? _CVX;
@@ -55,6 +58,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
   String get _actionWithForText =>
       _params?.action == ExchangeAction.buy ? 'With' : 'For';
+
+  @override
+  void initState() {
+    super.initState();
+
+    _refreshBalance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +126,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       final ofToken = e == _CVX ? null : e;
 
                       _params = _params.setOfToken(ofToken);
+
+                      _refreshOfBalance();
                     });
                   },
                 ),
@@ -125,7 +137,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             // -- Of Token, or CVX, balance.
             Row(
               children: [
-                _Balance(token: _params.ofToken),
+                _Balance(
+                  token: _params.ofToken,
+                  balance: _ofBalance,
+                ),
               ],
             ),
             Container(
@@ -139,6 +154,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   onPressed: () {
                     setState(() {
                       _params = _params.swap();
+
+                      _refreshBalance();
                     });
                   },
                 ),
@@ -175,6 +192,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       final withToken = e == _CVX ? null : e;
 
                       _params = _params.setWithToken(withToken);
+
+                      _refreshWithBalance();
                     });
                   },
                 ),
@@ -184,7 +203,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             // -- With Token, or CVX, balance.
             Row(
               children: [
-                _Balance(token: _params.withToken),
+                _Balance(
+                  token: _params.withToken,
+                  balance: _withBalance,
+                ),
               ],
             ),
             Gap(60),
@@ -211,6 +233,31 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     _withController.dispose();
 
     super.dispose();
+  }
+
+  void _refreshOfBalance() {
+    final appState = context.read<AppState>();
+
+    final ofToken = _params.ofToken;
+
+    _ofBalance = ofToken == null
+        ? appState.convexClient().balance()
+        : appState.assetLibrary().balance(asset: ofToken.address);
+  }
+
+  void _refreshWithBalance() {
+    final appState = context.read<AppState>();
+
+    final withToken = _params.withToken;
+
+    _withBalance = withToken == null
+        ? appState.convexClient().balance()
+        : appState.assetLibrary().balance(asset: withToken.address);
+  }
+
+  void _refreshBalance() {
+    _refreshOfBalance();
+    _refreshWithBalance();
   }
 }
 
@@ -289,27 +336,30 @@ class _Dropdown<T> extends StatelessWidget {
 
 class _Balance extends StatelessWidget {
   final FungibleToken token;
+  final Future balance;
 
-  const _Balance({Key key, this.token}) : super(key: key);
+  const _Balance({
+    Key key,
+    this.token,
+    this.balance,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
-
     return FutureBuilder(
-      future: token == null
-          ? appState.convexClient().balance()
-          : appState.assetLibrary().balance(asset: token.address),
+      future: balance,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Spinner();
         } else {
-          final s = token == null
-              ? format.formatCVX(snapshot.data)
-              : format.formatFungibleCurrency(
-                  metadata: token.metadata,
-                  number: snapshot.data,
-                );
+          final s = snapshot.data == null
+              ? ''
+              : token == null
+                  ? format.formatCVX(snapshot.data)
+                  : format.formatFungibleCurrency(
+                      metadata: token.metadata,
+                      number: snapshot.data,
+                    );
 
           return Container(
             height: 20,
