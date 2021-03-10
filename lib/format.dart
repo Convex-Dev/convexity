@@ -57,6 +57,8 @@ int readFungibleCurrency({
   }
 }
 
+int readCVX(String s) => int.parse(s);
+
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
 
 String formatCVX(int n) => NumberFormat().format(n);
