@@ -237,7 +237,6 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 ),
               ],
             ),
-            Gap(5),
             // -- With Token, or CVX, balance.
             Row(
               children: [
