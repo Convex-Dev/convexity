@@ -138,7 +138,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       return TextField(
                         controller: _ofController,
                         autofocus: true,
-                        enabled: snapshot.hasData,
+                        enabled: _ofToken == _CVX || snapshot.hasData,
                         onChanged: (s) {
                           setState(() {
                             _params = _params.copyWith(amount: s);
@@ -261,7 +261,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         );
                       }
 
-                      if (snapshot.hasError) {
+                      if (snapshot.hasError || snapshot.data == null) {
                         return Expanded(
                           child: Text('-'),
                         );
@@ -322,18 +322,25 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               ],
             ),
             Gap(60),
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                child: Text(
-                  _actionText,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      .copyWith(color: Colors.white),
+            FutureBuilder(
+              future: _quote,
+              builder: (context, snapshot) => SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  child: Text(
+                    _actionText,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        .copyWith(color: Colors.white),
+                  ),
+                  onPressed:
+                      snapshot.connectionState == ConnectionState.waiting ||
+                              snapshot.data == null
+                          ? null
+                          : _buySell,
                 ),
-                onPressed: _params.isAmountValid ? _buySell : null,
               ),
             ),
           ],
@@ -645,20 +652,22 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Returns quote formatted based on 'with Token'.
   /// If 'with Token' is selected, it will be formated using its metadata.
   /// If 'with Token' is null, it will be formatted as CVX.
-  String _quoteText(int quote) => _params.withToken != null
-      ? format.formatFungibleCurrency(
-          metadata: _params.withToken.metadata,
-          number: quote,
-        )
-      : format.formatCVX(quote);
+  String _quoteText(int quote) => quote == null
+      ? '-'
+      : _params.withToken != null
+          ? format.formatFungibleCurrency(
+              metadata: _params.withToken.metadata,
+              number: quote,
+            )
+          : format.formatCVX(quote);
 }
 
 // ignore: non_constant_identifier_names
 final _CVX = FungibleToken(
   address: Address(-1),
   metadata: FungibleTokenMetadata(
-    name: 'CVX',
-    description: 'Convex Coin',
+    name: 'Convex Gold',
+    description: 'Convex Gold Coin.',
     symbol: 'CVX',
     currencySymbol: '\$',
     decimals: 0,
