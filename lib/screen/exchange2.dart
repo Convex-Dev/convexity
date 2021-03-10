@@ -118,20 +118,28 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   ),
                 ),
                 Gap(40),
-                _Dropdown<FungibleToken>(
-                  active: _params.ofToken ?? _CVX,
-                  items: [_CVX, ...fungibles],
-                  itemWidget: (fungible) => Text(fungible.metadata.name),
-                  onChanged: (e) {
-                    setState(() {
-                      final ofToken = e == _CVX ? null : e;
+                Column(
+                  children: [
+                    _Dropdown<FungibleToken>(
+                      active: _ofToken,
+                      items: [_CVX, ...fungibles],
+                      itemWidget: (fungible) => Text(
+                        fungible.metadata.symbol,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onChanged: (e) {
+                        setState(() {
+                          final ofToken = e == _CVX ? null : e;
 
-                      _params = _params.setOfToken(ofToken);
+                          _params = _params.setOfToken(ofToken);
 
-                      _refreshOfBalance();
-                      _refreshQuote();
-                    });
-                  },
+                          _refreshOfBalance();
+                          _refreshQuote();
+                        });
+                      },
+                    ),
+                    Text(_ofToken.metadata.name),
+                  ],
                 ),
               ],
             ),
@@ -221,20 +229,28 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     },
                   ),
                 Gap(40),
-                _Dropdown<FungibleToken>(
-                  active: _params.withToken ?? _CVX,
-                  items: [_CVX, ...fungibles],
-                  itemWidget: (fungible) => Text(fungible.metadata.name),
-                  onChanged: (e) {
-                    setState(() {
-                      final withToken = e == _CVX ? null : e;
+                Column(
+                  children: [
+                    _Dropdown<FungibleToken>(
+                      active: _withToken,
+                      items: [_CVX, ...fungibles],
+                      itemWidget: (fungible) => Text(
+                        fungible.metadata.symbol,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onChanged: (e) {
+                        setState(() {
+                          final withToken = e == _CVX ? null : e;
 
-                      _params = _params.setWithToken(withToken);
+                          _params = _params.setWithToken(withToken);
 
-                      _refreshWithBalance();
-                      _refreshQuote();
-                    });
-                  },
+                          _refreshWithBalance();
+                          _refreshQuote();
+                        });
+                      },
+                    ),
+                    Text(_withToken.metadata.name),
+                  ],
                 ),
               ],
             ),
