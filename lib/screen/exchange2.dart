@@ -165,6 +165,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                       _ofBalance = withBalance;
                       _withBalance = ofBalance;
+
+                      _refreshQuote();
                     });
                   },
                 ),
