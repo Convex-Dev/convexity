@@ -199,12 +199,23 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         );
                       }
 
-                      final text = snapshot.hasData && !snapshot.hasError
-                          ? quoteText(snapshot.data) + ' (estimated)'
-                          : '';
+                      if (snapshot.hasError) {
+                        return Expanded(
+                          child: Text('-'),
+                        );
+                      }
 
                       return Expanded(
-                        child: Text(text),
+                        child: Row(
+                          children: [
+                            Text(quoteText(snapshot.data)),
+                            Gap(5),
+                            Text(
+                              '(estimated)',
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),
