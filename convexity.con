@@ -7,7 +7,60 @@
         (deploy (trust/build-whitelist {:controller *caller* :whitelist [*caller*]})))
 
       (def registry
-        {})
+        {#34 {:type :fungible
+              :symbol "GBP"
+              :name "Pound Sterling"
+              :description "UK National Currency"
+              :currency-symbol "€"
+              :decimals 2}
+         #28 {:type :fungible
+              :symbol "USD"
+              :name "US Dollar"
+              :description "US National Currency"
+              :currency-symbol "$"
+              :decimals 2}
+         #40 {:type :fungible
+              :symbol "MYR"
+              :name "Malaysian Ringgit"
+              :description "Malaysian National Currency"
+              :currency-symbol "RM"
+              :decimals 2}
+         #42 {:type :fungible
+              :symbol "CHF"
+              :name "Swiss Franc"
+              :description "Swiss National Currency"
+              :currency-symbol "Fr."
+              :decimals 2}
+         #30 {:type :fungible
+              :symbol "JPY"
+              :name "Japanese Yen"
+              :description "Japanese National Currency"
+              :currency-symbol "¥"
+              :decimals 0}
+         #32 {:type :fungible
+              :symbol "EUR"
+              :name "Euro"
+              :description "European Union Currency"
+              :currency-symbol "€"
+              :decimals 2}
+         #44 {:type :fungible
+              :symbol "HKD"
+              :name "Hong Kong Dollar"
+              :description "Hong Kong Currency"
+              :currency-symbol "HK$"
+              :decimals 2}
+         #38 {:type :fungible
+              :symbol "VND"
+              :name "Vietnamese Dong"
+              :description "Vietnamese National Currency"
+              :currency-symbol "₫"
+              :decimals 2}
+         #36 {:type :fungible
+              :symbol "THB"
+              :name "Thai Baht"
+              :description "Thai National Currency"
+              :currency-symbol "฿"
+              :decimals 2}})
 
       (defn all-assets
         ^{:doc
