@@ -244,6 +244,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       market: _withMarketPrice,
                       onCreated: (shares) {
                         setState(() {
+                          _refreshPrice();
                           _refreshWithBalance();
                           _refreshWithMarketPrice();
                           _refreshQuote();
@@ -309,6 +310,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                           _params = _params.setWithToken(withToken);
 
+                          _refreshPrice();
                           _refreshWithBalance();
                           _refreshWithMarketPrice();
                           _refreshQuote();
@@ -595,6 +597,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     if (_params.ofToken == null) {
       return;
     }
+
+    logger.d(
+      'Of Token: ${_params.ofToken?.address}, With Token: ${_params.withToken?.address}',
+    );
 
     _price = torus.price(
       ofToken: _params.ofToken?.address,
