@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
 import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
-import '../nav.dart' as nav;
 import '../format.dart' as format;
 
 class ExchangeScreen2 extends StatelessWidget {
@@ -48,6 +46,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Set by [_refreshWithBalance].
   Future _withBalance;
 
+  /// Set by [_refreshOfMarketPrice].
+  Future<double> _ofMarketPrice;
+
+  /// Set by [_refreshWithMarketPrice].
+  Future<double> _withMarketPrice;
+
   /// Set by [_refreshQuote].
   Future<int> _quote;
 
@@ -68,6 +72,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     super.initState();
 
     _refreshBalance();
+    _refreshOfMarketPrice();
+    _refreshWithMarketPrice();
   }
 
   @override
@@ -93,27 +99,54 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               },
             ),
             Gap(30),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  _actionText,
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-              ],
+            Container(
+              height: 60,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        _actionText,
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ],
+                  ),
+                  // It's null if 'of Token' is CVX - doesn't make sense to check CVX.
+                  if (_ofMarketPrice != null)
+                    _MarketCheck(
+                      token: _params.ofToken,
+                      market: _ofMarketPrice,
+                      onCreated: (shares) {
+                        setState(() {
+                          _refreshOfBalance();
+                          _refreshOfMarketPrice();
+                          _refreshQuote();
+                        });
+                      },
+                    ),
+                ],
+              ),
             ),
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _ofController,
-                    autofocus: true,
-                    onChanged: (s) {
-                      setState(() {
-                        _params = _params.copyWith(amount: s);
+                  child: FutureBuilder(
+                    future: _ofMarketPrice,
+                    builder: (context, snapshot) {
+                      return TextField(
+                        controller: _ofController,
+                        autofocus: true,
+                        enabled: snapshot.hasData,
+                        onChanged: (s) {
+                          setState(() {
+                            _params = _params.copyWith(amount: s);
 
-                        _refreshQuote();
-                      });
+                            _refreshQuote();
+                          });
+                        },
+                      );
                     },
                   ),
                 ),
@@ -134,6 +167,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           _params = _params.setOfToken(ofToken);
 
                           _refreshOfBalance();
+                          _refreshOfMarketPrice();
                           _refreshQuote();
                         });
                       },
@@ -177,16 +211,33 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 ),
               ),
             ),
-            Row(
-              children: [
-                Text(
-                  _actionWithForText,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      .copyWith(color: Colors.black54),
-                ),
-              ],
+            Container(
+              height: 60,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _actionWithForText,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        .copyWith(color: Colors.black54),
+                  ),
+                  // It's null if 'with Token' is CVX - doesn't make sense to check CVX.
+                  if (_withMarketPrice != null)
+                    _MarketCheck(
+                      token: _params.withToken,
+                      market: _withMarketPrice,
+                      onCreated: (shares) {
+                        setState(() {
+                          _refreshWithBalance();
+                          _refreshWithMarketPrice();
+                          _refreshQuote();
+                        });
+                      },
+                    ),
+                ],
+              ),
             ),
             Row(
               children: [
@@ -245,6 +296,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           _params = _params.setWithToken(withToken);
 
                           _refreshWithBalance();
+                          _refreshWithMarketPrice();
                           _refreshQuote();
                         });
                       },
@@ -516,6 +568,36 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     _refreshWithBalance();
   }
 
+  /// Query price for 'of Token'.
+  ///
+  /// Set it to `null` if 'of Token' is null.
+  void _refreshOfMarketPrice() {
+    if (_params.ofToken == null) {
+      _ofMarketPrice = null;
+
+      return;
+    }
+
+    final torus = context.read<AppState>().torus();
+
+    _ofMarketPrice = torus.price(ofToken: _params.ofToken.address);
+  }
+
+  /// Query price for 'with Token'.
+  ///
+  /// Set it to `null` if 'with Token' is null.
+  void _refreshWithMarketPrice() {
+    if (_params.withToken == null) {
+      _withMarketPrice = null;
+
+      return;
+    }
+
+    final torus = context.read<AppState>().torus();
+
+    _withMarketPrice = torus.price(ofToken: _params.withToken.address);
+  }
+
   /// Query quote for 'with Token'.
   /// This method must be called whenever 'of Token' or 'with Token' changes.
   void _refreshQuote() {
@@ -680,6 +762,330 @@ class _Balance extends StatelessWidget {
           );
         }
       },
+    );
+  }
+}
+
+class _MarketCheck extends StatelessWidget {
+  final FungibleToken token;
+  final Future<double> market;
+  final void Function(int shares) onCreated;
+
+  const _MarketCheck({
+    Key key,
+    this.token,
+    this.market,
+    this.onCreated,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: market,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text(
+            "Getting Market...",
+            style: Theme.of(context).textTheme.caption,
+          );
+        }
+
+        if (snapshot.data == null) {
+          return Row(
+            children: [
+              Text(
+                "There isn't a Market for ${token.metadata.name}.",
+                style: Theme.of(context).textTheme.caption,
+                overflow: TextOverflow.ellipsis,
+              ),
+              TextButton(
+                child: Text('CREATE MARKET'),
+                onPressed: () {
+                  _create(context);
+                },
+              ),
+            ],
+          );
+        }
+
+        return Text('');
+      },
+    );
+  }
+
+  void _create(BuildContext context) async {
+    final shares = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: SafeArea(
+              child: _TokenLiquidity(
+                token: token,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (shares != null) {
+      onCreated(shares);
+    }
+  }
+}
+
+class _TokenLiquidity extends StatefulWidget {
+  final FungibleToken token;
+
+  const _TokenLiquidity({Key key, this.token}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _TokenLiquidityState();
+}
+
+class _TokenLiquidityState extends State<_TokenLiquidity> {
+  int tokenAmount = 0;
+  int cvxAmount = 0;
+  Future<int> liquidity;
+
+  Future<Result> balance;
+
+  double get tokenPrice =>
+      tokenAmount > 0 && cvxAmount > 0 ? tokenAmount / cvxAmount : null;
+
+  double get cvxPrice =>
+      tokenAmount > 0 && cvxAmount > 0 ? cvxAmount / tokenAmount : null;
+
+  void initState() {
+    super.initState();
+
+    final appState = context.read<AppState>();
+
+    final activeAddress = appState.model.activeAddress;
+
+    balance = appState.convexClient().query(
+          source: '(import convex.asset :as asset)'
+              '[(balance $activeAddress) (asset/balance ${widget.token.address} $activeAddress)]',
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: defaultScreenPadding,
+      child: liquidity != null
+          ? FutureBuilder<int>(
+              future: liquidity,
+              builder: (context, snapshot) {
+                if (ConnectionState.waiting == snapshot.connectionState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    Text(
+                      'Gained ${snapshot.hasError ? snapshot.error : snapshot.data} liquidity shares.',
+                    ),
+                    Gap(20),
+                    ElevatedButton(
+                      child: Text('Done'),
+                      onPressed: () => Navigator.pop(context, snapshot.data),
+                    )
+                  ],
+                );
+              },
+            )
+          : Column(
+              children: <Widget>[
+                Text(
+                  'Add liquidity for ${widget.token.metadata.symbol}',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Text(
+                  'Explanatory text.',
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Gap(40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${widget.token.metadata.symbol} BALANCE',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    Gap(8),
+                    FutureBuilder<Result>(
+                      future: balance,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Spinner();
+                        }
+
+                        final tokenBalance = format.formatFungibleCurrency(
+                          metadata: widget.token.metadata,
+                          number: (snapshot.data.value[1]),
+                        );
+
+                        return Text(
+                          tokenBalance,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        );
+                      },
+                    )
+                  ],
+                ),
+                Gap(5),
+                TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: 'Amount of ${widget.token.metadata.symbol}',
+                    helperText: 'Helper text',
+                    border: const OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      tokenAmount = int.tryParse(value) ?? 0;
+                    });
+                  },
+                ),
+                Gap(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'CVX BALANCE',
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    Gap(5),
+                    FutureBuilder<Result>(
+                      future: balance,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Spinner();
+                        }
+
+                        final userBalance =
+                            format.formatCVX(snapshot.data.value[0]);
+
+                        return Text(
+                          userBalance,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        );
+                      },
+                    )
+                  ],
+                ),
+                Gap(5),
+                TextField(
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    labelText: 'Amount of CVX',
+                    helperText: 'Helper text',
+                    border: const OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      cvxAmount = int.tryParse(value) ?? 0;
+                    });
+                  },
+                ),
+                Gap(30),
+                Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Text(
+                            '1 ${widget.token.metadata.symbol}',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            '=',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            cvxPrice != null
+                                ? '${NumberFormat().format(cvxPrice)} CVX'
+                                : '-',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        TableCell(
+                          child: Text(
+                            '1 CVX',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            '=',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        TableCell(
+                          child: Text(
+                            tokenPrice != null
+                                ? '$tokenPrice ${widget.token.metadata.symbol}'
+                                : '-',
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Gap(30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlinedButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                      child: Text('Confirm'),
+                      onPressed: (tokenAmount != null && tokenAmount > 0) &&
+                              (cvxAmount != null && cvxAmount > 0)
+                          ? () {
+                              setState(() {
+                                liquidity = context
+                                    .read<AppState>()
+                                    .torus()
+                                    .addLiquidity(
+                                      token: widget.token.address,
+                                      tokenAmount: format.readFungibleCurrency(
+                                        metadata: widget.token.metadata,
+                                        s: tokenAmount.toString(),
+                                      ),
+                                      cvxAmount: cvxAmount,
+                                    );
+                              });
+                            }
+                          : null,
+                    ),
+                  ],
+                )
+              ],
+            ),
     );
   }
 }
