@@ -155,7 +155,11 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     setState(() {
                       _params = _params.swap();
 
-                      _refreshBalance();
+                      final ofBalance = _ofBalance;
+                      final withBalance = _withBalance;
+
+                      _ofBalance = withBalance;
+                      _withBalance = ofBalance;
                     });
                   },
                 ),
