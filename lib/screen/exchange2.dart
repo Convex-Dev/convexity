@@ -310,6 +310,16 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
       return;
     }
 
+    try {
+      _params.amountInt;
+    } catch (e) {
+      logger.e('Amount cannot be coerced to int. Will set quote to null.', e);
+
+      _quote = null;
+
+      return;
+    }
+
     final torus = context.read<AppState>().torus();
 
     if (_params.action == ExchangeAction.buy) {
