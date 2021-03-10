@@ -469,9 +469,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         Navigator.pop(context);
 
                         setState(() {
+                          // Buy/sell was successfull. Now let's make the UI ready for a new transaction:
+
+                          // Refresh 'of Token' and 'with Token' balance.
                           _refreshBalance();
 
-                          // Clear quote.
+                          // Clear quote and amount.
                           _ofController.text = '';
                           _params = _params.emptyAmount();
                           _quote = null;
