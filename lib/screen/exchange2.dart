@@ -63,9 +63,6 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   String get _actionWithForText =>
       _params?.action == ExchangeAction.buy ? 'With' : 'For';
 
-  String get _buyWithSellForText =>
-      _params?.action == ExchangeAction.buy ? 'With' : 'For';
-
   @override
   void initState() {
     super.initState();
@@ -100,13 +97,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Of',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Gap(10),
-                Text(
-                  _ofToken.metadata.name,
-                  style: Theme.of(context).textTheme.overline,
+                  _actionText,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
               ],
             ),
@@ -181,12 +173,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               children: [
                 Text(
                   _actionWithForText,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Gap(10),
-                Text(
-                  _withToken.metadata.name,
-                  style: Theme.of(context).textTheme.overline,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(color: Colors.black54),
                 ),
               ],
             ),
@@ -202,7 +192,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Expanded(
-                          child: Text('Estimating...'),
+                          child: Text('Getting quote...'),
                         );
                       }
 
@@ -214,11 +204,15 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                       return Expanded(
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(_quoteText(snapshot.data)),
+                            Text(
+                              _quoteText(snapshot.data),
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
                             Gap(5),
                             Text(
-                              '(estimated)',
+                              '(latest quote)',
                               style: Theme.of(context).textTheme.caption,
                             ),
                           ],
@@ -258,7 +252,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
-                child: Text(_actionText),
+                child: Text(
+                  _actionText,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(color: Colors.white),
+                ),
                 onPressed: _params.isAmountValid ? _buySell : null,
               ),
             ),
@@ -309,18 +309,30 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         '${_quoteText(snapshot.data)} ${_withToken.metadata.name}';
 
                     return Text(
-                      '$buyingSellingText ${_buyWithSellForText.toLowerCase()} $quoteText?',
+                      '$buyingSellingText ${_actionWithForText.toLowerCase()} $quoteText?',
                       style: Theme.of(context).textTheme.bodyText2,
                     );
                   },
                 ),
               ),
               Gap(10),
-              ElevatedButton(
-                child: const Text('Confirm'),
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  Gap(60),
+                  ElevatedButton(
+                    child: const Text('Confirm'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ],
               )
             ],
           ),
