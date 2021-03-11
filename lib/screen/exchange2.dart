@@ -46,6 +46,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Set by [_refreshWithBalance].
   Future _withBalance;
 
+  /// Set by [_refreshPrice].
   Future<double> _price;
 
   /// Set by [_refreshOfMarketPrice].
