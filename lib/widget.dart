@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import 'convex.dart';
+import 'logger.dart';
 import 'model.dart';
 import 'convex.dart' as convex;
 import 'format.dart';
@@ -317,6 +318,24 @@ class AssetCollection extends StatefulWidget {
 }
 
 class _AssetCollectionState extends State<AssetCollection> {
+  void _pushAsset({
+    BuildContext context,
+    AAsset aasset,
+    Future balance,
+  }) async {
+    final result = await nav.pushAsset(
+      context,
+      aasset: aasset,
+      balance: balance,
+    );
+
+    logger.d('Asset $aasset balance $result.');
+
+    setState(() {
+      widget.balanceCache[aasset] = Future.value(result);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -383,15 +402,11 @@ class _AssetCollectionState extends State<AssetCollection> {
                 return;
               }
 
-              final result = nav.pushAsset(
-                context,
-                aasset: asset,
+              _pushAsset(
+                context: context,
+                aasset: aasset,
                 balance: balance,
               );
-
-              setState(() {
-                widget.balanceCache[asset] = result;
-              });
             },
           );
         }
