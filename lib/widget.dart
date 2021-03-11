@@ -318,24 +318,6 @@ class AssetCollection extends StatefulWidget {
 }
 
 class _AssetCollectionState extends State<AssetCollection> {
-  void _pushAsset({
-    BuildContext context,
-    AAsset aasset,
-    Future balance,
-  }) async {
-    final result = await nav.pushAsset(
-      context,
-      aasset: aasset,
-      balance: balance,
-    );
-
-    logger.d('Asset $aasset balance $result.');
-
-    setState(() {
-      widget.balanceCache[aasset] = Future.value(result);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
@@ -426,6 +408,24 @@ class _AssetCollectionState extends State<AssetCollection> {
         );
       }).toList(),
     );
+  }
+
+  void _pushAsset({
+    BuildContext context,
+    AAsset aasset,
+    Future balance,
+  }) async {
+    final result = await nav.pushAsset(
+      context,
+      aasset: aasset,
+      balance: balance,
+    );
+
+    logger.d('Asset $aasset balance $result.');
+
+    setState(() {
+      widget.balanceCache[aasset] = Future.value(result);
+    });
   }
 }
 
