@@ -666,17 +666,27 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     final torus = context.read<AppState>().torus();
 
     if (_params.action == ExchangeAction.buy) {
-      _quote = torus.buyQuote(
-        ofToken: _params.ofToken?.address,
-        amount: _params.amountInt,
-        withToken: _params.withToken?.address,
-      );
+      _quote = _ofToken == _CVX
+          ? torus.buyCvxQuote(
+              amount: _params.amountInt,
+              withToken: _params.withToken?.address,
+            )
+          : torus.buyQuote(
+              ofToken: _params.ofToken?.address,
+              amount: _params.amountInt,
+              withToken: _params.withToken?.address,
+            );
     } else {
-      _quote = torus.sellQuote(
-        ofToken: _params.ofToken?.address,
-        amount: _params.amountInt,
-        withToken: _params.withToken?.address,
-      );
+      _quote = _ofToken == _CVX
+          ? torus.sellCvxQuote(
+              amount: _params.amountInt,
+              withToken: _params.withToken?.address,
+            )
+          : torus.sellQuote(
+              ofToken: _params.ofToken?.address,
+              amount: _params.amountInt,
+              withToken: _params.withToken?.address,
+            );
     }
   }
 

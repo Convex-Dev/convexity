@@ -155,6 +155,24 @@ class TorusLibrary {
     return result.value;
   }
 
+  /// Query quote for buying CVX with [withToken].
+  Future<int> buyCvxQuote({
+    Address withToken,
+    int amount,
+  }) async {
+    final result = await convexClient.query(
+      source: '$_import'
+          '(let [market (or (torus/get-market $withToken) (return nil))]'
+          '(call market (buy-cvx-quote $amount))'
+          ')',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
+
   Future<int> sellQuote({
     Address ofToken,
     Address withToken,
@@ -162,6 +180,24 @@ class TorusLibrary {
   }) async {
     final result = await convexClient.query(
       source: '$_import (torus/sell-quote $ofToken $amount ${withToken ?? ''})',
+    );
+
+    if (result.errorCode != null)
+      throw Exception('${result.errorCode}: ${result.value}');
+
+    return result.value;
+  }
+
+  /// Query quote for selling CVX with [withToken].
+  Future<int> sellCvxQuote({
+    Address withToken,
+    int amount,
+  }) async {
+    final result = await convexClient.query(
+      source: '$_import'
+          '(let [market (or (torus/get-market $withToken) (return nil))]'
+          '(call market (sell-cvx-quote $amount))'
+          ')',
     );
 
     if (result.errorCode != null)
