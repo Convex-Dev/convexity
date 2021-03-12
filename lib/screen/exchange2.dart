@@ -224,6 +224,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       _withMarketPrice = ofMarketPrice;
 
                       _refreshQuote();
+                      _refreshPrice();
                     });
                   },
                 ),
