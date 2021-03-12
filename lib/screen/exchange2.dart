@@ -442,27 +442,50 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     final appState = context.read<AppState>();
 
-    final x = _params.action == ExchangeAction.buy
-        ? (_params.withToken == null
-            ? appState.torus().buyTokens(
-                  ofToken: _params.ofToken.address,
-                  amount: _params.amountInt,
-                )
-            : appState.torus().buy(
-                  ofToken: _params.ofToken.address,
-                  amount: _params.amountInt,
-                  withToken: _params.withToken.address,
-                ))
-        : (_params.withToken == null
-            ? appState.torus().sellTokens(
-                  ofToken: _params.ofToken.address,
-                  amount: _params.amountInt,
-                )
-            : appState.torus().sell(
-                  ofToken: _params.ofToken.address,
-                  amount: _params.amountInt,
-                  withToken: _params.withToken?.address,
-                ));
+    Future<int> x;
+
+    switch (_params.action) {
+      case ExchangeAction.buy:
+        if (_ofToken == _CVX) {
+          x = appState.torus().buyCVX(
+                amount: _params.amountInt,
+                withToken: _params.withToken.address,
+              );
+        } else if (_withToken != _CVX) {
+          x = appState.torus().buy(
+                ofToken: _params.ofToken.address,
+                amount: _params.amountInt,
+                withToken: _params.withToken.address,
+              );
+        } else {
+          x = appState.torus().buyTokens(
+                ofToken: _params.ofToken.address,
+                amount: _params.amountInt,
+              );
+        }
+
+        break;
+      case ExchangeAction.sell:
+        if (_ofToken == _CVX) {
+          x = appState.torus().sellCVX(
+                amount: _params.amountInt,
+                withToken: _params.withToken.address,
+              );
+        } else if (_withToken != _CVX) {
+          x = appState.torus().sell(
+                ofToken: _params.ofToken.address,
+                amount: _params.amountInt,
+                withToken: _params.withToken.address,
+              );
+        } else {
+          x = appState.torus().sellTokens(
+                ofToken: _params.ofToken.address,
+                amount: _params.amountInt,
+              );
+        }
+
+        break;
+    }
 
     showModalBottomSheet(
       context: context,
