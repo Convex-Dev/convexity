@@ -177,7 +177,7 @@ class _RecommendedState extends State<_Recommended> {
             )
             .map(
               (asset) => asset.type == AssetType.fungible
-                  ? fungibleTokenCard(
+                  ? FungibleTokenCard(
                       fungible: asset.asset as FungibleToken,
                       balance: _balanceCache[asset.asset.address],
                       onTap: (FungibleToken fungible) {
@@ -330,7 +330,7 @@ class _AssetIDState extends State<_AssetID> {
             SizedBox(
               width: 160,
               child: aasset.type == AssetType.fungible
-                  ? fungibleTokenCard(
+                  ? FungibleTokenCard(
                       fungible: aasset.asset,
                       balance: appState.assetLibrary().balance(
                             asset: aasset.asset.address,
