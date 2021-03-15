@@ -172,23 +172,24 @@ Widget fungibleTokenCard({
             Gap(4),
             FutureBuilder(
               future: balance,
-              builder: (context, snapshot) =>
-                  snapshot.connectionState == ConnectionState.waiting
-                      ? SizedBox(
-                          width: 17,
-                          height: 17,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(
-                          snapshot.data != null
-                              ? formatFungibleCurrency(
-                                  metadata: fungible.metadata,
-                                  number: snapshot.data,
-                                )
-                              : '-',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
+              builder: (context, snapshot) => Container(
+                height: 30,
+                child: snapshot.connectionState == ConnectionState.waiting
+                    ? Text(
+                        'Getting balance...',
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    : Text(
+                        snapshot.data != null
+                            ? formatFungibleCurrency(
+                                metadata: fungible.metadata,
+                                number: snapshot.data,
+                              )
+                            : '-',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+              ),
             )
           ],
         ),
