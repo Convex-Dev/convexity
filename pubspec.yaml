@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_sodium: ^0.1.11
-  http: 0.12.2
+  http: 0.13.0
   flutter_svg: ^0.19.1
   jdenticon_dart: ^1.2.1+1
   shared_preferences: 0.5.12+4
