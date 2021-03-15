@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
 import '../logger.dart';
@@ -48,7 +47,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   Future _withBalance;
 
   /// Set by [_refreshPrice].
-  Tuple2<Future<double>, double> _price;
+  Future<double> _price;
 
   /// Set by [_refreshOfMarketPrice].
   Future<double> _ofMarketPrice;
@@ -628,28 +627,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     }
 
     logger.d(
-      'REFRESH PRICE - Of Token: ${_params.ofToken?.address}, With Token: ${_params.withToken?.address}',
+      'Of Token: ${_params.ofToken?.address}, With Token: ${_params.withToken?.address}',
     );
 
-    final price = torus.price(
+    _price = torus.price(
       ofToken: _params.ofToken?.address,
       withToken: _params.withToken?.address,
-    );
-
-    price.then((newPrice) {
-      logger.d('REFRESH PRICE - Set price $newPrice');
-
-      setState(() {
-        _price = Tuple2(
-          price,
-          newPrice,
-        );
-      });
-    });
-
-    _price = Tuple2(
-      price,
-      _price?.item2,
     );
   }
 
@@ -935,14 +918,14 @@ class _MarketCheck extends StatelessWidget {
 
 class _MarketPrice extends StatelessWidget {
   final ExchangeParams params;
-  final Tuple2<Future<double>, double> price;
+  final Future<double> price;
 
   const _MarketPrice({Key key, this.params, this.price}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<double>(
-      future: price.item1,
+      future: price,
       builder: (context, snapshot) {
         final priceShifted = format.shiftDecimalPlace(
           snapshot.data ?? 0,
@@ -950,13 +933,10 @@ class _MarketPrice extends StatelessWidget {
               (params.withToken?.metadata?.decimals ?? 0),
         );
 
-        final isUpdate = snapshot.connectionState == ConnectionState.waiting &&
-            price.item2 != null;
-
         final withPriceText = NumberFormat().format(priceShifted);
 
         return Container(
-          height: 60,
+          height: 50,
           child: Column(
             children: [
               Text(
@@ -964,9 +944,9 @@ class _MarketPrice extends StatelessWidget {
                 style: Theme.of(context).textTheme.overline,
               ),
               Gap(4),
-              if (price.item2 == null)
+              if (snapshot.connectionState == ConnectionState.waiting)
                 Text('Getting Price...')
-              else ...[
+              else
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -999,14 +979,6 @@ class _MarketPrice extends StatelessWidget {
                     )
                   ],
                 ),
-                Text(
-                  snapshot.connectionState == ConnectionState.waiting &&
-                          price.item2 != null
-                      ? 'Updating price...'
-                      : '',
-                  style: Theme.of(context).textTheme.caption,
-                ),
-              ]
             ],
           ),
         );
