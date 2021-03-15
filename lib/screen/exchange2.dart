@@ -622,10 +622,6 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   void _refreshPrice() {
     final torus = context.read<AppState>().torus();
 
-    if (_params.ofToken == null) {
-      return;
-    }
-
     logger.d(
       'Of Token: ${_params.ofToken?.address}, With Token: ${_params.withToken?.address}',
     );
