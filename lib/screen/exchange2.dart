@@ -101,6 +101,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                   // Changing between buy and sell must refresh quote.
                   _refreshQuote();
+                  _refreshPrice();
                 });
               },
             ),
