@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'screen/exchange2.dart';
 import 'widget.dart';
-import 'screen/exchange.dart';
 import 'screen/staking_peer.dart';
 import 'screen/launcher.dart';
 import 'screen/home.dart';
