@@ -239,61 +239,68 @@ class FungibleTokenCard extends StatelessWidget {
   }
 }
 
-/// Returns a Non-Fungible Token renderer Widget.
-Widget nonFungibleTokenCard({
-  @required convex.NonFungibleToken nonFungible,
-  void Function(convex.NonFungibleToken) onTap,
-}) =>
-    StatelessWidgetBuilder((context) {
-      final container = Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.videogame_asset,
-            size: 40,
-            color: Colors.orangeAccent,
-          ),
-          Gap(10),
-          Text(
-            nonFungible.metadata.name,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.caption,
-          ),
-          Gap(4),
-          Text(
-            nonFungible.metadata.description,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-        ],
-      );
+class NonFungibleTokenCard extends StatelessWidget {
+  final convex.NonFungibleToken nonFungible;
+  final void Function(convex.NonFungibleToken) onTap;
 
-      return Stack(
-        children: [
-          Positioned.fill(
-            child: Card(
-              child: InkWell(
-                child: container,
-                onTap: () {
-                  if (onTap != null) {
-                    onTap(nonFungible);
-                  }
-                },
-              ),
+  const NonFungibleTokenCard({
+    Key key,
+    @required this.nonFungible,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final container = Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.videogame_asset,
+          size: 40,
+          color: Colors.orangeAccent,
+        ),
+        Gap(10),
+        Text(
+          nonFungible.metadata.name,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.caption,
+        ),
+        Gap(4),
+        Text(
+          nonFungible.metadata.description,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+      ],
+    );
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Card(
+            child: InkWell(
+              child: container,
+              onTap: () {
+                if (onTap != null) {
+                  onTap(nonFungible);
+                }
+              },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              'Non-Fungible',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.overline,
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            'Non-Fungible',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.overline,
           ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
+  }
+}
 
 // ignore: must_be_immutable
 class AssetCollection extends StatefulWidget {
@@ -403,7 +410,7 @@ class _AssetCollectionState extends State<AssetCollection> {
           );
         }
 
-        return nonFungibleTokenCard(
+        return NonFungibleTokenCard(
           nonFungible: aasset.asset as convex.NonFungibleToken,
           onTap: (nonFungible) {
             nav.pushAsset(

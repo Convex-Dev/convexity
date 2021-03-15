@@ -188,7 +188,7 @@ class _RecommendedState extends State<_Recommended> {
                         );
                       },
                     )
-                  : nonFungibleTokenCard(
+                  : NonFungibleTokenCard(
                       nonFungible: asset.asset as NonFungibleToken,
                       onTap: (NonFungibleToken nonFungible) {
                         follow(
@@ -337,7 +337,7 @@ class _AssetIDState extends State<_AssetID> {
                             owner: appState.model.activeAddress,
                           ),
                     )
-                  : nonFungibleTokenCard(
+                  : NonFungibleTokenCard(
                       nonFungible: aasset.asset,
                     ),
             ),
