@@ -93,25 +93,30 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                   child: FutureBuilder<Result>(
                     future: prices,
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text('');
-                      }
+                      final data = snapshot.data?.value ?? [];
 
-                      final e = snapshot.data.value.firstWhere(
+                      final e = data.firstWhere(
                         (element) =>
                             Address(element['address']) == token.address,
                         orElse: () => null,
                       );
 
-                      return Text(
-                        e['price'] == null
-                            ? '-'
-                            : format.marketPriceStr(
-                                format.marketPrice(
-                                  ofToken: token,
-                                  price: e['price'],
+                      return AnimatedOpacity(
+                        opacity:
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? 0
+                                : 1,
+                        duration: const Duration(milliseconds: 200),
+                        child: Text(
+                          (e == null || e['price'] == null)
+                              ? ''
+                              : format.marketPriceStr(
+                                  format.marketPrice(
+                                    ofToken: token,
+                                    price: e['price'],
+                                  ),
                                 ),
-                              ),
+                        ),
                       );
                     },
                   ),
