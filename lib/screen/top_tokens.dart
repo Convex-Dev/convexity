@@ -76,32 +76,51 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
         final fungibleRows = fungibles.map(
           (token) => TableRow(
             children: [
-              TableCell(child: Text(token.metadata.name)),
-              TableCell(child: Text(token.metadata.symbol)),
               TableCell(
-                child: FutureBuilder<Result>(
-                  future: prices,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text('');
-                    }
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(token.metadata.name),
+                ),
+              ),
+              TableCell(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    token.metadata.symbol,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              TableCell(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: FutureBuilder<Result>(
+                    future: prices,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text('');
+                      }
 
-                    final e = snapshot.data.value.firstWhere(
-                      (element) => Address(element['address']) == token.address,
-                      orElse: () => null,
-                    );
+                      final e = snapshot.data.value.firstWhere(
+                        (element) =>
+                            Address(element['address']) == token.address,
+                        orElse: () => null,
+                      );
 
-                    return Text(
-                      e['price'] == null
-                          ? '-'
-                          : format.marketPriceStr(
-                              format.marketPrice(
-                                ofToken: token,
-                                price: e['price'],
+                      return Text(
+                        e['price'] == null
+                            ? '-'
+                            : format.marketPriceStr(
+                                format.marketPrice(
+                                  ofToken: token,
+                                  price: e['price'],
+                                ),
                               ),
-                            ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
