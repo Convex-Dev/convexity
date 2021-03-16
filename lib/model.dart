@@ -571,7 +571,7 @@ class AppState with ChangeNotifier {
         preferences: preferences,
       );
 
-      Navigator.popUntil(context, ModalRoute.withName(route.launcher));
+      Navigator.popUntil(context, ModalRoute.withName(route.LAUNCHER));
     });
   }
 

@@ -238,7 +238,7 @@ class _CreateTokenState extends State<_CreateToken> {
               child: const Text('Done'),
               onPressed: () => Navigator.popUntil(
                 context,
-                ModalRoute.withName(route.asset),
+                ModalRoute.withName(route.ASSET),
               ),
             ),
           ],

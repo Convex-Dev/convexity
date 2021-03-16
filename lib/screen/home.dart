@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
 
-                Navigator.pushNamed(context, route.wallet);
+                Navigator.pushNamed(context, route.WALLET);
               },
             ),
           ],
@@ -77,6 +77,12 @@ class HomeScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final widgets = [
       ActiveAccount(),
+      ListTile(
+        leading: Icon(Icons.show_chart),
+        title: Text('Top Tokens'),
+        subtitle: Text('View top Tokens in the Exchange'),
+        onTap: () => nav.pushTopTokens(context),
+      ),
       ListTile(
         leading: Icon(Icons.videogame_asset_rounded),
         title: Text('Digital Assets'),

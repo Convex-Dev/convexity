@@ -52,7 +52,7 @@ class _AppState extends State<App> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       routes: route.routes(),
-      initialRoute: config.isDebug() ? route.dev : route.launcher,
+      initialRoute: config.isDebug() ? route.DEV : route.LAUNCHER,
     );
   }
 }

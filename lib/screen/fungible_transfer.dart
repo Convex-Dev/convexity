@@ -291,7 +291,7 @@ class _FungibleTransferScreenBodyState
 
                         Navigator.popUntil(
                           context,
-                          ModalRoute.withName(route.asset),
+                          ModalRoute.withName(route.ASSET),
                         );
                       },
                     )

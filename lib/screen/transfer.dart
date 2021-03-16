@@ -192,7 +192,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                       onPressed: () {
                         Navigator.popUntil(
                           context,
-                          ModalRoute.withName(route.launcher),
+                          ModalRoute.withName(route.LAUNCHER),
                         );
                       },
                     )

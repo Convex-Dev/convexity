@@ -9,36 +9,36 @@ import 'widget.dart';
 
 void pushLauncher(BuildContext context) => Navigator.pushReplacementNamed(
       context,
-      route.launcher,
+      route.LAUNCHER,
     );
 
 void pushAccount(BuildContext context, convex.Address address) =>
     Navigator.pushNamed(
       context,
-      route.account,
+      route.ACCOUNT,
       arguments: address,
     );
 
 void pushAccount2(BuildContext context, convex.Address address) =>
     Navigator.pushNamed(
       context,
-      route.account,
+      route.ACCOUNT,
       arguments: address,
     );
 
 void pushSettings(BuildContext context) => Navigator.pushNamed(
       context,
-      route.settings,
+      route.SETTINGS,
     );
 
 void pushTransfer(BuildContext context) => Navigator.pushNamed(
       context,
-      route.transfer,
+      route.TRANSFER,
     );
 
 void pushAssets(BuildContext context) => Navigator.pushNamed(
       context,
-      route.assets,
+      route.ASSETS,
     );
 
 Future<dynamic> pushAsset(
@@ -48,13 +48,13 @@ Future<dynamic> pushAsset(
 }) =>
     Navigator.pushNamed(
       context,
-      route.asset,
+      route.ASSET,
       arguments: Tuple2(aasset, balance),
     );
 
 void pushFollow(BuildContext context) => Navigator.pushNamed(
       context,
-      route.follow,
+      route.FOLLOW,
     );
 
 Future<dynamic> pushFungibleTransfer(
@@ -64,18 +64,18 @@ Future<dynamic> pushFungibleTransfer(
 ) =>
     Navigator.pushNamed(
       context,
-      route.fungibleTransfer,
+      route.FUNGIBLE_TRANSFER,
       arguments: Tuple2(token, balance),
     );
 
 void pushMyTokens(BuildContext context) => Navigator.pushNamed(
       context,
-      route.myTokens,
+      route.MY_TOKENS,
     );
 
 Future<dynamic> pushNewToken(BuildContext context) => Navigator.pushNamed(
       context,
-      route.newToken,
+      route.NEW_TOKEN,
     );
 
 Future<dynamic> pushNewNonFungibleToken(
@@ -84,13 +84,13 @@ Future<dynamic> pushNewNonFungibleToken(
 }) =>
     Navigator.pushNamed(
       context,
-      route.newNonFungibleToken,
+      route.NEW_NON_FUNGIBLE_TOKEN,
       arguments: nonFungibleToken,
     );
 
 Future<dynamic> pushAddressBook(BuildContext context) => Navigator.pushNamed(
       context,
-      route.addressBook,
+      route.ADDRESS_BOOK,
     );
 
 Future<dynamic> pushSelectAccount(
@@ -99,23 +99,23 @@ Future<dynamic> pushSelectAccount(
 }) =>
     Navigator.pushNamed(
       context,
-      route.selectAccount,
+      route.SELECT_ACCOUNT,
       arguments: params ?? SelectAccountParams(),
     );
 
 Future<dynamic> pushNewContact(BuildContext context) => Navigator.pushNamed(
       context,
-      route.newContact,
+      route.NEW_CONTACT,
     );
 
 Future<dynamic> pushWhitelist(BuildContext context) => Navigator.pushNamed(
       context,
-      route.whitelist,
+      route.WHITELIST,
     );
 
 Future<dynamic> pushNewWhitelist(BuildContext context) => Navigator.pushNamed(
       context,
-      route.addWhitelist,
+      route.ADD_WHITELIST,
     );
 
 Future<dynamic> pushNonFungibleToken(
@@ -126,7 +126,7 @@ Future<dynamic> pushNonFungibleToken(
 }) =>
     Navigator.pushNamed(
       context,
-      route.nonFungibleToken,
+      route.NON_FUNGIBLE_TOKEN,
       arguments: Tuple3(
         nonFungibleToken,
         tokenId,
@@ -141,7 +141,7 @@ Future<dynamic> pushNonFungibleTransfer(
 }) =>
     Navigator.pushNamed(
       context,
-      route.nonFungibleTransfer,
+      route.NON_FUNGIBLE_TRANSFER,
       arguments: Tuple2(
         nonFungibleToken,
         tokenId,
@@ -154,13 +154,13 @@ Future<dynamic> pushActivity(
 }) =>
     Navigator.pushNamed(
       context,
-      route.activity,
+      route.ACTIVITY,
       arguments: activity,
     );
 
 Future<dynamic> pushStaking(BuildContext context) => Navigator.pushNamed(
       context,
-      route.staking,
+      route.STAKING,
     );
 
 Future<dynamic> pushStakingPeer(
@@ -169,7 +169,7 @@ Future<dynamic> pushStakingPeer(
 }) =>
     Navigator.pushNamed(
       context,
-      route.stakingPeer,
+      route.STAKING_PEER,
       arguments: peer,
     );
 
@@ -179,11 +179,16 @@ Future<dynamic> pushExchange(
 }) =>
     Navigator.pushNamed(
       context,
-      route.exchange,
+      route.EXCHANGE,
       arguments: params,
     );
 
 Future<dynamic> pushSelectFungible(BuildContext context) => Navigator.pushNamed(
       context,
-      route.selectFungible,
+      route.SELECT_FUNGIBLE,
+    );
+
+Future<dynamic> pushTopTokens(BuildContext context) => Navigator.pushNamed(
+      context,
+      route.TOP_TOKENS,
     );

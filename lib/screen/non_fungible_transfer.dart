@@ -219,7 +219,7 @@ class _NonFungibleTransferScreenBodyState
                       onPressed: () {
                         Navigator.popUntil(
                           context,
-                          ModalRoute.withName(route.asset),
+                          ModalRoute.withName(route.ASSET),
                         );
                       },
                     )
