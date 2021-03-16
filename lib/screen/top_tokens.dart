@@ -1,4 +1,5 @@
 import 'package:convex_wallet/convex.dart';
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -38,9 +39,13 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     Widget columnText(String text) =>
         Text(text, style: Theme.of(context).textTheme.caption);
 
-    final columns = ['Name', 'Symbol', 'Price', 'Liquidity']
-        .map((e) => TableCell(child: columnText(e)))
-        .toList();
+    final columns = [
+      'Name',
+      'Symbol',
+      'Price',
+    ].map((e) => TableCell(child: columnText(e))).toList();
+
+    final appState = context.watch<AppState>();
 
     return FutureBuilder<Set<AAsset>>(
       future: _assets,
@@ -55,13 +60,41 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
             .where((e) => e.type == AssetType.fungible)
             .map((e) => e.asset as FungibleToken);
 
+        final sexp = fungibles.fold<String>(
+          '',
+          (sexp, token) =>
+              sexp +
+              '{:address ${token.address} :price (torus/price ${token.address})}',
+        );
+
+        // Single query to check the price of all Tokens.
+        // Return a list of maps where each map contains the Token address and price.
+        final prices = appState.convexClient().query(
+              source: '(import torus.exchange :as torus) [$sexp]',
+            );
+
         final fungibleRows = fungibles.map(
           (token) => TableRow(
             children: [
               TableCell(child: Text(token.metadata.name)),
               TableCell(child: Text(token.metadata.symbol)),
-              TableCell(child: Text('1')),
-              TableCell(child: Text('100')),
+              TableCell(
+                child: FutureBuilder<Result>(
+                  future: prices,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text('');
+                    }
+
+                    final e = snapshot.data.value.firstWhere(
+                      (element) => Address(element['address']) == token.address,
+                      orElse: () => null,
+                    );
+
+                    return Text('${e['price'] ?? '-'}');
+                  },
+                ),
+              ),
             ],
           ),
         );
