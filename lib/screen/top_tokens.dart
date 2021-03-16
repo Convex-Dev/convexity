@@ -10,7 +10,7 @@ class TopTokensScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Top Tokens')),
+      appBar: AppBar(title: Text('Top Currencies')),
       body: Container(
         padding: defaultScreenPadding,
         child: TopTokensScreenBody(),

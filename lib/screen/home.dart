@@ -79,8 +79,8 @@ class HomeScreenBody extends StatelessWidget {
       ActiveAccount(),
       ListTile(
         leading: Icon(Icons.show_chart),
-        title: Text('Top Tokens'),
-        subtitle: Text('View top Tokens in the Exchange'),
+        title: Text('Top Currencies'),
+        subtitle: Text('View top currencies in the Exchange'),
         onTap: () => nav.pushTopTokens(context),
       ),
       ListTile(
