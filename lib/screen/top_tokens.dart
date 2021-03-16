@@ -116,6 +116,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                                     price: e['price'],
                                   ),
                                 ),
+                          textAlign: TextAlign.right,
                         ),
                       );
                     },
