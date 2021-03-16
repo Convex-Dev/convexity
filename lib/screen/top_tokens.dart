@@ -39,11 +39,9 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     Widget columnText(String text) =>
         Text(text, style: Theme.of(context).textTheme.caption);
 
-    final columns = [
-      'Name',
-      'Symbol',
-      'Price',
-    ].map((e) => TableCell(child: columnText(e))).toList();
+    final columns = ['Name', 'Symbol', 'Price']
+        .map((e) => TableCell(child: columnText(e)))
+        .toList();
 
     final appState = context.watch<AppState>();
 
@@ -51,7 +49,9 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
       future: _assets,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
 
         final assets = snapshot.data ?? <AAsset>[];
