@@ -48,12 +48,6 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     return FutureBuilder<Set<AAsset>>(
       future: _assets,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
         final assets = snapshot.data ?? <AAsset>[];
 
         final fungibles = assets
@@ -127,11 +121,22 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
         );
 
-        return Table(
-          children: [
-            TableRow(children: columns),
-            ...fungibleRows,
-          ],
+        return AnimatedCrossFade(
+          crossFadeState: snapshot.connectionState == ConnectionState.waiting
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 200),
+          firstChild: SizedBox.expand(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          secondChild: Table(
+            children: [
+              TableRow(children: columns),
+              ...fungibleRows,
+            ],
+          ),
         );
       },
     );
