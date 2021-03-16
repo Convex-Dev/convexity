@@ -1,10 +1,10 @@
 import 'package:convex_wallet/convex.dart';
-import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../widget.dart';
+import '../format.dart' as format;
 
 class TopTokensScreen extends StatelessWidget {
   @override
@@ -91,7 +91,16 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                       orElse: () => null,
                     );
 
-                    return Text('${e['price'] ?? '-'}');
+                    return Text(
+                      e['price'] == null
+                          ? '-'
+                          : format.marketPriceStr(
+                              format.marketPrice(
+                                ofToken: token,
+                                price: e['price'],
+                              ),
+                            ),
+                    );
                   },
                 ),
               ),
