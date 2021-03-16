@@ -39,7 +39,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     Widget columnText(String text) =>
         Text(text, style: Theme.of(context).textTheme.caption);
 
-    final columns = ['Name', 'Symbol', 'Price']
+    final columns = ['Name', 'Symbol', 'Price (CVX)']
         .map((e) => TableCell(child: columnText(e)))
         .toList();
 
