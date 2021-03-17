@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../format.dart' as format;
+import '../nav.dart' as nav;
 
 class TopTokensScreen extends StatelessWidget {
   @override
@@ -49,10 +50,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    Widget columnText(String text) => Text(
-          text,
-          style: Theme.of(context).textTheme.caption,
-        );
+    final appState = context.watch<AppState>();
 
     return FutureBuilder<Set<AAsset>>(
       future: _assets,
@@ -128,6 +126,16 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                       );
                     },
                   ),
+                  onTap: () {
+                    nav.pushAsset(context,
+                        aasset: AAsset(
+                          type: AssetType.fungible,
+                          asset: token,
+                        ),
+                        balance: appState
+                            .assetLibrary()
+                            .balance(asset: token.address));
+                  },
                 ),
               ),
             ],
