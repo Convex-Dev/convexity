@@ -1,6 +1,6 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
@@ -67,78 +67,96 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           );
         }
 
-        return SafeArea(
-          child: ListView(
-            children: [
-              Dropdown<FungibleToken>(
-                active: _defaultToken ?? CVX,
-                items: [CVX, ...fungibles],
-                itemWidget: (FungibleToken token) {
-                  return Text(token.metadata.symbol);
-                },
-                onChanged: (t) {
-                  setState(() {
-                    _defaultToken = t == CVX ? null : t;
+        final widgets = [
+          Dropdown<FungibleToken>(
+            active: _defaultToken ?? CVX,
+            items: [CVX, ...fungibles],
+            itemWidget: (FungibleToken token) {
+              return Text(token.metadata.symbol);
+            },
+            onChanged: (t) {
+              setState(() {
+                _defaultToken = t == CVX ? null : t;
 
-                    _refreshPrices(
-                      context: context,
-                      assets: assets,
-                      withToken: _defaultToken?.address,
-                    );
-                  });
+                _refreshPrices(
+                  context: context,
+                  assets: assets,
+                  withToken: _defaultToken?.address,
+                );
+              });
+            },
+          ),
+          ...fungibles.map(
+            (token) => ListTile(
+              leading: Icon(Icons.attach_money),
+              title: Text(token.metadata.symbol),
+              subtitle: Text(token.metadata.name),
+              trailing: FutureBuilder<Result>(
+                future: _prices,
+                builder: (context, snapshot) {
+                  final data = snapshot.data?.value ?? [];
+
+                  final e = data.firstWhere(
+                    (element) => Address(element['address']) == token.address,
+                    orElse: () => null,
+                  );
+
+                  return AnimatedOpacity(
+                    opacity: snapshot.connectionState == ConnectionState.waiting
+                        ? 0
+                        : 1,
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(
+                      (e == null || e['price'] == null)
+                          ? ''
+                          : _withToken.metadata.currencySymbol +
+                              format.marketPriceStr(
+                                format.marketPrice(
+                                  ofToken: token,
+                                  price: e['price'],
+                                  withToken: _defaultToken,
+                                ),
+                              ),
+                      textAlign: TextAlign.right,
+                    ),
+                  );
                 },
               ),
-              ...fungibles.map(
-                (token) => ListTile(
-                  leading: Icon(Icons.attach_money),
-                  title: Text(token.metadata.symbol),
-                  subtitle: Text(token.metadata.name),
-                  trailing: FutureBuilder<Result>(
-                    future: _prices,
-                    builder: (context, snapshot) {
-                      final data = snapshot.data?.value ?? [];
+              onTap: () {
+                nav.pushAsset(context,
+                    aasset: AAsset(
+                      type: AssetType.fungible,
+                      asset: token,
+                    ),
+                    balance:
+                        appState.assetLibrary().balance(asset: token.address));
+              },
+            ),
+          ),
+        ];
 
-                      final e = data.firstWhere(
-                        (element) =>
-                            Address(element['address']) == token.address,
-                        orElse: () => null,
-                      );
-
-                      return AnimatedOpacity(
-                        opacity:
-                            snapshot.connectionState == ConnectionState.waiting
-                                ? 0
-                                : 1,
-                        duration: const Duration(milliseconds: 200),
-                        child: Text(
-                          (e == null || e['price'] == null)
-                              ? ''
-                              : _withToken.metadata.currencySymbol +
-                                  format.marketPriceStr(
-                                    format.marketPrice(
-                                      ofToken: token,
-                                      price: e['price'],
-                                      withToken: _defaultToken,
-                                    ),
-                                  ),
-                          textAlign: TextAlign.right,
-                        ),
-                      );
-                    },
+        final animated = widgets
+            .asMap()
+            .entries
+            .map(
+              (e) => AnimationConfiguration.staggeredList(
+                position: e.key,
+                duration: const Duration(milliseconds: 375),
+                child: SlideAnimation(
+                  verticalOffset: 50.0,
+                  child: FadeInAnimation(
+                    child: e.value,
                   ),
-                  onTap: () {
-                    nav.pushAsset(context,
-                        aasset: AAsset(
-                          type: AssetType.fungible,
-                          asset: token,
-                        ),
-                        balance: appState
-                            .assetLibrary()
-                            .balance(asset: token.address));
-                  },
                 ),
               ),
-            ],
+            )
+            .toList();
+
+        return AnimationLimiter(
+          child: SafeArea(
+            child: ListView(
+              children: animated,
+            ),
           ),
         );
       },
