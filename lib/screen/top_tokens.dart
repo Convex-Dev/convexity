@@ -77,7 +77,9 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
               Gap(10),
               Dropdown<FungibleToken>(
                 active: _defaultToken ?? CVX,
-                items: [CVX, ...fungibles],
+                items: [CVX, ...fungibles]..sort(
+                    (a, b) => a.metadata.symbol.compareTo(b.metadata.symbol),
+                  ),
                 itemWidget: (FungibleToken token) {
                   return Text(token.metadata.symbol);
                 },
