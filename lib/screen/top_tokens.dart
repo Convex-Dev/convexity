@@ -25,25 +25,31 @@ class TopTokensScreenBody extends StatefulWidget {
 }
 
 class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
+  FungibleToken _defaultToken;
   Future<Set<AAsset>> _assets;
+  Future<Result> _prices;
 
   @override
   void initState() {
     super.initState();
 
     _assets = context.read<AppState>().convexityClient().assets();
+    _assets.then((assets) {
+      setState(() {
+        _refreshPrices(
+          context: context,
+          assets: assets ?? [],
+        );
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget columnText(String text) =>
-        Text(text, style: Theme.of(context).textTheme.caption);
-
-    final columns = ['Name', 'Symbol', 'Price (CVX)']
-        .map((e) => TableCell(child: columnText(e)))
-        .toList();
-
-    final appState = context.watch<AppState>();
+    Widget columnText(String text) => Text(
+          text,
+          style: Theme.of(context).textTheme.caption,
+        );
 
     return FutureBuilder<Set<AAsset>>(
       future: _assets,
@@ -53,19 +59,6 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
         final fungibles = assets
             .where((e) => e.type == AssetType.fungible)
             .map((e) => e.asset as FungibleToken);
-
-        final sexp = fungibles.fold<String>(
-          '',
-          (sexp, token) =>
-              sexp +
-              '{:address ${token.address} :price (torus/price ${token.address})}',
-        );
-
-        // Single query to check the price of all Tokens.
-        // Return a list of maps where each map contains the Token address and price.
-        final prices = appState.convexClient().query(
-              source: '(import torus.exchange :as torus) [$sexp]',
-            );
 
         final fungibleRows = fungibles.map(
           (token) => TableRow(
@@ -91,7 +84,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: FutureBuilder<Result>(
-                    future: prices,
+                    future: _prices,
                     builder: (context, snapshot) {
                       final data = snapshot.data?.value ?? [];
 
@@ -114,6 +107,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                                   format.marketPrice(
                                     ofToken: token,
                                     price: e['price'],
+                                    withToken: _defaultToken,
                                   ),
                                 ),
                           textAlign: TextAlign.right,
@@ -127,24 +121,78 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
         );
 
-        return AnimatedCrossFade(
-          crossFadeState: snapshot.connectionState == ConnectionState.waiting
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
-          duration: const Duration(milliseconds: 200),
-          firstChild: SizedBox.expand(
-            child: Center(
-              child: CircularProgressIndicator(),
+        return SingleChildScrollView(
+          child: AnimatedCrossFade(
+            crossFadeState: snapshot.connectionState == ConnectionState.waiting
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            duration: const Duration(milliseconds: 200),
+            firstChild: SizedBox.expand(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
-          ),
-          secondChild: Table(
-            children: [
-              TableRow(children: columns),
-              ...fungibleRows,
-            ],
+            secondChild: Table(
+              children: [
+                TableRow(
+                  children: [
+                    TableCell(
+                      child: columnText('Name'),
+                    ),
+                    TableCell(
+                      child: columnText('Symbol'),
+                    ),
+                    TableCell(
+                      child: Dropdown<FungibleToken>(
+                        active: _defaultToken ?? CVX,
+                        items: [CVX, ...fungibles],
+                        itemWidget: (FungibleToken token) {
+                          return Text(token.metadata.symbol);
+                        },
+                        onChanged: (t) {
+                          setState(() {
+                            _defaultToken = t == CVX ? null : t;
+
+                            _refreshPrices(
+                              context: context,
+                              assets: assets,
+                              withToken: _defaultToken?.address,
+                            );
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                ...fungibleRows,
+              ],
+            ),
           ),
         );
       },
     );
+  }
+
+  void _refreshPrices({
+    BuildContext context,
+    Set<AAsset> assets,
+    Address withToken,
+  }) {
+    final fungibles = assets
+        .where((e) => e.type == AssetType.fungible)
+        .map((e) => e.asset as FungibleToken);
+
+    final sexp = fungibles.fold<String>(
+      '',
+      (sexp, token) =>
+          sexp +
+          '{:address ${token.address} :price (torus/price ${token.address} ${withToken ?? ''})}',
+    );
+
+    // Single query to check the price of all Tokens.
+    // Return a list of maps where each map contains the Token address and price.
+    _prices = context.read<AppState>().convexClient().query(
+          source: '(import torus.exchange :as torus) [$sexp]',
+        );
   }
 }

@@ -14,6 +14,17 @@ import 'preferences.dart' as p;
 import 'route.dart' as route;
 import 'format.dart' as format;
 
+final CVX = FungibleToken(
+  address: Address(-1),
+  metadata: FungibleTokenMetadata(
+    name: 'Convex Gold',
+    description: 'Convex Gold Coin.',
+    symbol: 'CVX',
+    currencySymbol: '\$',
+    decimals: 0,
+  ),
+);
+
 enum ExchangeAction {
   buy,
   sell,

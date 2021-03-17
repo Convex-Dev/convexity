@@ -885,3 +885,34 @@ Widget Spinner() => SizedBox(
         strokeWidth: 2,
       ),
     );
+
+class Dropdown<T> extends StatelessWidget {
+  final T active;
+  final List<T> items;
+  final Widget Function(T item) itemWidget;
+  final void Function(T t) onChanged;
+
+  const Dropdown({
+    Key key,
+    this.active,
+    this.items,
+    this.itemWidget,
+    this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<T>(
+      value: active,
+      items: items
+          .map(
+            (t) => DropdownMenuItem<T>(
+              value: t,
+              child: itemWidget(t),
+            ),
+          )
+          .toList(),
+      onChanged: onChanged,
+    );
+  }
+}
