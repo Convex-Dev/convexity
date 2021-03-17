@@ -99,7 +99,12 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
           ...fungibles.map(
             (token) => ListTile(
-              leading: _flag(token) ?? Icon(Icons.attach_money),
+              leading: _flag(token) ??
+                  Icon(
+                    Icons.circle,
+                    size: 40,
+                    color: Colors.black12,
+                  ),
               title: Text(token.metadata.symbol),
               subtitle: Text(token.metadata.name),
               trailing: FutureBuilder<Result>(
