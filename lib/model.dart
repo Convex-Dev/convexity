@@ -14,13 +14,14 @@ import 'preferences.dart' as p;
 import 'route.dart' as route;
 import 'format.dart' as format;
 
+// ignore: non_constant_identifier_names
 final CVX = FungibleToken(
   address: Address(-1),
   metadata: FungibleTokenMetadata(
     name: 'Convex Gold',
     description: 'Convex Gold Coin.',
     symbol: 'CVX',
-    currencySymbol: '\$',
+    currencySymbol: '',
     decimals: 0,
   ),
 );

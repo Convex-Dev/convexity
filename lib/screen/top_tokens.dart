@@ -1,5 +1,6 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
@@ -28,6 +29,8 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   FungibleToken _defaultToken;
   Future<Set<AAsset>> _assets;
   Future<Result> _prices;
+
+  FungibleToken get _withToken => _defaultToken ?? CVX;
 
   @override
   void initState() {
@@ -103,13 +106,14 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                         child: Text(
                           (e == null || e['price'] == null)
                               ? ''
-                              : format.marketPriceStr(
-                                  format.marketPrice(
-                                    ofToken: token,
-                                    price: e['price'],
-                                    withToken: _defaultToken,
+                              : _withToken.metadata.currencySymbol +
+                                  format.marketPriceStr(
+                                    format.marketPrice(
+                                      ofToken: token,
+                                      price: e['price'],
+                                      withToken: _defaultToken,
+                                    ),
                                   ),
-                                ),
                           textAlign: TextAlign.right,
                         ),
                       );
@@ -138,23 +142,30 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                   child: columnText('Symbol'),
                 ),
                 TableCell(
-                  child: Dropdown<FungibleToken>(
-                    active: _defaultToken ?? CVX,
-                    items: [CVX, ...fungibles],
-                    itemWidget: (FungibleToken token) {
-                      return Text(token.metadata.symbol);
-                    },
-                    onChanged: (t) {
-                      setState(() {
-                        _defaultToken = t == CVX ? null : t;
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      columnText('Price'),
+                      Gap(10),
+                      Dropdown<FungibleToken>(
+                        active: _defaultToken ?? CVX,
+                        items: [CVX, ...fungibles],
+                        itemWidget: (FungibleToken token) {
+                          return Text(token.metadata.symbol);
+                        },
+                        onChanged: (t) {
+                          setState(() {
+                            _defaultToken = t == CVX ? null : t;
 
-                        _refreshPrices(
-                          context: context,
-                          assets: assets,
-                          withToken: _defaultToken?.address,
-                        );
-                      });
-                    },
+                            _refreshPrices(
+                              context: context,
+                              assets: assets,
+                              withToken: _defaultToken?.address,
+                            );
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
