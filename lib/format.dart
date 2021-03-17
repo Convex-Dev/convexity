@@ -64,3 +64,15 @@ String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
 String formatCVX(int n) => NumberFormat().format(n);
 
 double shiftDecimalPlace(double x, int decimals) => x * pow(10, decimals);
+
+double marketPrice({
+  FungibleToken ofToken,
+  FungibleToken withToken,
+  double price,
+}) =>
+    shiftDecimalPlace(
+      price,
+      (ofToken?.metadata?.decimals ?? 0) - (withToken?.metadata?.decimals ?? 0),
+    );
+
+String marketPriceStr(double price) => NumberFormat().format(price);
