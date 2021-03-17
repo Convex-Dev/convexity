@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:flag/flag.dart';
 
 import '../model.dart';
 import '../widget.dart';
@@ -96,7 +97,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
           ...fungibles.map(
             (token) => ListTile(
-              leading: Icon(Icons.attach_money),
+              leading: _flag(token) ?? Icon(Icons.attach_money),
               title: Text(token.metadata.symbol),
               subtitle: Text(token.metadata.name),
               trailing: FutureBuilder<Result>(
@@ -192,5 +193,30 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     _prices = context.read<AppState>().convexClient().query(
           source: '(import torus.exchange :as torus) [$sexp]',
         );
+  }
+
+  Widget _flag(FungibleToken token) {
+    final mapping = {
+      'GBP': 'gb',
+      'USD': 'us',
+      'MYR': 'my',
+      'CHF': 'ch',
+      'JPY': 'jp',
+      'HKD': 'hk',
+      'VND': 'vn',
+      'THB': 'th',
+    };
+
+    final country = mapping[token.metadata.symbol];
+
+    if (country == null) {
+      return null;
+    }
+
+    return Flag(
+      mapping[token.metadata.symbol],
+      height: 40,
+      width: 40,
+    );
   }
 }
