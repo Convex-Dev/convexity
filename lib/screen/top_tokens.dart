@@ -1,6 +1,7 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../model.dart';
@@ -68,23 +69,30 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
         }
 
         final widgets = [
-          Dropdown<FungibleToken>(
-            active: _defaultToken ?? CVX,
-            items: [CVX, ...fungibles],
-            itemWidget: (FungibleToken token) {
-              return Text(token.metadata.symbol);
-            },
-            onChanged: (t) {
-              setState(() {
-                _defaultToken = t == CVX ? null : t;
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text('Price in'),
+              Gap(10),
+              Dropdown<FungibleToken>(
+                active: _defaultToken ?? CVX,
+                items: [CVX, ...fungibles],
+                itemWidget: (FungibleToken token) {
+                  return Text(token.metadata.symbol);
+                },
+                onChanged: (t) {
+                  setState(() {
+                    _defaultToken = t == CVX ? null : t;
 
-                _refreshPrices(
-                  context: context,
-                  assets: assets,
-                  withToken: _defaultToken?.address,
-                );
-              });
-            },
+                    _refreshPrices(
+                      context: context,
+                      assets: assets,
+                      withToken: _defaultToken?.address,
+                    );
+                  });
+                },
+              ),
+            ],
           ),
           ...fungibles.map(
             (token) => ListTile(
