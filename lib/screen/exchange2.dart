@@ -89,6 +89,18 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
         .map((e) => e.asset as FungibleToken)
         .toList();
 
+    // Make sure 'of Token' and 'with Token'
+    // are in the set of dropdown items.
+    final dropdownItems = fungibles.toSet();
+
+    if (_params.ofToken != null) {
+      dropdownItems.add(_params.ofToken);
+    }
+
+    if (_params.withToken != null) {
+      dropdownItems.add(_params.withToken);
+    }
+
     return SingleChildScrollView(
       child: SafeArea(
         child: Column(
@@ -167,7 +179,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   children: [
                     _Dropdown<FungibleToken>(
                       active: _ofToken,
-                      items: [_CVX, ...fungibles],
+                      items: [_CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
                         fungible.metadata.symbol,
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -305,7 +317,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   children: [
                     _Dropdown<FungibleToken>(
                       active: _withToken,
-                      items: [_CVX, ...fungibles],
+                      items: [_CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
                         fungible.metadata.symbol,
                         style: TextStyle(fontWeight: FontWeight.bold),
