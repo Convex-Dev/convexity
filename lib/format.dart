@@ -75,4 +75,4 @@ double marketPrice({
       (ofToken?.metadata?.decimals ?? 0) - (withToken?.metadata?.decimals ?? 0),
     );
 
-String marketPriceStr(double price) => NumberFormat().format(price);
+String marketPriceStr(double price) => price.toStringAsPrecision(5);
