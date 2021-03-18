@@ -142,13 +142,25 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                 },
               ),
               onTap: () {
-                nav.pushAsset(context,
-                    aasset: AAsset(
-                      type: AssetType.fungible,
-                      asset: token,
-                    ),
-                    balance:
-                        appState.assetLibrary().balance(asset: token.address));
+                final result = nav.pushAsset(
+                  context,
+                  aasset: AAsset(
+                    type: AssetType.fungible,
+                    asset: token,
+                  ),
+                  balance:
+                      appState.assetLibrary().balance(asset: token.address),
+                );
+
+                result.then(
+                  (value) => setState(() {
+                    _refreshPrices(
+                      context: context,
+                      assets: assets,
+                      withToken: appState.model.defaultWithToken?.address,
+                    );
+                  }),
+                );
               },
             ),
           ),

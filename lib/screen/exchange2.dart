@@ -323,9 +323,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
-                        setState(() {
-                          final withToken = e == _CVX ? null : e;
+                        final withToken = e == _CVX ? null : e;
 
+                        // Always update the default global 'with Token' too.
+                        appState.setDefaultWithToken(withToken);
+
+                        setState(() {
                           _params = _params.setWithToken(withToken);
 
                           _refreshPrice();
