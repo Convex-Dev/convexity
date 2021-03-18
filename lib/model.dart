@@ -357,6 +357,7 @@ class Model {
   final Set<Contact> contacts;
   final Map<Address, KeyPair> keyring;
   final Address activeAddress;
+  final FungibleToken defaultWithToken;
 
   const Model({
     this.convexServerUri,
@@ -367,6 +368,7 @@ class Model {
     this.contacts = const {},
     this.keyring = const {},
     this.activeAddress,
+    this.defaultWithToken,
   });
 
   KeyPair get activeKeyPair => keyring[activeAddress];
@@ -384,6 +386,7 @@ class Model {
     Set<Contact> contacts,
     Map<Address, KeyPair> keyring,
     Address activeAddress,
+    FungibleToken defaultWithToken,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -394,17 +397,19 @@ class Model {
         contacts: contacts ?? this.contacts,
         keyring: keyring ?? this.keyring,
         activeAddress: activeAddress ?? this.activeAddress,
+        defaultWithToken: defaultWithToken ?? this.defaultWithToken,
       );
 
   String toString() => {
-        'convexServerUri': convexServerUri.toString(),
-        'convexityAddress': convexityAddress.toString(),
+        'convexServerUri': convexServerUri?.toString(),
+        'convexityAddress': convexityAddress?.toString(),
         'following': following.toString(),
         'myTokens': myTokens.toString(),
         'activities': activities.toString(),
         'contacts': contacts.toString(),
-        'keyring': keyring.toString(),
-        'activeAddress': activeAddress.toString(),
+        'keyring': keyring?.toString(),
+        'activeAddress': activeAddress?.toString(),
+        'defaultWithToken': defaultWithToken?.toString(),
       }.toString();
 }
 
@@ -419,6 +424,7 @@ void bootstrap({
     final myTokens = p.readMyTokens(preferences);
     final activities = p.readActivities(preferences);
     final contacts = p.readContacts(preferences);
+    final defaultWithToken = p.readDefaultWithToken(preferences);
 
     final _model = Model(
       convexServerUri: convexWorldUri,
@@ -429,6 +435,7 @@ void bootstrap({
       myTokens: myTokens,
       activities: activities,
       contacts: contacts,
+      defaultWithToken: defaultWithToken,
     );
 
     logger.d(_model);
@@ -640,5 +647,18 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) => m.copyWith(activeAddress: address));
+  }
+
+  void setDefaultWithToken(
+    FungibleToken defaultWithToken, {
+    bool isPersistent = true,
+  }) {
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeDefaultWithToken(preferences, defaultWithToken),
+      );
+    }
+
+    setState((m) => m.copyWith(defaultWithToken: defaultWithToken));
   }
 }

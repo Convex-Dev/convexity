@@ -29,11 +29,11 @@ class TopTokensScreenBody extends StatefulWidget {
 }
 
 class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
-  FungibleToken _defaultToken;
   Future<Set<AAsset>> _assets;
   Future<Result> _prices;
 
-  FungibleToken get _withToken => _defaultToken ?? CVX;
+  FungibleToken _withToken(BuildContext context) =>
+      context.read<AppState>().model.defaultWithToken ?? CVX;
 
   @override
   void initState() {
@@ -45,6 +45,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
         _refreshPrices(
           context: context,
           assets: assets ?? [],
+          withToken: context.read<AppState>().model.defaultWithToken?.address,
         );
       });
     });
@@ -76,7 +77,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
               Text('Price in'),
               Gap(10),
               Dropdown<FungibleToken>(
-                active: _defaultToken ?? CVX,
+                active: appState.model.defaultWithToken ?? CVX,
                 items: [CVX, ...fungibles]..sort(
                     (a, b) => a.metadata.symbol.compareTo(b.metadata.symbol),
                   ),
@@ -84,13 +85,15 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                   return Text(token.metadata.symbol);
                 },
                 onChanged: (t) {
-                  setState(() {
-                    _defaultToken = t == CVX ? null : t;
+                  final defaultWithToken = t == CVX ? null : t;
 
+                  appState.setDefaultWithToken(defaultWithToken);
+
+                  setState(() {
                     _refreshPrices(
                       context: context,
                       assets: assets,
-                      withToken: _defaultToken?.address,
+                      withToken: defaultWithToken?.address,
                     );
                   });
                 },
@@ -125,12 +128,12 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                     child: Text(
                       (e == null || e['price'] == null)
                           ? ''
-                          : _withToken.metadata.currencySymbol +
+                          : _withToken(context).metadata.currencySymbol +
                               format.marketPriceStr(
                                 format.marketPrice(
                                   ofToken: token,
                                   price: e['price'],
-                                  withToken: _defaultToken,
+                                  withToken: appState.model.defaultWithToken,
                                 ),
                               ),
                       textAlign: TextAlign.right,

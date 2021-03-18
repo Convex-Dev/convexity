@@ -15,6 +15,7 @@ const PREF_ACTIVITIES = 'ACTIVITIES';
 const PREF_CONTACTS = 'CONTACTS';
 const PREF_WHITELISTS = 'WHITELISTS';
 const PREF_ACTIVE_ADDRESS = 'ACTIVE_ADDRESS';
+const PREF_DEFAULT_WITH_TOKEN = 'DEFAULT_WITH_TOKEN';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -182,4 +183,31 @@ Future<bool> writeContacts(
   logger.d('Write Contacts: $encoded');
 
   return preferences.setString(PREF_CONTACTS, encoded);
+}
+
+/// Reads the default 'with Token'.
+///
+/// Returns null if there isn't a 'with Token' persisted.
+FungibleToken readDefaultWithToken(SharedPreferences preferences) {
+  final encoded = preferences.getString(PREF_DEFAULT_WITH_TOKEN);
+
+  if (encoded != null) {
+    return FungibleToken.fromJson(jsonDecode(encoded));
+  }
+
+  return null;
+}
+
+/// Persists the default 'with Token'.
+///
+/// [defaultWithToken] will be persisted as a JSON encoded string.
+Future<bool> writeDefaultWithToken(
+  SharedPreferences preferences,
+  FungibleToken defaultWithToken,
+) {
+  var encoded = jsonEncode(defaultWithToken.toJson());
+
+  logger.d('Write default with Token: $encoded');
+
+  return preferences.setString(PREF_DEFAULT_WITH_TOKEN, encoded);
 }
