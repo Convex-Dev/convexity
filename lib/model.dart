@@ -400,6 +400,36 @@ class Model {
         defaultWithToken: defaultWithToken ?? this.defaultWithToken,
       );
 
+  Model copyWith2({
+    Uri Function() convexServerUri,
+    Address Function() convexityAddress,
+    KeyPair Function() activeKeyPair,
+    Set<AAsset> Function() following,
+    Set<AAsset> Function() myTokens,
+    List<Activity> Function() activities,
+    Set<Contact> Function() contacts,
+    Map<Address, KeyPair> Function() keyring,
+    Address Function() activeAddress,
+    FungibleToken Function() defaultWithToken,
+  }) =>
+      Model(
+        convexServerUri:
+            convexServerUri != null ? convexServerUri() : this.convexServerUri,
+        convexityAddress: convexityAddress != null
+            ? convexityAddress()
+            : this.convexityAddress,
+        following: following != null ? following() : this.following,
+        myTokens: myTokens != null ? myTokens() : this.myTokens,
+        activities: activities != null ? activities() : this.activities,
+        contacts: contacts != null ? contacts() : this.contacts,
+        keyring: keyring != null ? keyring() : this.keyring,
+        activeAddress:
+            activeAddress != null ? activeAddress : this.activeAddress,
+        defaultWithToken: defaultWithToken != null
+            ? defaultWithToken()
+            : this.defaultWithToken,
+      );
+
   String toString() => {
         'convexServerUri': convexServerUri?.toString(),
         'convexityAddress': convexityAddress?.toString(),
@@ -659,6 +689,6 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith(defaultWithToken: defaultWithToken));
+    setState((m) => m.copyWith2(defaultWithToken: () => defaultWithToken));
   }
 }

@@ -205,7 +205,13 @@ Future<bool> writeDefaultWithToken(
   SharedPreferences preferences,
   FungibleToken defaultWithToken,
 ) {
-  var encoded = jsonEncode(defaultWithToken.toJson());
+  if (defaultWithToken == null) {
+    logger.d('Reset default with Token');
+
+    return preferences.remove(PREF_DEFAULT_WITH_TOKEN);
+  }
+
+  final encoded = jsonEncode(defaultWithToken.toJson());
 
   logger.d('Write default with Token: $encoded');
 
