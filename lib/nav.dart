@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tuple/tuple.dart';
+import 'package:provider/provider.dart';
 
 import 'convex.dart' as convex;
 import 'model.dart';
@@ -176,12 +177,19 @@ Future<dynamic> pushStakingPeer(
 Future<dynamic> pushExchange(
   BuildContext context, {
   ExchangeParams params,
-}) =>
-    Navigator.pushNamed(
-      context,
-      route.EXCHANGE,
-      arguments: params,
-    );
+}) {
+  final defaultWithToken = context.read<AppState>().model.defaultWithToken;
+
+  return Navigator.pushNamed(
+    context,
+    route.EXCHANGE,
+    // If 'with Token' is not specified, we should use the default one.
+    // This is a common behavior whenever there is a 'with Token'.
+    arguments: params.withToken == null
+        ? params.copyWith2(withToken: () => defaultWithToken)
+        : params,
+  );
+}
 
 Future<dynamic> pushSelectFungible(BuildContext context) => Navigator.pushNamed(
       context,

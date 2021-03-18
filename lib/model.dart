@@ -111,6 +111,19 @@ class ExchangeParams {
         withToken: withToken ?? this.withToken,
       );
 
+  ExchangeParams copyWith2({
+    ExchangeAction Function() action,
+    FungibleToken Function() ofToken,
+    String Function() amount,
+    FungibleToken Function() withToken,
+  }) =>
+      ExchangeParams(
+        action: action != null ? action() : this.action,
+        ofToken: ofToken != null ? ofToken() : this.ofToken,
+        amount: amount != null ? amount() : this.amount,
+        withToken: withToken != null ? withToken() : this.withToken,
+      );
+
   Map<String, dynamic> toJson() => {
         'action': action?.toString(),
         'ofToken': ofToken?.toJson(),
