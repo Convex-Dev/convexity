@@ -180,12 +180,17 @@ Future<dynamic> pushExchange(
 }) {
   final defaultWithToken = context.read<AppState>().model.defaultWithToken;
 
+  // Use default 'with Token' if it's not specified in the parameters,
+  // and it's not the same as 'of Token'.
+  final withToken =
+      params.withToken == null && params.ofToken != defaultWithToken
+          ? defaultWithToken
+          : null;
+
   return Navigator.pushNamed(
     context,
     route.EXCHANGE,
-    // If 'with Token' is not specified, we should use the default one.
-    // This is a common behavior whenever there is a 'with Token'.
-    arguments: params.withToken == null
+    arguments: withToken != null
         ? params.copyWith2(withToken: () => defaultWithToken)
         : params,
   );
