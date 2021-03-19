@@ -1,10 +1,11 @@
-import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:flag/flag.dart';
 
+import '../convex.dart';
+import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../format.dart' as format;
@@ -60,8 +61,22 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
       builder: (context, snapshot) {
         final assets = snapshot.data ?? <AAsset>[];
 
+        final defaultTokens = {
+          34,
+          28,
+          40,
+          42,
+          30,
+          32,
+          44,
+          38,
+          36,
+        };
+
         final fungibles = assets
-            .where((e) => e.type == AssetType.fungible)
+            .where((e) =>
+                e.type == AssetType.fungible &&
+                defaultTokens.contains(e.asset.address.value))
             .map((e) => e.asset as FungibleToken);
 
         if (snapshot.connectionState == ConnectionState.waiting) {
