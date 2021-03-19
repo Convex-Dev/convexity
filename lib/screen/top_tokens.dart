@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:flag/flag.dart';
 
 import '../convex.dart';
 import '../model.dart';

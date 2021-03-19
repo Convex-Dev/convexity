@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
 import '../logger.dart';
@@ -57,6 +58,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
   /// Set by [_refreshQuote].
   Future<int> _quote;
+
+  Future<Tuple2<int, int>> _liquidity;
 
   _ExchangeScreenBody2State(this._params);
 
@@ -114,6 +117,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   // Changing between buy and sell must refresh quote.
                   _refreshQuote();
                   _refreshPrice();
+                  _refreshLiquidity();
                 });
               },
             ),
@@ -147,6 +151,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           _refreshOfBalance();
                           _refreshOfMarketPrice();
                           _refreshQuote();
+                          _refreshLiquidity();
                         });
                       },
                     ),
@@ -168,6 +173,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                             _params = _params.copyWith(amount: s);
 
                             _refreshQuote();
+                            _refreshLiquidity();
                           });
                         },
                       );
@@ -194,6 +200,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           _refreshOfBalance();
                           _refreshOfMarketPrice();
                           _refreshQuote();
+                          _refreshLiquidity();
                         });
                       },
                     ),
@@ -238,6 +245,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                       _refreshQuote();
                       _refreshPrice();
+                      _refreshLiquidity();
                     });
                   },
                 ),
@@ -266,6 +274,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           _refreshWithBalance();
                           _refreshWithMarketPrice();
                           _refreshQuote();
+                          _refreshLiquidity();
                         });
                       },
                     ),
@@ -335,6 +344,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           _refreshWithBalance();
                           _refreshWithMarketPrice();
                           _refreshQuote();
+                          _refreshLiquidity();
                         });
                       },
                     ),
@@ -349,6 +359,15 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 _Balance(
                   token: _params.withToken,
                   balance: _withBalance,
+                ),
+              ],
+            ),
+            Gap(30),
+            ExpansionTile(
+              title: Text('Details'),
+              children: [
+                ListTile(
+                  title: Text('Title'),
                 ),
               ],
             ),
@@ -724,6 +743,18 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               withToken: _params.withToken?.address,
             );
     }
+  }
+
+  /// We want to know the liquidity pool of **of Token** and **with Token**.
+  ///
+  /// Sets [_liquidity] with 'of liquidity pool' and 'with liquidity pool' respectively.
+  void _refreshLiquidity() async {
+    final appState = context.read<AppState>();
+
+    _liquidity = appState.torus().liquidity(
+          ofToken: _params.ofToken?.address,
+          withToken: _params.withToken?.address,
+        );
   }
 
   /// Returns quote formatted based on 'with Token'.

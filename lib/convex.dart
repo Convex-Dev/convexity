@@ -8,8 +8,6 @@ import 'package:meta/meta.dart';
 import 'config.dart' as config;
 import 'logger.dart';
 
-const CONVEX_WORLD_HOST = 'convex.world';
-
 final convexWorldUri = Uri.parse('https://convex.world');
 
 enum Lang {
