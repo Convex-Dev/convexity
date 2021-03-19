@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:flag/flag.dart';
 
 import '../convex.dart';
-import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../format.dart' as format;
@@ -117,7 +116,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
           ...fungibles.map(
             (token) => ListTile(
-              leading: _flag(token) ??
+              leading: _currencyIcon(token) ??
                   Icon(
                     Icons.circle,
                     size: 40,
@@ -232,28 +231,10 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
         );
   }
 
-  Widget _flag(FungibleToken token) {
-    final mapping = {
-      'GBP': 'gb',
-      'USD': 'us',
-      'MYR': 'my',
-      'CHF': 'ch',
-      'JPY': 'jp',
-      'HKD': 'hk',
-      'VND': 'vn',
-      'THB': 'th',
-    };
-
-    final country = mapping[token.metadata.symbol];
-
-    if (country == null) {
-      return null;
-    }
-
-    return Flag(
-      mapping[token.metadata.symbol],
-      height: 40,
-      width: 40,
-    );
-  }
+  Widget _currencyIcon(FungibleToken token) => Image.asset(
+        'icons/currency/${token.metadata.symbol.toLowerCase()}.png',
+        package: 'currency_icons',
+        width: 40,
+        height: 40,
+      );
 }
