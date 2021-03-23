@@ -43,7 +43,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
       setState(() {
         _refreshPrices(
           context: context,
-          assets: assets ?? [],
+          assets: assets ?? <AAsset>{},
           withToken: context.read<AppState>().model.defaultWithToken?.address,
         );
       });

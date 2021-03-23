@@ -114,7 +114,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 setState(() {
                   _params = _params.copyWith(action: action);
 
-                  // Changing between buy and sell must refresh quote.
+                  // Changing between *buy* and *sell* must refresh quote.
+
                   _refreshQuote();
                   _refreshPrice();
                   _refreshLiquidity();
