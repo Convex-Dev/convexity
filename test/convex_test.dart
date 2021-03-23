@@ -53,7 +53,7 @@ void main() {
 
   group('AccountKey', () {
     test('AccountKey value', () {
-      expect(AccountKey(null).value, null);
+      expect(AccountKey('').value, null);
       expect(AccountKey('').value, '');
       expect(AccountKey('ABC').value, 'ABC');
     });
@@ -188,7 +188,7 @@ void main() {
         source: '*address*',
       );
 
-      expect(result.value, convexClient.credentials.address.value);
+      expect(result.value, convexClient.credentials?.address?.value);
     });
 
     test('Error - UNDECLARED', () async {
@@ -224,7 +224,7 @@ void main() {
         lang: Lang.convexScript,
       );
 
-      expect(result.value, convexClient.credentials.address.value);
+      expect(result.value, convexClient.credentials?.address?.value);
     });
   });
 }

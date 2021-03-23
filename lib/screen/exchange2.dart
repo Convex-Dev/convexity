@@ -13,7 +13,8 @@ import '../format.dart' as format;
 class ExchangeScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeParams? params = ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
+    final ExchangeParams? params =
+        ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
@@ -297,7 +298,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              _quoteText(snapshot.data),
+                              _quoteText(snapshot.data as int),
                               style: Theme.of(context).textTheme.headline6,
                             ),
                             Gap(5),
@@ -459,7 +460,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                     // Example: 1,000 CVX
                     final quoteText =
-                        '${_quoteText(snapshot.data)} ${_withToken.metadata.name}';
+                        '${_quoteText(snapshot.data as int)} ${_withToken.metadata.name}';
 
                     return Text(
                       '$buyingSellingText ${_actionWithForText.toLowerCase()} $quoteText?',
@@ -917,10 +918,10 @@ class _Balance extends StatelessWidget {
           final s = snapshot.data == null
               ? ''
               : token == null
-                  ? format.formatCVX(snapshot.data)
+                  ? format.formatCVX(snapshot.data as int)
                   : format.formatFungibleCurrency(
                       metadata: token!.metadata,
-                      number: snapshot.data,
+                      number: snapshot.data as int,
                     );
 
           return Container(
@@ -1025,8 +1026,8 @@ class _MarketPrice extends StatelessWidget {
       builder: (context, snapshot) {
         final priceShifted = format.shiftDecimalPlace(
           snapshot.data ?? 0,
-          (params!.ofToken?.metadata?.decimals ?? 0) -
-              (params!.withToken?.metadata?.decimals ?? 0),
+          (params!.ofToken?.metadata.decimals ?? 0) -
+              (params!.withToken?.metadata.decimals ?? 0),
         );
 
         final withPriceText = NumberFormat().format(priceShifted);
@@ -1051,7 +1052,7 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      params!.ofToken?.metadata?.symbol ?? _CVX.metadata.symbol!,
+                      params!.ofToken?.metadata.symbol ?? _CVX.metadata.symbol!,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -1066,7 +1067,7 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      (params!.withToken?.metadata?.symbol ??
+                      (params!.withToken?.metadata.symbol ??
                           _CVX.metadata.symbol!),
                       style: Theme.of(context)
                           .textTheme
@@ -1310,8 +1311,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                     Gap(10),
                     ElevatedButton(
                       child: Text('Confirm'),
-                      onPressed: (tokenAmount != null && tokenAmount > 0) &&
-                              (cvxAmount != null && cvxAmount > 0)
+                      onPressed: tokenAmount > 0 && cvxAmount > 0
                           ? () {
                               setState(() {
                                 liquidity = context

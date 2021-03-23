@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:convex_wallet/logger.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:decimal/decimal.dart';
 
@@ -72,7 +71,7 @@ double marketPrice({
 }) =>
     shiftDecimalPlace(
       price,
-      (ofToken?.metadata?.decimals ?? 0) - (withToken?.metadata?.decimals ?? 0),
+      (ofToken?.metadata.decimals ?? 0) - (withToken?.metadata.decimals ?? 0),
     );
 
 String marketPriceStr(double price) => price.toStringAsPrecision(5);

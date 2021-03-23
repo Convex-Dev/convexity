@@ -214,9 +214,9 @@ String activityTypeString(ActivityType? activityType) {
   switch (activityType) {
     case ActivityType.transfer:
       return 'Transfer';
+    default:
+      return 'Unknown';
   }
-
-  return 'Unknown';
 }
 
 /// Immutable data class to encode an 'Activity'.
@@ -437,8 +437,9 @@ class Model {
         activities: activities != null ? activities() : this.activities,
         contacts: contacts != null ? contacts() : this.contacts,
         keyring: keyring != null ? keyring() : this.keyring,
-        activeAddress:
-            activeAddress != null ? activeAddress as Address? : this.activeAddress,
+        activeAddress: activeAddress != null
+            ? activeAddress as Address?
+            : this.activeAddress,
         defaultWithToken: defaultWithToken != null
             ? defaultWithToken()
             : this.defaultWithToken,
@@ -451,7 +452,7 @@ class Model {
         'myTokens': myTokens.toString(),
         'activities': activities.toString(),
         'contacts': contacts.toString(),
-        'keyring': keyring?.toString(),
+        'keyring': keyring.toString(),
         'activeAddress': activeAddress?.toString(),
         'defaultWithToken': defaultWithToken?.toString(),
       }.toString();
@@ -664,7 +665,8 @@ class AppState with ChangeNotifier {
   }
 
   void removeAddress(Address? address, {bool isPersistent = true}) {
-    final _keyring = Map<Address, KeyPair>.from(model!.keyring)..remove(address);
+    final _keyring = Map<Address, KeyPair>.from(model!.keyring)
+      ..remove(address);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(

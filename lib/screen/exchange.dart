@@ -14,7 +14,8 @@ import '../format.dart' as format;
 class ExchangeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeParams? params = ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
+    final ExchangeParams? params =
+        ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
@@ -311,8 +312,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
           final priceShifted = format.shiftDecimalPlace(
             snapshot.data!,
-            (params!.ofToken?.metadata?.decimals ?? 0) -
-                (params.withToken?.metadata?.decimals ?? 0),
+            (params!.ofToken?.metadata.decimals ?? 0) -
+                (params.withToken?.metadata.decimals ?? 0),
           );
 
           final currencySymbol = params.withToken != null
@@ -337,7 +338,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Text(
-                    params.ofToken?.metadata?.symbol ?? CVX.metadata.symbol!,
+                    params.ofToken?.metadata.symbol ?? CVX.metadata.symbol!,
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
@@ -352,7 +353,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Text(
-                    (params.withToken?.metadata?.symbol ?? CVX.metadata.symbol!),
+                    (params.withToken?.metadata.symbol ?? CVX.metadata.symbol!),
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
@@ -412,13 +413,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     children: [
                       TableCell(
                         child: Text(
-                          '${params!.ofToken?.metadata?.symbol ?? 'CVX'}',
+                          '${params!.ofToken?.metadata.symbol ?? 'CVX'}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),
                       TableCell(
                         child: Text(
-                          '${params!.withToken?.metadata?.symbol ?? 'CVX'}',
+                          '${params!.withToken?.metadata.symbol ?? 'CVX'}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),
@@ -518,7 +519,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 ],
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
-                    : buyOrSellOf(ofTokenPrice: snapshot.data),
+                    : buyOrSellOf(ofTokenPrice: snapshot.data as double),
                 if (isOfPriceAvailable) buyOrSellWith(),
                 gap,
                 if (isOfPriceAvailable)
@@ -546,9 +547,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         return 'Buy';
       case ExchangeAction.sell:
         return 'Sell';
+      default:
+        return '?';
     }
-
-    return '?';
   }
 
   String buyWithSellForText() =>
@@ -589,7 +590,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 constraints: BoxConstraints.tightFor(width: 60, height: 60),
                 child: ElevatedButton(
                   child: Text(
-                    params!.ofToken?.metadata?.symbol ?? CVX.metadata.symbol!,
+                    params!.ofToken?.metadata.symbol ?? CVX.metadata.symbol!,
                     style: Theme.of(context).textTheme.caption!.copyWith(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold,
@@ -659,7 +660,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       },
                     ),
                     Text(
-                      'There is no liquidity for ${params!.ofToken?.metadata?.symbol ?? ''}.',
+                      'There is no liquidity for ${params!.ofToken?.metadata.symbol ?? ''}.',
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],
@@ -749,7 +750,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   constraints: BoxConstraints.tightFor(width: 60, height: 60),
                   child: ElevatedButton(
                     child: Text(
-                      params!.withToken?.metadata?.symbol ?? CVX.metadata.symbol!,
+                      params!.withToken?.metadata.symbol ??
+                          CVX.metadata.symbol!,
                       style: Theme.of(context).textTheme.caption!.copyWith(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -881,7 +883,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
                     // Example: 1,000 CVX
                     final quoteText =
-                        '${getQuoteText(snapshot.data)} ${_withToken().metadata.name}';
+                        '${getQuoteText(snapshot.data as int)} ${_withToken().metadata.name}';
 
                     return Text(
                       '$buyingSellingText ${buyWithSellForText().toLowerCase()} $quoteText?',
@@ -1353,8 +1355,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                     Gap(10),
                     ElevatedButton(
                       child: Text('Confirm'),
-                      onPressed: (tokenAmount != null && tokenAmount > 0) &&
-                              (cvxAmount != null && cvxAmount > 0)
+                      onPressed: (tokenAmount > 0) && (cvxAmount > 0)
                           ? () {
                               setState(() {
                                 liquidity = context

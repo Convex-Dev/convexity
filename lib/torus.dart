@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
 import 'convex.dart';

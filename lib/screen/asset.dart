@@ -348,7 +348,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                 : Text(
                                     formatFungibleCurrency(
                                       metadata: widget.aasset!.asset.metadata,
-                                      number: snapshot.data,
+                                      number: snapshot.data as int,
                                     ),
                                   );
                           },

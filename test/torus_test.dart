@@ -25,7 +25,7 @@ Future<Tuple2<Address, KeyPair>> _setupNewAccount(
     throw Exception('Failed to setup new Account.');
   }
 
-  return Tuple2(generatedAddress, generatedKeyPair);
+  return Tuple2(generatedAddress!, generatedKeyPair);
 }
 
 void main() {

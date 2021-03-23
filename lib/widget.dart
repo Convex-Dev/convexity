@@ -136,7 +136,7 @@ class FungibleTokenCard extends StatelessWidget {
   final convex.FungibleToken? fungible;
   final Future? balance;
   final bool? isMine;
-  final void Function(convex.FungibleToken?)? onTap;
+  final void Function(convex.FungibleToken)? onTap;
 
   const FungibleTokenCard({
     Key? key,
@@ -192,7 +192,7 @@ class FungibleTokenCard extends StatelessWidget {
                       snapshot.data != null
                           ? formatFungibleCurrency(
                               metadata: fungible!.metadata,
-                              number: snapshot.data,
+                              number: snapshot.data as int,
                             )
                           : '-',
                       textAlign: TextAlign.center,
@@ -221,7 +221,7 @@ class FungibleTokenCard extends StatelessWidget {
                   : container,
               onTap: () {
                 if (onTap != null) {
-                  onTap!(fungible);
+                  onTap!(fungible!);
                 }
               },
             ),
@@ -242,7 +242,7 @@ class FungibleTokenCard extends StatelessWidget {
 
 class NonFungibleTokenCard extends StatelessWidget {
   final convex.NonFungibleToken? nonFungible;
-  final void Function(convex.NonFungibleToken?)? onTap;
+  final void Function(convex.NonFungibleToken)? onTap;
 
   const NonFungibleTokenCard({
     Key? key,
@@ -284,7 +284,7 @@ class NonFungibleTokenCard extends StatelessWidget {
               child: container,
               onTap: () {
                 if (onTap != null) {
-                  onTap!(nonFungible);
+                  onTap!(nonFungible!);
                 }
               },
             ),
@@ -520,18 +520,12 @@ class SelectAccountParams {
 
 Widget selectAccountScreen({SelectAccountParams? params}) =>
     StatelessWidgetBuilder((context) {
-      SelectAccountParams _params =
-          params ?? ModalRoute.of(context)!.settings.arguments as SelectAccountParams;
+      SelectAccountParams _params = params ??
+          ModalRoute.of(context)!.settings.arguments as SelectAccountParams;
 
       return Scaffold(
         appBar: AppBar(title: Text(_params.title)),
-        body: _SelectAccount(
-          params: _params ??
-              SelectAccountParams(
-                isContactsVisible: true,
-                isRecentsVisible: true,
-              ),
-        ),
+        body: _SelectAccount(params: _params),
       );
     });
 
@@ -591,9 +585,11 @@ class _SelectAccountState extends State<_SelectAccount> {
     }
 
     // Add contact items - if it's not empty.
-    if (widget.params!.isContactsVisible && appState.model!.contacts.isNotEmpty) {
+    if (widget.params!.isContactsVisible &&
+        appState.model!.contacts.isNotEmpty) {
       l.add(_HeadingItem('Contacts'));
-      l.addAll(appState.model!.contacts.map((contact) => _ContactItem(contact)));
+      l.addAll(
+          appState.model!.contacts.map((contact) => _ContactItem(contact)));
     }
 
     return Container(

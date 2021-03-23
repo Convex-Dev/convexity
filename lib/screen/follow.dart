@@ -76,9 +76,9 @@ class OptionRenderer extends StatelessWidget {
         return _MyHoldings();
       case _Option.assetId:
         return _AssetID();
+      default:
+        throw Exception("No renderer for $option");
     }
-
-    throw Exception("No renderer for $option");
   }
 }
 

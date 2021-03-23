@@ -47,7 +47,7 @@ Future<bool> writeKeyring(
   SharedPreferences preferences,
   Map<Address?, KeyPair?> keyring,
 ) {
-  final encoded = jsonEncode(crypto.keyringToJson(keyring ?? {}));
+  final encoded = jsonEncode(crypto.keyringToJson(keyring));
 
   logger.d(encoded);
 

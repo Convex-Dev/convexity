@@ -92,7 +92,8 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
               Dropdown<FungibleToken?>(
                 active: appState.model!.defaultWithToken ?? CVX,
                 items: [CVX, ...fungibles]..sort(
-                    (a, b) => a!.metadata.symbol!.compareTo(b!.metadata.symbol!),
+                    (a, b) =>
+                        a!.metadata.symbol!.compareTo(b!.metadata.symbol!),
                   ),
                 itemWidget: (FungibleToken? token) {
                   return Text(token!.metadata.symbol!);
@@ -115,12 +116,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
           ...fungibles.map(
             (token) => ListTile(
-              leading: _currencyIcon(token!) ??
-                  Icon(
-                    Icons.circle,
-                    size: 40,
-                    color: Colors.black12,
-                  ),
+              leading: _currencyIcon(token!),
               title: Text(token.metadata.symbol!),
               subtitle: Text(token.metadata.name!),
               trailing: FutureBuilder<Result>(

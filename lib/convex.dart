@@ -22,8 +22,6 @@ String langString(Lang lang) {
     case Lang.convexScript:
       return 'convexScrypt';
   }
-
-  return '';
 }
 
 @immutable
@@ -215,7 +213,8 @@ class ConvexClient {
   }) {
     if (credentials == null ||
         credentials!.address == null ||
-        credentials!.accountKey == null) throw Exception('Missing credentials.');
+        credentials!.accountKey == null)
+      throw Exception('Missing credentials.');
 
     final uri = _uri('api/v1/transaction/submit');
 

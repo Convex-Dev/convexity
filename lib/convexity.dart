@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'convex.dart' as convex;
 import 'model.dart';
 

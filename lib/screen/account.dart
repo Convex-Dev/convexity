@@ -154,13 +154,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               ),
             );
         }
-
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Text('Account not found.'),
-          ),
-        );
       },
     );
   }
