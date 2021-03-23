@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_sodium: ^0.2.0
-  http: 0.13.0
+  http: 0.13.1
   flutter_svg: ^0.19.1
   jdenticon_dart: ^2.0.0
   shared_preferences: ^2.0.4
@@ -37,8 +37,8 @@ dependencies:
   logger: ^1.0.0
   tuple: ^2.0.0
   flutter_staggered_animations: ^1.0.0
-  transparent_image: ^1.0.0
-  asn1lib: ^0.8.1
+  transparent_image: ^2.0.0
+  asn1lib: ^1.0.0
   charts_flutter: ^0.10.0
   decimal: ^1.0.0
   flag: ^3.2.2

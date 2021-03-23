@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 
 import '../convex.dart';
 import '../logger.dart';
@@ -58,6 +59,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Set by [_refreshQuote].
   Future<int> _quote;
 
+  Future<Tuple2<int, int>> _liquidity;
+
   _ExchangeScreenBody2State(this._params);
 
   FungibleToken get _ofToken => _params.ofToken ?? _CVX;
@@ -76,6 +79,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     _refreshBalance();
     _refreshPrice();
+    _refreshLiquidity();
     _refreshOfMarketPrice();
     _refreshWithMarketPrice();
   }
@@ -111,9 +115,11 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 setState(() {
                   _params = _params.copyWith(action: action);
 
-                  // Changing between buy and sell must refresh quote.
+                  // Changing between *buy* and *sell* must refresh quote.
+
                   _refreshQuote();
                   _refreshPrice();
+                  _refreshLiquidity();
                 });
               },
             ),
@@ -143,10 +149,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       market: _ofMarketPrice,
                       onCreated: (shares) {
                         setState(() {
-                          _refreshPrice();
-                          _refreshOfBalance();
-                          _refreshOfMarketPrice();
-                          _refreshQuote();
+                          _refreshOf();
                         });
                       },
                     ),
@@ -190,10 +193,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                           _params = _params.setOfToken(ofToken);
 
-                          _refreshPrice();
-                          _refreshOfBalance();
-                          _refreshOfMarketPrice();
-                          _refreshQuote();
+                          _refreshOf();
                         });
                       },
                     ),
@@ -238,6 +238,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                       _refreshQuote();
                       _refreshPrice();
+                      _refreshLiquidity();
                     });
                   },
                 ),
@@ -262,10 +263,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       market: _withMarketPrice,
                       onCreated: (shares) {
                         setState(() {
-                          _refreshPrice();
-                          _refreshWithBalance();
-                          _refreshWithMarketPrice();
-                          _refreshQuote();
+                          _refreshWith();
                         });
                       },
                     ),
@@ -331,10 +329,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         setState(() {
                           _params = _params.setWithToken(withToken);
 
-                          _refreshPrice();
-                          _refreshWithBalance();
-                          _refreshWithMarketPrice();
-                          _refreshQuote();
+                          _refreshWith();
                         });
                       },
                     ),
@@ -349,6 +344,52 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 _Balance(
                   token: _params.withToken,
                   balance: _withBalance,
+                ),
+              ],
+            ),
+            Gap(30),
+            ExpansionTile(
+              title: Text('Liquidity'),
+              children: [
+                ListTile(
+                  title: Text(_ofToken.metadata.name),
+                  trailing: FutureBuilder<Tuple2<int, int>>(
+                    future: _liquidity,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Spinner();
+                      }
+
+                      final s = _ofToken == _CVX
+                          ? format.formatCVX(snapshot.data.item1)
+                          : format.formatFungibleCurrency(
+                              metadata: _ofToken.metadata,
+                              number: snapshot.data.item1,
+                            );
+
+                      return Text(s);
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: Text(_withToken.metadata.name),
+                  trailing: FutureBuilder<Tuple2<int, int>>(
+                    future: _liquidity,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Spinner();
+                      }
+
+                      final s = _withToken == _CVX
+                          ? format.formatCVX(snapshot.data.item2)
+                          : format.formatFungibleCurrency(
+                              metadata: _withToken.metadata,
+                              number: snapshot.data.item2,
+                            );
+
+                      return Text(s);
+                    },
+                  ),
                 ),
               ],
             ),
@@ -593,6 +634,9 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           // Refresh 'of Token' and 'with Token' balance.
                           _refreshBalance();
 
+                          // Refresh liquidity of 'of Token' and 'with Token'.
+                          _refreshLiquidity();
+
                           // Clear quote and amount.
                           _ofController.text = '';
                           _params = _params.emptyAmount();
@@ -724,6 +768,46 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               withToken: _params.withToken?.address,
             );
     }
+  }
+
+  /// We want to know the liquidity pool of **of Token** and **with Token**.
+  ///
+  /// Sets [_liquidity] with 'of liquidity pool' and 'with liquidity pool' respectively.
+  void _refreshLiquidity() async {
+    final appState = context.read<AppState>();
+
+    _liquidity = appState.torus().liquidity(
+          ofToken: _params.ofToken?.address,
+          withToken: _params.withToken?.address,
+        );
+  }
+
+  /// Whenever 'of Token' changes, there are a few things that needs to refresh:
+  /// - Price of 'of Token' with 'with Token'
+  /// - User's balance of 'of Token'
+  /// - Market price of 'of Token'
+  /// - Quotation
+  /// - Liquidity
+  void _refreshOf() {
+    _refreshPrice();
+    _refreshOfBalance();
+    _refreshOfMarketPrice();
+    _refreshQuote();
+    _refreshLiquidity();
+  }
+
+  /// Whenever 'with Token' changes, there are a few things that needs to refresh:
+  /// - Price of 'of Token' with 'with Token'
+  /// - User's balance of 'with Token'
+  /// - Market price of 'with Token'
+  /// - Quotation
+  /// - Liquidity
+  void _refreshWith() {
+    _refreshPrice();
+    _refreshWithBalance();
+    _refreshWithMarketPrice();
+    _refreshQuote();
+    _refreshLiquidity();
   }
 
   /// Returns quote formatted based on 'with Token'.

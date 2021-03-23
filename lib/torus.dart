@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:tuple/tuple.dart';
 
 import 'convex.dart';
 
@@ -227,5 +228,73 @@ class TorusLibrary {
       throw Exception('${result.errorCode}: ${result.value}');
 
     return result.value;
+  }
+
+  /// Liquidity pool of **of Token** and **with Token**.
+  ///
+  /// If a Token is `null`, it's considered to be CVX.
+  ///
+  /// The liquidity pool of CVX is the balance of the Market (Actor).
+  ///
+  /// Returns `Tuple2<int, int>` with 'of liquidity pool' and 'with liquidity pool' respectively.
+  Future<Tuple2<int, int>> liquidity({
+    Address ofToken,
+    Address withToken,
+  }) async {
+    final ofMarket = ofToken != null ? await getMarket(token: ofToken) : null;
+
+    final withMarket =
+        withToken != null ? await getMarket(token: withToken) : null;
+
+    // -- Buying/selling CVX
+    // 'of' is null, therefore, we are buying/selling CVX.
+    if (ofToken == null) {
+      final withBalance = withMarket != null
+          ? await convexClient.query(
+              source: '(import convex.asset :as asset)'
+                  '(asset/balance $withToken $withMarket)',
+            )
+          : null;
+
+      // 'with Market' must exist when we're buying/selling CVX.
+      // If there isn't a Market, 'of balance' will be null.
+      final ofBalance =
+          withMarket != null ? await convexClient.balance(withMarket) : null;
+
+      return Tuple2<int, int>(ofBalance, withBalance?.value);
+    }
+
+    // -- Buying/selling Tokens
+    // 'of' is not null, therefore, we are buying/selling Tokens.
+
+    final ofBalance = ofMarket != null
+        ? await convexClient.query(
+            source: '(import convex.asset :as asset)'
+                '(asset/balance $ofToken $ofMarket)',
+          )
+        : null;
+
+    final isMissingWithMarket = withToken != null && withMarket == null;
+
+    // When trading with Token, we need to query the balance of the 'of Market' too.
+    // It's possible to have a 'with' Token but not have a Market for it.
+    // Short circuits to null if there's a 'with' Token but doesn't have a Market for it.
+    //
+    // If there isn't a 'with' Token, we're exchanging for CVX, therefore,
+    // we must query the balance of the 'of' Market instead.
+
+    final withBalance = isMissingWithMarket
+        ? null
+        : withMarket != null
+            ? await convexClient.query(
+                source: '(import convex.asset :as asset)'
+                    '(asset/balance $withToken $withMarket)',
+              )
+            : await convexClient.balance(ofMarket);
+
+    return Tuple2<int, int>(
+      ofBalance?.value,
+      withBalance is Result ? withBalance.value : withBalance,
+    );
   }
 }
