@@ -5,17 +5,17 @@ import 'model.dart';
 
 class ConvexityClient {
   final convex.ConvexClient convexClient;
-  final convex.Address actor;
+  final convex.Address? actor;
 
   ConvexityClient({
-    @required this.convexClient,
-    @required this.actor,
+    required this.convexClient,
+    required this.actor,
   });
 
   /// Query Asset by its Address.
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
-  Future<AAsset> asset(convex.Address addr) async {
+  Future<AAsset?> asset(convex.Address addr) async {
     var source = '(call ${this.actor} (asset-metadata $addr))';
 
     var result = await convexClient.query(source: source);
@@ -44,7 +44,7 @@ class ConvexityClient {
   }
 
   /// Query all Assets in the registry.
-  Future<Set<AAsset>> assets() async {
+  Future<Set<AAsset>?> assets() async {
     var source = '(call ${this.actor} (all-assets))';
 
     var result = await convexClient.query(source: source);
@@ -94,7 +94,7 @@ class ConvexityClient {
   }
 
   Future<convex.Result> requestToRegister({
-    AAsset aasset,
+    required AAsset aasset,
   }) {
     var fungible = aasset.asset as convex.FungibleToken;
 
@@ -108,7 +108,7 @@ class ConvexityClient {
         '}';
 
     var source =
-        '(call ${this.actor.value} (request-registry ${fungible.address} $metadataStr))';
+        '(call ${this.actor!.value} (request-registry ${fungible.address} $metadataStr))';
 
     return convexClient.transact(source: source);
   }

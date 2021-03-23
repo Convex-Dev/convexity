@@ -31,27 +31,27 @@ class NewTokenScreen extends StatelessWidget {
 
 @immutable
 class _NewFungibleToken {
-  final String name;
-  final String description;
-  final String symbol;
-  final String currencySymbol;
-  final int decimals;
-  final int supply;
+  final String? name;
+  final String? description;
+  final String? symbol;
+  final String? currencySymbol;
+  final int? decimals;
+  final int? supply;
 
   _NewFungibleToken({
-    @required this.name,
-    @required this.description,
-    @required this.symbol,
-    @required this.currencySymbol,
-    @required this.decimals,
-    @required this.supply,
+    required this.name,
+    required this.description,
+    required this.symbol,
+    required this.currencySymbol,
+    required this.decimals,
+    required this.supply,
   });
 }
 
 class _CreateToken extends StatefulWidget {
   final _NewFungibleToken newToken;
 
-  const _CreateToken(this.newToken, {Key key}) : super(key: key);
+  const _CreateToken(this.newToken, {Key? key}) : super(key: key);
 
   @override
   _CreateTokenState createState() => _CreateTokenState();
@@ -60,7 +60,7 @@ class _CreateToken extends StatefulWidget {
 class _CreateTokenState extends State<_CreateToken> {
   var _newTokenStatus = _NewTokenStatus.creatingToken;
 
-  Result _newTokenResult;
+  Result? _newTokenResult;
 
   void createToken() async {
     // The process of creating a new user-defined Token on the Convex Network is divided in 2 steps:
@@ -71,13 +71,13 @@ class _CreateTokenState extends State<_CreateToken> {
 
     final _newFungibleToken = widget.newToken;
 
-    Result _result;
+    Result? _result;
 
     // Step 1 - deploy.
     try {
       _result = await appState.fungibleLibrary().createToken(
             supply:
-                _newFungibleToken.supply * pow(10, _newFungibleToken.decimals),
+                _newFungibleToken.supply! * (pow(10, _newFungibleToken.decimals!) as int),
           );
     } on Exception catch (e, s) {
       logger.e('Failed to create Token: $e $s');
@@ -130,7 +130,7 @@ class _CreateTokenState extends State<_CreateToken> {
 
     try {
       registerResult =
-          await appState.convexityClient().requestToRegister(aasset: aasset);
+          await appState.convexityClient()!.requestToRegister(aasset: aasset);
     } on Exception catch (e) {
       print('Failed to register Token: $e');
 
@@ -202,7 +202,7 @@ class _CreateTokenState extends State<_CreateToken> {
             ),
             if (_newTokenResult != null)
               Text(
-                '${_newTokenResult.errorCode}: ${_newTokenResult.value}',
+                '${_newTokenResult!.errorCode}: ${_newTokenResult!.value}',
               ),
             ElevatedButton(
               child: const Text('Okay'),
@@ -276,19 +276,19 @@ class NewTokenScreenBody extends StatefulWidget {
 class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
   final _formKey = GlobalKey<FormState>();
 
-  String _name;
-  String _description;
-  String _symbol;
-  String _currencySymbol;
-  int _decimals;
-  int _supply;
+  String? _name;
+  String? _description;
+  String? _symbol;
+  String? _currencySymbol;
+  int? _decimals;
+  int? _supply;
 
   List<Widget> _fields() {
     return [
       ListTile(
         title: TextFormField(
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return 'Required';
             }
 
@@ -305,7 +305,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       ListTile(
         title: TextFormField(
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return 'Required';
             }
 
@@ -322,7 +322,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       ListTile(
         title: TextFormField(
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return 'Required';
             }
 
@@ -339,7 +339,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       ListTile(
         title: TextFormField(
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return 'Required';
             }
 
@@ -360,11 +360,11 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
             FilteringTextInputFormatter.digitsOnly,
           ],
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return 'Required';
             }
 
-            final d = int.tryParse(value);
+            final d = int.tryParse(value)!;
 
             if (d.isNegative) {
               return 'Can not be negative';
@@ -391,7 +391,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
             FilteringTextInputFormatter.digitsOnly,
           ],
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return 'Required';
             }
 
@@ -420,7 +420,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
             child: ElevatedButton(
               child: Text('Create Token'),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   final newToken = _NewFungibleToken(
                     name: _name,
                     description: _description,

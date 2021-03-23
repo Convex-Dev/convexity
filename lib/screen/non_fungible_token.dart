@@ -11,7 +11,7 @@ class NonFungibleTokenScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Tuple of NFT + ID + Data.
     final Tuple3<NonFungibleToken, int, Future<Result>> t =
-        ModalRoute.of(context).settings.arguments;
+        ModalRoute.of(context)!.settings.arguments as Tuple3<NonFungibleToken, int, Future<Result>>;
 
     return WillPopScope(
       child: Scaffold(
@@ -40,10 +40,10 @@ class NonFungibleTokenScreenBody extends StatefulWidget {
   final Future<Result> data;
 
   const NonFungibleTokenScreenBody({
-    Key key,
-    @required this.nonFungibleToken,
-    @required this.tokenId,
-    @required this.data,
+    Key? key,
+    required this.nonFungibleToken,
+    required this.tokenId,
+    required this.data,
   }) : super(key: key);
 
   @override
@@ -64,7 +64,7 @@ class _NonFungibleTokenScreenBodyState
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 // Result value is a map of attribute name to value - unless there's an error.
-                if (snapshot.data.errorCode != null) {
+                if (snapshot.data!.errorCode != null) {
                   return ListTile(
                     leading: Icon(Icons.error),
                     title: Text(
@@ -74,7 +74,7 @@ class _NonFungibleTokenScreenBodyState
                 }
 
                 return ListTile(
-                  title: Text(snapshot.data.value['name']),
+                  title: Text(snapshot.data!.value['name']),
                   subtitle: Text('Name'),
                 );
               }
@@ -88,21 +88,21 @@ class _NonFungibleTokenScreenBodyState
               final imageTransparent = Image.memory(kTransparentImage);
 
               if (snapshot.hasData) {
-                if (snapshot.data.errorCode != null) {
+                if (snapshot.data!.errorCode != null) {
                   return imageTransparent;
                 }
 
-                if (snapshot.data.value['uri'] == null) {
+                if (snapshot.data!.value['uri'] == null) {
                   return imageTransparent;
                 }
 
-                if (Uri.parse(snapshot.data.value['uri']).isAbsolute == false) {
+                if (Uri.parse(snapshot.data!.value['uri']).isAbsolute == false) {
                   return imageTransparent;
                 }
 
                 return FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
-                  image: snapshot.data.value['uri'],
+                  image: snapshot.data!.value['uri'],
                 );
               }
 

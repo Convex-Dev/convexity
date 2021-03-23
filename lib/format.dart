@@ -9,14 +9,14 @@ import 'convex.dart';
 
 final customNumberFormat = NumberFormat('#,###');
 
-String formatIntegerPart(int n) => customNumberFormat.format(n);
+String formatIntegerPart(int? n) => customNumberFormat.format(n);
 
 String formatWithDecimals(int num, int decimals) {
   if ((decimals < 1) || (decimals > 12)) throw ("Decimals out of range");
 
   if (num < 0) throw ("Negative number");
 
-  int divisor = pow(10, decimals);
+  int divisor = pow(10, decimals) as int;
   int x = num ~/ divisor;
   int y = num % divisor;
 
@@ -26,13 +26,13 @@ String formatWithDecimals(int num, int decimals) {
 }
 
 String formatFungibleCurrency({
-  @required FungibleTokenMetadata metadata,
-  @required int number,
+  required FungibleTokenMetadata metadata,
+  required int? number,
 }) =>
-    metadata.currencySymbol +
+    metadata.currencySymbol! +
     (metadata.decimals == 0
         ? formatIntegerPart(number)
-        : formatWithDecimals(number, metadata.decimals));
+        : formatWithDecimals(number!, metadata.decimals!));
 
 int readWithDecimals(String s, int decimals) {
   // logger.d(
@@ -41,15 +41,15 @@ int readWithDecimals(String s, int decimals) {
   //       'amount = ${params.amount} * 10^${params.ofToken.metadata.decimals})',
   // );
 
-  return (Decimal.parse(s) * Decimal.fromInt(pow(10, decimals))).toInt();
+  return (Decimal.parse(s) * Decimal.fromInt(pow(10, decimals) as int)).toInt();
 }
 
 int readFungibleCurrency({
-  @required FungibleTokenMetadata metadata,
-  @required String s,
+  required FungibleTokenMetadata metadata,
+  required String s,
 }) {
   try {
-    return readWithDecimals(s, metadata.decimals);
+    return readWithDecimals(s, metadata.decimals!);
   } catch (e, s) {
     logger.e(s);
 
@@ -61,14 +61,14 @@ int readCVX(String s) => int.parse(s);
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
 
-String formatCVX(int n) => NumberFormat().format(n);
+String formatCVX(int? n) => NumberFormat().format(n);
 
 double shiftDecimalPlace(double x, int decimals) => x * pow(10, decimals);
 
 double marketPrice({
-  FungibleToken ofToken,
-  FungibleToken withToken,
-  double price,
+  FungibleToken? ofToken,
+  FungibleToken? withToken,
+  required double price,
 }) =>
     shiftDecimalPlace(
       price,

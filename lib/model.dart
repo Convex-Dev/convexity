@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -33,10 +34,10 @@ enum ExchangeAction {
 
 @immutable
 class ExchangeParams {
-  final ExchangeAction action;
-  final FungibleToken ofToken;
-  final String amount;
-  final FungibleToken withToken;
+  final ExchangeAction? action;
+  final FungibleToken? ofToken;
+  final String? amount;
+  final FungibleToken? withToken;
 
   ExchangeParams({
     this.action,
@@ -46,16 +47,16 @@ class ExchangeParams {
   });
 
   int get amountInt => ofToken == null
-      ? format.readCVX(amount)
-      : format.readFungibleCurrency(metadata: ofToken.metadata, s: amount);
+      ? format.readCVX(amount!)
+      : format.readFungibleCurrency(metadata: ofToken!.metadata, s: amount!);
 
   bool get isAmountValid {
     try {
-      if (amount == null || amount.isEmpty) {
+      if (amount == null || amount!.isEmpty) {
         return false;
       }
 
-      int.parse(amount);
+      int.parse(amount!);
 
       return true;
     } catch (e) {
@@ -70,14 +71,14 @@ class ExchangeParams {
         withToken: this.ofToken,
       );
 
-  ExchangeParams setOfToken(FungibleToken ofToken) => ExchangeParams(
+  ExchangeParams setOfToken(FungibleToken? ofToken) => ExchangeParams(
         action: this.action,
         ofToken: ofToken,
         amount: this.amount,
         withToken: this.withToken,
       );
 
-  ExchangeParams setWithToken(FungibleToken withToken) => ExchangeParams(
+  ExchangeParams setWithToken(FungibleToken? withToken) => ExchangeParams(
         action: this.action,
         ofToken: this.ofToken,
         amount: this.amount,
@@ -99,10 +100,10 @@ class ExchangeParams {
       );
 
   ExchangeParams copyWith({
-    ExchangeAction action,
-    FungibleToken ofToken,
-    String amount,
-    FungibleToken withToken,
+    ExchangeAction? action,
+    FungibleToken? ofToken,
+    String? amount,
+    FungibleToken? withToken,
   }) =>
       ExchangeParams(
         action: action ?? this.action,
@@ -112,10 +113,10 @@ class ExchangeParams {
       );
 
   ExchangeParams copyWith2({
-    ExchangeAction Function() action,
-    FungibleToken Function() ofToken,
-    String Function() amount,
-    FungibleToken Function() withToken,
+    ExchangeAction Function()? action,
+    FungibleToken Function()? ofToken,
+    String Function()? amount,
+    FungibleToken? Function()? withToken,
   }) =>
       ExchangeParams(
         action: action != null ? action() : this.action,
@@ -134,12 +135,12 @@ class ExchangeParams {
 
 @immutable
 class Contact {
-  final String name;
-  final Address address;
+  final String? name;
+  final Address? address;
 
   Contact({
-    @required this.name,
-    @required this.address,
+    required this.name,
+    required this.address,
   });
 
   Contact.fromJson(Map<String, dynamic> json)
@@ -148,7 +149,7 @@ class Contact {
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'address': address.toJson(),
+        'address': address!.toJson(),
       };
 
   @override
@@ -163,11 +164,11 @@ class Contact {
 
 @immutable
 class Peer {
-  final String address;
-  final int stake;
-  final int delegatedStake;
-  final Uri uri;
-  final Map<Address, int> stakes;
+  final String? address;
+  final int? stake;
+  final int? delegatedStake;
+  final Uri? uri;
+  final Map<Address, int>? stakes;
 
   Peer({
     this.address,
@@ -209,7 +210,7 @@ enum ActivityType {
   transfer,
 }
 
-String activityTypeString(ActivityType activityType) {
+String activityTypeString(ActivityType? activityType) {
   switch (activityType) {
     case ActivityType.transfer:
       return 'Transfer';
@@ -225,12 +226,12 @@ String activityTypeString(ActivityType activityType) {
 @immutable
 @sealed
 class Activity {
-  final ActivityType type;
+  final ActivityType? type;
   final dynamic payload;
 
   Activity({
-    @required this.type,
-    @required this.payload,
+    required this.type,
+    required this.payload,
   });
 
   Activity.fromJson(Map<String, dynamic> json)
@@ -242,7 +243,7 @@ class Activity {
         'payload': payload.toJson(),
       };
 
-  static ActivityType _decodeType(Map<String, dynamic> json) {
+  static ActivityType? _decodeType(Map<String, dynamic> json) {
     if (ActivityType.transfer.toString() == json['type']) {
       return ActivityType.transfer;
     }
@@ -265,31 +266,31 @@ class Activity {
 /// Immutable data class to encode a 'Transfer Activity' - a Fungible Token transfer in particular.
 @immutable
 class FungibleTransferActivity {
-  final Address from;
-  final Address to;
-  final FungibleToken token;
-  final int amount;
+  final Address? from;
+  final Address? to;
+  final FungibleToken? token;
+  final int? amount;
   final DateTime timestamp;
 
   FungibleTransferActivity({
-    @required this.from,
-    @required this.to,
-    @required this.token,
-    @required this.amount,
-    @required this.timestamp,
+    required this.from,
+    required this.to,
+    required this.token,
+    required this.amount,
+    required this.timestamp,
   });
 
   FungibleTransferActivity.fromJson(Map<String, dynamic> json)
       : from = Address.fromJson(json['from']),
         to = Address.fromJson(json['to']),
         token = FungibleToken.fromJson(json['token']),
-        amount = json['amount'] as int,
+        amount = json['amount'] as int?,
         timestamp = DateTime.parse(json['timestamp']);
 
   Map<String, dynamic> toJson() => {
-        'from': from.toJson(),
-        'to': to.toJson(),
-        'token': token.toJson(),
+        'from': from!.toJson(),
+        'to': to!.toJson(),
+        'token': token!.toJson(),
         'amount': amount,
         'timestamp': timestamp.toIso8601String(),
       };
@@ -301,7 +302,7 @@ enum AssetType {
 }
 
 /// Returns an (optional) AssetType from string.
-AssetType assetType(String s) {
+AssetType? assetType(String? s) {
   if (AssetType.fungible.toString() == s) {
     return AssetType.fungible;
   }
@@ -315,12 +316,12 @@ AssetType assetType(String s) {
 
 @immutable
 class AAsset {
-  final AssetType type;
+  final AssetType? type;
   final dynamic asset;
 
   AAsset({
-    @required this.type,
-    @required this.asset,
+    required this.type,
+    required this.asset,
   });
 
   @override
@@ -362,15 +363,15 @@ final convexityAddress = Address(602);
 /// An instance of this class represents a snapshot of the state of the app.
 @immutable
 class Model {
-  final Uri convexServerUri;
-  final Address convexityAddress;
+  final Uri? convexServerUri;
+  final Address? convexityAddress;
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
   final List<Activity> activities;
   final Set<Contact> contacts;
-  final Map<Address, KeyPair> keyring;
-  final Address activeAddress;
-  final FungibleToken defaultWithToken;
+  final Map<Address?, KeyPair?> keyring;
+  final Address? activeAddress;
+  final FungibleToken? defaultWithToken;
 
   const Model({
     this.convexServerUri,
@@ -384,22 +385,22 @@ class Model {
     this.defaultWithToken,
   });
 
-  KeyPair get activeKeyPair => keyring[activeAddress];
+  KeyPair? get activeKeyPair => keyring[activeAddress];
 
-  AccountKey get activeAccountKey =>
-      activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair.pk) : null;
+  AccountKey? get activeAccountKey =>
+      activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair!.pk) : null;
 
   Model copyWith({
-    Uri convexServerUri,
-    Address convexityAddress,
-    KeyPair activeKeyPair,
-    Set<AAsset> following,
-    Set<AAsset> myTokens,
-    List<Activity> activities,
-    Set<Contact> contacts,
-    Map<Address, KeyPair> keyring,
-    Address activeAddress,
-    FungibleToken defaultWithToken,
+    Uri? convexServerUri,
+    Address? convexityAddress,
+    KeyPair? activeKeyPair,
+    Set<AAsset>? following,
+    Set<AAsset>? myTokens,
+    List<Activity>? activities,
+    Set<Contact>? contacts,
+    Map<Address?, KeyPair?>? keyring,
+    Address? activeAddress,
+    FungibleToken? defaultWithToken,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -414,16 +415,16 @@ class Model {
       );
 
   Model copyWith2({
-    Uri Function() convexServerUri,
-    Address Function() convexityAddress,
-    KeyPair Function() activeKeyPair,
-    Set<AAsset> Function() following,
-    Set<AAsset> Function() myTokens,
-    List<Activity> Function() activities,
-    Set<Contact> Function() contacts,
-    Map<Address, KeyPair> Function() keyring,
-    Address Function() activeAddress,
-    FungibleToken Function() defaultWithToken,
+    Uri Function()? convexServerUri,
+    Address Function()? convexityAddress,
+    KeyPair Function()? activeKeyPair,
+    Set<AAsset> Function()? following,
+    Set<AAsset> Function()? myTokens,
+    List<Activity> Function()? activities,
+    Set<Contact> Function()? contacts,
+    Map<Address, KeyPair> Function()? keyring,
+    Address Function()? activeAddress,
+    FungibleToken? Function()? defaultWithToken,
   }) =>
       Model(
         convexServerUri:
@@ -437,7 +438,7 @@ class Model {
         contacts: contacts != null ? contacts() : this.contacts,
         keyring: keyring != null ? keyring() : this.keyring,
         activeAddress:
-            activeAddress != null ? activeAddress : this.activeAddress,
+            activeAddress != null ? activeAddress as Address? : this.activeAddress,
         defaultWithToken: defaultWithToken != null
             ? defaultWithToken()
             : this.defaultWithToken,
@@ -457,8 +458,8 @@ class Model {
 }
 
 void bootstrap({
-  @required BuildContext context,
-  @required SharedPreferences preferences,
+  required BuildContext context,
+  required SharedPreferences preferences,
 }) {
   try {
     final keyring = p.readKeyring(preferences);
@@ -492,17 +493,17 @@ void bootstrap({
 class AppState with ChangeNotifier {
   final client = http.Client();
 
-  Model model;
+  Model? model;
 
   AppState({this.model});
 
   ConvexClient convexClient() => ConvexClient(
         client: client,
-        server: model.convexServerUri,
+        server: model!.convexServerUri,
         credentials: Credentials(
-          address: model.activeAddress,
-          accountKey: model.activeAccountKey,
-          secretKey: model.activeKeyPair?.sk,
+          address: model!.activeAddress,
+          accountKey: model!.activeAccountKey,
+          secretKey: model!.activeKeyPair?.sk,
         ),
       );
 
@@ -513,44 +514,44 @@ class AppState with ChangeNotifier {
 
   TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
 
-  ConvexityClient convexityClient() => model.convexityAddress != null
+  ConvexityClient? convexityClient() => model!.convexityAddress != null
       ? ConvexityClient(
           convexClient: convexClient(),
-          actor: model.convexityAddress,
+          actor: model!.convexityAddress,
         )
       : null;
 
-  void setState(Model f(Model m)) {
+  void setState(Model f(Model? m)) {
     model = f(model);
 
     notifyListeners();
   }
 
-  void setFollowing(Set<AAsset> following, {bool isPersistent = false}) {
+  void setFollowing(Set<AAsset?> following, {bool isPersistent = false}) {
     if (isPersistent) {
       SharedPreferences.getInstance().then(
         (preferences) => p.writeFollowing(preferences, following),
       );
     }
 
-    setState((m) => m.copyWith(following: Set<AAsset>.from(following)));
+    setState((m) => m!.copyWith(following: Set<AAsset>.from(following)));
   }
 
-  void follow(AAsset aasset, {bool isPersistent = false}) {
-    var following = Set<AAsset>.from(model.following)..add(aasset);
+  void follow(AAsset? aasset, {bool isPersistent = false}) {
+    var following = Set<AAsset?>.from(model!.following)..add(aasset);
 
     setFollowing(following, isPersistent: isPersistent);
   }
 
-  void unfollow(AAsset aasset, {bool isPersistent = false}) {
-    var following = model.following.where((e) => e != aasset).toSet();
+  void unfollow(AAsset? aasset, {bool isPersistent = false}) {
+    var following = model!.following.where((e) => e != aasset).toSet();
 
     setFollowing(following, isPersistent: isPersistent);
   }
 
   /// Add a new Token to 'My Tokens'.
   void addMyToken(AAsset myToken, {bool isPersistent = false}) {
-    var myTokens = Set<AAsset>.from(model.myTokens)..add(myToken);
+    var myTokens = Set<AAsset>.from(model!.myTokens)..add(myToken);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
@@ -559,7 +560,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
+      (model) => model!.copyWith(
         myTokens: myTokens,
       ),
     );
@@ -567,7 +568,7 @@ class AppState with ChangeNotifier {
 
   /// Add a new Activity.
   void addActivity(Activity activity, {bool isPersistent = false}) {
-    var activities = List<Activity>.from(model.activities)..add(activity);
+    var activities = List<Activity>.from(model!.activities)..add(activity);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
@@ -576,7 +577,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
+      (model) => model!.copyWith(
         activities: activities,
       ),
     );
@@ -584,7 +585,7 @@ class AppState with ChangeNotifier {
 
   /// Add a new Contact to Address Book.
   void addContact(Contact contact, {bool isPersistent = true}) {
-    var contacts = Set<Contact>.from(model.contacts);
+    var contacts = Set<Contact>.from(model!.contacts);
 
     if (contacts.contains(contact)) {
       contacts.remove(contact);
@@ -599,15 +600,15 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
+      (model) => model!.copyWith(
         contacts: contacts,
       ),
     );
   }
 
   /// Remove Contact from Address Book.
-  void removeContact(Contact contact, {bool isPersistent = false}) {
-    var contacts = Set<Contact>.from(model.contacts);
+  void removeContact(Contact? contact, {bool isPersistent = false}) {
+    var contacts = Set<Contact>.from(model!.contacts);
     contacts.remove(contact);
 
     if (isPersistent) {
@@ -617,7 +618,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
+      (model) => model!.copyWith(
         contacts: contacts,
       ),
     );
@@ -637,19 +638,18 @@ class AppState with ChangeNotifier {
     });
   }
 
-  Contact findContact(Address address) => model.contacts.firstWhere(
+  Contact? findContact(Address? address) => model!.contacts.firstWhereOrNull(
         (_contact) => _contact.address == address,
-        orElse: () => null,
       );
 
-  bool isAddressMine2(Address address) => model.keyring.containsKey(address);
+  bool isAddressMine2(Address? address) => model!.keyring.containsKey(address);
 
   void addToKeyring({
-    Address address,
-    KeyPair keyPair,
+    Address? address,
+    KeyPair? keyPair,
     bool isPersistent = true,
   }) {
-    final _keyring = Map<Address, KeyPair>.from(model.keyring);
+    final _keyring = Map<Address?, KeyPair?>.from(model!.keyring);
     _keyring[address] = keyPair;
 
     if (isPersistent) {
@@ -659,12 +659,12 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) {
-      return m.copyWith(keyring: _keyring);
+      return m!.copyWith(keyring: _keyring);
     });
   }
 
-  void removeAddress(Address address, {bool isPersistent = true}) {
-    final _keyring = Map<Address, KeyPair>.from(model.keyring)..remove(address);
+  void removeAddress(Address? address, {bool isPersistent = true}) {
+    final _keyring = Map<Address, KeyPair>.from(model!.keyring)..remove(address);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
@@ -674,26 +674,26 @@ class AppState with ChangeNotifier {
 
     setState(
       (m) {
-        return m.copyWith(keyring: _keyring);
+        return m!.copyWith(keyring: _keyring);
       },
     );
   }
 
   void setActiveAddress(
-    Address address, {
+    Address? address, {
     bool isPersistent = true,
   }) {
     if (isPersistent) {
       SharedPreferences.getInstance().then(
-        (preferences) => p.writeActiveAddress(preferences, address),
+        (preferences) => p.writeActiveAddress(preferences, address!),
       );
     }
 
-    setState((m) => m.copyWith(activeAddress: address));
+    setState((m) => m!.copyWith(activeAddress: address));
   }
 
   void setDefaultWithToken(
-    FungibleToken defaultWithToken, {
+    FungibleToken? defaultWithToken, {
     bool isPersistent = true,
   }) {
     if (isPersistent) {
@@ -702,6 +702,6 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith2(defaultWithToken: () => defaultWithToken));
+    setState((m) => m!.copyWith2(defaultWithToken: () => defaultWithToken));
   }
 }

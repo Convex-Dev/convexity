@@ -8,7 +8,7 @@ import '../convex.dart';
 import '../model.dart';
 
 class StakingScreen extends StatelessWidget {
-  const StakingScreen({Key key}) : super(key: key);
+  const StakingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class StakingScreenBody extends StatefulWidget {
 }
 
 class _StakingScreenBodyState extends State<StakingScreenBody> {
-  Future<Result> peers;
+  Future<Result>? peers;
 
   @override
   void initState() {
@@ -54,14 +54,14 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
           );
         }
 
-        final peers = (snapshot.data.value as Map).entries.map((e) {
+        final peers = (snapshot.data!.value as Map).entries.map((e) {
           final m = e.value as Map<String, dynamic>;
 
           return Peer.fromJson(m..addAll({'address': e.key}));
         });
 
         final sorted = peers.toList()
-          ..sort((a, b) => b.stake.compareTo(a.stake));
+          ..sort((a, b) => b.stake!.compareTo(a.stake!));
 
         final tiles = sorted.map(
           (peer) {

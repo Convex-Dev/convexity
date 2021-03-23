@@ -48,8 +48,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   Widget addressCard(
     BuildContext context, {
-    Address activeAddress,
-    Address otherAddress,
+    Address? activeAddress,
+    Address? otherAddress,
   }) {
     final isActive = activeAddress == otherAddress;
 
@@ -103,7 +103,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                       print(
                         '\n' +
                             crypto.encodePrivateKeyPEM(
-                              appState.model.activeKeyPair.sk,
+                              appState.model!.activeKeyPair!.sk,
                             ),
                       );
                     },
@@ -126,7 +126,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                           onPressed: () {
                             final appState = context.read<AppState>();
 
-                            if (otherAddress == appState.model.activeAddress) {
+                            if (otherAddress == appState.model!.activeAddress) {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
@@ -184,8 +184,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final activeAddress = appState.model.activeAddress;
-    final allAddresses = appState.model.keyring.keys;
+    final activeAddress = appState.model!.activeAddress;
+    final allAddresses = appState.model!.keyring.keys;
 
     final widgets = [
       Padding(
@@ -199,7 +199,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           'Wallet contains your own Accounts managed on this device.',
           style: Theme.of(context)
               .textTheme
-              .subtitle1
+              .subtitle1!
               .copyWith(color: Colors.black54),
         ),
       ),
@@ -288,7 +288,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         );
 
         appState.addContact(Contact(
-          name: 'Account ${appState.model.keyring.length}',
+          name: 'Account ${appState.model!.keyring.length}',
           address: generatedAddress,
         ));
 
@@ -306,7 +306,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     }
   }
 
-  void _remove(BuildContext context, {Address address}) async {
+  void _remove(BuildContext context, {Address? address}) async {
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) => _Remove(address: address),
@@ -321,9 +321,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 }
 
 class _Remove extends StatefulWidget {
-  final Address address;
+  final Address? address;
 
-  const _Remove({Key key, this.address}) : super(key: key);
+  const _Remove({Key? key, this.address}) : super(key: key);
 
   @override
   _RemoveState createState() => _RemoveState();
@@ -349,7 +349,7 @@ class _RemoveState extends State<_Remove> {
               ),
               Gap(20),
               aidenticon(
-                widget.address,
+                widget.address!,
                 width: 80,
                 height: 80,
               ),

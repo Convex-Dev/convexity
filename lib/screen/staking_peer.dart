@@ -10,13 +10,13 @@ import '../widget.dart';
 import '../model.dart';
 
 class StakingPeerScreen extends StatelessWidget {
-  final Peer peer;
+  final Peer? peer;
 
-  const StakingPeerScreen({Key key, this.peer}) : super(key: key);
+  const StakingPeerScreen({Key? key, this.peer}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Peer _peer = peer ?? ModalRoute.of(context).settings.arguments;
+    final Peer _peer = peer ?? ModalRoute.of(context)!.settings.arguments as Peer;
 
     return Scaffold(
       appBar: AppBar(
@@ -33,16 +33,16 @@ class StakingPeerScreen extends StatelessWidget {
 }
 
 class StakingPeerScreenBody extends StatefulWidget {
-  final Peer peer;
+  final Peer? peer;
 
-  const StakingPeerScreenBody({Key key, this.peer}) : super(key: key);
+  const StakingPeerScreenBody({Key? key, this.peer}) : super(key: key);
 
   @override
   _StakingPeerScreenBodyState createState() => _StakingPeerScreenBodyState();
 }
 
 class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
-  Future<Account> _account;
+  Future<Account>? _account;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
 
     final appState = context.read<AppState>();
     _account =
-        appState.convexClient().accountDetails(appState.model.activeAddress);
+        appState.convexClient().accountDetails(appState.model!.activeAddress);
   }
 
   @override
@@ -58,23 +58,23 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
     final appState = context.watch<AppState>();
 
     final series = [
-      charts.Series<Tuple2<String, int>, String>(
+      charts.Series<Tuple2<String, int?>, String>(
         id: 'Staking',
         domainFn: (datum, index) => datum.item1,
-        measureFn: (datum, index) => datum.item2,
+        measureFn: (datum, index) => datum.item2!,
         labelAccessorFn: (datum, index) => datum.item1,
         data: [
-          Tuple2<String, int>(
+          Tuple2<String, int?>(
             'Stake',
-            widget.peer.stake,
+            widget.peer!.stake,
           ),
-          Tuple2<String, int>(
+          Tuple2<String, int?>(
             'Delegated Stake',
-            widget.peer.delegatedStake,
+            widget.peer!.delegatedStake,
           ),
           Tuple2<String, int>(
             'Owned Stake',
-            widget.peer.stakes[appState.model.activeAddress] ?? 0,
+            widget.peer!.stakes![appState.model!.activeAddress!] ?? 0,
           ),
         ],
       ),
@@ -114,16 +114,16 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                   children: [
                     _cell(
                       context,
-                      text: NumberFormat().format(widget.peer.stake),
+                      text: NumberFormat().format(widget.peer!.stake),
                     ),
                     _cell(
                       context,
-                      text: NumberFormat().format(widget.peer.delegatedStake),
+                      text: NumberFormat().format(widget.peer!.delegatedStake),
                     ),
                     _cell(
                       context,
                       text: NumberFormat().format(
-                          widget.peer.stakes[appState.model.activeAddress] ??
+                          widget.peer!.stakes![appState.model!.activeAddress!] ??
                               0),
                     ),
                   ],
@@ -163,8 +163,8 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
 
   Widget _cell(
     BuildContext context, {
-    String text,
-    TextStyle style,
+    required String text,
+    TextStyle? style,
     TextAlign textAlign = TextAlign.right,
   }) {
     return TableCell(
@@ -181,11 +181,11 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
 }
 
 class _TransactStake extends StatefulWidget {
-  final Peer peer;
-  final Future<Account> account;
+  final Peer? peer;
+  final Future<Account>? account;
 
   const _TransactStake({
-    Key key,
+    Key? key,
     this.peer,
     this.account,
   }) : super(key: key);
@@ -196,13 +196,13 @@ class _TransactStake extends StatefulWidget {
 
 class _TransactStakeState extends State<_TransactStake> {
   // Stake amount.
-  num amount;
+  num? amount;
 
   // Flag to indicate the app is processing the transaction.
   bool isProcessing = false;
 
   // Returned value from the transaction - it's used to check if the was an error.
-  Result transaction;
+  Result? transaction;
 
   Widget _successLayout() => Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -270,7 +270,7 @@ class _TransactStakeState extends State<_TransactStake> {
                   Gap(5),
                   Text(
                     NumberFormat().format(
-                      snapshot.data.balance,
+                      snapshot.data!.balance,
                     ),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
@@ -322,7 +322,7 @@ class _TransactStakeState extends State<_TransactStake> {
 
     if (isProcessing) {
       child = _processingLayout();
-    } else if (transaction != null && transaction.errorCode != null) {
+    } else if (transaction != null && transaction!.errorCode != null) {
       child = _errorLayout();
     } else if (transaction != null) {
       child = _successLayout();
@@ -345,7 +345,7 @@ class _TransactStakeState extends State<_TransactStake> {
       final appState = context.read<AppState>();
 
       return await appState.convexClient().transact(
-            source: '(stake ${widget.peer.address} $amount)',
+            source: '(stake ${widget.peer!.address} $amount)',
           );
     } finally {
       setState(() {

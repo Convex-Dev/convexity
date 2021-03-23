@@ -13,7 +13,7 @@ import '../format.dart' as format;
 class ExchangeScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeParams params = ModalRoute.of(context).settings.arguments;
+    final ExchangeParams? params = ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
@@ -28,44 +28,44 @@ class ExchangeScreen2 extends StatelessWidget {
 }
 
 class ExchangeScreenBody2 extends StatefulWidget {
-  final ExchangeParams params;
+  final ExchangeParams? params;
 
-  ExchangeScreenBody2({Key key, this.params}) : super(key: key);
+  ExchangeScreenBody2({Key? key, this.params}) : super(key: key);
 
   @override
   _ExchangeScreenBody2State createState() => _ExchangeScreenBody2State(params);
 }
 
 class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
-  ExchangeParams _params;
+  ExchangeParams? _params;
 
   TextEditingController _ofController = TextEditingController();
 
   /// Set by [_refreshOfBalance].
-  Future _ofBalance;
+  Future? _ofBalance;
 
   /// Set by [_refreshWithBalance].
-  Future _withBalance;
+  Future? _withBalance;
 
   /// Set by [_refreshPrice].
-  Future<double> _price;
+  Future<double?>? _price;
 
   /// Set by [_refreshOfMarketPrice].
-  Future<double> _ofMarketPrice;
+  Future<double?>? _ofMarketPrice;
 
   /// Set by [_refreshWithMarketPrice].
-  Future<double> _withMarketPrice;
+  Future<double?>? _withMarketPrice;
 
   /// Set by [_refreshQuote].
-  Future<int> _quote;
+  Future<int?>? _quote;
 
-  Future<Tuple2<int, int>> _liquidity;
+  Future<Tuple2<int?, int?>>? _liquidity;
 
   _ExchangeScreenBody2State(this._params);
 
-  FungibleToken get _ofToken => _params.ofToken ?? _CVX;
+  FungibleToken get _ofToken => _params!.ofToken ?? _CVX;
 
-  FungibleToken get _withToken => _params.withToken ?? _CVX;
+  FungibleToken get _withToken => _params!.withToken ?? _CVX;
 
   String get _actionText =>
       _params?.action == ExchangeAction.buy ? 'Buy' : 'Sell';
@@ -88,21 +88,21 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final fungibles = appState.model.following
+    final fungibles = appState.model!.following
         .where((e) => e.type == AssetType.fungible)
-        .map((e) => e.asset as FungibleToken)
+        .map((e) => e.asset as FungibleToken?)
         .toList();
 
     // Make sure 'of Token' and 'with Token'
     // are in the set of dropdown items.
     final dropdownItems = fungibles.toSet();
 
-    if (_params.ofToken != null) {
-      dropdownItems.add(_params.ofToken);
+    if (_params!.ofToken != null) {
+      dropdownItems.add(_params!.ofToken);
     }
 
-    if (_params.withToken != null) {
-      dropdownItems.add(_params.withToken);
+    if (_params!.withToken != null) {
+      dropdownItems.add(_params!.withToken);
     }
 
     return SingleChildScrollView(
@@ -110,10 +110,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
         child: Column(
           children: [
             _BuySellToggle(
-              selected: _params.action,
+              selected: _params!.action,
               onPressed: (action) {
                 setState(() {
-                  _params = _params.copyWith(action: action);
+                  _params = _params!.copyWith(action: action);
 
                   // Changing between *buy* and *sell* must refresh quote.
 
@@ -145,7 +145,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   // It's null if 'of Token' is CVX - doesn't make sense to check CVX.
                   if (_ofMarketPrice != null)
                     _MarketCheck(
-                      token: _params.ofToken,
+                      token: _params!.ofToken,
                       market: _ofMarketPrice,
                       onCreated: (shares) {
                         setState(() {
@@ -168,7 +168,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         enabled: _ofToken == _CVX || snapshot.hasData,
                         onChanged: (s) {
                           setState(() {
-                            _params = _params.copyWith(amount: s);
+                            _params = _params!.copyWith(amount: s);
 
                             _refreshQuote();
                           });
@@ -180,24 +180,24 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 Gap(40),
                 Column(
                   children: [
-                    _Dropdown<FungibleToken>(
+                    _Dropdown<FungibleToken?>(
                       active: _ofToken,
                       items: [_CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
-                        fungible.metadata.symbol,
+                        fungible!.metadata.symbol!,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
                         setState(() {
                           final ofToken = e == _CVX ? null : e;
 
-                          _params = _params.setOfToken(ofToken);
+                          _params = _params!.setOfToken(ofToken);
 
                           _refreshOf();
                         });
                       },
                     ),
-                    Text(_ofToken.metadata.name),
+                    Text(_ofToken.metadata.name!),
                   ],
                 ),
               ],
@@ -207,7 +207,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             Row(
               children: [
                 _Balance(
-                  token: _params.ofToken,
+                  token: _params!.ofToken,
                   balance: _ofBalance,
                 ),
               ],
@@ -222,7 +222,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   ),
                   onPressed: () {
                     setState(() {
-                      _params = _params.swap();
+                      _params = _params!.swap();
 
                       final ofBalance = _ofBalance;
                       final withBalance = _withBalance;
@@ -253,13 +253,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     _actionWithForText,
                     style: Theme.of(context)
                         .textTheme
-                        .headline6
+                        .headline6!
                         .copyWith(color: Colors.black54),
                   ),
                   // It's null if 'with Token' is CVX - doesn't make sense to check CVX.
                   if (_withMarketPrice != null)
                     _MarketCheck(
-                      token: _params.withToken,
+                      token: _params!.withToken,
                       market: _withMarketPrice,
                       onCreated: (shares) {
                         setState(() {
@@ -313,11 +313,11 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 Gap(40),
                 Column(
                   children: [
-                    _Dropdown<FungibleToken>(
+                    _Dropdown<FungibleToken?>(
                       active: _withToken,
                       items: [_CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
-                        fungible.metadata.symbol,
+                        fungible!.metadata.symbol!,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
@@ -327,13 +327,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         appState.setDefaultWithToken(withToken);
 
                         setState(() {
-                          _params = _params.setWithToken(withToken);
+                          _params = _params!.setWithToken(withToken);
 
                           _refreshWith();
                         });
                       },
                     ),
-                    Text(_withToken.metadata.name),
+                    Text(_withToken.metadata.name!),
                   ],
                 ),
               ],
@@ -342,7 +342,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             Row(
               children: [
                 _Balance(
-                  token: _params.withToken,
+                  token: _params!.withToken,
                   balance: _withBalance,
                 ),
               ],
@@ -352,8 +352,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               title: Text('Liquidity'),
               children: [
                 ListTile(
-                  title: Text(_ofToken.metadata.name),
-                  trailing: FutureBuilder<Tuple2<int, int>>(
+                  title: Text(_ofToken.metadata.name!),
+                  trailing: FutureBuilder<Tuple2<int?, int?>>(
                     future: _liquidity,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -361,10 +361,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       }
 
                       final s = _ofToken == _CVX
-                          ? format.formatCVX(snapshot.data.item1)
+                          ? format.formatCVX(snapshot.data!.item1)
                           : format.formatFungibleCurrency(
                               metadata: _ofToken.metadata,
-                              number: snapshot.data.item1,
+                              number: snapshot.data!.item1,
                             );
 
                       return Text(s);
@@ -372,8 +372,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   ),
                 ),
                 ListTile(
-                  title: Text(_withToken.metadata.name),
-                  trailing: FutureBuilder<Tuple2<int, int>>(
+                  title: Text(_withToken.metadata.name!),
+                  trailing: FutureBuilder<Tuple2<int?, int?>>(
                     future: _liquidity,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -381,10 +381,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       }
 
                       final s = _withToken == _CVX
-                          ? format.formatCVX(snapshot.data.item2)
+                          ? format.formatCVX(snapshot.data!.item2)
                           : format.formatFungibleCurrency(
                               metadata: _withToken.metadata,
-                              number: snapshot.data.item2,
+                              number: snapshot.data!.item2,
                             );
 
                       return Text(s);
@@ -404,7 +404,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     _actionText,
                     style: Theme.of(context)
                         .textTheme
-                        .headline6
+                        .headline6!
                         .copyWith(color: Colors.white),
                   ),
                   onPressed:
@@ -455,7 +455,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                     // Example: Buy 1000 Token 1
                     final buyingSellingText =
-                        '$_actionText ${_params.amount} ${_ofToken.metadata.name}';
+                        '$_actionText ${_params!.amount} ${_ofToken.metadata.name}';
 
                     // Example: 1,000 CVX
                     final quoteText =
@@ -499,25 +499,25 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     final appState = context.read<AppState>();
 
-    Future<int> x;
+    Future<int?>? x;
 
-    switch (_params.action) {
+    switch (_params!.action) {
       case ExchangeAction.buy:
         if (_ofToken == _CVX) {
           x = appState.torus().buyCVX(
-                amount: _params.amountInt,
-                withToken: _params.withToken.address,
+                amount: _params!.amountInt,
+                withToken: _params!.withToken!.address,
               );
         } else if (_withToken != _CVX) {
           x = appState.torus().buy(
-                ofToken: _params.ofToken.address,
-                amount: _params.amountInt,
-                withToken: _params.withToken.address,
+                ofToken: _params!.ofToken!.address,
+                amount: _params!.amountInt,
+                withToken: _params!.withToken!.address,
               );
         } else {
           x = appState.torus().buyTokens(
-                ofToken: _params.ofToken.address,
-                amount: _params.amountInt,
+                ofToken: _params!.ofToken!.address,
+                amount: _params!.amountInt,
               );
         }
 
@@ -525,19 +525,19 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
       case ExchangeAction.sell:
         if (_ofToken == _CVX) {
           x = appState.torus().sellCVX(
-                amount: _params.amountInt,
-                withToken: _params.withToken.address,
+                amount: _params!.amountInt,
+                withToken: _params!.withToken!.address,
               );
         } else if (_withToken != _CVX) {
           x = appState.torus().sell(
-                ofToken: _params.ofToken.address,
-                amount: _params.amountInt,
-                withToken: _params.withToken.address,
+                ofToken: _params!.ofToken!.address,
+                amount: _params!.amountInt,
+                withToken: _params!.withToken!.address,
               );
         } else {
           x = appState.torus().sellTokens(
-                ofToken: _params.ofToken.address,
-                amount: _params.amountInt,
+                ofToken: _params!.ofToken!.address,
+                amount: _params!.amountInt,
               );
         }
 
@@ -556,7 +556,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               future: x,
               builder: (
                 BuildContext context,
-                AsyncSnapshot<int> snapshot,
+                AsyncSnapshot<int?> snapshot,
               ) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
@@ -595,7 +595,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                 }
 
                 final boughtOrSold =
-                    _params.action == ExchangeAction.buy ? 'Bought' : 'Sold';
+                    _params!.action == ExchangeAction.buy ? 'Bought' : 'Sold';
 
                 // Example: 1,000 CVX
                 final quoteText =
@@ -617,7 +617,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '$boughtOrSold ${_params.amount} ${_ofToken.metadata.symbol} ${_actionWithForText.toLowerCase()} $quoteText.',
+                            '$boughtOrSold ${_params!.amount} ${_ofToken.metadata.symbol} ${_actionWithForText.toLowerCase()} $quoteText.',
                           ),
                         ],
                       ),
@@ -639,7 +639,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
                           // Clear quote and amount.
                           _ofController.text = '';
-                          _params = _params.emptyAmount();
+                          _params = _params!.emptyAmount();
                           _quote = null;
                         });
                       },
@@ -657,7 +657,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   void _refreshOfBalance() {
     final appState = context.read<AppState>();
 
-    final ofToken = _params.ofToken;
+    final ofToken = _params!.ofToken;
 
     _ofBalance = ofToken == null
         ? appState.convexClient().balance()
@@ -667,7 +667,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   void _refreshWithBalance() {
     final appState = context.read<AppState>();
 
-    final withToken = _params.withToken;
+    final withToken = _params!.withToken;
 
     _withBalance = withToken == null
         ? appState.convexClient().balance()
@@ -683,12 +683,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     final torus = context.read<AppState>().torus();
 
     logger.d(
-      'Of Token: ${_params.ofToken?.address}, With Token: ${_params.withToken?.address}',
+      'Of Token: ${_params!.ofToken?.address}, With Token: ${_params!.withToken?.address}',
     );
 
     _price = torus.price(
-      ofToken: _params.ofToken?.address,
-      withToken: _params.withToken?.address,
+      ofToken: _params!.ofToken?.address,
+      withToken: _params!.withToken?.address,
     );
   }
 
@@ -696,7 +696,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   ///
   /// Set it to `null` if 'of Token' is null.
   void _refreshOfMarketPrice() {
-    if (_params.ofToken == null) {
+    if (_params!.ofToken == null) {
       _ofMarketPrice = null;
 
       return;
@@ -704,14 +704,14 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     final torus = context.read<AppState>().torus();
 
-    _ofMarketPrice = torus.price(ofToken: _params.ofToken.address);
+    _ofMarketPrice = torus.price(ofToken: _params!.ofToken!.address);
   }
 
   /// Query price for 'with Token'.
   ///
   /// Set it to `null` if 'with Token' is null.
   void _refreshWithMarketPrice() {
-    if (_params.withToken == null) {
+    if (_params!.withToken == null) {
       _withMarketPrice = null;
 
       return;
@@ -719,13 +719,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     final torus = context.read<AppState>().torus();
 
-    _withMarketPrice = torus.price(ofToken: _params.withToken.address);
+    _withMarketPrice = torus.price(ofToken: _params!.withToken!.address);
   }
 
   /// Query quote for 'with Token'.
   /// This method must be called whenever 'of Token' or 'with Token' changes.
   void _refreshQuote() {
-    if (_params.amount == null || _params.amount.isEmpty) {
+    if (_params!.amount == null || _params!.amount!.isEmpty) {
       logger.d('Amount is blank. Will set quote to null.');
 
       _quote = null;
@@ -734,7 +734,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     }
 
     try {
-      _params.amountInt;
+      _params!.amountInt;
     } catch (e) {
       logger.e('Amount cannot be coerced to int. Will set quote to null.', e);
 
@@ -745,27 +745,27 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     final torus = context.read<AppState>().torus();
 
-    if (_params.action == ExchangeAction.buy) {
+    if (_params!.action == ExchangeAction.buy) {
       _quote = _ofToken == _CVX
           ? torus.buyCvxQuote(
-              amount: _params.amountInt,
-              withToken: _params.withToken?.address,
+              amount: _params!.amountInt,
+              withToken: _params!.withToken?.address,
             )
           : torus.buyQuote(
-              ofToken: _params.ofToken?.address,
-              amount: _params.amountInt,
-              withToken: _params.withToken?.address,
+              ofToken: _params!.ofToken?.address,
+              amount: _params!.amountInt,
+              withToken: _params!.withToken?.address,
             );
     } else {
       _quote = _ofToken == _CVX
           ? torus.sellCvxQuote(
-              amount: _params.amountInt,
-              withToken: _params.withToken?.address,
+              amount: _params!.amountInt,
+              withToken: _params!.withToken?.address,
             )
           : torus.sellQuote(
-              ofToken: _params.ofToken?.address,
-              amount: _params.amountInt,
-              withToken: _params.withToken?.address,
+              ofToken: _params!.ofToken?.address,
+              amount: _params!.amountInt,
+              withToken: _params!.withToken?.address,
             );
     }
   }
@@ -777,8 +777,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     final appState = context.read<AppState>();
 
     _liquidity = appState.torus().liquidity(
-          ofToken: _params.ofToken?.address,
-          withToken: _params.withToken?.address,
+          ofToken: _params!.ofToken?.address,
+          withToken: _params!.withToken?.address,
         );
   }
 
@@ -813,11 +813,11 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   /// Returns quote formatted based on 'with Token'.
   /// If 'with Token' is selected, it will be formated using its metadata.
   /// If 'with Token' is null, it will be formatted as CVX.
-  String _quoteText(int quote) => quote == null
+  String _quoteText(int? quote) => quote == null
       ? '-'
-      : _params.withToken != null
+      : _params!.withToken != null
           ? format.formatFungibleCurrency(
-              metadata: _params.withToken.metadata,
+              metadata: _params!.withToken!.metadata,
               number: quote,
             )
           : format.formatCVX(quote);
@@ -836,10 +836,10 @@ final _CVX = FungibleToken(
 );
 
 class _BuySellToggle extends StatelessWidget {
-  final ExchangeAction selected;
-  final void Function(ExchangeAction action) onPressed;
+  final ExchangeAction? selected;
+  final void Function(ExchangeAction action)? onPressed;
 
-  const _BuySellToggle({Key key, this.selected, this.onPressed})
+  const _BuySellToggle({Key? key, this.selected, this.onPressed})
       : super(key: key);
 
   @override
@@ -858,7 +858,7 @@ class _BuySellToggle extends StatelessWidget {
         final action = i == 0 ? ExchangeAction.buy : ExchangeAction.sell;
 
         if (onPressed != null) {
-          onPressed(action);
+          onPressed!(action);
         }
       },
     );
@@ -866,13 +866,13 @@ class _BuySellToggle extends StatelessWidget {
 }
 
 class _Dropdown<T> extends StatelessWidget {
-  final T active;
-  final List<T> items;
-  final Widget Function(T item) itemWidget;
-  final void Function(T t) onChanged;
+  final T? active;
+  final List<T>? items;
+  final Widget Function(T item)? itemWidget;
+  final void Function(T? t)? onChanged;
 
   const _Dropdown({
-    Key key,
+    Key? key,
     this.active,
     this.items,
     this.itemWidget,
@@ -883,11 +883,11 @@ class _Dropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButton<T>(
       value: active,
-      items: items
+      items: items!
           .map(
             (t) => DropdownMenuItem<T>(
               value: t,
-              child: itemWidget(t),
+              child: itemWidget!(t),
             ),
           )
           .toList(),
@@ -897,11 +897,11 @@ class _Dropdown<T> extends StatelessWidget {
 }
 
 class _Balance extends StatelessWidget {
-  final FungibleToken token;
-  final Future balance;
+  final FungibleToken? token;
+  final Future? balance;
 
   const _Balance({
-    Key key,
+    Key? key,
     this.token,
     this.balance,
   }) : super(key: key);
@@ -919,7 +919,7 @@ class _Balance extends StatelessWidget {
               : token == null
                   ? format.formatCVX(snapshot.data)
                   : format.formatFungibleCurrency(
-                      metadata: token.metadata,
+                      metadata: token!.metadata,
                       number: snapshot.data,
                     );
 
@@ -943,12 +943,12 @@ class _Balance extends StatelessWidget {
 }
 
 class _MarketCheck extends StatelessWidget {
-  final FungibleToken token;
-  final Future<double> market;
-  final void Function(int shares) onCreated;
+  final FungibleToken? token;
+  final Future<double?>? market;
+  final void Function(int shares)? onCreated;
 
   const _MarketCheck({
-    Key key,
+    Key? key,
     this.token,
     this.market,
     this.onCreated,
@@ -1007,26 +1007,26 @@ class _MarketCheck extends StatelessWidget {
     );
 
     if (shares != null) {
-      onCreated(shares);
+      onCreated!(shares);
     }
   }
 }
 
 class _MarketPrice extends StatelessWidget {
-  final ExchangeParams params;
-  final Future<double> price;
+  final ExchangeParams? params;
+  final Future<double?>? price;
 
-  const _MarketPrice({Key key, this.params, this.price}) : super(key: key);
+  const _MarketPrice({Key? key, this.params, this.price}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<double>(
+    return FutureBuilder<double?>(
       future: price,
       builder: (context, snapshot) {
         final priceShifted = format.shiftDecimalPlace(
           snapshot.data ?? 0,
-          (params.ofToken?.metadata?.decimals ?? 0) -
-              (params.withToken?.metadata?.decimals ?? 0),
+          (params!.ofToken?.metadata?.decimals ?? 0) -
+              (params!.withToken?.metadata?.decimals ?? 0),
         );
 
         final withPriceText = NumberFormat().format(priceShifted);
@@ -1051,10 +1051,10 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      params.ofToken?.metadata?.symbol ?? _CVX.metadata.symbol,
+                      params!.ofToken?.metadata?.symbol ?? _CVX.metadata.symbol!,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black54),
                     ),
                     Icon(
@@ -1066,11 +1066,11 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      (params.withToken?.metadata?.symbol ??
-                          _CVX.metadata.symbol),
+                      (params!.withToken?.metadata?.symbol ??
+                          _CVX.metadata.symbol!),
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black54),
                     )
                   ],
@@ -1084,9 +1084,9 @@ class _MarketPrice extends StatelessWidget {
 }
 
 class _TokenLiquidity extends StatefulWidget {
-  final FungibleToken token;
+  final FungibleToken? token;
 
-  const _TokenLiquidity({Key key, this.token}) : super(key: key);
+  const _TokenLiquidity({Key? key, this.token}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TokenLiquidityState();
@@ -1095,14 +1095,14 @@ class _TokenLiquidity extends StatefulWidget {
 class _TokenLiquidityState extends State<_TokenLiquidity> {
   int tokenAmount = 0;
   int cvxAmount = 0;
-  Future<int> liquidity;
+  Future<int?>? liquidity;
 
-  Future<Result> balance;
+  Future<Result>? balance;
 
-  double get tokenPrice =>
+  double? get tokenPrice =>
       tokenAmount > 0 && cvxAmount > 0 ? tokenAmount / cvxAmount : null;
 
-  double get cvxPrice =>
+  double? get cvxPrice =>
       tokenAmount > 0 && cvxAmount > 0 ? cvxAmount / tokenAmount : null;
 
   void initState() {
@@ -1110,11 +1110,11 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
 
     final appState = context.read<AppState>();
 
-    final activeAddress = appState.model.activeAddress;
+    final activeAddress = appState.model!.activeAddress;
 
     balance = appState.convexClient().query(
           source: '(import convex.asset :as asset)'
-              '[(balance $activeAddress) (asset/balance ${widget.token.address} $activeAddress)]',
+              '[(balance $activeAddress) (asset/balance ${widget.token!.address} $activeAddress)]',
         );
   }
 
@@ -1123,7 +1123,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
     return Container(
       padding: defaultScreenPadding,
       child: liquidity != null
-          ? FutureBuilder<int>(
+          ? FutureBuilder<int?>(
               future: liquidity,
               builder: (context, snapshot) {
                 if (ConnectionState.waiting == snapshot.connectionState) {
@@ -1149,7 +1149,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
           : Column(
               children: <Widget>[
                 Text(
-                  'Add liquidity for ${widget.token.metadata.symbol}',
+                  'Add liquidity for ${widget.token!.metadata.symbol}',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Text(
@@ -1161,7 +1161,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${widget.token.metadata.symbol} BALANCE',
+                      '${widget.token!.metadata.symbol} BALANCE',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     Gap(8),
@@ -1174,8 +1174,8 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         }
 
                         final tokenBalance = format.formatFungibleCurrency(
-                          metadata: widget.token.metadata,
-                          number: (snapshot.data.value[1]),
+                          metadata: widget.token!.metadata,
+                          number: (snapshot.data!.value[1]),
                         );
 
                         return Text(
@@ -1190,7 +1190,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                 TextField(
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Amount of ${widget.token.metadata.symbol}',
+                    labelText: 'Amount of ${widget.token!.metadata.symbol}',
                     helperText: 'Helper text',
                     border: const OutlineInputBorder(),
                   ),
@@ -1219,7 +1219,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         }
 
                         final userBalance =
-                            format.formatCVX(snapshot.data.value[0]);
+                            format.formatCVX(snapshot.data!.value[0]);
 
                         return Text(
                           userBalance,
@@ -1251,7 +1251,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       children: [
                         TableCell(
                           child: Text(
-                            '1 ${widget.token.metadata.symbol}',
+                            '1 ${widget.token!.metadata.symbol}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
@@ -1288,7 +1288,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         TableCell(
                           child: Text(
                             tokenPrice != null
-                                ? '$tokenPrice ${widget.token.metadata.symbol}'
+                                ? '$tokenPrice ${widget.token!.metadata.symbol}'
                                 : '-',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
@@ -1318,9 +1318,9 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                                     .read<AppState>()
                                     .torus()
                                     .addLiquidity(
-                                      token: widget.token.address,
+                                      token: widget.token!.address,
                                       tokenAmount: format.readFungibleCurrency(
-                                        metadata: widget.token.metadata,
+                                        metadata: widget.token!.metadata,
                                         s: tokenAmount.toString(),
                                       ),
                                       cvxAmount: cvxAmount,

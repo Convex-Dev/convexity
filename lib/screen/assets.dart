@@ -21,12 +21,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
     final appState = context.read<AppState>();
     final assetLibrary = appState.assetLibrary();
 
-    balancheCache = Map.fromEntries(appState.model.following.map(
+    balancheCache = Map.fromEntries(appState.model!.following.map(
       (aasset) => MapEntry(
           aasset,
           assetLibrary.balance(
             asset: aasset.asset.address,
-            owner: appState.model.activeAddress,
+            owner: appState.model!.activeAddress,
           )),
     ));
   }
@@ -44,7 +44,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
             children: [
               Expanded(
                 child: AssetCollection(
-                  assets: appState.model.following,
+                  assets: appState.model!.following,
                   balanceCache: balancheCache,
                 ),
               ),

@@ -20,7 +20,7 @@ void pushAccount(BuildContext context, convex.Address address) =>
       arguments: address,
     );
 
-void pushAccount2(BuildContext context, convex.Address address) =>
+void pushAccount2(BuildContext context, convex.Address? address) =>
     Navigator.pushNamed(
       context,
       route.ACCOUNT,
@@ -44,8 +44,8 @@ void pushAssets(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushAsset(
   BuildContext context, {
-  AAsset aasset,
-  Future balance,
+  AAsset? aasset,
+  Future? balance,
 }) =>
     Navigator.pushNamed(
       context,
@@ -60,8 +60,8 @@ void pushFollow(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushFungibleTransfer(
   BuildContext context,
-  convex.FungibleToken token,
-  Future<dynamic> balance,
+  convex.FungibleToken? token,
+  Future<dynamic>? balance,
 ) =>
     Navigator.pushNamed(
       context,
@@ -81,7 +81,7 @@ Future<dynamic> pushNewToken(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushNewNonFungibleToken(
   BuildContext context, {
-  convex.NonFungibleToken nonFungibleToken,
+  convex.NonFungibleToken? nonFungibleToken,
 }) =>
     Navigator.pushNamed(
       context,
@@ -96,7 +96,7 @@ Future<dynamic> pushAddressBook(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushSelectAccount(
   BuildContext context, {
-  SelectAccountParams params,
+  SelectAccountParams? params,
 }) =>
     Navigator.pushNamed(
       context,
@@ -121,9 +121,9 @@ Future<dynamic> pushNewWhitelist(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushNonFungibleToken(
   BuildContext context, {
-  convex.NonFungibleToken nonFungibleToken,
-  int tokenId,
-  Future<convex.Result> data,
+  convex.NonFungibleToken? nonFungibleToken,
+  int? tokenId,
+  Future<convex.Result>? data,
 }) =>
     Navigator.pushNamed(
       context,
@@ -137,8 +137,8 @@ Future<dynamic> pushNonFungibleToken(
 
 Future<dynamic> pushNonFungibleTransfer(
   BuildContext context, {
-  convex.NonFungibleToken nonFungibleToken,
-  int tokenId,
+  convex.NonFungibleToken? nonFungibleToken,
+  int? tokenId,
 }) =>
     Navigator.pushNamed(
       context,
@@ -151,7 +151,7 @@ Future<dynamic> pushNonFungibleTransfer(
 
 Future<dynamic> pushActivity(
   BuildContext context, {
-  @required Activity activity,
+  required Activity activity,
 }) =>
     Navigator.pushNamed(
       context,
@@ -166,7 +166,7 @@ Future<dynamic> pushStaking(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushStakingPeer(
   BuildContext context, {
-  Peer peer,
+  Peer? peer,
 }) =>
     Navigator.pushNamed(
       context,
@@ -176,9 +176,9 @@ Future<dynamic> pushStakingPeer(
 
 Future<dynamic> pushExchange(
   BuildContext context, {
-  ExchangeParams params,
+  required ExchangeParams params,
 }) {
-  final defaultWithToken = context.read<AppState>().model.defaultWithToken;
+  final defaultWithToken = context.read<AppState>().model!.defaultWithToken;
 
   // Use default 'with Token' if it's not specified in the parameters,
   // and it's not the same as 'of Token'.

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -22,7 +23,7 @@ class StatelessWidgetBuilder extends StatelessWidget {
 
   const StatelessWidgetBuilder(
     this.builder, {
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -31,8 +32,8 @@ class StatelessWidgetBuilder extends StatelessWidget {
 
 Widget identicon(
   String bytes, {
-  double width,
-  double height,
+  double? width,
+  double? height,
 }) =>
     SvgPicture.string(
       Jdenticon.toSvg(bytes),
@@ -42,8 +43,8 @@ Widget identicon(
 
 Widget aidenticon(
   Address address, {
-  double width,
-  double height,
+  double? width,
+  double? height,
 }) =>
     identicon(
       address.value.toString(),
@@ -54,7 +55,7 @@ Widget aidenticon(
 class Identicon extends StatelessWidget {
   final KeyPair keyPair;
 
-  const Identicon({Key key, @required this.keyPair}) : super(key: key);
+  const Identicon({Key? key, required this.keyPair}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => SvgPicture.string(
@@ -69,8 +70,8 @@ class Identicon2 extends StatelessWidget {
   final int size;
 
   const Identicon2({
-    Key key,
-    @required this.address,
+    Key? key,
+    required this.address,
     this.isAddressVisible = false,
     this.size = 64,
   }) : super(key: key);
@@ -92,13 +93,13 @@ class Identicon2 extends StatelessWidget {
 }
 
 class IdenticonDropdown extends StatelessWidget {
-  final KeyPair activeKeyPair;
-  final List<KeyPair> allKeyPairs;
-  final double width;
-  final double height;
+  final KeyPair? activeKeyPair;
+  final List<KeyPair>? allKeyPairs;
+  final double? width;
+  final double? height;
 
   const IdenticonDropdown({
-    Key key,
+    Key? key,
     this.activeKeyPair,
     this.allKeyPairs,
     this.width,
@@ -107,9 +108,9 @@ class IdenticonDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var activePK = Sodium.bin2hex(activeKeyPair.pk);
+    var activePK = Sodium.bin2hex(activeKeyPair!.pk);
 
-    var allPKs = allKeyPairs.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
+    var allPKs = allKeyPairs!.map((_keyPair) => Sodium.bin2hex(_keyPair.pk));
 
     return DropdownButton<String>(
       value: activePK,
@@ -132,15 +133,15 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 class FungibleTokenCard extends StatelessWidget {
-  final convex.FungibleToken fungible;
-  final Future balance;
-  final bool isMine;
-  final void Function(convex.FungibleToken) onTap;
+  final convex.FungibleToken? fungible;
+  final Future? balance;
+  final bool? isMine;
+  final void Function(convex.FungibleToken?)? onTap;
 
   const FungibleTokenCard({
-    Key key,
-    @required this.fungible,
-    @required this.balance,
+    Key? key,
+    required this.fungible,
+    required this.balance,
     this.isMine,
     this.onTap,
   }) : super(key: key);
@@ -160,13 +161,13 @@ class FungibleTokenCard extends StatelessWidget {
           ),
           Gap(10),
           Text(
-            fungible.metadata.symbol,
+            fungible!.metadata.symbol!,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption,
           ),
           Gap(4),
           Text(
-            fungible.metadata.name,
+            fungible!.metadata.name!,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyText1,
@@ -190,7 +191,7 @@ class FungibleTokenCard extends StatelessWidget {
                   : Text(
                       snapshot.data != null
                           ? formatFungibleCurrency(
-                              metadata: fungible.metadata,
+                              metadata: fungible!.metadata,
                               number: snapshot.data,
                             )
                           : '-',
@@ -220,7 +221,7 @@ class FungibleTokenCard extends StatelessWidget {
                   : container,
               onTap: () {
                 if (onTap != null) {
-                  onTap(fungible);
+                  onTap!(fungible);
                 }
               },
             ),
@@ -240,12 +241,12 @@ class FungibleTokenCard extends StatelessWidget {
 }
 
 class NonFungibleTokenCard extends StatelessWidget {
-  final convex.NonFungibleToken nonFungible;
-  final void Function(convex.NonFungibleToken) onTap;
+  final convex.NonFungibleToken? nonFungible;
+  final void Function(convex.NonFungibleToken?)? onTap;
 
   const NonFungibleTokenCard({
-    Key key,
-    @required this.nonFungible,
+    Key? key,
+    required this.nonFungible,
     this.onTap,
   }) : super(key: key);
 
@@ -262,13 +263,13 @@ class NonFungibleTokenCard extends StatelessWidget {
         ),
         Gap(10),
         Text(
-          nonFungible.metadata.name,
+          nonFungible!.metadata.name!,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.caption,
         ),
         Gap(4),
         Text(
-          nonFungible.metadata.description,
+          nonFungible!.metadata.description!,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyText1,
         ),
@@ -283,7 +284,7 @@ class NonFungibleTokenCard extends StatelessWidget {
               child: container,
               onTap: () {
                 if (onTap != null) {
-                  onTap(nonFungible);
+                  onTap!(nonFungible);
                 }
               },
             ),
@@ -305,15 +306,15 @@ class NonFungibleTokenCard extends StatelessWidget {
 // ignore: must_be_immutable
 class AssetCollection extends StatefulWidget {
   final Set<AAsset> assets = {};
-  final Map<AAsset, Future> balanceCache = {};
+  final Map<AAsset?, Future> balanceCache = {};
 
-  String empty;
-  void Function(AAsset) onAssetTap;
+  late String empty;
+  void Function(AAsset)? onAssetTap;
 
   AssetCollection({
-    Key key,
-    @required assets,
-    void Function(AAsset) onAssetTap,
+    Key? key,
+    required assets,
+    void Function(AAsset)? onAssetTap,
     balanceCache,
     empty,
   }) : super(key: key) {
@@ -371,18 +372,17 @@ class _AssetCollectionState extends State<AssetCollection> {
         final balance = widget.balanceCache[aasset] ??
             appState.assetLibrary().balance(
                   asset: aasset.asset.address,
-                  owner: appState.model.activeAddress,
+                  owner: appState.model!.activeAddress,
                 );
 
         if (aasset.type == AssetType.fungible) {
-          final mine = appState.model.myTokens.firstWhere(
+          final mine = appState.model!.myTokens.firstWhereOrNull(
             (myToken) => myToken.asset.address == aasset.asset.address,
-            orElse: () => null,
           );
 
           return FungibleTokenCard(
             isMine: mine != null,
-            fungible: aasset.asset as convex.FungibleToken,
+            fungible: aasset.asset as convex.FungibleToken?,
             balance: balance,
             onTap: (fungible) {
               final asset = AAsset(
@@ -396,7 +396,7 @@ class _AssetCollectionState extends State<AssetCollection> {
               // Otherwise, push the Asset screen.
 
               if (widget.onAssetTap != null) {
-                widget.onAssetTap(asset);
+                widget.onAssetTap!(asset);
 
                 return;
               }
@@ -411,7 +411,7 @@ class _AssetCollectionState extends State<AssetCollection> {
         }
 
         return NonFungibleTokenCard(
-          nonFungible: aasset.asset as convex.NonFungibleToken,
+          nonFungible: aasset.asset as convex.NonFungibleToken?,
           onTap: (nonFungible) {
             nav.pushAsset(
               context,
@@ -428,9 +428,9 @@ class _AssetCollectionState extends State<AssetCollection> {
   }
 
   void _pushAsset({
-    BuildContext context,
-    AAsset aasset,
-    Future balance,
+    required BuildContext context,
+    AAsset? aasset,
+    Future? balance,
   }) async {
     final result = await nav.pushAsset(
       context,
@@ -473,8 +473,8 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon(contact.address),
-        title: Text(contact.name),
+        leading: aidenticon(contact.address!),
+        title: Text(contact.name!),
         subtitle: Text(contact.address.toString()),
         onTap: () {
           Navigator.pop(context, contact.address);
@@ -484,12 +484,12 @@ class _ContactItem implements _AWidget {
 
 /// A [_AWidget] that contains data to display an [Address].
 class _AddressItem implements _AWidget {
-  final convex.Address address;
+  final convex.Address? address;
 
   _AddressItem(this.address);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon(address),
+        leading: aidenticon(address!),
         title: Text('Not in Address Book'),
         subtitle: Text(address.toString()),
         onTap: () {
@@ -499,7 +499,7 @@ class _AddressItem implements _AWidget {
 }
 
 /// Shows a Modal Bottom Sheet UI to select an Account.
-Future<convex.Address> selectAccountModal(BuildContext context) =>
+Future<convex.Address?> selectAccountModal(BuildContext context) =>
     showModalBottomSheet<convex.Address>(
       context: context,
       builder: (context) => _SelectAccount(),
@@ -518,10 +518,10 @@ class SelectAccountParams {
   });
 }
 
-Widget selectAccountScreen({SelectAccountParams params}) =>
+Widget selectAccountScreen({SelectAccountParams? params}) =>
     StatelessWidgetBuilder((context) {
       SelectAccountParams _params =
-          params ?? ModalRoute.of(context).settings.arguments;
+          params ?? ModalRoute.of(context)!.settings.arguments as SelectAccountParams;
 
       return Scaffold(
         appBar: AppBar(title: Text(_params.title)),
@@ -536,16 +536,16 @@ Widget selectAccountScreen({SelectAccountParams params}) =>
     });
 
 class _SelectAccount extends StatefulWidget {
-  final SelectAccountParams params;
+  final SelectAccountParams? params;
 
-  const _SelectAccount({Key key, this.params}) : super(key: key);
+  const _SelectAccount({Key? key, this.params}) : super(key: key);
 
   @override
   _SelectAccountState createState() => _SelectAccountState();
 }
 
 class _SelectAccountState extends State<_SelectAccount> {
-  String _addressStr;
+  String? _addressStr;
 
   @override
   Widget build(BuildContext context) {
@@ -554,10 +554,10 @@ class _SelectAccountState extends State<_SelectAccount> {
     final l = <_AWidget>[];
 
     // Add recent activities.
-    if (widget.params.isRecentsVisible &&
-        appState.model.activities.isNotEmpty) {
+    if (widget.params!.isRecentsVisible &&
+        appState.model!.activities.isNotEmpty) {
       // Map to Address, and then cast to a Set to remove duplicates.
-      final recent = appState.model.activities
+      final recent = appState.model!.activities
           .where((activity) => activity.type == ActivityType.transfer)
           .map((activity) => (activity.payload as FungibleTransferActivity).to)
           .toSet();
@@ -565,9 +565,8 @@ class _SelectAccountState extends State<_SelectAccount> {
       var items = recent
           .map((to) {
             // Check if address is saved in the Address Book.
-            final contact = appState.model.contacts.firstWhere(
+            final contact = appState.model!.contacts.firstWhereOrNull(
               (contact) => contact.address == to,
-              orElse: () => null,
             );
 
             // Replace an Address item for a Contact item
@@ -579,7 +578,7 @@ class _SelectAccountState extends State<_SelectAccount> {
 
       // If [isContactsVisible] is true, we simply take the last 5.
       // Otherwise, we need to check and remove contacts.
-      if (widget.params.isContactsVisible) {
+      if (widget.params!.isContactsVisible) {
         items = items.take(5);
       } else {
         items = items.whereType<_AddressItem>().take(5);
@@ -592,9 +591,9 @@ class _SelectAccountState extends State<_SelectAccount> {
     }
 
     // Add contact items - if it's not empty.
-    if (widget.params.isContactsVisible && appState.model.contacts.isNotEmpty) {
+    if (widget.params!.isContactsVisible && appState.model!.contacts.isNotEmpty) {
       l.add(_HeadingItem('Contacts'));
-      l.addAll(appState.model.contacts.map((contact) => _ContactItem(contact)));
+      l.addAll(appState.model!.contacts.map((contact) => _ContactItem(contact)));
     }
 
     return Container(
@@ -641,7 +640,7 @@ class _SelectAccountState extends State<_SelectAccount> {
                     if (isNotEmpty) {
                       Navigator.pop(
                         context,
-                        convex.Address.fromStr(_addressStr),
+                        convex.Address.fromStr(_addressStr!),
                       );
                     }
                   },
@@ -667,11 +666,11 @@ class ActiveAccount extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          AddressTile(address: appState.model.activeAddress),
+          AddressTile(address: appState.model!.activeAddress),
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
-                .accountDetails(appState.model.activeAddress),
+                .accountDetails(appState.model!.activeAddress),
             builder: (context, snapshot) {
               var animatedChild;
 
@@ -706,11 +705,11 @@ class ActiveAccount extends StatelessWidget {
 }
 
 class AddressTile extends StatelessWidget {
-  final Address address;
-  final void Function() onTap;
+  final Address? address;
+  final void Function()? onTap;
 
   const AddressTile({
-    Key key,
+    Key? key,
     this.address,
     this.onTap,
   }) : super(key: key);
@@ -742,7 +741,7 @@ class AddressTile extends StatelessWidget {
     );
 
     return ListTile(
-      leading: aidenticon(address),
+      leading: aidenticon(address!),
       trailing: IconButton(
         icon: Icon(Icons.copy),
         onPressed: () {
@@ -773,9 +772,9 @@ class AddressTile extends StatelessWidget {
 }
 
 class AccountTable extends StatelessWidget {
-  final Account account;
+  final Account? account;
 
-  const AccountTable({Key key, this.account}) : super(key: key);
+  const AccountTable({Key? key, this.account}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -809,16 +808,16 @@ class AccountTable extends StatelessWidget {
             _cell(
               context,
               text: NumberFormat().format(
-                account.balance,
+                account!.balance,
               ),
             ),
             _cell(
               context,
-              text: account.memorySize.toString(),
+              text: account!.memorySize.toString(),
             ),
             _cell(
               context,
-              text: account.memoryAllowance.toString(),
+              text: account!.memoryAllowance.toString(),
             ),
           ],
         )
@@ -828,8 +827,8 @@ class AccountTable extends StatelessWidget {
 
   Widget _cell(
     BuildContext context, {
-    String text,
-    TextStyle style,
+    required String text,
+    TextStyle? style,
     TextAlign textAlign = TextAlign.right,
   }) {
     return TableCell(
@@ -846,13 +845,13 @@ class AccountTable extends StatelessWidget {
 }
 
 class AnimatedListView extends StatelessWidget {
-  final List<Widget> children;
+  final List<Widget>? children;
 
-  const AnimatedListView({Key key, this.children}) : super(key: key);
+  const AnimatedListView({Key? key, this.children}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final animated = children
+    final animated = children!
         .asMap()
         .entries
         .map(
@@ -887,13 +886,13 @@ Widget Spinner() => SizedBox(
     );
 
 class Dropdown<T> extends StatelessWidget {
-  final T active;
-  final List<T> items;
-  final Widget Function(T item) itemWidget;
-  final void Function(T t) onChanged;
+  final T? active;
+  final List<T>? items;
+  final Widget Function(T item)? itemWidget;
+  final void Function(T? t)? onChanged;
 
   const Dropdown({
-    Key key,
+    Key? key,
     this.active,
     this.items,
     this.itemWidget,
@@ -904,11 +903,11 @@ class Dropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButton<T>(
       value: active,
-      items: items
+      items: items!
           .map(
             (t) => DropdownMenuItem<T>(
               value: t,
-              child: itemWidget(t),
+              child: itemWidget!(t),
             ),
           )
           .toList(),
