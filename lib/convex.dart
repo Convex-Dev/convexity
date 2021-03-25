@@ -26,13 +26,13 @@ String langString(Lang lang) {
 
 @immutable
 class Address {
-  final int? value;
+  final int value;
 
   Address(this.value);
 
   Address.fromStr(String s) : value = int.parse(s.replaceFirst('#', ''));
 
-  Address.fromJson(Map<String, dynamic> m) : value = (m['value'] as int?);
+  Address.fromJson(Map<String, dynamic> m) : value = (m['value'] as int);
 
   @override
   String toString() => '#$value';
@@ -311,7 +311,7 @@ class ConvexClient {
       logger.d(bodyDecoded);
     }
 
-    final address = Address(bodyDecoded['address'] as int?);
+    final address = Address(bodyDecoded['address']);
 
     return address;
   }
