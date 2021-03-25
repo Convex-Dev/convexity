@@ -363,7 +363,7 @@ final convexityAddress = Address(602);
 /// An instance of this class represents a snapshot of the state of the app.
 @immutable
 class Model {
-  final Uri? convexServerUri;
+  final Uri convexServerUri;
   final Address? convexityAddress;
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
@@ -374,7 +374,7 @@ class Model {
   final FungibleToken? defaultWithToken;
 
   const Model({
-    this.convexServerUri,
+    required this.convexServerUri,
     this.convexityAddress,
     this.following = const {},
     this.myTokens = const {},
@@ -446,7 +446,7 @@ class Model {
       );
 
   String toString() => {
-        'convexServerUri': convexServerUri?.toString(),
+        'convexServerUri': convexServerUri.toString(),
         'convexityAddress': convexityAddress?.toString(),
         'following': following.toString(),
         'myTokens': myTokens.toString(),

@@ -156,7 +156,7 @@ class Result {
 }
 
 class ConvexClient {
-  final Uri? server;
+  final Uri server;
   final http.Client client;
 
   // Credentials can change over time.
@@ -172,9 +172,9 @@ class ConvexClient {
       this.credentials = credentials;
 
   Uri _uri(String path) => Uri(
-        scheme: server!.scheme,
-        host: server!.host,
-        port: server!.port,
+        scheme: server.scheme,
+        host: server.host,
+        port: server.port,
         path: path,
       );
 

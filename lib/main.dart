@@ -1,3 +1,4 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sodium/flutter_sodium.dart' as sodium;
 import 'package:provider/provider.dart';
@@ -12,7 +13,7 @@ void main() {
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AppState(model: Model()),
+      create: (_) => AppState(model: Model(convexServerUri: convexWorldUri)),
       child: App(),
     ),
   );
