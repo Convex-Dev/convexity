@@ -98,40 +98,36 @@ class _RecommendedState extends State<_Recommended> {
     final appState = context.read<AppState>();
     final convexityClient = appState.convexityClient();
 
-    if (convexityClient != null) {
-      convexityClient.assets().then((Set<AAsset>? assets) {
-        // It's important to check if the Widget is mounted
-        // because the user might change the selected option
-        // while we're still loading the recommended Assets.
-        if (mounted) {
-          final xs = assets ?? <AAsset>{};
+    convexityClient.assets().then((Set<AAsset>? assets) {
+      // It's important to check if the Widget is mounted
+      // because the user might change the selected option
+      // while we're still loading the recommended Assets.
+      if (mounted) {
+        final xs = assets ?? <AAsset>{};
 
-          final fungibles = xs
-              .where(
-                (aasset) => aasset.type == AssetType.fungible,
-              )
-              .map(
-                (aasset) => MapEntry(
-                  aasset.asset.address as Address?,
-                  appState.assetLibrary().balance(
-                        asset: aasset.asset.address,
-                        owner: appState.model.activeAddress,
-                      ),
-                ),
-              );
+        final fungibles = xs
+            .where(
+              (aasset) => aasset.type == AssetType.fungible,
+            )
+            .map(
+              (aasset) => MapEntry(
+                aasset.asset.address as Address?,
+                appState.assetLibrary().balance(
+                      asset: aasset.asset.address,
+                      owner: appState.model.activeAddress,
+                    ),
+              ),
+            );
 
-          setState(
-            () {
-              _isLoading = false;
-              _assets = xs;
-              _balanceCache = Map<Address?, Future>.fromEntries(fungibles);
-            },
-          );
-        }
-      });
-    } else {
-      this._isLoading = false;
-    }
+        setState(
+          () {
+            _isLoading = false;
+            _assets = xs;
+            _balanceCache = Map<Address?, Future>.fromEntries(fungibles);
+          },
+        );
+      }
+    });
   }
 
   void follow(
@@ -234,7 +230,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
         this.status = _ScanQRCodeStatus.loading;
       });
 
-      var convexity = context.read<AppState>().convexityClient()!;
+      var convexity = context.read<AppState>().convexityClient();
 
       print('Asset Metadata $scannedAddress');
 
@@ -390,25 +386,13 @@ class _AssetIDState extends State<_AssetID> {
           onPressed: (AssetMetadataQueryStatus.inProgress == status)
               ? null
               : () {
-                  if (context.read<AppState>().convexityClient() == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Can't verify because Convexity Address is not set.",
-                        ),
-                      ),
-                    );
-
-                    return;
-                  }
-
                   setState(() {
                     status = AssetMetadataQueryStatus.inProgress;
                   });
 
                   context
                       .read<AppState>()
-                      .convexityClient()!
+                      .convexityClient()
                       .asset(Address.fromStr(address))
                       .then(
                     (_assetMetadata) {

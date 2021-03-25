@@ -88,14 +88,14 @@ AccountType? accountType(String s) {
 
 @immutable
 class Credentials {
-  final Address? address;
-  final AccountKey? accountKey;
-  final Uint8List? secretKey;
+  final Address address;
+  final AccountKey accountKey;
+  final Uint8List secretKey;
 
   Credentials({
-    this.address,
-    this.accountKey,
-    this.secretKey,
+    required this.address,
+    required this.accountKey,
+    required this.secretKey,
   });
 }
 
@@ -183,14 +183,13 @@ class ConvexClient {
     int? sequence,
     Lang lang = Lang.convexLisp,
   }) {
-    if (credentials == null || credentials!.address == null)
-      throw Exception('Missing credentials.');
+    if (credentials == null) throw Exception('Missing credentials.');
 
     final uri = _uri('api/v1/transaction/prepare');
 
     Map<String, dynamic> body = {
       'source': source,
-      'address': credentials!.address!.value,
+      'address': credentials!.address.value,
       'lang': langString(lang),
     };
 
@@ -211,16 +210,13 @@ class ConvexClient {
     required String hash,
     required String sig,
   }) {
-    if (credentials == null ||
-        credentials!.address == null ||
-        credentials!.accountKey == null)
-      throw Exception('Missing credentials.');
+    if (credentials == null) throw Exception('Missing credentials.');
 
     final uri = _uri('api/v1/transaction/submit');
 
     Map<String, dynamic> body = {
-      'address': credentials!.address!.value,
-      'accountKey': credentials!.accountKey!.value,
+      'address': credentials!.address.value,
+      'accountKey': credentials!.accountKey.value,
       'hash': hash,
       'sig': sig,
     };
@@ -254,7 +250,7 @@ class ConvexClient {
     final hashHex = preparedBody['hash'];
     final hashBin = sodium.Sodium.hex2bin(hashHex);
 
-    final sigBin = sign(hashBin, credentials!.secretKey!);
+    final sigBin = sign(hashBin, credentials!.secretKey);
     final sigHex = sodium.Sodium.bin2hex(sigBin);
 
     final submitResponse = await submitTransaction(
@@ -281,11 +277,11 @@ class ConvexClient {
   }
 
   Future<Address?> createAccount([AccountKey? accountKey]) async {
-    if (accountKey == null && credentials?.accountKey == null)
-      throw Exception('Missing AccountKey.');
+    if (accountKey == null && credentials == null)
+      throw Exception('Missing credentials.');
 
     final body = convert.jsonEncode({
-      'accountKey': accountKey?.value ?? credentials!.accountKey!.value,
+      'accountKey': accountKey?.value ?? credentials!.accountKey.value,
     });
 
     if (config.isDebug()) {
@@ -323,7 +319,7 @@ class ConvexClient {
     final uri = _uri('api/v1/faucet');
 
     var body = convert.jsonEncode({
-      'address': address != null ? address.value : credentials!.address!.value,
+      'address': address != null ? address.value : credentials!.address.value,
       'amount': amount,
     });
 
@@ -343,7 +339,7 @@ class ConvexClient {
 
     var body = convert.jsonEncode({
       'source': source,
-      'address': credentials!.address!.value,
+      'address': credentials!.address.value,
       'lang': langString(lang),
     });
 
@@ -377,7 +373,7 @@ class ConvexClient {
       throw Exception('Missing credentials.');
 
     final uri = _uri(
-      'api/v1/accounts/${address != null ? address.value : credentials!.address!.value}',
+      'api/v1/accounts/${address != null ? address.value : credentials!.address.value}',
     );
 
     final response = await client.get(uri);
@@ -394,7 +390,7 @@ class ConvexClient {
       throw Exception('Missing credentials.');
 
     final uri = _uri(
-      'api/v1/accounts/${address != null ? address.value : credentials!.address!.value}',
+      'api/v1/accounts/${address != null ? address.value : credentials!.address.value}',
     );
 
     final response = await client.get(uri);

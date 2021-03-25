@@ -52,7 +52,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
 
     final convexityAddress = appState.model.convexityAddress;
 
-    if (convexityController.text.isEmpty && convexityAddress != null) {
+    if (convexityController.text.isEmpty) {
       convexityController.text = convexityAddress.toString();
     }
 

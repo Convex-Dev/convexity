@@ -501,11 +501,15 @@ class AppState with ChangeNotifier {
   ConvexClient convexClient() => ConvexClient(
         client: client,
         server: model.convexServerUri,
-        credentials: Credentials(
-          address: model.activeAddress,
-          accountKey: model.activeAccountKey,
-          secretKey: model.activeKeyPair?.sk,
-        ),
+        credentials: model.activeAddress != null &&
+                model.activeAccountKey != null &&
+                model.activeKeyPair != null
+            ? Credentials(
+                address: model.activeAddress!,
+                accountKey: model.activeAccountKey!,
+                secretKey: model.activeKeyPair!.sk,
+              )
+            : null,
       );
 
   FungibleLibrary fungibleLibrary() =>
@@ -515,12 +519,10 @@ class AppState with ChangeNotifier {
 
   TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
 
-  ConvexityClient? convexityClient() => model.convexityAddress != null
-      ? ConvexityClient(
-          convexClient: convexClient(),
-          actor: model.convexityAddress,
-        )
-      : null;
+  ConvexityClient convexityClient() => ConvexityClient(
+        convexClient: convexClient(),
+        actor: model.convexityAddress,
+      );
 
   void setState(Model f(Model? m)) {
     model = f(model);

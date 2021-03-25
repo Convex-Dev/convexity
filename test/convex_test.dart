@@ -18,7 +18,6 @@ void main() {
 
   group('Address', () {
     test('Address value', () {
-      expect(Address(null).value, null);
       expect(Address(1).value, 1);
       expect(Address.fromStr('1').value, 1);
       expect(Address.fromStr(' 1').value, 1);
@@ -53,7 +52,6 @@ void main() {
 
   group('AccountKey', () {
     test('AccountKey value', () {
-      expect(AccountKey('').value, null);
       expect(AccountKey('').value, '');
       expect(AccountKey('ABC').value, 'ABC');
     });
@@ -121,7 +119,7 @@ void main() {
       // Update credentials.
       convexClient.setCredentials(
         Credentials(
-          address: generatedAddress,
+          address: generatedAddress!,
           accountKey: generatedAccountKey,
           secretKey: generatedKeyPair.sk,
         ),
@@ -188,7 +186,7 @@ void main() {
         source: '*address*',
       );
 
-      expect(result.value, convexClient.credentials?.address?.value);
+      expect(result.value, convexClient.credentials?.address.value);
     });
 
     test('Error - UNDECLARED', () async {
@@ -224,7 +222,7 @@ void main() {
         lang: Lang.convexScript,
       );
 
-      expect(result.value, convexClient.credentials?.address?.value);
+      expect(result.value, convexClient.credentials?.address.value);
     });
   });
 }
