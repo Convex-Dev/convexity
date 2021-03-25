@@ -14,7 +14,8 @@ import '../format.dart' as format;
 class ExchangeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeParams params = ModalRoute.of(context).settings.arguments;
+    final ExchangeParams? params =
+        ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
@@ -29,10 +30,10 @@ class ExchangeScreen extends StatelessWidget {
 }
 
 class ExchangeScreenBody extends StatefulWidget {
-  final ExchangeParams params;
+  final ExchangeParams? params;
 
   const ExchangeScreenBody({
-    Key key,
+    Key? key,
     this.params,
   }) : super(key: key);
 
@@ -58,42 +59,42 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     ),
   );
 
-  ExchangeParams params;
+  ExchangeParams? params;
 
-  Future<double> marketPrice;
+  Future<double?>? marketPrice;
 
-  Future ofTokenBalance;
+  Future? ofTokenBalance;
 
-  Future withTokenBalance;
+  Future? withTokenBalance;
 
-  Future<Tuple2<int, int>> exchangeLiquidity;
+  Future<Tuple2<int?, int?>>? exchangeLiquidity;
 
-  Future<int> quote;
+  Future<int?>? quote;
 
-  _ExchangeScreenBodyState({ExchangeParams params}) {
+  _ExchangeScreenBodyState({ExchangeParams? params}) {
     this.params = params ?? ExchangeParams(action: ExchangeAction.buy);
   }
 
-  FungibleToken _ofToken() => params.ofToken ?? CVX;
+  FungibleToken _ofToken() => params!.ofToken ?? CVX;
 
-  String ofTokenAmountText(int amount) => params.ofToken == null
+  String ofTokenAmountText(int amount) => params!.ofToken == null
       ? format.formatCVX(amount)
       : format.formatFungibleCurrency(
-          metadata: params.ofToken.metadata,
+          metadata: params!.ofToken!.metadata,
           number: amount,
         );
 
-  FungibleToken _withToken() => params.withToken ?? CVX;
+  FungibleToken _withToken() => params!.withToken ?? CVX;
 
-  String withTokenAmountText(int amount) => params.withToken == null
+  String withTokenAmountText(int amount) => params!.withToken == null
       ? format.formatCVX(amount)
       : format.formatFungibleCurrency(
-          metadata: params.withToken.metadata,
+          metadata: params!.withToken!.metadata,
           number: amount,
         );
 
   /// Returns null if there's no 'of token' selected.
-  Future getOfTokenPrice(
+  Future? getOfTokenPrice(
     BuildContext context,
     ExchangeParams params,
   ) =>
@@ -101,7 +102,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           ? context
               .read<AppState>()
               .torus()
-              .price(ofToken: params.ofToken.address)
+              .price(ofToken: params.ofToken!.address)
           : null;
 
   /// If no 'of token' is selected, it defaults to CVX,
@@ -131,7 +132,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           : context.read<AppState>().convexClient().balance();
 
   /// Returns null if there's no 'with token' selected.
-  Future getWithTokenPrice(
+  Future? getWithTokenPrice(
     BuildContext context,
     ExchangeParams params,
   ) =>
@@ -139,14 +140,14 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           ? context
               .read<AppState>()
               .torus()
-              .price(ofToken: params.withToken.address)
+              .price(ofToken: params.withToken!.address)
           : null;
 
-  Future<int> getQuote(
+  Future<int?>? getQuote(
     BuildContext context,
     ExchangeParams params,
   ) {
-    if (params.amount == null || params.amount.isEmpty) {
+    if (params.amount == null || params.amount!.isEmpty) {
       logger.d('Amount is blank. Will return null.');
 
       return null;
@@ -155,7 +156,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     final amount = format.readFungibleCurrency(
       // 'of' is null if buying/selling CVX.
       metadata: params.ofToken?.metadata ?? CVX.metadata,
-      s: params.amount,
+      s: params.amount!,
     );
 
     if (params.action == ExchangeAction.buy) {
@@ -176,9 +177,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   /// Returns quote formatted based on 'with Token'.
   /// If 'with Token' is selected, it will be formated using its metadata.
   /// If 'with Token' is null, it will be formatted as CVX.
-  String getQuoteText(int quote) => params.withToken != null
+  String getQuoteText(int? quote) => params!.withToken != null
       ? format.formatFungibleCurrency(
-          metadata: params.ofToken.metadata,
+          metadata: params!.ofToken!.metadata,
           number: quote,
         )
       : format.formatCVX(quote);
@@ -190,10 +191,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   /// The liquidity pool of CVX is the balance of the Market (Actor).
   ///
   /// Returns a [Tuple2<int, int>] with 'of liquidity pool' and 'with liquidity pool' respectively.
-  Future<Tuple2<int, int>> getExchangeLiquidity({
-    BuildContext context,
-    Address ofToken,
-    Address withToken,
+  Future<Tuple2<int?, int?>> getExchangeLiquidity({
+    required BuildContext context,
+    Address? ofToken,
+    Address? withToken,
   }) async {
     // Assert that 'of Token' and 'with Token' are not the same.
     assert(ofToken != withToken);
@@ -224,7 +225,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           ? await appState.convexClient().balance(withMarket)
           : null;
 
-      return Tuple2<int, int>(ofBalance, withBalance);
+      return Tuple2<int?, int?>(ofBalance, withBalance);
     }
 
     // -- Buying/selling Tokens
@@ -254,7 +255,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 )
             : await appState.convexClient().balance(ofMarket);
 
-    return Tuple2<int, int>(ofBalance, withBalance);
+    return Tuple2<int?, int?>(ofBalance, withBalance);
   }
 
   // ignore: non_constant_identifier_names
@@ -268,8 +269,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   // ignore: non_constant_identifier_names
   Widget Balance(
-    Future balance, {
-    String Function(dynamic data) formatter,
+    Future? balance, {
+    String Function(dynamic data)? formatter,
   }) =>
       FutureBuilder(
         future: balance,
@@ -299,10 +300,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
   // ignore: non_constant_identifier_names
   Widget MarketPrice({
-    ExchangeParams params,
-    Future<double> price,
+    ExchangeParams? params,
+    Future<double?>? price,
   }) =>
-      FutureBuilder<double>(
+      FutureBuilder<double?>(
         future: price,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -310,13 +311,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           }
 
           final priceShifted = format.shiftDecimalPlace(
-            snapshot.data,
-            (params.ofToken?.metadata?.decimals ?? 0) -
-                (params.withToken?.metadata?.decimals ?? 0),
+            snapshot.data!,
+            (params!.ofToken?.metadata.decimals ?? 0) -
+                (params.withToken?.metadata.decimals ?? 0),
           );
 
           final currencySymbol = params.withToken != null
-              ? params.withToken.metadata.currencySymbol
+              ? params.withToken!.metadata.currencySymbol
               : '';
 
           final priceText =
@@ -337,10 +338,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Text(
-                    params.ofToken?.metadata?.symbol ?? CVX.metadata.symbol,
+                    params.ofToken?.metadata.symbol ?? CVX.metadata.symbol!,
                     style: Theme.of(context)
                         .textTheme
-                        .headline6
+                        .headline6!
                         .copyWith(color: Colors.black54),
                   ),
                   Icon(
@@ -352,10 +353,10 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Text(
-                    (params.withToken?.metadata?.symbol ?? CVX.metadata.symbol),
+                    (params.withToken?.metadata.symbol ?? CVX.metadata.symbol!),
                     style: Theme.of(context)
                         .textTheme
-                        .headline6
+                        .headline6!
                         .copyWith(color: Colors.black54),
                   )
                 ],
@@ -366,7 +367,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
       );
 
   // ignore: non_constant_identifier_names
-  Widget Quote(Future<int> quote) => FutureBuilder<int>(
+  Widget Quote(Future<int?>? quote) => FutureBuilder<int?>(
         future: quote,
         builder: (context, snapshot) {
           return Row(
@@ -388,8 +389,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   // ignore: non_constant_identifier_names
   Widget ExchangeLiquidity(
     Future<Tuple2<int, int>> exchangeLiquidity, {
-    String Function(int data) ofFormatter,
-    String Function(int balance) withFormatter,
+    String Function(int data)? ofFormatter,
+    String Function(int balance)? withFormatter,
   }) =>
       FutureBuilder<Tuple2<int, int>>(
         future: exchangeLiquidity,
@@ -412,13 +413,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     children: [
                       TableCell(
                         child: Text(
-                          '${params.ofToken?.metadata?.symbol ?? 'CVX'}',
+                          '${params!.ofToken?.metadata.symbol ?? 'CVX'}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),
                       TableCell(
                         child: Text(
-                          '${params.withToken?.metadata?.symbol ?? 'CVX'}',
+                          '${params!.withToken?.metadata.symbol ?? 'CVX'}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),
@@ -429,16 +430,16 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       TableCell(
                         child: Text(
                           ofFormatter != null
-                              ? ofFormatter(snapshot.data.item1)
-                              : snapshot.data.item1.toString(),
+                              ? ofFormatter(snapshot.data!.item1)
+                              : snapshot.data!.item1.toString(),
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
                       ),
                       TableCell(
                         child: Text(
                           withFormatter != null
-                              ? withFormatter(snapshot.data.item2)
-                              : snapshot.data.item2.toString(),
+                              ? withFormatter(snapshot.data!.item2)
+                              : snapshot.data!.item2.toString(),
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
                       ),
@@ -458,7 +459,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
     params = exchangeParams;
 
-    quote = getQuote(context, params);
+    quote = getQuote(context, params!);
 
     marketPrice = appState.torus().price(
           ofToken: exchangeParams.ofToken?.address,
@@ -480,7 +481,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   void initState() {
     super.initState();
 
-    reset(params);
+    reset(params!);
   }
 
   @override
@@ -518,7 +519,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 ],
                 snapshot.connectionState == ConnectionState.waiting
                     ? CircularProgressIndicator()
-                    : buyOrSellOf(ofTokenPrice: snapshot.data),
+                    : buyOrSellOf(ofTokenPrice: snapshot.data as double),
                 if (isOfPriceAvailable) buyOrSellWith(),
                 gap,
                 if (isOfPriceAvailable)
@@ -527,7 +528,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     child: ElevatedButton(
                       child: Text(actionText()),
                       onPressed:
-                          (params.amount != null && params.amount.isNotEmpty)
+                          (params!.amount != null && params!.amount!.isNotEmpty)
                               ? confirm
                               : null,
                     ),
@@ -541,18 +542,18 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   }
 
   String actionText() {
-    switch (params.action) {
+    switch (params!.action) {
       case ExchangeAction.buy:
         return 'Buy';
       case ExchangeAction.sell:
         return 'Sell';
+      default:
+        return '?';
     }
-
-    return '?';
   }
 
   String buyWithSellForText() =>
-      params.action == ExchangeAction.buy ? 'With' : 'For';
+      params!.action == ExchangeAction.buy ? 'With' : 'For';
 
   Widget actionToggle() => ToggleButtons(
         children: [
@@ -560,19 +561,19 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           Text('Sell'),
         ],
         isSelected: [
-          params.action == ExchangeAction.buy,
-          params.action == ExchangeAction.sell,
+          params!.action == ExchangeAction.buy,
+          params!.action == ExchangeAction.sell,
         ],
         onPressed: (i) {
           setState(() {
-            params = params.copyWith(
+            params = params!.copyWith(
               action: i == 0 ? ExchangeAction.buy : ExchangeAction.sell,
             );
           });
         },
       );
 
-  Widget buyOrSellOf({double ofTokenPrice}) {
+  Widget buyOrSellOf({double? ofTokenPrice}) {
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -589,8 +590,8 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 constraints: BoxConstraints.tightFor(width: 60, height: 60),
                 child: ElevatedButton(
                   child: Text(
-                    params.ofToken?.metadata?.symbol ?? CVX.metadata.symbol,
-                    style: Theme.of(context).textTheme.caption.copyWith(
+                    params!.ofToken?.metadata.symbol ?? CVX.metadata.symbol!,
+                    style: Theme.of(context).textTheme.caption!.copyWith(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold,
                         ),
@@ -601,7 +602,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                       (fungible) {
                         if (fungible != null) {
                           setState(() {
-                            reset(params.copyWith(ofToken: fungible));
+                            reset(params!.copyWith(ofToken: fungible));
                           });
                         }
                       },
@@ -622,9 +623,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     inputFormatters: [],
                     onChanged: (s) {
                       setState(() {
-                        params = params.copyWith(amount: s);
+                        params = params!.copyWith(amount: s);
 
-                        quote = getQuote(context, params);
+                        quote = getQuote(context, params!);
                       });
                     },
                   ),
@@ -645,7 +646,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                               child: SingleChildScrollView(
                                 child: SafeArea(
                                   child: _TokenLiquidity(
-                                    token: params.ofToken,
+                                    token: params!.ofToken,
                                   ),
                                 ),
                               ),
@@ -653,13 +654,13 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           },
                         ).then((value) {
                           setState(() {
-                            reset(params);
+                            reset(params!);
                           });
                         });
                       },
                     ),
                     Text(
-                      'There is no liquidity for ${params.ofToken?.metadata?.symbol ?? ''}.',
+                      'There is no liquidity for ${params!.ofToken?.metadata.symbol ?? ''}.',
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],
@@ -674,18 +675,18 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 Balance(
                   ofTokenBalance,
                   formatter: (data) {
-                    if (params.ofToken == null) {
+                    if (params!.ofToken == null) {
                       return format.formatCVX(data);
                     }
 
                     return format.formatFungibleCurrency(
-                      metadata: params.ofToken.metadata,
+                      metadata: params!.ofToken!.metadata,
                       number: data,
                     );
                   },
                 ),
                 Gap(20),
-                FutureBuilder<Tuple2<int, int>>(
+                FutureBuilder<Tuple2<int?, int?>>(
                   future: exchangeLiquidity,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -695,9 +696,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     final ofBalance = snapshot.data?.item1;
 
                     final ofBalanceText = ofBalance != null
-                        ? params.ofToken != null
+                        ? params!.ofToken != null
                             ? format.formatFungibleCurrency(
-                                metadata: params.ofToken.metadata,
+                                metadata: params!.ofToken!.metadata,
                                 number: ofBalance,
                               )
                             : format.formatCVX(ofBalance)
@@ -749,8 +750,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                   constraints: BoxConstraints.tightFor(width: 60, height: 60),
                   child: ElevatedButton(
                     child: Text(
-                      params.withToken?.metadata?.symbol ?? CVX.metadata.symbol,
-                      style: Theme.of(context).textTheme.caption.copyWith(
+                      params!.withToken?.metadata.symbol ??
+                          CVX.metadata.symbol!,
+                      style: Theme.of(context).textTheme.caption!.copyWith(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
@@ -761,7 +763,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         (fungible) {
                           if (fungible != null) {
                             setState(() {
-                              reset(params.copyWith(withToken: fungible));
+                              reset(params!.copyWith(withToken: fungible));
                             });
                           }
                         },
@@ -777,19 +779,19 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 if (quote != null) Quote(quote),
                 Gap(30),
                 // Reset 'with' Token and query price for CVX.
-                if (params.withToken != null)
+                if (params!.withToken != null)
                   ElevatedButton(
                     child: Text(
                       'Reset',
                       style: Theme.of(context)
                           .textTheme
-                          .caption
+                          .caption!
                           .copyWith(color: Colors.white),
                       overflow: TextOverflow.ellipsis,
                     ),
                     onPressed: () {
                       setState(() {
-                        reset(params.resetWith());
+                        reset(params!.resetWith());
                       });
                     },
                   ),
@@ -800,17 +802,17 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
             Row(
               children: [
                 Balance(withTokenBalance, formatter: (data) {
-                  if (params.withToken == null) {
+                  if (params!.withToken == null) {
                     return format.formatCVX(data);
                   }
 
                   return format.formatFungibleCurrency(
-                    metadata: params.withToken.metadata,
+                    metadata: params!.withToken!.metadata,
                     number: data,
                   );
                 }),
                 Gap(20),
-                FutureBuilder<Tuple2<int, int>>(
+                FutureBuilder<Tuple2<int?, int?>>(
                   future: exchangeLiquidity,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -820,9 +822,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                     final withBalance = snapshot.data?.item2;
 
                     final withBalanceText = withBalance != null
-                        ? params.withToken != null
+                        ? params!.withToken != null
                             ? format.formatFungibleCurrency(
-                                metadata: params.withToken.metadata,
+                                metadata: params!.withToken!.metadata,
                                 number: withBalance,
                               )
                             : format.formatCVX(withBalance)
@@ -877,11 +879,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 
                     // Example: Buy 1000 Token 1
                     final buyingSellingText =
-                        '${actionText()} ${params.amount} ${params.ofToken.metadata.name}';
+                        '${actionText()} ${params!.amount} ${params!.ofToken!.metadata.name}';
 
                     // Example: 1,000 CVX
                     final quoteText =
-                        '${getQuoteText(snapshot.data)} ${_withToken().metadata.name}';
+                        '${getQuoteText(snapshot.data as int)} ${_withToken().metadata.name}';
 
                     return Text(
                       '$buyingSellingText ${buyWithSellForText().toLowerCase()} $quoteText?',
@@ -910,20 +912,20 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
     final appState = context.read<AppState>();
 
     final int amountOf = format.readFungibleCurrency(
-      metadata: params.ofToken.metadata,
-      s: params.amount,
+      metadata: params!.ofToken!.metadata,
+      s: params!.amount!,
     );
 
-    if (params.action == ExchangeAction.buy) {
-      final pricePaid = params.withToken == null
+    if (params!.action == ExchangeAction.buy) {
+      final pricePaid = params!.withToken == null
           ? appState.torus().buyTokens(
-                ofToken: params.ofToken.address,
+                ofToken: params!.ofToken!.address,
                 amount: amountOf,
               )
           : appState.torus().buy(
-                ofToken: params.ofToken.address,
+                ofToken: params!.ofToken!.address,
                 amount: amountOf,
-                withToken: params.withToken.address,
+                withToken: params!.withToken!.address,
               );
 
       showModalBottomSheet(
@@ -938,7 +940,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                 future: pricePaid,
                 builder: (
                   BuildContext context,
-                  AsyncSnapshot<int> snapshot,
+                  AsyncSnapshot<int?> snapshot,
                 ) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -962,7 +964,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            'Sorry. It was not possible to buy ${params.ofToken.metadata.symbol}.\n\n${snapshot.error}',
+                            'Sorry. It was not possible to buy ${params!.ofToken!.metadata.symbol}.\n\n${snapshot.error}',
                           ),
                         ),
                         Gap(10),
@@ -992,7 +994,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Bought ${params.amount} ${_ofToken().metadata.symbol} for ${snapshot.data} ${_withToken().metadata.symbol}.',
+                              'Bought ${params!.amount} ${_ofToken().metadata.symbol} for ${snapshot.data} ${_withToken().metadata.symbol}.',
                             ),
                           ],
                         ),
@@ -1004,7 +1006,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           Navigator.pop(context);
 
                           setState(() {
-                            reset(params.emptyAmount());
+                            reset(params!.emptyAmount());
                           });
                         },
                       )
@@ -1017,15 +1019,15 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
         },
       );
     } else {
-      final sold = params.withToken == null
+      final sold = params!.withToken == null
           ? appState.torus().sellTokens(
-                ofToken: params.ofToken.address,
+                ofToken: params!.ofToken!.address,
                 amount: amountOf,
               )
           : appState.torus().sell(
-                ofToken: params.ofToken.address,
+                ofToken: params!.ofToken!.address,
                 amount: amountOf,
-                withToken: params.withToken?.address,
+                withToken: params!.withToken?.address,
               );
 
       showModalBottomSheet(
@@ -1036,11 +1038,11 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
           return Container(
             height: 300,
             child: Center(
-              child: FutureBuilder<int>(
+              child: FutureBuilder<int?>(
                 future: sold,
                 builder: (
                   BuildContext context,
-                  AsyncSnapshot<int> snapshot,
+                  AsyncSnapshot<int?> snapshot,
                 ) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -1064,7 +1066,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            'Sorry. It was not possible to sell ${params.ofToken.metadata.symbol}.\n\n${snapshot.error}',
+                            'Sorry. It was not possible to sell ${params!.ofToken!.metadata.symbol}.\n\n${snapshot.error}',
                           ),
                         ),
                         Gap(10),
@@ -1074,7 +1076,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                             Navigator.pop(context);
 
                             setState(() {
-                              reset(params);
+                              reset(params!);
                             });
                           },
                         )
@@ -1098,7 +1100,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Sold ${params.amount} ${_ofToken().metadata.symbol} for ${snapshot.data} ${_withToken().metadata.symbol}.',
+                              'Sold ${params!.amount} ${_ofToken().metadata.symbol} for ${snapshot.data} ${_withToken().metadata.symbol}.',
                             ),
                           ],
                         ),
@@ -1110,7 +1112,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
                           Navigator.pop(context);
 
                           setState(() {
-                            reset(params.emptyAmount());
+                            reset(params!.emptyAmount());
                           });
                         },
                       )
@@ -1127,9 +1129,9 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
 }
 
 class _TokenLiquidity extends StatefulWidget {
-  final FungibleToken token;
+  final FungibleToken? token;
 
-  const _TokenLiquidity({Key key, this.token}) : super(key: key);
+  const _TokenLiquidity({Key? key, this.token}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TokenLiquidityState();
@@ -1138,14 +1140,14 @@ class _TokenLiquidity extends StatefulWidget {
 class _TokenLiquidityState extends State<_TokenLiquidity> {
   int tokenAmount = 0;
   int cvxAmount = 0;
-  Future<int> liquidity;
+  Future<int?>? liquidity;
 
-  Future<Result> balance;
+  Future<Result>? balance;
 
-  double get tokenPrice =>
+  double? get tokenPrice =>
       tokenAmount > 0 && cvxAmount > 0 ? tokenAmount / cvxAmount : null;
 
-  double get cvxPrice =>
+  double? get cvxPrice =>
       tokenAmount > 0 && cvxAmount > 0 ? cvxAmount / tokenAmount : null;
 
   void initState() {
@@ -1157,7 +1159,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
 
     balance = appState.convexClient().query(
           source: '(import convex.asset :as asset)'
-              '[(balance $activeAddress) (asset/balance ${widget.token.address} $activeAddress)]',
+              '[(balance $activeAddress) (asset/balance ${widget.token!.address} $activeAddress)]',
         );
   }
 
@@ -1166,7 +1168,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
     return Container(
       padding: defaultScreenPadding,
       child: liquidity != null
-          ? FutureBuilder<int>(
+          ? FutureBuilder<int?>(
               future: liquidity,
               builder: (context, snapshot) {
                 if (ConnectionState.waiting == snapshot.connectionState) {
@@ -1192,7 +1194,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
           : Column(
               children: <Widget>[
                 Text(
-                  'Add liquidity for ${widget.token.metadata.symbol}',
+                  'Add liquidity for ${widget.token!.metadata.symbol}',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Text(
@@ -1204,7 +1206,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${widget.token.metadata.symbol} BALANCE',
+                      '${widget.token!.metadata.symbol} BALANCE',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     Gap(8),
@@ -1217,8 +1219,8 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         }
 
                         final tokenBalance = format.formatFungibleCurrency(
-                          metadata: widget.token.metadata,
-                          number: (snapshot.data.value[1]),
+                          metadata: widget.token!.metadata,
+                          number: (snapshot.data!.value[1]),
                         );
 
                         return Text(
@@ -1233,7 +1235,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                 TextField(
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Amount of ${widget.token.metadata.symbol}',
+                    labelText: 'Amount of ${widget.token!.metadata.symbol}',
                     helperText: 'Helper text',
                     border: const OutlineInputBorder(),
                   ),
@@ -1262,7 +1264,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         }
 
                         final userBalance =
-                            format.formatCVX(snapshot.data.value[0]);
+                            format.formatCVX(snapshot.data!.value[0]);
 
                         return Text(
                           userBalance,
@@ -1294,7 +1296,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       children: [
                         TableCell(
                           child: Text(
-                            '1 ${widget.token.metadata.symbol}',
+                            '1 ${widget.token!.metadata.symbol}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
@@ -1331,7 +1333,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         TableCell(
                           child: Text(
                             tokenPrice != null
-                                ? '$tokenPrice ${widget.token.metadata.symbol}'
+                                ? '$tokenPrice ${widget.token!.metadata.symbol}'
                                 : '-',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
@@ -1353,17 +1355,16 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                     Gap(10),
                     ElevatedButton(
                       child: Text('Confirm'),
-                      onPressed: (tokenAmount != null && tokenAmount > 0) &&
-                              (cvxAmount != null && cvxAmount > 0)
+                      onPressed: (tokenAmount > 0) && (cvxAmount > 0)
                           ? () {
                               setState(() {
                                 liquidity = context
                                     .read<AppState>()
                                     .torus()
                                     .addLiquidity(
-                                      token: widget.token.address,
+                                      token: widget.token!.address,
                                       tokenAmount: format.readFungibleCurrency(
-                                        metadata: widget.token.metadata,
+                                        metadata: widget.token!.metadata,
                                         s: tokenAmount.toString(),
                                       ),
                                       cvxAmount: cvxAmount,

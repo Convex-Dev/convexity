@@ -25,9 +25,9 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
   final _formKey = GlobalKey<FormState>();
   final _addressTextController = TextEditingController();
 
-  String _name;
+  String? _name;
 
-  Address get _address => _addressTextController.text.isNotEmpty
+  Address? get _address => _addressTextController.text.isNotEmpty
       ? Address.fromStr(_addressTextController.text)
       : null;
 
@@ -41,7 +41,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
             title: TextFormField(
               autofocus: true,
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Required';
                 }
 
@@ -60,7 +60,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
               readOnly: true,
               controller: _addressTextController,
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Required';
                 }
 
@@ -92,7 +92,7 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
             child: ElevatedButton(
               child: Text('Save'),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   context.read<AppState>().addContact(
                         Contact(
                           name: _name,

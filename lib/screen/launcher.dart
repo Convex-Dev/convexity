@@ -40,7 +40,7 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isSignedIn ? currentIndexLabel[currentIndex] : ''),
+        title: Text(isSignedIn ? currentIndexLabel[currentIndex]! : ''),
         actions: isSignedIn
             ? [
                 PopupMenuButton<_PopupChoice>(

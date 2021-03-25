@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -16,24 +17,24 @@ import '../route.dart' as route;
 import '../nav.dart' as nav;
 
 class FungibleTransferScreen extends StatelessWidget {
-  final FungibleToken token;
-  final Future balance;
+  final FungibleToken? token;
+  final Future? balance;
 
   const FungibleTransferScreen({
-    Key key,
+    Key? key,
     this.token,
     this.balance,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var arguments = ModalRoute.of(context).settings.arguments
-        as Tuple2<FungibleToken, Future<dynamic>>;
+    var arguments = ModalRoute.of(context)!.settings.arguments
+        as Tuple2<FungibleToken, Future<dynamic>>?;
 
     // Token and balance can be passed directly to the constructor,
     // or via the Navigator arguments.
-    var _token = token ?? arguments.item1;
-    var _balance = balance ?? arguments.item2;
+    var _token = token ?? arguments!.item1;
+    var _balance = balance ?? arguments!.item2;
 
     return WillPopScope(
       child: Scaffold(
@@ -56,7 +57,7 @@ class FungibleTransferScreen extends StatelessWidget {
 
                     var formattedBalance = formatFungibleCurrency(
                       metadata: _token.metadata,
-                      number: snapshot.data as int,
+                      number: snapshot.data as int?,
                     );
 
                     return Text(
@@ -81,9 +82,9 @@ class FungibleTransferScreen extends StatelessWidget {
 }
 
 class FungibleTransferScreenBody extends StatefulWidget {
-  final FungibleToken token;
+  final FungibleToken? token;
 
-  const FungibleTransferScreenBody({Key key, this.token}) : super(key: key);
+  const FungibleTransferScreenBody({Key? key, this.token}) : super(key: key);
 
   @override
   _FungibleTransferScreenBodyState createState() =>
@@ -94,22 +95,21 @@ class _FungibleTransferScreenBodyState
     extends State<FungibleTransferScreenBody> {
   final _formKey = GlobalKey<FormState>();
   final _receiverTextController = TextEditingController();
-  int _amount;
+  int? _amount;
 
-  Address get _receiver => _receiverTextController.text.isNotEmpty
+  Address? get _receiver => _receiverTextController.text.isNotEmpty
       ? Address.fromStr(_receiverTextController.text)
       : null;
 
   void send(BuildContext context) async {
     var appState = context.read<AppState>();
 
-    final contact = appState.model.contacts.firstWhere(
+    final contact = appState.model.contacts.firstWhereOrNull(
       (contact) => contact.address == _receiver,
-      orElse: () => null,
     );
 
     var formattedAmount = formatFungibleCurrency(
-      metadata: widget.token.metadata,
+      metadata: widget.token!.metadata,
       number: _amount,
     );
 
@@ -149,7 +149,7 @@ class _FungibleTransferScreenBodyState
                         ),
                       ),
                     ] else
-                      Text(contact.name),
+                      Text(contact.name!),
                     Text(
                       '?',
                     )
@@ -174,9 +174,9 @@ class _FungibleTransferScreenBodyState
     }
 
     var transferInProgress = appState.fungibleLibrary().transfer(
-          token: widget.token.address,
+          token: widget.token!.address,
           holder: appState.model.activeAddress,
-          holderSecretKey: appState.model.activeKeyPair.sk,
+          holderSecretKey: appState.model.activeKeyPair!.sk,
           holderAccountKey: appState.model.activeAccountKey,
           receiver: _receiver,
           amount: _amount,
@@ -202,7 +202,7 @@ class _FungibleTransferScreenBodyState
 
                 if (snapshot.data?.errorCode != null) {
                   logger.e(
-                    'Fungible transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                    'Fungible transfer returned an error: ${snapshot.data!.errorCode} ${snapshot.data!.value}',
                   );
 
                   return Column(
@@ -218,7 +218,7 @@ class _FungibleTransferScreenBodyState
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Text(
-                          'Sorry. Your transfer could not be completed.\n\n${snapshot.data.errorCode} ${snapshot.data.value}',
+                          'Sorry. Your transfer could not be completed.\n\n${snapshot.data!.errorCode} ${snapshot.data!.value}',
                         ),
                       ),
                       Gap(10),
@@ -263,7 +263,7 @@ class _FungibleTransferScreenBodyState
                               ),
                             ),
                           ] else
-                            Text(contact.name),
+                            Text(contact.name!),
                         ],
                       ),
                     ),
@@ -309,9 +309,8 @@ class _FungibleTransferScreenBodyState
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final contact = appState.model.contacts.firstWhere(
+    final contact = appState.model.contacts.firstWhereOrNull(
       (contact) => contact.address == _receiver,
-      orElse: () => null,
     );
 
     return Form(
@@ -327,7 +326,7 @@ class _FungibleTransferScreenBodyState
                     height: 120,
                   )
                 : aidenticon(
-                    _receiver,
+                    _receiver!,
                     height: 120,
                     width: 120,
                   ),
@@ -338,7 +337,7 @@ class _FungibleTransferScreenBodyState
                 : Padding(
                     padding: const EdgeInsets.all(8),
                     child: Text(
-                      contact == null ? 'Not in Address Book' : contact.name,
+                      contact == null ? 'Not in Address Book' : contact.name!,
                     ),
                   ),
             TextFormField(
@@ -349,7 +348,7 @@ class _FungibleTransferScreenBodyState
                 border: const OutlineInputBorder(),
               ),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Required';
                 }
 
@@ -379,20 +378,20 @@ class _FungibleTransferScreenBodyState
                 ),
               ],
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Required';
                 }
 
                 return null;
               },
               onChanged: (value) {
-                final amount = num.tryParse(value) *
-                    pow(10, widget.token.metadata.decimals);
+                final amount = num.tryParse(value)! *
+                    pow(10, widget.token!.metadata.decimals!);
 
                 logger.d(
                   'Set amount: ${amount.toInt()} ' +
-                      '(Token decimals: ${widget.token.metadata.decimals}; ' +
-                      'amount = $value * 10^${widget.token.metadata.decimals})',
+                      '(Token decimals: ${widget.token!.metadata.decimals}; ' +
+                      'amount = $value * 10^${widget.token!.metadata.decimals})',
                 );
 
                 setState(() {
@@ -410,7 +409,7 @@ class _FungibleTransferScreenBodyState
                   child: ElevatedButton(
                     child: Text('SEND'),
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         send(context);
                       }
                     },

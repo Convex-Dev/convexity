@@ -48,8 +48,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
   Widget addressCard(
     BuildContext context, {
-    Address activeAddress,
-    Address otherAddress,
+    Address? activeAddress,
+    Address? otherAddress,
   }) {
     final isActive = activeAddress == otherAddress;
 
@@ -103,7 +103,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                       print(
                         '\n' +
                             crypto.encodePrivateKeyPEM(
-                              appState.model.activeKeyPair.sk,
+                              appState.model.activeKeyPair!.sk,
                             ),
                       );
                     },
@@ -199,7 +199,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           'Wallet contains your own Accounts managed on this device.',
           style: Theme.of(context)
               .textTheme
-              .subtitle1
+              .subtitle1!
               .copyWith(color: Colors.black54),
         ),
       ),
@@ -306,7 +306,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
     }
   }
 
-  void _remove(BuildContext context, {Address address}) async {
+  void _remove(BuildContext context, {Address? address}) async {
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) => _Remove(address: address),
@@ -321,9 +321,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 }
 
 class _Remove extends StatefulWidget {
-  final Address address;
+  final Address? address;
 
-  const _Remove({Key key, this.address}) : super(key: key);
+  const _Remove({Key? key, this.address}) : super(key: key);
 
   @override
   _RemoveState createState() => _RemoveState();
@@ -349,7 +349,7 @@ class _RemoveState extends State<_Remove> {
               ),
               Gap(20),
               aidenticon(
-                widget.address,
+                widget.address!,
                 width: 80,
                 height: 80,
               ),

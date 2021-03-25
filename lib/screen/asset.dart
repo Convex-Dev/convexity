@@ -49,7 +49,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                 Row(
                   children: [
                     aidenticon(
-                      fungibleTransferActivity.from,
+                      fungibleTransferActivity.from!,
                       height: 30,
                       width: 30,
                     ),
@@ -77,7 +77,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                     Icon(Icons.arrow_right_alt),
                     Gap(10),
                     aidenticon(
-                      fungibleTransferActivity.to,
+                      fungibleTransferActivity.to!,
                       height: 30,
                       width: 30,
                     ),
@@ -106,7 +106,7 @@ Widget fungibleTransferActivityView(Activity activity) =>
                 Gap(4),
                 Text(
                   'Amount: ${formatFungibleCurrency(
-                    metadata: fungibleTransferActivity.token.metadata,
+                    metadata: fungibleTransferActivity.token!.metadata,
                     number: fungibleTransferActivity.amount,
                   )}',
                   style: TextStyle(
@@ -127,11 +127,11 @@ Widget fungibleTransferActivityView(Activity activity) =>
     });
 
 class AssetScreen extends StatelessWidget {
-  final AAsset aasset;
-  final Future balance;
+  final AAsset? aasset;
+  final Future? balance;
 
   const AssetScreen({
-    Key key,
+    Key? key,
     this.aasset,
     this.balance,
   }) : super(key: key);
@@ -139,12 +139,12 @@ class AssetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final arguments =
-        ModalRoute.of(context).settings.arguments as Tuple2<AAsset, Future>;
+        ModalRoute.of(context)!.settings.arguments as Tuple2<AAsset, Future>?;
 
     // AAsset and balance can be passed directly to the constructor,
     // or via the Navigator arguments.
-    AAsset _aasset = aasset ?? arguments.item1;
-    Future _balance = balance ?? arguments.item2;
+    AAsset _aasset = aasset ?? arguments!.item1;
+    Future _balance = balance ?? arguments!.item2;
 
     final title = _aasset.type == AssetType.fungible
         ? (_aasset.asset as FungibleToken).metadata.symbol
@@ -158,11 +158,11 @@ class AssetScreen extends StatelessWidget {
 }
 
 class AssetScreenBody extends StatefulWidget {
-  final AAsset aasset;
-  final Future balance;
+  final AAsset? aasset;
+  final Future? balance;
 
   const AssetScreenBody({
-    Key key,
+    Key? key,
     this.aasset,
     this.balance,
   }) : super(key: key);
@@ -172,9 +172,9 @@ class AssetScreenBody extends StatefulWidget {
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  Future _balance;
+  Future? _balance;
 
-  Future get balance => _balance ?? widget.balance;
+  Future? get balance => _balance ?? widget.balance;
 
   Widget _info() => StatelessWidgetBuilder((context) => Card(
         child: Padding(
@@ -189,18 +189,18 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.aasset.asset.metadata.name,
+                      widget.aasset!.asset.metadata.name,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                     Gap(4),
                     Text(
-                      widget.aasset.asset.metadata.description,
+                      widget.aasset!.asset.metadata.description,
                       style: Theme.of(context).textTheme.bodyText2,
                     ),
                     Gap(4),
                     SelectableText(
-                      widget.aasset.asset.address.toString(),
+                      widget.aasset!.asset.address.toString(),
                       showCursor: false,
                       style: Theme.of(context).textTheme.caption,
                     ),
@@ -208,7 +208,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
               ),
               QrImage(
-                data: widget.aasset.asset.address.value.toString(),
+                data: widget.aasset!.asset.address.value.toString(),
                 version: QrVersions.auto,
                 size: 80,
               ),
@@ -218,8 +218,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
       ));
 
   Widget _action({
-    @required String label,
-    @required void Function() onPressed,
+    required String label,
+    required void Function() onPressed,
   }) =>
       StatelessWidgetBuilder(
         (context) => Column(
@@ -257,7 +257,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               ..showSnackBar(
                 SnackBar(
                   content: Text(
-                    'You are following ${widget.aasset.asset.metadata.name}',
+                    'You are following ${widget.aasset!.asset.metadata.name}',
                     overflow: TextOverflow.clip,
                   ),
                 ),
@@ -282,7 +282,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
               ..showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Unfollowed ${widget.aasset.asset.metadata.name}',
+                    'Unfollowed ${widget.aasset!.asset.metadata.name}',
                     overflow: TextOverflow.clip,
                   ),
                 ),
@@ -303,7 +303,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
                 final a = activity.payload as FungibleTransferActivity;
 
-                return a.token == widget.aasset.asset;
+                return a.token == widget.aasset!.asset;
               },
             )
             .toList()
@@ -347,8 +347,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                   )
                                 : Text(
                                     formatFungibleCurrency(
-                                      metadata: widget.aasset.asset.metadata,
-                                      number: snapshot.data,
+                                      metadata: widget.aasset!.asset.metadata,
+                                      number: snapshot.data as int,
                                     ),
                                   );
                           },
@@ -364,7 +364,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                               context,
                               params: ExchangeParams(
                                 action: ExchangeAction.buy,
-                                ofToken: widget.aasset.asset,
+                                ofToken: widget.aasset!.asset,
                               ),
                             );
 
@@ -383,7 +383,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                               context,
                               params: ExchangeParams(
                                 action: ExchangeAction.sell,
-                                ofToken: widget.aasset.asset,
+                                ofToken: widget.aasset!.asset,
                               ),
                             );
 
@@ -399,7 +399,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           label: 'Transfer',
                           onPressed: () {
                             final fungible =
-                                widget.aasset.asset as FungibleToken;
+                                widget.aasset!.asset as FungibleToken?;
 
                             var future = nav.pushFungibleTransfer(
                               context,
@@ -517,7 +517,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             children: ids.asMap().entries.map(
                               (entry) {
                                 final dataSource =
-                                    '(call ${widget.aasset.asset.address} (get-token-data ${entry.value}))';
+                                    '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))';
 
                                 final data =
                                     convexClient.query(source: dataSource);
@@ -556,7 +556,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       final result = nav.pushNewNonFungibleToken(
                         context,
                         nonFungibleToken:
-                            widget.aasset.asset as NonFungibleToken,
+                            widget.aasset!.asset as NonFungibleToken?,
                       );
 
                       result.then(
@@ -600,8 +600,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   }
 
   Widget _nonFungibleToken({
-    int tokenId,
-    Future<Result> data,
+    int? tokenId,
+    Future<Result>? data,
   }) =>
       FutureBuilder<Result>(
         future: data,
@@ -610,9 +610,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             duration: Duration(milliseconds: 500),
             child: snapshot.connectionState == ConnectionState.waiting
                 ? Text('')
-                : (snapshot.data.errorCode != null
+                : (snapshot.data!.errorCode != null
                     ? Text('')
-                    : Text(snapshot.data.value['name'])),
+                    : Text(snapshot.data!.value['name'])),
           );
 
           final child = AnimatedSwitcher(
@@ -627,12 +627,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       ),
                     ),
                   )
-                : (snapshot.data.value['uri'] == null
+                : (snapshot.data!.value['uri'] == null
                     ? Icon(
                         Icons.image,
                         size: 40,
                       )
-                    : _nonFungibleImage(snapshot.data.value['uri'])),
+                    : _nonFungibleImage(snapshot.data!.value['uri'])),
           );
 
           return InkWell(
@@ -647,7 +647,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             onTap: () {
               final f = nav.pushNonFungibleToken(
                 context,
-                nonFungibleToken: widget.aasset.asset,
+                nonFungibleToken: widget.aasset!.asset,
                 tokenId: tokenId,
                 data: data,
               );
@@ -673,7 +673,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
     final appState = context.read<AppState>();
 
     return appState.assetLibrary().balance(
-          asset: widget.aasset.asset.address,
+          asset: widget.aasset!.asset.address,
           owner: appState.model.activeAddress,
         );
   }
@@ -681,7 +681,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   @override
   Widget build(BuildContext context) => WillPopScope(
         child: SafeArea(
-          child: widget.aasset.type == AssetType.fungible
+          child: widget.aasset!.type == AssetType.fungible
               ? _fungible()
               : _nonFungible(),
         ),

@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
 import 'convex.dart';
@@ -8,10 +7,10 @@ class TorusLibrary {
 
   final ConvexClient convexClient;
 
-  TorusLibrary({@required this.convexClient});
+  TorusLibrary({required this.convexClient});
 
   /// Gets the canonical market for a token. Returns nil if the market does not exist.
-  Future<Address> getMarket({@required Address token}) async {
+  Future<Address?> getMarket({required Address token}) async {
     final result = await convexClient.query(
       source: '$_import (torus/get-market $token)',
     );
@@ -28,7 +27,7 @@ class TorusLibrary {
 
   /// Gets or creates the canonical market for a token.
   Future<Address> createMarket({
-    @required Address token,
+    required Address token,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/create-market $token)',
@@ -40,10 +39,10 @@ class TorusLibrary {
     return Address(result.value);
   }
 
-  Future<int> addLiquidity({
-    @required Address token,
-    @required int tokenAmount,
-    @required int cvxAmount,
+  Future<int?> addLiquidity({
+    required Address token,
+    required int tokenAmount,
+    required int cvxAmount,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/add-liquidity $token $tokenAmount $cvxAmount)',
@@ -55,10 +54,10 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> buy({
-    @required Address ofToken,
-    @required int amount,
-    @required Address withToken,
+  Future<int?> buy({
+    required Address ofToken,
+    required int amount,
+    required Address withToken,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/buy $ofToken $amount $withToken)',
@@ -70,9 +69,9 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> buyCVX({
-    @required Address withToken,
-    @required int amount,
+  Future<int?> buyCVX({
+    required Address withToken,
+    required int amount,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/buy-cvx $withToken $amount)',
@@ -84,9 +83,9 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> buyTokens({
-    @required Address ofToken,
-    @required int amount,
+  Future<int?> buyTokens({
+    required Address ofToken,
+    required int amount,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/buy-tokens $ofToken $amount)',
@@ -98,10 +97,10 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> sell({
-    @required Address ofToken,
-    @required int amount,
-    @required Address withToken,
+  Future<int?> sell({
+    required Address ofToken,
+    required int amount,
+    required Address? withToken,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/sell $ofToken $amount $withToken)',
@@ -113,9 +112,9 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> sellTokens({
-    @required Address ofToken,
-    @required int amount,
+  Future<int?> sellTokens({
+    required Address ofToken,
+    required int amount,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/sell-tokens $ofToken $amount)',
@@ -127,9 +126,9 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> sellCVX({
-    @required Address withToken,
-    @required int amount,
+  Future<int?> sellCVX({
+    required Address withToken,
+    required int amount,
   }) async {
     final result = await convexClient.transact(
       source: '$_import (torus/sell-cvx $withToken $amount)',
@@ -141,9 +140,9 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<double> price({
-    Address ofToken,
-    Address withToken,
+  Future<double?> price({
+    Address? ofToken,
+    Address? withToken,
   }) async {
     assert(
       !(ofToken == null && withToken == null),
@@ -164,10 +163,10 @@ class TorusLibrary {
     return ofToken == null ? 1 / result.value : result.value;
   }
 
-  Future<int> buyQuote({
-    Address ofToken,
-    Address withToken,
-    int amount,
+  Future<int?> buyQuote({
+    Address? ofToken,
+    Address? withToken,
+    int? amount,
   }) async {
     final result = await convexClient.query(
       source: '$_import (torus/buy-quote $ofToken $amount ${withToken ?? ''})',
@@ -180,9 +179,9 @@ class TorusLibrary {
   }
 
   /// Query quote for buying CVX with [withToken].
-  Future<int> buyCvxQuote({
-    Address withToken,
-    int amount,
+  Future<int?> buyCvxQuote({
+    Address? withToken,
+    int? amount,
   }) async {
     final result = await convexClient.query(
       source: '$_import'
@@ -197,10 +196,10 @@ class TorusLibrary {
     return result.value;
   }
 
-  Future<int> sellQuote({
-    Address ofToken,
-    Address withToken,
-    int amount,
+  Future<int?> sellQuote({
+    Address? ofToken,
+    Address? withToken,
+    int? amount,
   }) async {
     final result = await convexClient.query(
       source: '$_import (torus/sell-quote $ofToken $amount ${withToken ?? ''})',
@@ -213,9 +212,9 @@ class TorusLibrary {
   }
 
   /// Query quote for selling CVX with [withToken].
-  Future<int> sellCvxQuote({
-    Address withToken,
-    int amount,
+  Future<int?> sellCvxQuote({
+    Address? withToken,
+    int? amount,
   }) async {
     final result = await convexClient.query(
       source: '$_import'
@@ -237,9 +236,9 @@ class TorusLibrary {
   /// The liquidity pool of CVX is the balance of the Market (Actor).
   ///
   /// Returns `Tuple2<int, int>` with 'of liquidity pool' and 'with liquidity pool' respectively.
-  Future<Tuple2<int, int>> liquidity({
-    Address ofToken,
-    Address withToken,
+  Future<Tuple2<int?, int?>> liquidity({
+    Address? ofToken,
+    Address? withToken,
   }) async {
     final ofMarket = ofToken != null ? await getMarket(token: ofToken) : null;
 
@@ -261,7 +260,7 @@ class TorusLibrary {
       final ofBalance =
           withMarket != null ? await convexClient.balance(withMarket) : null;
 
-      return Tuple2<int, int>(ofBalance, withBalance?.value);
+      return Tuple2<int?, int?>(ofBalance, withBalance?.value);
     }
 
     // -- Buying/selling Tokens
@@ -292,9 +291,9 @@ class TorusLibrary {
               )
             : await convexClient.balance(ofMarket);
 
-    return Tuple2<int, int>(
+    return Tuple2<int?, int?>(
       ofBalance?.value,
-      withBalance is Result ? withBalance.value : withBalance,
+      withBalance is Result ? withBalance.value : withBalance as int?,
     );
   }
 }

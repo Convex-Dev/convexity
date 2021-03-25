@@ -22,11 +22,11 @@ KeyPair keyPairFromJson(Map<String, dynamic> json) => KeyPair(
       sk: Sodium.hex2bin(json['sk']),
     );
 
-Map<String, dynamic> keyringToJson(Map<Address, KeyPair> keyring) =>
+Map<String, dynamic> keyringToJson(Map<Address?, KeyPair?> keyring) =>
     keyring.map(
       (key, value) => MapEntry(
         key.toString(),
-        value.toJson(),
+        value!.toJson(),
       ),
     );
 

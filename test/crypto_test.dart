@@ -48,9 +48,9 @@ void main() {
 
       expect(
         true,
-        Sodium.bin2hex(keyring[Address(1)].sk) ==
+        Sodium.bin2hex(keyring[Address(1)]!.sk) ==
                 Sodium.bin2hex(generatedKeyPair.sk) &&
-            Sodium.bin2hex(keyring[Address(1)].pk) ==
+            Sodium.bin2hex(keyring[Address(1)]!.pk) ==
                 Sodium.bin2hex(generatedKeyPair.pk),
       );
     });

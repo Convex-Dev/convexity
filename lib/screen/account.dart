@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -8,24 +9,23 @@ import '../model.dart';
 import '../widget.dart';
 
 class AccountScreen extends StatelessWidget {
-  final Address address;
+  final Address? address;
 
-  const AccountScreen({Key key, this.address}) : super(key: key);
+  const AccountScreen({Key? key, this.address}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Address _address =
-        address ?? ModalRoute.of(context).settings.arguments;
+    final Address? _address =
+        address ?? ModalRoute.of(context)!.settings.arguments as Address?;
 
     final contacts = context
         .select<AppState, Set<Contact>>((appState) => appState.model.contacts);
 
-    final contact = contacts.firstWhere(
+    final contact = contacts.firstWhereOrNull(
       (element) => element.address == _address,
-      orElse: () => null,
     );
 
-    final activeAddress = context.select<AppState, Address>(
+    final activeAddress = context.select<AppState, Address?>(
       (appState) => appState.model.activeAddress,
     );
 
@@ -55,16 +55,16 @@ class AccountScreen extends StatelessWidget {
 }
 
 class AccountScreenBody extends StatefulWidget {
-  final Address address;
+  final Address? address;
 
-  const AccountScreenBody({Key key, this.address}) : super(key: key);
+  const AccountScreenBody({Key? key, this.address}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AccountScreenBodyState();
 }
 
 class _AccountScreenBodyState extends State<AccountScreenBody> {
-  Future<Account> account;
+  Future<Account>? account;
 
   @override
   void initState() {
@@ -80,9 +80,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
       (appState) => appState.model.contacts,
     );
 
-    final contact = contacts.firstWhere(
+    final contact = contacts.firstWhereOrNull(
       (_contact) => _contact.address == widget.address,
-      orElse: () => null,
     );
 
     return FutureBuilder(
@@ -115,7 +114,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                   children: [
                     QrImage(
                       data:
-                          'https://convex.world/explorer/accounts/${widget.address.value}',
+                          'https://convex.world/explorer/accounts/${widget.address!.value}',
                       version: QrVersions.auto,
                       size: 140,
                     ),
@@ -155,19 +154,12 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               ),
             );
         }
-
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Text('Account not found.'),
-          ),
-        );
       },
     );
   }
 
-  void _addToAddressBook(BuildContext context, {Address address}) async {
-    String alias;
+  void _addToAddressBook(BuildContext context, {Address? address}) async {
+    String? alias;
 
     var confirmation = await showModalBottomSheet(
       context: context,
@@ -185,7 +177,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Gap(20),
-                  aidenticon(widget.address, width: 80, height: 80),
+                  aidenticon(widget.address!, width: 80, height: 80),
                   Gap(5),
                   Text(
                     widget.address.toString(),
@@ -243,7 +235,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
     }
   }
 
-  void _removeFromAddressBook(BuildContext context, {Contact contact}) async {
+  void _removeFromAddressBook(BuildContext context, {Contact? contact}) async {
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -261,7 +253,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
               Gap(10),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Text('Remove ${contact.name} from Address Book?'),
+                child: Text('Remove ${contact!.name} from Address Book?'),
               ),
               Gap(10),
               Row(

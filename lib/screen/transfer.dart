@@ -38,7 +38,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   var targetController = TextEditingController();
   var amountController = TextEditingController();
 
-  Address target;
+  Address? target;
 
   void scan() async {
     var result = await BarcodeScanner.scan();
@@ -49,9 +49,9 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   }
 
   void transfer({
-    BuildContext context,
-    convex.Address to,
-    int amount,
+    required BuildContext context,
+    convex.Address? to,
+    int? amount,
   }) async {
     final appState = context.read<AppState>();
 
@@ -83,7 +83,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                     if (contact == null)
                       Text(to.toString())
                     else
-                      Text(contact.name),
+                      Text(contact.name!),
                     Text(
                       '?',
                     )
@@ -131,7 +131,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
                 if (snapshot.data?.errorCode != null) {
                   logger.e(
-                    'Transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                    'Transfer returned an error: ${snapshot.data!.errorCode} ${snapshot.data!.value}',
                   );
 
                   return Column(
@@ -180,9 +180,9 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                             'Transfered $amount to ',
                           ),
                           if (contact == null)
-                            aidenticon(to)
+                            aidenticon(to!)
                           else
-                            Text(contact.name + '.'),
+                            Text(contact.name! + '.'),
                         ],
                       ),
                     ),
@@ -213,7 +213,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     final fromContact = appState.findContact(appState.model.activeAddress);
 
     fromController.text = fromContact != null
-        ? fromContact.name
+        ? fromContact.name!
         : appState.model.activeAddress.toString();
 
     return Padding(
@@ -239,7 +239,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 hintText: 'Address of payee',
               ),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Please enter the address.';
                 }
 
@@ -256,10 +256,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                         .findContact(selectedAddress as Address);
 
                     setState(() {
-                      target = selectedAddress as Address;
+                      target = selectedAddress;
 
                       targetController.text = targetContact != null
-                          ? targetContact.name
+                          ? targetContact.name!
                           : selectedAddress.toString();
                     });
                   }
@@ -277,7 +277,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 hintText: 'Amount in Convex Coins',
               ),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Please enter the amount.';
                 }
 
@@ -294,7 +294,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               child: ElevatedButton(
                 child: Text('Transfer'),
                 onPressed: () {
-                  if (formKey.currentState.validate()) {
+                  if (formKey.currentState!.validate()) {
                     transfer(
                       context: context,
                       to: target,

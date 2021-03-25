@@ -33,17 +33,17 @@ class FollowAssetScreenBody extends StatefulWidget {
 }
 
 class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
-  var selectedOption = _Option.recommended;
+  _Option? selectedOption = _Option.recommended;
 
   Widget option({
-    @required String title,
-    @required _Option value,
+    required String title,
+    required _Option value,
   }) =>
       RadioListTile(
         title: Text(title),
         value: value,
         groupValue: selectedOption,
-        onChanged: (value) {
+        onChanged: (dynamic value) {
           setState(() {
             selectedOption = value;
           });
@@ -59,9 +59,9 @@ class _FollowAssetScreenBodyState extends State<FollowAssetScreenBody> {
 }
 
 class OptionRenderer extends StatelessWidget {
-  final _Option option;
+  final _Option? option;
 
-  const OptionRenderer({Key key, this.option}) : super(key: key);
+  const OptionRenderer({Key? key, this.option}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +76,9 @@ class OptionRenderer extends StatelessWidget {
         return _MyHoldings();
       case _Option.assetId:
         return _AssetID();
+      default:
+        throw Exception("No renderer for $option");
     }
-
-    throw Exception("No renderer for $option");
   }
 }
 
@@ -90,7 +90,7 @@ class _Recommended extends StatefulWidget {
 class _RecommendedState extends State<_Recommended> {
   var _isLoading = true;
   var _assets = <AAsset>{};
-  var _balanceCache = <Address, Future>{};
+  Map<Address?, Future<dynamic>> _balanceCache = <Address, Future>{};
 
   void initState() {
     super.initState();
@@ -98,46 +98,42 @@ class _RecommendedState extends State<_Recommended> {
     final appState = context.read<AppState>();
     final convexityClient = appState.convexityClient();
 
-    if (convexityClient != null) {
-      convexityClient.assets().then((Set<AAsset> assets) {
-        // It's important to check if the Widget is mounted
-        // because the user might change the selected option
-        // while we're still loading the recommended Assets.
-        if (mounted) {
-          final xs = assets ?? <AAsset>{};
+    convexityClient.assets().then((Set<AAsset>? assets) {
+      // It's important to check if the Widget is mounted
+      // because the user might change the selected option
+      // while we're still loading the recommended Assets.
+      if (mounted) {
+        final xs = assets ?? <AAsset>{};
 
-          final fungibles = xs
-              .where(
-                (aasset) => aasset.type == AssetType.fungible,
-              )
-              .map(
-                (aasset) => MapEntry(
-                  aasset.asset.address as Address,
-                  appState.assetLibrary().balance(
-                        asset: aasset.asset.address,
-                        owner: appState.model.activeAddress,
-                      ),
-                ),
-              );
+        final fungibles = xs
+            .where(
+              (aasset) => aasset.type == AssetType.fungible,
+            )
+            .map(
+              (aasset) => MapEntry(
+                aasset.asset.address as Address?,
+                appState.assetLibrary().balance(
+                      asset: aasset.asset.address,
+                      owner: appState.model.activeAddress,
+                    ),
+              ),
+            );
 
-          setState(
-            () {
-              _isLoading = false;
-              _assets = xs;
-              _balanceCache = Map<Address, Future>.fromEntries(fungibles);
-            },
-          );
-        }
-      });
-    } else {
-      this._isLoading = false;
-    }
+        setState(
+          () {
+            _isLoading = false;
+            _assets = xs;
+            _balanceCache = Map<Address?, Future>.fromEntries(fungibles);
+          },
+        );
+      }
+    });
   }
 
   void follow(
     BuildContext context, {
-    AssetType type,
-    Asset asset,
+    AssetType? type,
+    Asset? asset,
   }) {
     var aasset = AAsset(
       type: type,
@@ -178,7 +174,7 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (asset) => asset.type == AssetType.fungible
                   ? FungibleTokenCard(
-                      fungible: asset.asset as FungibleToken,
+                      fungible: asset.asset as FungibleToken?,
                       balance: _balanceCache[asset.asset.address],
                       onTap: (FungibleToken fungible) {
                         follow(
@@ -189,7 +185,7 @@ class _RecommendedState extends State<_Recommended> {
                       },
                     )
                   : NonFungibleTokenCard(
-                      nonFungible: asset.asset as NonFungibleToken,
+                      nonFungible: asset.asset as NonFungibleToken?,
                       onTap: (NonFungibleToken nonFungible) {
                         follow(
                           context,
@@ -219,8 +215,8 @@ class _ScanQRCode extends StatefulWidget {
 class _ScanQRCodeState extends State<_ScanQRCode> {
   _ScanQRCodeStatus status = _ScanQRCodeStatus.ready;
 
-  Address scannedAddress;
-  AAsset aasset;
+  Address? scannedAddress;
+  AAsset? aasset;
 
   void scan() async {
     var r = await BarcodeScanner.scan();
@@ -311,8 +307,8 @@ class _AssetID extends StatefulWidget {
 class _AssetIDState extends State<_AssetID> {
   var status = AssetMetadataQueryStatus.ready;
 
-  String address;
-  AAsset aasset;
+  late String address;
+  AAsset? aasset;
 
   Widget body(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -329,16 +325,16 @@ class _AssetIDState extends State<_AssetID> {
           children: [
             SizedBox(
               width: 160,
-              child: aasset.type == AssetType.fungible
+              child: aasset!.type == AssetType.fungible
                   ? FungibleTokenCard(
-                      fungible: aasset.asset,
+                      fungible: aasset!.asset,
                       balance: appState.assetLibrary().balance(
-                            asset: aasset.asset.address,
+                            asset: aasset!.asset.address,
                             owner: appState.model.activeAddress,
                           ),
                     )
                   : NonFungibleTokenCard(
-                      nonFungible: aasset.asset,
+                      nonFungible: aasset!.asset,
                     ),
             ),
             ElevatedButton(
@@ -390,18 +386,6 @@ class _AssetIDState extends State<_AssetID> {
           onPressed: (AssetMetadataQueryStatus.inProgress == status)
               ? null
               : () {
-                  if (context.read<AppState>().convexityClient() == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Can't verify because Convexity Address is not set.",
-                        ),
-                      ),
-                    );
-
-                    return;
-                  }
-
                   setState(() {
                     status = AssetMetadataQueryStatus.inProgress;
                   });

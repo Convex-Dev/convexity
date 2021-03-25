@@ -9,8 +9,8 @@ import '../route.dart' as route;
 class NewNonFungibleTokenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final NonFungibleToken nonFungibleToken =
-        ModalRoute.of(context).settings.arguments;
+    final NonFungibleToken? nonFungibleToken =
+        ModalRoute.of(context)!.settings.arguments as NonFungibleToken?;
 
     return Scaffold(
       appBar: AppBar(
@@ -25,9 +25,9 @@ class NewNonFungibleTokenScreen extends StatelessWidget {
 }
 
 class NewNonFungibleTokenScreenBody extends StatefulWidget {
-  final NonFungibleToken _nonFungibleToken;
+  final NonFungibleToken? _nonFungibleToken;
 
-  const NewNonFungibleTokenScreenBody(this._nonFungibleToken, {Key key})
+  const NewNonFungibleTokenScreenBody(this._nonFungibleToken, {Key? key})
       : super(key: key);
 
   @override
@@ -39,8 +39,8 @@ class _NewNonFungibleTokenScreenBodyState
     extends State<NewNonFungibleTokenScreenBody> {
   final _formKey = GlobalKey<FormState>();
 
-  String _name;
-  String _uri;
+  String? _name;
+  String? _uri;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class _NewNonFungibleTokenScreenBodyState
           ListTile(
             title: TextFormField(
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Required';
                 }
 
@@ -83,7 +83,7 @@ class _NewNonFungibleTokenScreenBodyState
             child: ElevatedButton(
               child: Text('Create Token'),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   final _newToken = _NewNonFungibleToken(
                     name: _name,
                     uri: _uri,
@@ -117,21 +117,21 @@ class _NewNonFungibleTokenScreenBodyState
 
 @immutable
 class _NewNonFungibleToken {
-  final String name;
-  final String uri;
+  final String? name;
+  final String? uri;
 
   _NewNonFungibleToken({
-    @required this.name,
+    required this.name,
     this.uri,
   });
 }
 
 class _CreateToken extends StatefulWidget {
-  final NonFungibleToken nonFungibleToken;
-  final _NewNonFungibleToken newToken;
+  final NonFungibleToken? nonFungibleToken;
+  final _NewNonFungibleToken? newToken;
 
   const _CreateToken({
-    Key key,
+    Key? key,
     this.nonFungibleToken,
     this.newToken,
   }) : super(key: key);
@@ -156,11 +156,11 @@ class _CreateTokenState extends State<_CreateToken> {
 
     try {
       final _uri =
-          widget.newToken.uri == null ? 'nil' : '"${widget.newToken.uri}"';
+          widget.newToken!.uri == null ? 'nil' : '"${widget.newToken!.uri}"';
 
       myTokenResult = await appState.convexClient().transact(
-            source: '(call ${widget.nonFungibleToken.address} '
-                '(create-token {:name "${widget.newToken.name}", :uri $_uri} nil) )',
+            source: '(call ${widget.nonFungibleToken!.address} '
+                '(create-token {:name "${widget.newToken!.name}", :uri $_uri} nil) )',
           );
     } catch (e, s) {
       print('Failed to create Token: $e $s');

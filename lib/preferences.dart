@@ -36,7 +36,7 @@ Map<Address, KeyPair> readKeyring(SharedPreferences preferences) {
 
   if (encoded != null) {
     return crypto.keyringFromJson(
-      jsonDecode(preferences.getString(PREF_KEYRING)),
+      jsonDecode(preferences.getString(PREF_KEYRING)!),
     );
   }
 
@@ -45,9 +45,9 @@ Map<Address, KeyPair> readKeyring(SharedPreferences preferences) {
 
 Future<bool> writeKeyring(
   SharedPreferences preferences,
-  Map<Address, KeyPair> keyring,
+  Map<Address?, KeyPair?> keyring,
 ) {
-  final encoded = jsonEncode(crypto.keyringToJson(keyring ?? {}));
+  final encoded = jsonEncode(crypto.keyringToJson(keyring));
 
   logger.d(encoded);
 
@@ -55,7 +55,7 @@ Future<bool> writeKeyring(
 }
 
 /// Returns the active Address, or null if there isn't one.
-Address readActiveAddress(SharedPreferences preferences) {
+Address? readActiveAddress(SharedPreferences preferences) {
   var encoded = preferences.getString(PREF_ACTIVE_ADDRESS);
 
   logger.d(encoded);
@@ -94,7 +94,7 @@ Set<AAsset> readFollowing(SharedPreferences preferences) {
 /// Persists the set of following Assets.
 ///
 /// [following] will be persisted as a JSON encoded string.
-void writeFollowing(SharedPreferences preferences, Set<AAsset> following) {
+void writeFollowing(SharedPreferences preferences, Set<AAsset?> following) {
   var encoded = jsonEncode(following.toList());
 
   preferences.setString(PREF_FOLLOWING, encoded);
@@ -188,7 +188,7 @@ Future<bool> writeContacts(
 /// Reads the default 'with Token'.
 ///
 /// Returns null if there isn't a 'with Token' persisted.
-FungibleToken readDefaultWithToken(SharedPreferences preferences) {
+FungibleToken? readDefaultWithToken(SharedPreferences preferences) {
   final encoded = preferences.getString(PREF_DEFAULT_WITH_TOKEN);
 
   if (encoded != null) {
@@ -203,7 +203,7 @@ FungibleToken readDefaultWithToken(SharedPreferences preferences) {
 /// [defaultWithToken] will be persisted as a JSON encoded string.
 Future<bool> writeDefaultWithToken(
   SharedPreferences preferences,
-  FungibleToken defaultWithToken,
+  FungibleToken? defaultWithToken,
 ) {
   if (defaultWithToken == null) {
     logger.d('Reset default with Token');

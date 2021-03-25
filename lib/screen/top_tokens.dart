@@ -28,8 +28,8 @@ class TopTokensScreenBody extends StatefulWidget {
 }
 
 class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
-  Future<Set<AAsset>> _assets;
-  Future<Result> _prices;
+  Future<Set<AAsset>?>? _assets;
+  Future<Result>? _prices;
 
   FungibleToken _withToken(BuildContext context) =>
       context.read<AppState>().model.defaultWithToken ?? CVX;
@@ -39,7 +39,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     super.initState();
 
     _assets = context.read<AppState>().convexityClient().assets();
-    _assets.then((assets) {
+    _assets!.then((assets) {
       setState(() {
         _refreshPrices(
           context: context,
@@ -54,7 +54,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    return FutureBuilder<Set<AAsset>>(
+    return FutureBuilder<Set<AAsset>?>(
       future: _assets,
       builder: (context, snapshot) {
         final assets = snapshot.data ?? <AAsset>[];
@@ -75,7 +75,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
             .where((e) =>
                 e.type == AssetType.fungible &&
                 defaultTokens.contains(e.asset.address.value))
-            .map((e) => e.asset as FungibleToken);
+            .map((e) => e.asset as FungibleToken?);
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -89,13 +89,14 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
             children: [
               Text('Price in'),
               Gap(10),
-              Dropdown<FungibleToken>(
+              Dropdown<FungibleToken?>(
                 active: appState.model.defaultWithToken ?? CVX,
                 items: [CVX, ...fungibles]..sort(
-                    (a, b) => a.metadata.symbol.compareTo(b.metadata.symbol),
+                    (a, b) =>
+                        a!.metadata.symbol!.compareTo(b!.metadata.symbol!),
                   ),
-                itemWidget: (FungibleToken token) {
-                  return Text(token.metadata.symbol);
+                itemWidget: (FungibleToken? token) {
+                  return Text(token!.metadata.symbol!);
                 },
                 onChanged: (t) {
                   final defaultWithToken = t == CVX ? null : t;
@@ -105,7 +106,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                   setState(() {
                     _refreshPrices(
                       context: context,
-                      assets: assets,
+                      assets: assets as Set<AAsset>,
                       withToken: defaultWithToken?.address,
                     );
                   });
@@ -115,14 +116,9 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ),
           ...fungibles.map(
             (token) => ListTile(
-              leading: _currencyIcon(token) ??
-                  Icon(
-                    Icons.circle,
-                    size: 40,
-                    color: Colors.black12,
-                  ),
-              title: Text(token.metadata.symbol),
-              subtitle: Text(token.metadata.name),
+              leading: _currencyIcon(token!),
+              title: Text(token.metadata.symbol!),
+              subtitle: Text(token.metadata.name!),
               trailing: FutureBuilder<Result>(
                 future: _prices,
                 builder: (context, snapshot) {
@@ -141,7 +137,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                     child: Text(
                       (e == null || e['price'] == null)
                           ? ''
-                          : _withToken(context).metadata.currencySymbol +
+                          : _withToken(context).metadata.currencySymbol! +
                               format.marketPriceStr(
                                 format.marketPrice(
                                   ofToken: token,
@@ -169,7 +165,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                   (value) => setState(() {
                     _refreshPrices(
                       context: context,
-                      assets: assets,
+                      assets: assets as Set<AAsset>,
                       withToken: appState.model.defaultWithToken?.address,
                     );
                   }),
@@ -208,19 +204,19 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   }
 
   void _refreshPrices({
-    BuildContext context,
-    Set<AAsset> assets,
-    Address withToken,
+    required BuildContext context,
+    required Set<AAsset> assets,
+    Address? withToken,
   }) {
     final fungibles = assets
         .where((e) => e.type == AssetType.fungible)
-        .map((e) => e.asset as FungibleToken);
+        .map((e) => e.asset as FungibleToken?);
 
     final sexp = fungibles.fold<String>(
       '',
       (sexp, token) =>
           sexp +
-          '{:address ${token.address} :price (torus/price ${token.address} ${withToken ?? ''})}',
+          '{:address ${token!.address} :price (torus/price ${token.address} ${withToken ?? ''})}',
     );
 
     // Single query to check the price of all Tokens.
@@ -231,7 +227,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   }
 
   Widget _currencyIcon(FungibleToken token) => Image.asset(
-        'icons/currency/${token.metadata.symbol.toLowerCase()}.png',
+        'icons/currency/${token.metadata.symbol!.toLowerCase()}.png',
         package: 'currency_icons',
         width: 40,
         height: 40,

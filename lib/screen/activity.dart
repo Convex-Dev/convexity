@@ -8,11 +8,11 @@ import '../format.dart';
 import '../nav.dart' as nav;
 
 class ActivityScreen extends StatelessWidget {
-  const ActivityScreen({Key key}) : super(key: key);
+  const ActivityScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var activity = ModalRoute.of(context).settings.arguments as Activity;
+    var activity = ModalRoute.of(context)!.settings.arguments as Activity;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +23,7 @@ class ActivityScreen extends StatelessWidget {
               '${activityTypeString(activity.type)}',
               style: Theme.of(context)
                   .textTheme
-                  .subtitle1
+                  .subtitle1!
                   .copyWith(color: Colors.white),
             ),
           ],
@@ -43,8 +43,8 @@ class ActivityScreenBody extends StatelessWidget {
   final Activity activity;
 
   const ActivityScreenBody({
-    Key key,
-    @required this.activity,
+    Key? key,
+    required this.activity,
   }) : super(key: key);
 
   @override
@@ -73,7 +73,7 @@ class ActivityScreenBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Text(
             formatFungibleCurrency(
-              metadata: a.token.metadata,
+              metadata: a.token!.metadata,
               number: a.amount,
             ),
             style: TextStyle(fontSize: 50),
@@ -104,7 +104,7 @@ class ActivityScreenBody extends StatelessWidget {
                   children: [
                     TableCell(
                       child: TextButton.icon(
-                        icon: aidenticon(a.from, width: 30, height: 30),
+                        icon: aidenticon(a.from!, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
                             appState.findContact(a.from)?.name ??
@@ -119,7 +119,7 @@ class ActivityScreenBody extends StatelessWidget {
                     ),
                     TableCell(
                       child: TextButton.icon(
-                        icon: aidenticon(a.to, width: 30, height: 30),
+                        icon: aidenticon(a.to!, width: 30, height: 30),
                         label: Expanded(
                           child: Text(
                             appState.findContact(a.to)?.name ?? a.to.toString(),

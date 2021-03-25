@@ -88,7 +88,7 @@ class AddressBookScreenBody extends StatelessWidget {
     );
   }
 
-  void _edit(BuildContext context, {Contact contact}) async {
+  void _edit(BuildContext context, {Contact? contact}) async {
     var _name = await showModalBottomSheet(
       context: context,
       builder: (context) => _Edit(contact: contact),
@@ -101,13 +101,13 @@ class AddressBookScreenBody extends StatelessWidget {
       appState.addContact(
         Contact(
           name: _name,
-          address: contact.address,
+          address: contact!.address,
         ),
       );
     }
   }
 
-  void _remove(BuildContext context, {Contact contact}) async {
+  void _remove(BuildContext context, {Contact? contact}) async {
     var confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) => _Remove(contact: contact),
@@ -120,9 +120,9 @@ class AddressBookScreenBody extends StatelessWidget {
 }
 
 class _Edit extends StatefulWidget {
-  final Contact contact;
+  final Contact? contact;
 
-  const _Edit({Key key, this.contact}) : super(key: key);
+  const _Edit({Key? key, this.contact}) : super(key: key);
 
   @override
   _EditState createState() => _EditState();
@@ -131,7 +131,7 @@ class _Edit extends StatefulWidget {
 class _EditState extends State<_Edit> {
   final formKey = GlobalKey<FormState>();
 
-  TextEditingController nameTextController;
+  TextEditingController? nameTextController;
 
   @override
   void initState() {
@@ -139,10 +139,10 @@ class _EditState extends State<_Edit> {
 
     nameTextController = TextEditingController.fromValue(
       TextEditingValue(
-        text: widget.contact.name,
+        text: widget.contact!.name!,
         selection: TextSelection(
           baseOffset: 0,
-          extentOffset: widget.contact.name.length,
+          extentOffset: widget.contact!.name!.length,
         ),
       ),
     );
@@ -165,10 +165,10 @@ class _EditState extends State<_Edit> {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Gap(20),
-                aidenticon(widget.contact.address, width: 80, height: 80),
+                aidenticon(widget.contact!.address!, width: 80, height: 80),
                 Gap(5),
                 Text(
-                  widget.contact.address.toString(),
+                  widget.contact!.address.toString(),
                   style: Theme.of(context).textTheme.caption,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -178,7 +178,7 @@ class _EditState extends State<_Edit> {
                   controller: nameTextController,
                   decoration: InputDecoration(labelText: 'Name'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return 'Required';
                     }
 
@@ -199,8 +199,8 @@ class _EditState extends State<_Edit> {
                     ElevatedButton(
                       child: const Text('Confirm'),
                       onPressed: () {
-                        if (formKey.currentState.validate()) {
-                          Navigator.pop(context, nameTextController.text);
+                        if (formKey.currentState!.validate()) {
+                          Navigator.pop(context, nameTextController!.text);
                         }
                       },
                     )
@@ -216,9 +216,9 @@ class _EditState extends State<_Edit> {
 }
 
 class _Remove extends StatefulWidget {
-  final Contact contact;
+  final Contact? contact;
 
-  const _Remove({Key key, this.contact}) : super(key: key);
+  const _Remove({Key? key, this.contact}) : super(key: key);
 
   @override
   _RemoveState createState() => _RemoveState();
@@ -236,14 +236,14 @@ class _RemoveState extends State<_Remove> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                'Remove ${widget.contact.name}?',
+                'Remove ${widget.contact!.name}?',
                 style: Theme.of(context).textTheme.headline6,
               ),
               Gap(20),
-              aidenticon(widget.contact.address, width: 80, height: 80),
+              aidenticon(widget.contact!.address!, width: 80, height: 80),
               Gap(5),
               Text(
-                widget.contact.address.toString(),
+                widget.contact!.address.toString(),
                 style: Theme.of(context).textTheme.caption,
                 overflow: TextOverflow.ellipsis,
               ),

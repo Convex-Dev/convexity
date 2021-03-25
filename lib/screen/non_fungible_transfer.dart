@@ -11,24 +11,24 @@ import '../convex.dart';
 import '../route.dart' as route;
 
 class NonFungibleTransferScreen extends StatelessWidget {
-  final NonFungibleToken nonFungibleToken;
-  final int tokenId;
+  final NonFungibleToken? nonFungibleToken;
+  final int? tokenId;
 
   const NonFungibleTransferScreen({
-    Key key,
+    Key? key,
     this.nonFungibleToken,
     this.tokenId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var arguments = ModalRoute.of(context).settings.arguments
-        as Tuple2<NonFungibleToken, int>;
+    var arguments = ModalRoute.of(context)!.settings.arguments
+        as Tuple2<NonFungibleToken, int>?;
 
     // Token can be passed directly to the constructor,
     // or via Navigator arguments.
-    var _nonFungibleToken = nonFungibleToken ?? arguments.item1;
-    var _tokenId = tokenId ?? arguments.item2;
+    var _nonFungibleToken = nonFungibleToken ?? arguments!.item1;
+    var _tokenId = tokenId ?? arguments!.item2;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,11 +46,11 @@ class NonFungibleTransferScreen extends StatelessWidget {
 }
 
 class NonFungibleTransferScreenBody extends StatefulWidget {
-  final NonFungibleToken nonFungibleToken;
-  final int tokenId;
+  final NonFungibleToken? nonFungibleToken;
+  final int? tokenId;
 
   const NonFungibleTransferScreenBody({
-    Key key,
+    Key? key,
     this.nonFungibleToken,
     this.tokenId,
   }) : super(key: key);
@@ -65,7 +65,7 @@ class _NonFungibleTransferScreenBodyState
   final _formKey = GlobalKey<FormState>();
   final _receiverTextController = TextEditingController();
 
-  Address get _receiver => _receiverTextController.text.isNotEmpty
+  Address? get _receiver => _receiverTextController.text.isNotEmpty
       ? Address.fromStr(_receiverTextController.text)
       : null;
 
@@ -127,10 +127,10 @@ class _NonFungibleTransferScreenBodyState
     // Asset transfer.
     var transferInProgress = appState.assetLibrary().transferNonFungible(
       holder: appState.model.activeAddress,
-      holderSecretKey: appState.model.activeKeyPair.sk,
+      holderSecretKey: appState.model.activeKeyPair!.sk,
       holderAccountKey: appState.model.activeAccountKey,
       receiver: _receiver,
-      nft: widget.nonFungibleToken.address,
+      nft: widget.nonFungibleToken!.address,
       tokens: {
         widget.tokenId,
       },
@@ -157,7 +157,7 @@ class _NonFungibleTransferScreenBodyState
 
                 if (snapshot.data?.errorCode != null) {
                   logger.e(
-                    'Non-Fungible transfer returned an error: ${snapshot.data.errorCode} ${snapshot.data.value}',
+                    'Non-Fungible transfer returned an error: ${snapshot.data!.errorCode} ${snapshot.data!.value}',
                   );
 
                   return Column(
@@ -206,7 +206,7 @@ class _NonFungibleTransferScreenBodyState
                             'Transfered Token ID ${widget.tokenId} to ',
                           ),
                           aidenticon(
-                            _receiver,
+                            _receiver!,
                             width: 30,
                             height: 30,
                           ),
@@ -253,7 +253,7 @@ class _NonFungibleTransferScreenBodyState
               child: _receiver == null
                   ? replacement
                   : aidenticon(
-                      _receiver,
+                      _receiver!,
                       height: 120,
                       width: 120,
                     ),
@@ -266,7 +266,7 @@ class _NonFungibleTransferScreenBodyState
                 border: const OutlineInputBorder(),
               ),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Required';
                 }
 
@@ -292,7 +292,7 @@ class _NonFungibleTransferScreenBodyState
                   child: ElevatedButton(
                     child: Text('SEND'),
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         _send(context);
                       }
                     },
