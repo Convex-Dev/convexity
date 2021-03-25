@@ -159,7 +159,8 @@ class ConvexClient {
   final Uri server;
   final http.Client client;
 
-  // Credentials can change over time.
+  // It's possible to create a client without credentials
+  // because the user might not have an Account yet.
   Credentials? credentials;
 
   ConvexClient({
