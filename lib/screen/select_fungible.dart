@@ -23,7 +23,7 @@ class _SelectFungibleScreenBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final fungibles = appState.model!.following.where(
+    final fungibles = appState.model.following.where(
       (element) => element.type == AssetType.fungible,
     );
 

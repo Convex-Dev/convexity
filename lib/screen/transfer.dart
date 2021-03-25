@@ -210,11 +210,11 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final fromContact = appState.findContact(appState.model!.activeAddress);
+    final fromContact = appState.findContact(appState.model.activeAddress);
 
     fromController.text = fromContact != null
         ? fromContact.name!
-        : appState.model!.activeAddress.toString();
+        : appState.model.activeAddress.toString();
 
     return Padding(
       padding: const EdgeInsets.all(8),

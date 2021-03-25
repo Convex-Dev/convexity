@@ -126,9 +126,9 @@ class _NonFungibleTransferScreenBodyState
 
     // Asset transfer.
     var transferInProgress = appState.assetLibrary().transferNonFungible(
-      holder: appState.model!.activeAddress,
-      holderSecretKey: appState.model!.activeKeyPair!.sk,
-      holderAccountKey: appState.model!.activeAccountKey,
+      holder: appState.model.activeAddress,
+      holderSecretKey: appState.model.activeKeyPair!.sk,
+      holderAccountKey: appState.model.activeAccountKey,
       receiver: _receiver,
       nft: widget.nonFungibleToken!.address,
       tokens: {

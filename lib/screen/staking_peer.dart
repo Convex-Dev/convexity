@@ -16,7 +16,8 @@ class StakingPeerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Peer _peer = peer ?? ModalRoute.of(context)!.settings.arguments as Peer;
+    final Peer _peer =
+        peer ?? ModalRoute.of(context)!.settings.arguments as Peer;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,7 +51,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
 
     final appState = context.read<AppState>();
     _account =
-        appState.convexClient().accountDetails(appState.model!.activeAddress);
+        appState.convexClient().accountDetails(appState.model.activeAddress);
   }
 
   @override
@@ -74,7 +75,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
           ),
           Tuple2<String, int>(
             'Owned Stake',
-            widget.peer!.stakes![appState.model!.activeAddress!] ?? 0,
+            widget.peer!.stakes![appState.model.activeAddress!] ?? 0,
           ),
         ],
       ),
@@ -123,7 +124,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                     _cell(
                       context,
                       text: NumberFormat().format(
-                          widget.peer!.stakes![appState.model!.activeAddress!] ??
+                          widget.peer!.stakes![appState.model.activeAddress!] ??
                               0),
                     ),
                   ],

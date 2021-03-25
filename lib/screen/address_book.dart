@@ -27,7 +27,7 @@ class AddressBookScreen extends StatelessWidget {
 class AddressBookScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<AppState>().model!;
+    final model = context.watch<AppState>().model;
 
     final contacts = model.contacts.toList(growable: false);
 

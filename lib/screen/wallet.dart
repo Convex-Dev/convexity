@@ -103,7 +103,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                       print(
                         '\n' +
                             crypto.encodePrivateKeyPEM(
-                              appState.model!.activeKeyPair!.sk,
+                              appState.model.activeKeyPair!.sk,
                             ),
                       );
                     },
@@ -126,7 +126,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
                           onPressed: () {
                             final appState = context.read<AppState>();
 
-                            if (otherAddress == appState.model!.activeAddress) {
+                            if (otherAddress == appState.model.activeAddress) {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
@@ -184,8 +184,8 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final activeAddress = appState.model!.activeAddress;
-    final allAddresses = appState.model!.keyring.keys;
+    final activeAddress = appState.model.activeAddress;
+    final allAddresses = appState.model.keyring.keys;
 
     final widgets = [
       Padding(
@@ -288,7 +288,7 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
         );
 
         appState.addContact(Contact(
-          name: 'Account ${appState.model!.keyring.length}',
+          name: 'Account ${appState.model.keyring.length}',
           address: generatedAddress,
         ));
 

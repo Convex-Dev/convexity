@@ -372,11 +372,11 @@ class _AssetCollectionState extends State<AssetCollection> {
         final balance = widget.balanceCache[aasset] ??
             appState.assetLibrary().balance(
                   asset: aasset.asset.address,
-                  owner: appState.model!.activeAddress,
+                  owner: appState.model.activeAddress,
                 );
 
         if (aasset.type == AssetType.fungible) {
-          final mine = appState.model!.myTokens.firstWhereOrNull(
+          final mine = appState.model.myTokens.firstWhereOrNull(
             (myToken) => myToken.asset.address == aasset.asset.address,
           );
 
@@ -549,9 +549,9 @@ class _SelectAccountState extends State<_SelectAccount> {
 
     // Add recent activities.
     if (widget.params!.isRecentsVisible &&
-        appState.model!.activities.isNotEmpty) {
+        appState.model.activities.isNotEmpty) {
       // Map to Address, and then cast to a Set to remove duplicates.
-      final recent = appState.model!.activities
+      final recent = appState.model.activities
           .where((activity) => activity.type == ActivityType.transfer)
           .map((activity) => (activity.payload as FungibleTransferActivity).to)
           .toSet();
@@ -559,7 +559,7 @@ class _SelectAccountState extends State<_SelectAccount> {
       var items = recent
           .map((to) {
             // Check if address is saved in the Address Book.
-            final contact = appState.model!.contacts.firstWhereOrNull(
+            final contact = appState.model.contacts.firstWhereOrNull(
               (contact) => contact.address == to,
             );
 
@@ -586,10 +586,9 @@ class _SelectAccountState extends State<_SelectAccount> {
 
     // Add contact items - if it's not empty.
     if (widget.params!.isContactsVisible &&
-        appState.model!.contacts.isNotEmpty) {
+        appState.model.contacts.isNotEmpty) {
       l.add(_HeadingItem('Contacts'));
-      l.addAll(
-          appState.model!.contacts.map((contact) => _ContactItem(contact)));
+      l.addAll(appState.model.contacts.map((contact) => _ContactItem(contact)));
     }
 
     return Container(
@@ -662,11 +661,11 @@ class ActiveAccount extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          AddressTile(address: appState.model!.activeAddress),
+          AddressTile(address: appState.model.activeAddress),
           FutureBuilder<Account>(
             future: appState
                 .convexClient()
-                .accountDetails(appState.model!.activeAddress),
+                .accountDetails(appState.model.activeAddress),
             builder: (context, snapshot) {
               var animatedChild;
 

@@ -89,7 +89,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final fungibles = appState.model!.following
+    final fungibles = appState.model.following
         .where((e) => e.type == AssetType.fungible)
         .map((e) => e.asset as FungibleToken?)
         .toList();
@@ -1111,7 +1111,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
 
     final appState = context.read<AppState>();
 
-    final activeAddress = appState.model!.activeAddress;
+    final activeAddress = appState.model.activeAddress;
 
     balance = appState.convexClient().query(
           source: '(import convex.asset :as asset)'

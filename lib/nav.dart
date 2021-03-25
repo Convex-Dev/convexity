@@ -178,7 +178,7 @@ Future<dynamic> pushExchange(
   BuildContext context, {
   required ExchangeParams params,
 }) {
-  final defaultWithToken = context.read<AppState>().model!.defaultWithToken;
+  final defaultWithToken = context.read<AppState>().model.defaultWithToken;
 
   // Use default 'with Token' if it's not specified in the parameters,
   // and it's not the same as 'of Token'.

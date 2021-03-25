@@ -13,7 +13,12 @@ void main() {
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AppState(model: Model(convexServerUri: convexWorldUri)),
+      create: (_) => AppState(
+        model: Model(
+          convexServerUri: convexWorldUri,
+          convexityAddress: convexityAddress,
+        ),
+      ),
       child: App(),
     ),
   );

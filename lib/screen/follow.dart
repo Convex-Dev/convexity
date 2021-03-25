@@ -115,7 +115,7 @@ class _RecommendedState extends State<_Recommended> {
                   aasset.asset.address as Address?,
                   appState.assetLibrary().balance(
                         asset: aasset.asset.address,
-                        owner: appState.model!.activeAddress,
+                        owner: appState.model.activeAddress,
                       ),
                 ),
               );
@@ -173,7 +173,7 @@ class _RecommendedState extends State<_Recommended> {
         children: _assets
             .where(
               (AAsset asset) =>
-                  appState.model!.following.contains(asset) == false,
+                  appState.model.following.contains(asset) == false,
             )
             .map(
               (asset) => asset.type == AssetType.fungible
@@ -334,7 +334,7 @@ class _AssetIDState extends State<_AssetID> {
                       fungible: aasset!.asset,
                       balance: appState.assetLibrary().balance(
                             asset: aasset!.asset.address,
-                            owner: appState.model!.activeAddress,
+                            owner: appState.model.activeAddress,
                           ),
                     )
                   : NonFungibleTokenCard(

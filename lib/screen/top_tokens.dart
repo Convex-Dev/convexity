@@ -32,7 +32,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   Future<Result>? _prices;
 
   FungibleToken _withToken(BuildContext context) =>
-      context.read<AppState>().model!.defaultWithToken ?? CVX;
+      context.read<AppState>().model.defaultWithToken ?? CVX;
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
         _refreshPrices(
           context: context,
           assets: assets ?? <AAsset>{},
-          withToken: context.read<AppState>().model!.defaultWithToken?.address,
+          withToken: context.read<AppState>().model.defaultWithToken?.address,
         );
       });
     });
@@ -90,7 +90,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
               Text('Price in'),
               Gap(10),
               Dropdown<FungibleToken?>(
-                active: appState.model!.defaultWithToken ?? CVX,
+                active: appState.model.defaultWithToken ?? CVX,
                 items: [CVX, ...fungibles]..sort(
                     (a, b) =>
                         a!.metadata.symbol!.compareTo(b!.metadata.symbol!),
@@ -142,7 +142,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                                 format.marketPrice(
                                   ofToken: token,
                                   price: e['price'],
-                                  withToken: appState.model!.defaultWithToken,
+                                  withToken: appState.model.defaultWithToken,
                                 ),
                               ),
                       textAlign: TextAlign.right,
@@ -166,7 +166,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                     _refreshPrices(
                       context: context,
                       assets: assets as Set<AAsset>,
-                      withToken: appState.model!.defaultWithToken?.address,
+                      withToken: appState.model.defaultWithToken?.address,
                     );
                   }),
                 );

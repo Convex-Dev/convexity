@@ -104,7 +104,7 @@ class _FungibleTransferScreenBodyState
   void send(BuildContext context) async {
     var appState = context.read<AppState>();
 
-    final contact = appState.model!.contacts.firstWhereOrNull(
+    final contact = appState.model.contacts.firstWhereOrNull(
       (contact) => contact.address == _receiver,
     );
 
@@ -175,9 +175,9 @@ class _FungibleTransferScreenBodyState
 
     var transferInProgress = appState.fungibleLibrary().transfer(
           token: widget.token!.address,
-          holder: appState.model!.activeAddress,
-          holderSecretKey: appState.model!.activeKeyPair!.sk,
-          holderAccountKey: appState.model!.activeAccountKey,
+          holder: appState.model.activeAddress,
+          holderSecretKey: appState.model.activeKeyPair!.sk,
+          holderAccountKey: appState.model.activeAccountKey,
           receiver: _receiver,
           amount: _amount,
         );
@@ -276,7 +276,7 @@ class _FungibleTransferScreenBodyState
                         var activity = Activity(
                           type: ActivityType.transfer,
                           payload: FungibleTransferActivity(
-                            from: appState.model!.activeAddress,
+                            from: appState.model.activeAddress,
                             to: _receiver,
                             amount: _amount,
                             token: widget.token,
@@ -309,7 +309,7 @@ class _FungibleTransferScreenBodyState
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final contact = appState.model!.contacts.firstWhereOrNull(
+    final contact = appState.model.contacts.firstWhereOrNull(
       (contact) => contact.address == _receiver,
     );
 

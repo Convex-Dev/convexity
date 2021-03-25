@@ -294,7 +294,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Widget _fungible() => StatelessWidgetBuilder((context) {
         final appState = context.watch<AppState>();
 
-        final activities = appState.model!.activities
+        final activities = appState.model.activities
             .where(
               (activity) {
                 if (activity.type != ActivityType.transfer) {
@@ -444,7 +444,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   ),
                 ),
               ],
-              if (appState.model!.following.contains(widget.aasset))
+              if (appState.model.following.contains(widget.aasset))
                 _unfollow(context, appState)
               else
                 _follow(context, appState),
@@ -567,7 +567,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     },
                   ),
                 ),
-                if (appState.model!.following.contains(widget.aasset))
+                if (appState.model.following.contains(widget.aasset))
                   _unfollow(context, appState)
                 else
                   _follow(context, appState),
@@ -674,7 +674,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
     return appState.assetLibrary().balance(
           asset: widget.aasset!.asset.address,
-          owner: appState.model!.activeAddress,
+          owner: appState.model.activeAddress,
         );
   }
 

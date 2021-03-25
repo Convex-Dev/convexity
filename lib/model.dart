@@ -364,18 +364,18 @@ final convexityAddress = Address(602);
 @immutable
 class Model {
   final Uri convexServerUri;
-  final Address? convexityAddress;
+  final Address convexityAddress;
   final Set<AAsset> following;
   final Set<AAsset> myTokens;
   final List<Activity> activities;
   final Set<Contact> contacts;
-  final Map<Address?, KeyPair?> keyring;
+  final Map<Address, KeyPair> keyring;
   final Address? activeAddress;
   final FungibleToken? defaultWithToken;
 
   const Model({
     required this.convexServerUri,
-    this.convexityAddress,
+    required this.convexityAddress,
     this.following = const {},
     this.myTokens = const {},
     this.activities = const [],
@@ -398,7 +398,7 @@ class Model {
     Set<AAsset>? myTokens,
     List<Activity>? activities,
     Set<Contact>? contacts,
-    Map<Address?, KeyPair?>? keyring,
+    Map<Address, KeyPair>? keyring,
     Address? activeAddress,
     FungibleToken? defaultWithToken,
   }) =>
@@ -447,7 +447,7 @@ class Model {
 
   String toString() => {
         'convexServerUri': convexServerUri.toString(),
-        'convexityAddress': convexityAddress?.toString(),
+        'convexityAddress': convexityAddress.toString(),
         'following': following.toString(),
         'myTokens': myTokens.toString(),
         'activities': activities.toString(),
@@ -494,17 +494,17 @@ void bootstrap({
 class AppState with ChangeNotifier {
   final client = http.Client();
 
-  Model? model;
+  Model model;
 
-  AppState({this.model});
+  AppState({required this.model});
 
   ConvexClient convexClient() => ConvexClient(
         client: client,
-        server: model!.convexServerUri,
+        server: model.convexServerUri,
         credentials: Credentials(
-          address: model!.activeAddress,
-          accountKey: model!.activeAccountKey,
-          secretKey: model!.activeKeyPair?.sk,
+          address: model.activeAddress,
+          accountKey: model.activeAccountKey,
+          secretKey: model.activeKeyPair?.sk,
         ),
       );
 
@@ -515,10 +515,10 @@ class AppState with ChangeNotifier {
 
   TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
 
-  ConvexityClient? convexityClient() => model!.convexityAddress != null
+  ConvexityClient? convexityClient() => model.convexityAddress != null
       ? ConvexityClient(
           convexClient: convexClient(),
-          actor: model!.convexityAddress,
+          actor: model.convexityAddress,
         )
       : null;
 
@@ -539,20 +539,20 @@ class AppState with ChangeNotifier {
   }
 
   void follow(AAsset? aasset, {bool isPersistent = false}) {
-    var following = Set<AAsset?>.from(model!.following)..add(aasset);
+    var following = Set<AAsset?>.from(model.following)..add(aasset);
 
     setFollowing(following, isPersistent: isPersistent);
   }
 
   void unfollow(AAsset? aasset, {bool isPersistent = false}) {
-    var following = model!.following.where((e) => e != aasset).toSet();
+    var following = model.following.where((e) => e != aasset).toSet();
 
     setFollowing(following, isPersistent: isPersistent);
   }
 
   /// Add a new Token to 'My Tokens'.
   void addMyToken(AAsset myToken, {bool isPersistent = false}) {
-    var myTokens = Set<AAsset>.from(model!.myTokens)..add(myToken);
+    var myTokens = Set<AAsset>.from(model.myTokens)..add(myToken);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
@@ -569,7 +569,7 @@ class AppState with ChangeNotifier {
 
   /// Add a new Activity.
   void addActivity(Activity activity, {bool isPersistent = false}) {
-    var activities = List<Activity>.from(model!.activities)..add(activity);
+    var activities = List<Activity>.from(model.activities)..add(activity);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(
@@ -586,7 +586,7 @@ class AppState with ChangeNotifier {
 
   /// Add a new Contact to Address Book.
   void addContact(Contact contact, {bool isPersistent = true}) {
-    var contacts = Set<Contact>.from(model!.contacts);
+    var contacts = Set<Contact>.from(model.contacts);
 
     if (contacts.contains(contact)) {
       contacts.remove(contact);
@@ -609,7 +609,7 @@ class AppState with ChangeNotifier {
 
   /// Remove Contact from Address Book.
   void removeContact(Contact? contact, {bool isPersistent = false}) {
-    var contacts = Set<Contact>.from(model!.contacts);
+    var contacts = Set<Contact>.from(model.contacts);
     contacts.remove(contact);
 
     if (isPersistent) {
@@ -639,18 +639,18 @@ class AppState with ChangeNotifier {
     });
   }
 
-  Contact? findContact(Address? address) => model!.contacts.firstWhereOrNull(
+  Contact? findContact(Address? address) => model.contacts.firstWhereOrNull(
         (_contact) => _contact.address == address,
       );
 
-  bool isAddressMine2(Address? address) => model!.keyring.containsKey(address);
+  bool isAddressMine2(Address? address) => model.keyring.containsKey(address);
 
   void addToKeyring({
-    Address? address,
-    KeyPair? keyPair,
+    required Address address,
+    required KeyPair keyPair,
     bool isPersistent = true,
   }) {
-    final _keyring = Map<Address?, KeyPair?>.from(model!.keyring);
+    final _keyring = Map<Address, KeyPair>.from(model.keyring);
     _keyring[address] = keyPair;
 
     if (isPersistent) {
@@ -665,8 +665,7 @@ class AppState with ChangeNotifier {
   }
 
   void removeAddress(Address? address, {bool isPersistent = true}) {
-    final _keyring = Map<Address, KeyPair>.from(model!.keyring)
-      ..remove(address);
+    final _keyring = Map<Address, KeyPair>.from(model.keyring)..remove(address);
 
     if (isPersistent) {
       SharedPreferences.getInstance().then(

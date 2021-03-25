@@ -1155,7 +1155,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
 
     final appState = context.read<AppState>();
 
-    final activeAddress = appState.model!.activeAddress;
+    final activeAddress = appState.model.activeAddress;
 
     balance = appState.convexClient().query(
           source: '(import convex.asset :as asset)'

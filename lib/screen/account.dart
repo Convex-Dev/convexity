@@ -19,14 +19,14 @@ class AccountScreen extends StatelessWidget {
         address ?? ModalRoute.of(context)!.settings.arguments as Address?;
 
     final contacts = context
-        .select<AppState, Set<Contact>>((appState) => appState.model!.contacts);
+        .select<AppState, Set<Contact>>((appState) => appState.model.contacts);
 
     final contact = contacts.firstWhereOrNull(
       (element) => element.address == _address,
     );
 
     final activeAddress = context.select<AppState, Address?>(
-      (appState) => appState.model!.activeAddress,
+      (appState) => appState.model.activeAddress,
     );
 
     final isMine = activeAddress == _address;
@@ -77,7 +77,7 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   @override
   Widget build(BuildContext context) {
     final contacts = context.select<AppState, Set<Contact>>(
-      (appState) => appState.model!.contacts,
+      (appState) => appState.model.contacts,
     );
 
     final contact = contacts.firstWhereOrNull(
