@@ -306,24 +306,20 @@ class NonFungibleTokenCard extends StatelessWidget {
 // ignore: must_be_immutable
 class AssetCollection extends StatefulWidget {
   final Set<AAsset> assets = {};
-  final Map<AAsset?, Future> balanceCache = {};
+  final Map<AAsset, Future> balanceCache = {};
 
   late String empty;
   void Function(AAsset)? onAssetTap;
 
   AssetCollection({
     Key? key,
-    required assets,
+    required Iterable<AAsset> assets,
     void Function(AAsset)? onAssetTap,
-    balanceCache,
-    empty,
+    Map<AAsset, Future>? balanceCache,
+    String? empty,
   }) : super(key: key) {
     this.empty = empty ?? 'Nothing to show';
-
-    if (assets != null) {
-      this.assets.addAll(Set.from(assets));
-    }
-
+    this.assets.addAll(assets);
     this.onAssetTap = onAssetTap;
 
     if (balanceCache != null) {
@@ -369,6 +365,9 @@ class _AssetCollectionState extends State<AssetCollection> {
       mainAxisSpacing: 10,
       crossAxisCount: 2,
       children: widget.assets.map((aasset) {
+        // We don't need to query the balance for this Asset
+        // if there's already one available in the cache.
+        // Notice that the cache *is not* updated.
         final balance = widget.balanceCache[aasset] ??
             appState.assetLibrary().balance(
                   asset: aasset.asset.address,
@@ -429,8 +428,8 @@ class _AssetCollectionState extends State<AssetCollection> {
 
   void _pushAsset({
     required BuildContext context,
-    AAsset? aasset,
-    Future? balance,
+    required AAsset aasset,
+    required Future balance,
   }) async {
     final result = await nav.pushAsset(
       context,
@@ -441,7 +440,8 @@ class _AssetCollectionState extends State<AssetCollection> {
     logger.d('Asset $aasset balance $result.');
 
     setState(() {
-      widget.balanceCache[aasset] = Future.value(result);
+      // Clear cache to 'force' a balance refresh.
+      widget.balanceCache.clear();
     });
   }
 }
