@@ -629,6 +629,24 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       onPressed: () {
                         Navigator.pop(context);
 
+                        if (_ofToken != _CVX) {
+                          appState.follow(
+                            AAsset(
+                              type: AssetType.fungible,
+                              asset: _ofToken,
+                            ),
+                          );
+                        }
+
+                        if (_withToken != _CVX) {
+                          appState.follow(
+                            AAsset(
+                              type: AssetType.fungible,
+                              asset: _withToken,
+                            ),
+                          );
+                        }
+
                         setState(() {
                           // Buy/sell was successfull. Now let's make the UI ready for a new transaction:
 

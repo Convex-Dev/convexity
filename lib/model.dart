@@ -540,7 +540,7 @@ class AppState with ChangeNotifier {
     setState((m) => m!.copyWith(following: Set<AAsset>.from(following)));
   }
 
-  void follow(AAsset? aasset, {bool isPersistent = false}) {
+  void follow(AAsset aasset, {bool isPersistent = true}) {
     var following = Set<AAsset?>.from(model.following)..add(aasset);
 
     setFollowing(following, isPersistent: isPersistent);

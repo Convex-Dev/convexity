@@ -250,7 +250,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         child: ElevatedButton(
           child: Text('Follow'),
           onPressed: () {
-            appState.follow(widget.aasset);
+            appState.follow(widget.aasset!);
 
             ScaffoldMessenger.of(context)
               ..removeCurrentSnackBar()

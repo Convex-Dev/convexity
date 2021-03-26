@@ -340,7 +340,7 @@ class _AssetIDState extends State<_AssetID> {
             ElevatedButton(
               child: Text('Follow'),
               onPressed: () {
-                context.read<AppState>().follow(aasset, isPersistent: true);
+                context.read<AppState>().follow(aasset!, isPersistent: true);
 
                 Navigator.pop(context);
               },
