@@ -13,8 +13,8 @@ import '../format.dart' as format;
 class ExchangeScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final ExchangeParams? params =
-        ModalRoute.of(context)!.settings.arguments as ExchangeParams?;
+    final ExchangeParams params =
+        ModalRoute.of(context)!.settings.arguments as ExchangeParams;
 
     return Scaffold(
       appBar: AppBar(title: Text('Exchange')),
@@ -29,9 +29,9 @@ class ExchangeScreen2 extends StatelessWidget {
 }
 
 class ExchangeScreenBody2 extends StatefulWidget {
-  final ExchangeParams? params;
+  final ExchangeParams params;
 
-  ExchangeScreenBody2({Key? key, this.params}) : super(key: key);
+  ExchangeScreenBody2({Key? key, required this.params}) : super(key: key);
 
   @override
   _ExchangeScreenBody2State createState() => _ExchangeScreenBody2State(params);
