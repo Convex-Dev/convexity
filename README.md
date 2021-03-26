@@ -4,7 +4,7 @@ A wallet and decentralised asset manager for Convex, written in Dart and using t
 
 ## Architecture
 
-Convexity is a lightweight dApp designed to connect to a Convex Peer, using the [JSON Client API](https://convex.world/#/documentation/client-api)
+Convexity is a lightweight dApp designed to connect to a Convex Peer, using the [JSON Client API](https://convex.world/documentation/client-api)
 
 A Convex test network peer is maintained at [convex.world](https://convex.world)
 
