@@ -654,7 +654,7 @@ class AssetLibrary {
   /// It returns a number for Fungible Tokens,
   /// but a set of numbers (IDs) for Non-Fungible Tokens.
   Future<dynamic> balance({
-    required Address? asset,
+    required Address asset,
     Address? owner,
   }) async {
     final source = '(import convex.asset :as asset)'
@@ -669,6 +669,37 @@ class AssetLibrary {
     }
 
     return result.value;
+  }
+
+  Future<Map<Address, dynamic>> balanceBulk(
+    Iterable<Address> assets,
+    Address? owner,
+  ) async {
+    final sexp = assets.fold<String>(
+      '',
+      (sexp, address) =>
+          sexp +
+          ''
+              '{'
+              ':address $address '
+              ':balance (asset/balance $address ${owner != null ? owner : convexClient.credentials!.address})'
+              '}',
+    );
+
+    return convexClient
+        .query(
+          source: '(import convex.asset :as asset) [$sexp]',
+        )
+        .then(
+          (result) => Map.fromEntries(
+            (result.value as List).map(
+              (m) => MapEntry<Address, dynamic>(
+                Address(m['address']),
+                m['balance'],
+              ),
+            ),
+          ),
+        );
   }
 
   Future<Result> transferNonFungible({
