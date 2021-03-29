@@ -323,7 +323,7 @@ class AssetCollection extends StatefulWidget {
     this.onAssetTap = onAssetTap;
 
     if (balanceCache != null) {
-      this.balanceCache.addAll(Map.from(balanceCache));
+      this.balanceCache.addAll(balanceCache);
     }
   }
 
