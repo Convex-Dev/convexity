@@ -24,7 +24,7 @@ final CVX = FungibleToken(
     description: 'Convex Gold Coin.',
     tickerSymbol: 'CVX',
     currencySymbol: '',
-    decimals: config.CVX_DECIMALS,
+    decimals: config.CONVEX_GOLD_DECIMALS,
   ),
 );
 

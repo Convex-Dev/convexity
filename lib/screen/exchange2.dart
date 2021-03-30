@@ -1054,6 +1054,8 @@ class _MarketPrice extends StatelessWidget {
           ),
         );
 
+        logger.d('Market price is $withPriceText (${snapshot.data}).');
+
         return Container(
           height: 50,
           child: Column(

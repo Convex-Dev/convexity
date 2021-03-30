@@ -16,4 +16,4 @@ Uri convexServerUri() => isDebug()
         port: 443,
       );
 
-const CVX_DECIMALS = 9;
+const CONVEX_GOLD_DECIMALS = 9;

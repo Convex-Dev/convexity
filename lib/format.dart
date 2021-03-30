@@ -50,9 +50,9 @@ int readFungibleCurrency({
   }
 }
 
-String formatCVX(int n) => formatWithDecimals(n, config.CVX_DECIMALS);
+String formatCVX(int n) => formatWithDecimals(n, config.CONVEX_GOLD_DECIMALS);
 
-int readCVX(String s) => readWithDecimals(s, config.CVX_DECIMALS);
+int readCVX(String s) => readWithDecimals(s, config.CONVEX_GOLD_DECIMALS);
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
 
@@ -66,8 +66,8 @@ double marketPrice({
     // A null 'of Token' or 'with Token' is interpreted as CVX.
     shiftDecimalPlace(
       price,
-      (ofToken?.metadata.decimals ?? config.CVX_DECIMALS) -
-          (withToken?.metadata.decimals ?? config.CVX_DECIMALS),
+      (ofToken?.metadata.decimals ?? config.CONVEX_GOLD_DECIMALS) -
+          (withToken?.metadata.decimals ?? config.CONVEX_GOLD_DECIMALS),
     );
 
 String marketPriceStr(double price) => price.toStringAsPrecision(5);
