@@ -100,7 +100,7 @@ class ConvexityClient {
         ':name "${fungible.metadata.name}",'
         ':description "${fungible.metadata.description}",'
         ':type :fungible,'
-        ':symbol "${fungible.metadata.symbol}",'
+        ':symbol "${fungible.metadata.tickerSymbol}",'
         ':currency-symbol "${fungible.metadata.currencySymbol}",'
         ':decimals ${fungible.metadata.decimals}'
         '}';

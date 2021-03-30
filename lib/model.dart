@@ -21,7 +21,7 @@ final CVX = FungibleToken(
   metadata: FungibleTokenMetadata(
     name: 'Convex Gold',
     description: 'Convex Gold Coin.',
-    symbol: 'CVX',
+    tickerSymbol: 'CVX',
     currencySymbol: '',
     decimals: 0,
   ),

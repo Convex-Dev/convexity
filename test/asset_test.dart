@@ -63,7 +63,7 @@ void main() {
     final metadata = FungibleTokenMetadata(
       name: 'Sample Token ${DateTime.now()}',
       description: 'Description of Sample Token ${DateTime.now()}.',
-      symbol: 'ST',
+      tickerSymbol: 'ST',
       currencySymbol: 'ST\$',
       decimals: 2,
     );

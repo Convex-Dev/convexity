@@ -46,7 +46,7 @@ class FungibleTransferScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Transfer ${_token.metadata.symbol}',
+                  'Transfer ${_token.metadata.tickerSymbol}',
                 ),
                 FutureBuilder(
                   future: _balance,

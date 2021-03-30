@@ -185,7 +185,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       active: _ofToken,
                       items: [_CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
-                        fungible!.metadata.symbol!,
+                        fungible!.metadata.tickerSymbol!,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
@@ -318,7 +318,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       active: _withToken,
                       items: [_CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
-                        fungible!.metadata.symbol!,
+                        fungible!.metadata.tickerSymbol!,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
@@ -581,7 +581,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Text(
-                          'Sorry. It was not possible to ${_actionText.toLowerCase()} ${_ofToken.metadata.symbol}.\n\n${snapshot.error}',
+                          'Sorry. It was not possible to ${_actionText.toLowerCase()} ${_ofToken.metadata.tickerSymbol}.\n\n${snapshot.error}',
                         ),
                       ),
                       Gap(10),
@@ -618,7 +618,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '$boughtOrSold ${_params!.amount} ${_ofToken.metadata.symbol} ${_actionWithForText.toLowerCase()} $quoteText.',
+                            '$boughtOrSold ${_params!.amount} ${_ofToken.metadata.tickerSymbol} ${_actionWithForText.toLowerCase()} $quoteText.',
                           ),
                         ],
                       ),
@@ -848,7 +848,7 @@ final _CVX = FungibleToken(
   metadata: FungibleTokenMetadata(
     name: 'Convex Gold',
     description: 'Convex Gold Coin.',
-    symbol: 'CVX',
+    tickerSymbol: 'CVX',
     currencySymbol: '\$',
     decimals: 0,
   ),
@@ -1070,7 +1070,8 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      params!.ofToken?.metadata.symbol ?? _CVX.metadata.symbol!,
+                      params!.ofToken?.metadata.tickerSymbol ??
+                          _CVX.metadata.tickerSymbol!,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -1085,8 +1086,8 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      (params!.withToken?.metadata.symbol ??
-                          _CVX.metadata.symbol!),
+                      (params!.withToken?.metadata.tickerSymbol ??
+                          _CVX.metadata.tickerSymbol!),
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -1168,7 +1169,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
           : Column(
               children: <Widget>[
                 Text(
-                  'Add liquidity for ${widget.token!.metadata.symbol}',
+                  'Add liquidity for ${widget.token!.metadata.tickerSymbol}',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Text(
@@ -1180,7 +1181,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${widget.token!.metadata.symbol} BALANCE',
+                      '${widget.token!.metadata.tickerSymbol} BALANCE',
                       style: Theme.of(context).textTheme.caption,
                     ),
                     Gap(8),
@@ -1209,7 +1210,8 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                 TextField(
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Amount of ${widget.token!.metadata.symbol}',
+                    labelText:
+                        'Amount of ${widget.token!.metadata.tickerSymbol}',
                     helperText: 'Helper text',
                     border: const OutlineInputBorder(),
                   ),
@@ -1270,7 +1272,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                       children: [
                         TableCell(
                           child: Text(
-                            '1 ${widget.token!.metadata.symbol}',
+                            '1 ${widget.token!.metadata.tickerSymbol}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
@@ -1307,7 +1309,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                         TableCell(
                           child: Text(
                             tokenPrice != null
-                                ? '$tokenPrice ${widget.token!.metadata.symbol}'
+                                ? '$tokenPrice ${widget.token!.metadata.tickerSymbol}'
                                 : '-',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),

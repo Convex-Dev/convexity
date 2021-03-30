@@ -147,7 +147,7 @@ class AssetScreen extends StatelessWidget {
     Future _balance = balance ?? arguments!.item2;
 
     final title = _aasset.type == AssetType.fungible
-        ? (_aasset.asset as FungibleToken).metadata.symbol
+        ? (_aasset.asset as FungibleToken).metadata.tickerSymbol
         : (_aasset.asset as NonFungibleToken).metadata.name;
 
     return Scaffold(

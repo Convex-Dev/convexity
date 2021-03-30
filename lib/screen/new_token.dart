@@ -107,7 +107,7 @@ class _CreateTokenState extends State<_CreateToken> {
     var metadata = FungibleTokenMetadata(
       name: _newFungibleToken.name,
       description: _newFungibleToken.description,
-      symbol: _newFungibleToken.symbol,
+      tickerSymbol: _newFungibleToken.symbol,
       currencySymbol: _newFungibleToken.currencySymbol,
       decimals: _newFungibleToken.decimals,
     );
@@ -334,7 +334,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
             });
           },
         ),
-        subtitle: Text('Symbol'),
+        subtitle: Text('Ticker Symbol'),
       ),
       ListTile(
         title: TextFormField(

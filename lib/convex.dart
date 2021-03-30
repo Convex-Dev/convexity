@@ -418,14 +418,15 @@ abstract class Asset {}
 class FungibleTokenMetadata {
   final String? name;
   final String? description;
-  final String? symbol;
+  final String? tickerSymbol;
   final String? currencySymbol;
   final int? decimals;
 
   FungibleTokenMetadata({
     required this.name,
     required this.description,
-    required this.symbol,
+    // It's like a PK for the Asset - also change things in Convexity Actor.
+    required this.tickerSymbol,
     required this.currencySymbol,
     required this.decimals,
   });
@@ -433,14 +434,14 @@ class FungibleTokenMetadata {
   FungibleTokenMetadata.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         description = json['description'],
-        symbol = json['symbol'],
+        tickerSymbol = json['symbol'],
         currencySymbol = json['currency-symbol'],
         decimals = json['decimals'];
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
-        'symbol': symbol,
+        'symbol': tickerSymbol,
         'currency-symbol': currencySymbol,
         'decimals': decimals,
       };

@@ -92,11 +92,11 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
               Dropdown<FungibleToken?>(
                 active: appState.model.defaultWithToken ?? CVX,
                 items: [CVX, ...fungibles]..sort(
-                    (a, b) =>
-                        a!.metadata.symbol!.compareTo(b!.metadata.symbol!),
+                    (a, b) => a!.metadata.tickerSymbol!
+                        .compareTo(b!.metadata.tickerSymbol!),
                   ),
                 itemWidget: (FungibleToken? token) {
-                  return Text(token!.metadata.symbol!);
+                  return Text(token!.metadata.tickerSymbol!);
                 },
                 onChanged: (t) {
                   final defaultWithToken = t == CVX ? null : t;
@@ -117,7 +117,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ...fungibles.map(
             (token) => ListTile(
               leading: _currencyIcon(token!),
-              title: Text(token.metadata.symbol!),
+              title: Text(token.metadata.tickerSymbol!),
               subtitle: Text(token.metadata.name!),
               trailing: FutureBuilder<Result>(
                 future: _prices,
@@ -227,7 +227,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   }
 
   Widget _currencyIcon(FungibleToken token) => Image.asset(
-        'icons/currency/${token.metadata.symbol!.toLowerCase()}.png',
+        'icons/currency/${token.metadata.tickerSymbol!.toLowerCase()}.png',
         package: 'currency_icons',
         width: 40,
         height: 40,

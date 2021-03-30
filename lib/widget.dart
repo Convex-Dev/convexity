@@ -161,7 +161,7 @@ class FungibleTokenCard extends StatelessWidget {
           ),
           Gap(10),
           Text(
-            fungible!.metadata.symbol!,
+            fungible!.metadata.tickerSymbol!,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption,
           ),
