@@ -7,7 +7,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import 'convex.dart';
 import 'logger.dart';
@@ -683,7 +682,7 @@ class ActiveAccount extends StatelessWidget {
               } else {
                 animatedChild = Padding(
                   padding: const EdgeInsets.all(16),
-                  child: AccountTable(account: snapshot.data),
+                  child: AccountTable(account: snapshot.data!),
                 );
               }
 
@@ -767,9 +766,9 @@ class AddressTile extends StatelessWidget {
 }
 
 class AccountTable extends StatelessWidget {
-  final Account? account;
+  final Account account;
 
-  const AccountTable({Key? key, this.account}) : super(key: key);
+  const AccountTable({Key? key, required this.account}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -802,17 +801,15 @@ class AccountTable extends StatelessWidget {
           children: [
             _cell(
               context,
-              text: NumberFormat().format(
-                account!.balance,
-              ),
+              text: formatCVX(account.balance!),
             ),
             _cell(
               context,
-              text: account!.memorySize.toString(),
+              text: account.memorySize.toString(),
             ),
             _cell(
               context,
-              text: account!.memoryAllowance.toString(),
+              text: account.memoryAllowance.toString(),
             ),
           ],
         )

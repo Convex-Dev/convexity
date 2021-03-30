@@ -14,6 +14,7 @@ import 'logger.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
 import 'format.dart' as format;
+import 'config.dart' as config;
 
 // ignore: non_constant_identifier_names
 final CVX = FungibleToken(
@@ -23,7 +24,7 @@ final CVX = FungibleToken(
     description: 'Convex Gold Coin.',
     tickerSymbol: 'CVX',
     currencySymbol: '',
-    decimals: 0,
+    decimals: config.CVX_DECIMALS,
   ),
 );
 

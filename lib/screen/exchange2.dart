@@ -64,9 +64,9 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
   _ExchangeScreenBody2State(this._params);
 
-  FungibleToken get _ofToken => _params!.ofToken ?? _CVX;
+  FungibleToken get _ofToken => _params!.ofToken ?? CVX;
 
-  FungibleToken get _withToken => _params!.withToken ?? _CVX;
+  FungibleToken get _withToken => _params!.withToken ?? CVX;
 
   String get _actionText =>
       _params?.action == ExchangeAction.buy ? 'Buy' : 'Sell';
@@ -126,8 +126,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             ),
             Gap(20),
             _MarketPrice(
-              params: _params,
-              price: _price,
+              params: _params!,
+              price: _price!,
             ),
             Container(
               height: 60,
@@ -166,7 +166,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       return TextField(
                         controller: _ofController,
                         autofocus: true,
-                        enabled: _ofToken == _CVX || snapshot.hasData,
+                        enabled: _ofToken == CVX || snapshot.hasData,
                         onChanged: (s) {
                           setState(() {
                             _params = _params!.copyWith(amount: s);
@@ -183,14 +183,14 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   children: [
                     _Dropdown<FungibleToken?>(
                       active: _ofToken,
-                      items: [_CVX, ...dropdownItems],
+                      items: [CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
                         fungible!.metadata.tickerSymbol!,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
                         setState(() {
-                          final ofToken = e == _CVX ? null : e;
+                          final ofToken = e == CVX ? null : e;
 
                           _params = _params!.setOfToken(ofToken);
 
@@ -316,13 +316,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                   children: [
                     _Dropdown<FungibleToken?>(
                       active: _withToken,
-                      items: [_CVX, ...dropdownItems],
+                      items: [CVX, ...dropdownItems],
                       itemWidget: (fungible) => Text(
                         fungible!.metadata.tickerSymbol!,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onChanged: (e) {
-                        final withToken = e == _CVX ? null : e;
+                        final withToken = e == CVX ? null : e;
 
                         // Always update the default global 'with Token' too.
                         appState.setDefaultWithToken(withToken);
@@ -361,8 +361,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         return Spinner();
                       }
 
-                      final s = _ofToken == _CVX
-                          ? format.formatCVX(snapshot.data!.item1)
+                      final s = _ofToken == CVX
+                          ? format.formatCVX(snapshot.data!.item1!)
                           : format.formatFungibleCurrency(
                               metadata: _ofToken.metadata,
                               number: snapshot.data!.item1,
@@ -381,8 +381,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         return Spinner();
                       }
 
-                      final s = _withToken == _CVX
-                          ? format.formatCVX(snapshot.data!.item2)
+                      final s = _withToken == CVX
+                          ? format.formatCVX(snapshot.data!.item2!)
                           : format.formatFungibleCurrency(
                               metadata: _withToken.metadata,
                               number: snapshot.data!.item2,
@@ -504,12 +504,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     switch (_params!.action) {
       case ExchangeAction.buy:
-        if (_ofToken == _CVX) {
+        if (_ofToken == CVX) {
           x = appState.torus().buyCVX(
                 amount: _params!.amountInt,
                 withToken: _params!.withToken!.address,
               );
-        } else if (_withToken != _CVX) {
+        } else if (_withToken != CVX) {
           x = appState.torus().buy(
                 ofToken: _params!.ofToken!.address,
                 amount: _params!.amountInt,
@@ -524,12 +524,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
         break;
       case ExchangeAction.sell:
-        if (_ofToken == _CVX) {
+        if (_ofToken == CVX) {
           x = appState.torus().sellCVX(
                 amount: _params!.amountInt,
                 withToken: _params!.withToken!.address,
               );
-        } else if (_withToken != _CVX) {
+        } else if (_withToken != CVX) {
           x = appState.torus().sell(
                 ofToken: _params!.ofToken!.address,
                 amount: _params!.amountInt,
@@ -629,7 +629,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       onPressed: () {
                         Navigator.pop(context);
 
-                        if (_ofToken != _CVX) {
+                        if (_ofToken != CVX) {
                           appState.follow(
                             AAsset(
                               type: AssetType.fungible,
@@ -638,7 +638,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                           );
                         }
 
-                        if (_withToken != _CVX) {
+                        if (_withToken != CVX) {
                           appState.follow(
                             AAsset(
                               type: AssetType.fungible,
@@ -765,7 +765,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     final torus = context.read<AppState>().torus();
 
     if (_params!.action == ExchangeAction.buy) {
-      _quote = _ofToken == _CVX
+      _quote = _ofToken == CVX
           ? torus.buyCvxQuote(
               amount: _params!.amountInt,
               withToken: _params!.withToken?.address,
@@ -776,7 +776,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               withToken: _params!.withToken?.address,
             );
     } else {
-      _quote = _ofToken == _CVX
+      _quote = _ofToken == CVX
           ? torus.sellCvxQuote(
               amount: _params!.amountInt,
               withToken: _params!.withToken?.address,
@@ -841,18 +841,6 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             )
           : format.formatCVX(quote);
 }
-
-// ignore: non_constant_identifier_names
-final _CVX = FungibleToken(
-  address: Address(-1),
-  metadata: FungibleTokenMetadata(
-    name: 'Convex Gold',
-    description: 'Convex Gold Coin.',
-    tickerSymbol: 'CVX',
-    currencySymbol: '\$',
-    decimals: 0,
-  ),
-);
 
 class _BuySellToggle extends StatelessWidget {
   final ExchangeAction? selected;
@@ -933,14 +921,26 @@ class _Balance extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Spinner();
         } else {
-          final s = snapshot.data == null
-              ? ''
-              : token == null
-                  ? format.formatCVX(snapshot.data as int)
-                  : format.formatFungibleCurrency(
-                      metadata: token!.metadata,
-                      number: snapshot.data as int,
-                    );
+          final balance = snapshot.data as int?;
+
+          late String balanceText;
+
+          if (balance == null) {
+            balanceText = '';
+
+            logger.d('Token $token balance is null.');
+          } else {
+            balanceText = token == null
+                ? format.formatCVX(balance)
+                : format.formatFungibleCurrency(
+                    metadata: token!.metadata,
+                    number: balance,
+                  );
+
+            logger.d(
+              '${token == null ? 'CVX' : token!.metadata.tickerSymbol} balance is $balanceText ($balance).',
+            );
+          }
 
           return Container(
             height: 20,
@@ -951,7 +951,7 @@ class _Balance extends StatelessWidget {
                   style: Theme.of(context).textTheme.caption,
                 ),
                 Gap(5),
-                Text(s),
+                Text(balanceText),
               ],
             ),
           );
@@ -1032,23 +1032,27 @@ class _MarketCheck extends StatelessWidget {
 }
 
 class _MarketPrice extends StatelessWidget {
-  final ExchangeParams? params;
-  final Future<double?>? price;
+  final ExchangeParams params;
+  final Future<double?> price;
 
-  const _MarketPrice({Key? key, this.params, this.price}) : super(key: key);
+  const _MarketPrice({
+    Key? key,
+    required this.params,
+    required this.price,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<double?>(
       future: price,
       builder: (context, snapshot) {
-        final priceShifted = format.shiftDecimalPlace(
-          snapshot.data ?? 0,
-          (params!.ofToken?.metadata.decimals ?? 0) -
-              (params!.withToken?.metadata.decimals ?? 0),
+        final withPriceText = format.marketPriceStr(
+          format.marketPrice(
+            ofToken: params.ofToken,
+            withToken: params.withToken,
+            price: snapshot.data ?? 0,
+          ),
         );
-
-        final withPriceText = NumberFormat().format(priceShifted);
 
         return Container(
           height: 50,
@@ -1070,8 +1074,8 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      params!.ofToken?.metadata.tickerSymbol ??
-                          _CVX.metadata.tickerSymbol!,
+                      params.ofToken?.metadata.tickerSymbol ??
+                          CVX.metadata.tickerSymbol!,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -1086,8 +1090,8 @@ class _MarketPrice extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     Text(
-                      (params!.withToken?.metadata.tickerSymbol ??
-                          _CVX.metadata.tickerSymbol!),
+                      (params.withToken?.metadata.tickerSymbol ??
+                          CVX.metadata.tickerSymbol!),
                       style: Theme.of(context)
                           .textTheme
                           .headline6!

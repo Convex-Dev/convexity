@@ -1,10 +1,11 @@
 import 'dart:math';
 
-import 'package:convex_wallet/logger.dart';
 import 'package:intl/intl.dart';
 import 'package:decimal/decimal.dart';
 
+import 'logger.dart';
 import 'convex.dart';
+import 'config.dart' as config;
 
 final customNumberFormat = NumberFormat('#,###');
 
@@ -33,15 +34,8 @@ String formatFungibleCurrency({
         ? formatIntegerPart(number)
         : formatWithDecimals(number!, metadata.decimals!));
 
-int readWithDecimals(String s, int decimals) {
-  // logger.d(
-  //   'Set amount: $amountOf ' +
-  //       '(Token decimals: ${params.ofToken.metadata.decimals}; ' +
-  //       'amount = ${params.amount} * 10^${params.ofToken.metadata.decimals})',
-  // );
-
-  return (Decimal.parse(s) * Decimal.fromInt(pow(10, decimals) as int)).toInt();
-}
+int readWithDecimals(String s, int decimals) =>
+    (Decimal.parse(s) * Decimal.fromInt(pow(10, decimals) as int)).toInt();
 
 int readFungibleCurrency({
   required FungibleTokenMetadata metadata,
@@ -56,11 +50,11 @@ int readFungibleCurrency({
   }
 }
 
-int readCVX(String s) => int.parse(s);
+String formatCVX(int n) => formatWithDecimals(n, config.CVX_DECIMALS);
+
+int readCVX(String s) => readWithDecimals(s, config.CVX_DECIMALS);
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
-
-String formatCVX(int? n) => NumberFormat().format(n);
 
 double shiftDecimalPlace(double x, int decimals) => x * pow(10, decimals);
 
@@ -69,9 +63,11 @@ double marketPrice({
   FungibleToken? withToken,
   required double price,
 }) =>
+    // A null 'of Token' or 'with Token' is interpreted as CVX.
     shiftDecimalPlace(
       price,
-      (ofToken?.metadata.decimals ?? 0) - (withToken?.metadata.decimals ?? 0),
+      (ofToken?.metadata.decimals ?? config.CVX_DECIMALS) -
+          (withToken?.metadata.decimals ?? config.CVX_DECIMALS),
     );
 
 String marketPriceStr(double price) => price.toStringAsPrecision(5);

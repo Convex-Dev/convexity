@@ -16,5 +16,4 @@ Uri convexServerUri() => isDebug()
         port: 443,
       );
 
-var convexityAddress =
-    '33391329CBf87B84EdD482B04D7De6A7bC33Bb99B384D9d77B0365BD7a7e2562';
+const CVX_DECIMALS = 9;

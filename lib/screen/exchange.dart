@@ -177,7 +177,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
   /// Returns quote formatted based on 'with Token'.
   /// If 'with Token' is selected, it will be formated using its metadata.
   /// If 'with Token' is null, it will be formatted as CVX.
-  String getQuoteText(int? quote) => params!.withToken != null
+  String getQuoteText(int quote) => params!.withToken != null
       ? format.formatFungibleCurrency(
           metadata: params!.ofToken!.metadata,
           number: quote,
@@ -380,7 +380,7 @@ class _ExchangeScreenBodyState extends State<ExchangeScreenBody> {
               ),
               Gap(10),
               Text(
-                snapshot.hasData ? getQuoteText(snapshot.data) : '',
+                snapshot.hasData ? getQuoteText(snapshot.data!) : '',
                 style: Theme.of(context).textTheme.headline5,
               )
             ],
