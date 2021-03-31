@@ -39,6 +39,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   var targetController = TextEditingController();
   var amountController = TextEditingController();
 
+  late Future<int?> _balance;
+
   Address? target;
 
   void scan() async {
@@ -226,10 +228,23 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    final appState = context.read<AppState>();
+
+    _balance = appState.convexClient().balance(appState.model.activeAddress);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
     final fromContact = appState.findContact(appState.model.activeAddress);
+
+    final address = fromContact != null
+        ? fromContact.address
+        : appState.model.activeAddress;
 
     fromController.text = fromContact != null
         ? fromContact.name!
@@ -248,6 +263,28 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
               decoration: InputDecoration(
                 labelText: 'From',
               ),
+            ),
+            FutureBuilder(
+              future: _balance,
+              builder: (context, snapshot) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        Spinner()
+                      else ...[
+                        Text(
+                          'Balance ',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        Text(format.formatCVX(snapshot.data as int))
+                      ]
+                    ],
+                  ),
+                );
+              },
             ),
             TextFormField(
               readOnly: true,
