@@ -242,10 +242,6 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
     final fromContact = appState.findContact(appState.model.activeAddress);
 
-    final address = fromContact != null
-        ? fromContact.address
-        : appState.model.activeAddress;
-
     fromController.text = fromContact != null
         ? fromContact.name!
         : appState.model.activeAddress.toString();
