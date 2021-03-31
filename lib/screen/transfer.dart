@@ -12,6 +12,7 @@ import '../nav.dart';
 import '../widget.dart';
 import '../route.dart' as route;
 import '../convex.dart' as convex;
+import '../format.dart' as format;
 
 class TransferScreen extends StatelessWidget {
   @override
@@ -50,8 +51,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
   void transfer({
     required BuildContext context,
-    convex.Address? to,
-    int? amount,
+    required convex.Address to,
+    required String amount,
   }) async {
     final appState = context.read<AppState>();
 
@@ -71,14 +72,25 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                 size: 80,
                 color: Colors.black12,
               ),
-              Gap(10),
+              Gap(5),
+              Text(
+                'Please confirm transfer.',
+                style: Theme.of(context).textTheme.caption,
+              ),
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Transfer $amount to ',
+                      'Transfer ',
+                    ),
+                    Text(
+                      '$amount Convex Gold ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      ' to ',
                     ),
                     if (contact == null)
                       Text(to.toString())
@@ -108,7 +120,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     }
 
     final transferInProgress = appState.convexClient().transact(
-          source: '(transfer $to $amount)',
+          source: '(transfer $to ${format.readCVX(amount)})',
         );
 
     showModalBottomSheet(
@@ -177,10 +189,17 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Transfered $amount to ',
+                            'Transfered ',
+                          ),
+                          Text(
+                            '$amount Convex Gold ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'to ',
                           ),
                           if (contact == null)
-                            aidenticon(to!)
+                            aidenticon(to)
                           else
                             Text(contact.name! + '.'),
                         ],
@@ -269,9 +288,6 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
             TextFormField(
               keyboardType: TextInputType.number,
               controller: amountController,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
               decoration: InputDecoration(
                 labelText: 'Amount',
                 hintText: 'Amount in Convex Coins',
@@ -281,7 +297,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                   return 'Please enter the amount.';
                 }
 
-                if (int.tryParse(value) == null) {
+                if (num.tryParse(value) == null) {
                   return 'Please enter the amount as number.';
                 }
 
@@ -297,8 +313,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                   if (formKey.currentState!.validate()) {
                     transfer(
                       context: context,
-                      to: target,
-                      amount: int.parse(amountController.text),
+                      to: target!,
+                      amount: amountController.text,
                     );
                   }
                 },
