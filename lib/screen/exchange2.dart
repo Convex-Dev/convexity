@@ -106,318 +106,327 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
       dropdownItems.add(_params!.withToken);
     }
 
-    return SingleChildScrollView(
-      child: SafeArea(
-        child: Column(
-          children: [
-            _BuySellToggle(
-              selected: _params!.action,
-              onPressed: (action) {
-                setState(() {
-                  _params = _params!.copyWith(action: action);
-
-                  // Changing between *buy* and *sell* must refresh quote.
-
-                  _refreshQuote();
-                  _refreshPrice();
-                  _refreshLiquidity();
-                });
-              },
-            ),
-            Gap(20),
-            _MarketPrice(
-              params: _params!,
-              price: _price!,
-            ),
-            Container(
-              height: 60,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        _actionText,
-                        style: Theme.of(context).textTheme.headline5,
-                      ),
-                    ],
-                  ),
-                  // It's null if 'of Token' is CVX - doesn't make sense to check CVX.
-                  if (_ofMarketPrice != null)
-                    _MarketCheck(
-                      token: _params!.ofToken,
-                      market: _ofMarketPrice,
-                      onCreated: (shares) {
-                        setState(() {
-                          _refreshOf();
-                        });
-                      },
-                    ),
-                ],
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: FutureBuilder(
-                    future: _ofMarketPrice,
-                    builder: (context, snapshot) {
-                      return TextField(
-                        controller: _ofController,
-                        autofocus: true,
-                        enabled: _ofToken == CVX || snapshot.hasData,
-                        onChanged: (s) {
-                          setState(() {
-                            _params = _params!.copyWith(amount: s);
+                  _BuySellToggle(
+                    selected: _params!.action,
+                    onPressed: (action) {
+                      setState(() {
+                        _params = _params!.copyWith(action: action);
 
-                            _refreshQuote();
-                          });
-                        },
-                      );
+                        // Changing between *buy* and *sell* must refresh quote.
+
+                        _refreshQuote();
+                        _refreshPrice();
+                        _refreshLiquidity();
+                      });
                     },
                   ),
-                ),
-                Gap(40),
-                Column(
-                  children: [
-                    _Dropdown<FungibleToken?>(
-                      active: _ofToken,
-                      items: [CVX, ...dropdownItems],
-                      itemWidget: (fungible) => Text(
-                        fungible!.metadata.tickerSymbol!,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onChanged: (e) {
-                        setState(() {
-                          final ofToken = e == CVX ? null : e;
-
-                          _params = _params!.setOfToken(ofToken);
-
-                          _refreshOf();
-                        });
-                      },
-                    ),
-                    Text(_ofToken.metadata.name!),
-                  ],
-                ),
-              ],
-            ),
-            Gap(5),
-            // -- Of Token, or CVX, balance.
-            Row(
-              children: [
-                _Balance(
-                  token: _params!.ofToken,
-                  balance: _ofBalance,
-                ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 30),
-              child: Center(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.swap_vert,
-                    color: Colors.black54,
+                  Gap(20),
+                  _MarketPrice(
+                    params: _params!,
+                    price: _price!,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _params = _params!.swap();
-
-                      final ofBalance = _ofBalance;
-                      final withBalance = _withBalance;
-
-                      _ofBalance = withBalance;
-                      _withBalance = ofBalance;
-
-                      final ofMarketPrice = _ofMarketPrice;
-                      final withMarketPrice = _withMarketPrice;
-
-                      _ofMarketPrice = withMarketPrice;
-                      _withMarketPrice = ofMarketPrice;
-
-                      _refreshQuote();
-                      _refreshPrice();
-                      _refreshLiquidity();
-                    });
-                  },
-                ),
-              ),
-            ),
-            Container(
-              height: 60,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    _actionWithForText,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .copyWith(color: Colors.black54),
-                  ),
-                  // It's null if 'with Token' is CVX - doesn't make sense to check CVX.
-                  if (_withMarketPrice != null)
-                    _MarketCheck(
-                      token: _params!.withToken,
-                      market: _withMarketPrice,
-                      onCreated: (shares) {
-                        setState(() {
-                          _refreshWith();
-                        });
-                      },
-                    ),
-                ],
-              ),
-            ),
-            Row(
-              children: [
-                if (_quote == null)
-                  Expanded(
-                    child: Text('-'),
-                  )
-                else
-                  FutureBuilder(
-                    future: _quote,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Expanded(
-                          child: Text('Getting quote...'),
-                        );
-                      }
-
-                      if (snapshot.hasError || snapshot.data == null) {
-                        return Expanded(
-                          child: Text('-'),
-                        );
-                      }
-
-                      return Expanded(
-                        child: Row(
+                  Container(
+                    height: 60,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              _quoteText(snapshot.data as int),
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                            Gap(5),
-                            Text(
-                              '(latest quote)',
-                              style: Theme.of(context).textTheme.caption,
+                              _actionText,
+                              style: Theme.of(context).textTheme.headline5,
                             ),
                           ],
                         ),
-                      );
-                    },
-                  ),
-                Gap(40),
-                Column(
-                  children: [
-                    _Dropdown<FungibleToken?>(
-                      active: _withToken,
-                      items: [CVX, ...dropdownItems],
-                      itemWidget: (fungible) => Text(
-                        fungible!.metadata.tickerSymbol!,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onChanged: (e) {
-                        final withToken = e == CVX ? null : e;
-
-                        // Always update the default global 'with Token' too.
-                        appState.setDefaultWithToken(withToken);
-
-                        setState(() {
-                          _params = _params!.setWithToken(withToken);
-
-                          _refreshWith();
-                        });
-                      },
+                        // It's null if 'of Token' is CVX - doesn't make sense to check CVX.
+                        if (_ofMarketPrice != null)
+                          _MarketCheck(
+                            token: _params!.ofToken,
+                            market: _ofMarketPrice,
+                            onCreated: (shares) {
+                              setState(() {
+                                _refreshOf();
+                              });
+                            },
+                          ),
+                      ],
                     ),
-                    Text(_withToken.metadata.name!),
-                  ],
-                ),
-              ],
-            ),
-            // -- With Token, or CVX, balance.
-            Row(
-              children: [
-                _Balance(
-                  token: _params!.withToken,
-                  balance: _withBalance,
-                ),
-              ],
-            ),
-            Gap(30),
-            ExpansionTile(
-              title: Text('Liquidity'),
-              children: [
-                ListTile(
-                  title: Text(_ofToken.metadata.name!),
-                  trailing: FutureBuilder<Tuple2<int?, int?>>(
-                    future: _liquidity,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Spinner();
-                      }
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FutureBuilder(
+                          future: _ofMarketPrice,
+                          builder: (context, snapshot) {
+                            return TextField(
+                              controller: _ofController,
+                              autofocus: true,
+                              enabled: _ofToken == CVX || snapshot.hasData,
+                              onChanged: (s) {
+                                setState(() {
+                                  _params = _params!.copyWith(amount: s);
 
-                      final s = _ofToken == CVX
-                          ? format.formatCVX(snapshot.data!.item1!)
-                          : format.formatFungibleCurrency(
-                              metadata: _ofToken.metadata,
-                              number: snapshot.data!.item1,
+                                  _refreshQuote();
+                                });
+                              },
                             );
+                          },
+                        ),
+                      ),
+                      Gap(40),
+                      Column(
+                        children: [
+                          _Dropdown<FungibleToken?>(
+                            active: _ofToken,
+                            items: [CVX, ...dropdownItems],
+                            itemWidget: (fungible) => Text(
+                              fungible!.metadata.tickerSymbol!,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            onChanged: (e) {
+                              setState(() {
+                                final ofToken = e == CVX ? null : e;
 
-                      return Text(s);
-                    },
+                                _params = _params!.setOfToken(ofToken);
+
+                                _refreshOf();
+                              });
+                            },
+                          ),
+                          Text(_ofToken.metadata.name!),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                ListTile(
-                  title: Text(_withToken.metadata.name!),
-                  trailing: FutureBuilder<Tuple2<int?, int?>>(
-                    future: _liquidity,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Spinner();
-                      }
+                  Gap(5),
+                  // -- Of Token, or CVX, balance.
+                  Row(
+                    children: [
+                      _Balance(
+                        token: _params!.ofToken,
+                        balance: _ofBalance,
+                      ),
+                    ],
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 30),
+                    child: Center(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.swap_vert,
+                          color: Colors.black54,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _params = _params!.swap();
 
-                      final s = _withToken == CVX
-                          ? format.formatCVX(snapshot.data!.item2!)
-                          : format.formatFungibleCurrency(
-                              metadata: _withToken.metadata,
-                              number: snapshot.data!.item2,
+                            final ofBalance = _ofBalance;
+                            final withBalance = _withBalance;
+
+                            _ofBalance = withBalance;
+                            _withBalance = ofBalance;
+
+                            final ofMarketPrice = _ofMarketPrice;
+                            final withMarketPrice = _withMarketPrice;
+
+                            _ofMarketPrice = withMarketPrice;
+                            _withMarketPrice = ofMarketPrice;
+
+                            _refreshQuote();
+                            _refreshPrice();
+                            _refreshLiquidity();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 60,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _actionWithForText,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .copyWith(color: Colors.black54),
+                        ),
+                        // It's null if 'with Token' is CVX - doesn't make sense to check CVX.
+                        if (_withMarketPrice != null)
+                          _MarketCheck(
+                            token: _params!.withToken,
+                            market: _withMarketPrice,
+                            onCreated: (shares) {
+                              setState(() {
+                                _refreshWith();
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      if (_quote == null)
+                        Expanded(
+                          child: Text('-'),
+                        )
+                      else
+                        FutureBuilder(
+                          future: _quote,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Expanded(
+                                child: Text('Getting quote...'),
+                              );
+                            }
+
+                            if (snapshot.hasError || snapshot.data == null) {
+                              return Expanded(
+                                child: Text('-'),
+                              );
+                            }
+
+                            return Expanded(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _quoteText(snapshot.data as int),
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                  Gap(5),
+                                  Text(
+                                    '(latest quote)',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                ],
+                              ),
                             );
+                          },
+                        ),
+                      Gap(40),
+                      Column(
+                        children: [
+                          _Dropdown<FungibleToken?>(
+                            active: _withToken,
+                            items: [CVX, ...dropdownItems],
+                            itemWidget: (fungible) => Text(
+                              fungible!.metadata.tickerSymbol!,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            onChanged: (e) {
+                              final withToken = e == CVX ? null : e;
 
-                      return Text(s);
-                    },
+                              // Always update the default global 'with Token' too.
+                              appState.setDefaultWithToken(withToken);
+
+                              setState(() {
+                                _params = _params!.setWithToken(withToken);
+
+                                _refreshWith();
+                              });
+                            },
+                          ),
+                          Text(_withToken.metadata.name!),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-            Gap(60),
-            FutureBuilder(
-              future: _quote,
-              builder: (context, snapshot) => SizedBox(
-                width: double.infinity,
-                height: 60,
-                child: ElevatedButton(
-                  child: Text(
-                    _actionText,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .copyWith(color: Colors.white),
+                  // -- With Token, or CVX, balance.
+                  Row(
+                    children: [
+                      _Balance(
+                        token: _params!.withToken,
+                        balance: _withBalance,
+                      ),
+                    ],
                   ),
-                  onPressed:
-                      snapshot.connectionState == ConnectionState.waiting ||
-                              snapshot.data == null
-                          ? null
-                          : _buySell,
-                ),
+                  Gap(30),
+                  ExpansionTile(
+                    title: Text('Liquidity'),
+                    children: [
+                      ListTile(
+                        title: Text(_ofToken.metadata.name!),
+                        trailing: FutureBuilder<Tuple2<int?, int?>>(
+                          future: _liquidity,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Spinner();
+                            }
+
+                            final s = _ofToken == CVX
+                                ? format.formatCVX(snapshot.data!.item1!)
+                                : format.formatFungibleCurrency(
+                                    metadata: _ofToken.metadata,
+                                    number: snapshot.data!.item1,
+                                  );
+
+                            return Text(s);
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(_withToken.metadata.name!),
+                        trailing: FutureBuilder<Tuple2<int?, int?>>(
+                          future: _liquidity,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Spinner();
+                            }
+
+                            final s = _withToken == CVX
+                                ? format.formatCVX(snapshot.data!.item2!)
+                                : format.formatFungibleCurrency(
+                                    metadata: _withToken.metadata,
+                                    number: snapshot.data!.item2,
+                                  );
+
+                            return Text(s);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          FutureBuilder(
+            future: _quote,
+            builder: (context, snapshot) => SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: ElevatedButton(
+                child: Text(
+                  _actionText,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6!
+                      .copyWith(color: Colors.white),
+                ),
+                onPressed:
+                    snapshot.connectionState == ConnectionState.waiting ||
+                            snapshot.data == null
+                        ? null
+                        : _buySell,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
