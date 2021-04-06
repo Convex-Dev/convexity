@@ -41,7 +41,12 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class HomeScreenBody extends StatelessWidget {
+class HomeScreenBody extends StatefulWidget {
+  @override
+  _HomeScreenBodyState createState() => _HomeScreenBodyState();
+}
+
+class _HomeScreenBodyState extends State<HomeScreenBody> {
   Widget action(
     BuildContext context,
     String label,
@@ -81,6 +86,10 @@ class HomeScreenBody extends StatelessWidget {
 
     final activeAddress = appState.model.activeAddress;
 
+    void rebuild(_) {
+      setState(() {});
+    }
+
     final widgets = [
       AccountCard(
         address: activeAddress!,
@@ -90,37 +99,37 @@ class HomeScreenBody extends StatelessWidget {
         leading: Icon(Icons.show_chart),
         title: Text('Top Currencies'),
         subtitle: Text('View top currencies in the Exchange'),
-        onTap: () => nav.pushTopTokens(context),
+        onTap: () => nav.pushTopTokens(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.videogame_asset_rounded),
         title: Text('Digital Assets'),
         subtitle: Text('View and follow Digital Assets'),
-        onTap: () => nav.pushAssets(context),
+        onTap: () => nav.pushAssets(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.contacts),
         title: Text('Address Book'),
         subtitle: Text('Manage trusted contacts'),
-        onTap: () => nav.pushAddressBook(context),
+        onTap: () => nav.pushAddressBook(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.money),
         title: Text('Personal Tokens'),
         subtitle: Text('View and create Fungible Tokens'),
-        onTap: () => nav.pushMyTokens(context),
+        onTap: () => nav.pushMyTokens(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.send),
         title: Text('Transfer'),
         subtitle: Text('Transfer Convex coins'),
-        onTap: () => nav.pushTransfer(context),
+        onTap: () => nav.pushTransfer(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.money),
         title: Text('Staking'),
         subtitle: Text(''),
-        onTap: () => nav.pushStaking(context),
+        onTap: () => nav.pushStaking(context).then(rebuild),
       )
     ];
 

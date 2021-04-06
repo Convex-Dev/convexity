@@ -8,36 +8,37 @@ import 'model.dart';
 import 'route.dart' as route;
 import 'widget.dart';
 
-void pushLauncher(BuildContext context) => Navigator.pushReplacementNamed(
+Future<dynamic> pushLauncher(BuildContext context) =>
+    Navigator.pushReplacementNamed(
       context,
       route.LAUNCHER,
     );
 
-void pushAccount(BuildContext context, convex.Address address) =>
+Future<dynamic> pushAccount(BuildContext context, convex.Address address) =>
     Navigator.pushNamed(
       context,
       route.ACCOUNT,
       arguments: address,
     );
 
-void pushAccount2(BuildContext context, convex.Address? address) =>
+Future<dynamic> pushAccount2(BuildContext context, convex.Address? address) =>
     Navigator.pushNamed(
       context,
       route.ACCOUNT,
       arguments: address,
     );
 
-void pushSettings(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushSettings(BuildContext context) => Navigator.pushNamed(
       context,
       route.SETTINGS,
     );
 
-void pushTransfer(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushTransfer(BuildContext context) => Navigator.pushNamed(
       context,
       route.TRANSFER,
     );
 
-void pushAssets(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushAssets(BuildContext context) => Navigator.pushNamed(
       context,
       route.ASSETS,
     );
@@ -53,7 +54,7 @@ Future<dynamic> pushAsset(
       arguments: Tuple2(aasset, balance),
     );
 
-void pushFollow(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushFollow(BuildContext context) => Navigator.pushNamed(
       context,
       route.FOLLOW,
     );
@@ -69,7 +70,7 @@ Future<dynamic> pushFungibleTransfer(
       arguments: Tuple2(token, balance),
     );
 
-void pushMyTokens(BuildContext context) => Navigator.pushNamed(
+Future<dynamic> pushMyTokens(BuildContext context) => Navigator.pushNamed(
       context,
       route.MY_TOKENS,
     );
