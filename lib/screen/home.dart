@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
+import '../model.dart';
 import '../route.dart' as route;
 import '../nav.dart' as nav;
 import '../widget.dart';
@@ -75,8 +77,15 @@ class HomeScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    final activeAddress = appState.model.activeAddress;
+
     final widgets = [
-      ActiveAccount(),
+      AccountCard(
+        address: activeAddress!,
+        account: appState.convexClient().accountDetails(activeAddress),
+      ),
       ListTile(
         leading: Icon(Icons.show_chart),
         title: Text('Top Currencies'),

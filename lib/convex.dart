@@ -101,20 +101,20 @@ class Credentials {
 
 @immutable
 class Account {
-  final int? sequence;
-  final Address? address;
-  final AccountType? type;
-  final int? balance;
-  final int? memorySize;
-  final int? memoryAllowance;
+  final int sequence;
+  final Address address;
+  final AccountType type;
+  final int balance;
+  final int memorySize;
+  final int memoryAllowance;
 
   Account({
-    this.sequence,
-    this.address,
-    this.balance,
-    this.type,
-    this.memorySize,
-    this.memoryAllowance,
+    required this.sequence,
+    required this.address,
+    required this.balance,
+    required this.type,
+    required this.memorySize,
+    required this.memoryAllowance,
   });
 
   static Account fromJson(String json) {
@@ -124,7 +124,7 @@ class Account {
       sequence: m['sequence'],
       address: Address(m['address']),
       balance: m['balance'],
-      type: accountType(m['type']),
+      type: accountType(m['type'])!,
       memorySize: m['memorySize'],
       memoryAllowance: m['allowance'],
     );

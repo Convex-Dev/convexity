@@ -652,19 +652,24 @@ class _SelectAccountState extends State<_SelectAccount> {
   }
 }
 
-class ActiveAccount extends StatelessWidget {
+class AccountCard extends StatelessWidget {
+  final Address address;
+  final Future<Account> account;
+
+  const AccountCard({
+    Key? key,
+    required this.address,
+    required this.account,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
-
     return Card(
       child: Column(
         children: [
-          AddressTile(address: appState.model.activeAddress),
+          AddressTile(address: address),
           FutureBuilder<Account>(
-            future: appState
-                .convexClient()
-                .accountDetails(appState.model.activeAddress),
+            future: account,
             builder: (context, snapshot) {
               var animatedChild;
 
@@ -801,7 +806,7 @@ class AccountTable extends StatelessWidget {
           children: [
             _cell(
               context,
-              text: formatCVX(account.balance!),
+              text: formatCVX(account.balance),
             ),
             _cell(
               context,
