@@ -155,7 +155,7 @@ class FungibleTokenCard extends StatelessWidget {
         children: [
           Icon(
             Icons.attach_money,
-            size: 40,
+            size: 30,
             color: Colors.orangeAccent,
           ),
           Gap(10),
@@ -257,7 +257,7 @@ class NonFungibleTokenCard extends StatelessWidget {
       children: [
         Icon(
           Icons.videogame_asset,
-          size: 40,
+          size: 30,
           color: Colors.orangeAccent,
         ),
         Gap(10),
