@@ -195,7 +195,7 @@ class FungibleTokenCard extends StatelessWidget {
                             )
                           : '-',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyText2,
                     ),
             ),
           )
@@ -265,6 +265,7 @@ class NonFungibleTokenCard extends StatelessWidget {
           nonFungible!.metadata.name!,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.caption,
+          overflow: TextOverflow.ellipsis,
         ),
         Gap(4),
         Text(
