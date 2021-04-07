@@ -6,6 +6,7 @@ import '../widget.dart';
 import '../nav.dart' as nav;
 import '../convex.dart';
 import '../model.dart';
+import '../format.dart' as format;
 
 class StakingScreen extends StatelessWidget {
   const StakingScreen({Key? key}) : super(key: key);
@@ -93,14 +94,14 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
                     children: [
                       TableCell(
                         child: Text(
-                          NumberFormat().format(peer.stake),
+                          format.formatCVX(peer.stake ?? 0),
                           textAlign: TextAlign.right,
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
                       ),
                       TableCell(
                         child: Text(
-                          NumberFormat().format(peer.delegatedStake),
+                          format.formatCVX(peer.delegatedStake ?? 0),
                           textAlign: TextAlign.right,
                           style: Theme.of(context).textTheme.bodyText2,
                         ),

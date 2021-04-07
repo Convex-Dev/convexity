@@ -7,6 +7,8 @@ import 'logger.dart';
 import 'convex.dart';
 import 'config.dart' as config;
 
+const int SIGNIFICANT_DIGITS = 5;
+
 final customNumberFormat = NumberFormat('#,###');
 
 String formatIntegerPart(int? n) => customNumberFormat.format(n);
@@ -70,4 +72,5 @@ double marketPrice({
           (withToken?.metadata.decimals ?? config.CONVEX_GOLD_DECIMALS),
     );
 
-String marketPriceStr(double price) => price.toStringAsPrecision(5);
+String marketPriceStr(double price) =>
+    price.toStringAsPrecision(SIGNIFICANT_DIGITS);

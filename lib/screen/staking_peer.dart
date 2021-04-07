@@ -8,6 +8,7 @@ import 'package:tuple/tuple.dart';
 import '../convex.dart';
 import '../widget.dart';
 import '../model.dart';
+import '../format.dart' as format;
 
 class StakingPeerScreen extends StatelessWidget {
   final Peer? peer;
@@ -115,17 +116,18 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                   children: [
                     _cell(
                       context,
-                      text: NumberFormat().format(widget.peer!.stake),
+                      text: format.formatCVX(widget.peer?.stake ?? 0),
                     ),
                     _cell(
                       context,
-                      text: NumberFormat().format(widget.peer!.delegatedStake),
+                      text: format.formatCVX(widget.peer?.delegatedStake ?? 0),
                     ),
                     _cell(
                       context,
-                      text: NumberFormat().format(
-                          widget.peer!.stakes![appState.model.activeAddress!] ??
-                              0),
+                      text: format.formatCVX(
+                        widget.peer?.stakes![appState.model.activeAddress!] ??
+                            0,
+                      ),
                     ),
                   ],
                 )
