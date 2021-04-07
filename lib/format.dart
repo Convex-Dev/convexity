@@ -14,9 +14,10 @@ final customNumberFormat = NumberFormat('#,###');
 String formatIntegerPart(int? n) => customNumberFormat.format(n);
 
 String formatWithDecimals(int num, int decimals) {
-  if ((decimals < 1) || (decimals > 12)) throw ("Decimals out of range");
+  if ((decimals < 1) || (decimals > 12))
+    throw FormatException('Decimals out of range');
 
-  if (num < 0) throw ("Negative number");
+  if (num < 0) throw FormatException('Negative number');
 
   int divisor = pow(10, decimals) as int;
   int x = num ~/ divisor;
