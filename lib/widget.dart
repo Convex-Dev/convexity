@@ -809,7 +809,7 @@ class AccountTable extends StatelessWidget {
             _cell(
               context,
               text: currency
-                  .copperTo(account.balance, currency.CvxUnit.gold)
+                  .copperTo(account.balance, toUnit: currency.CvxUnit.gold)
                   .toStringAsPrecision(9),
             ),
             _cell(

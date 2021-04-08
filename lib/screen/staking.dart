@@ -96,7 +96,7 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
                           currency
                               .copperTo(
                                 peer.stake ?? 0,
-                                currency.CvxUnit.gold,
+                                toUnit: currency.CvxUnit.gold,
                               )
                               .toStringAsPrecision(5),
                           textAlign: TextAlign.right,
@@ -108,7 +108,7 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
                           currency
                               .copperTo(
                                 peer.delegatedStake ?? 0,
-                                currency.CvxUnit.gold,
+                                toUnit: currency.CvxUnit.gold,
                               )
                               .toStringAsPrecision(5),
                           textAlign: TextAlign.right,

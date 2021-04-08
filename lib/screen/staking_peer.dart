@@ -71,7 +71,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
             currency
                 .copperTo(
                   widget.peer!.stake ?? 0,
-                  currency.CvxUnit.gold,
+                  toUnit: currency.CvxUnit.gold,
                 )
                 .toDouble(),
           ),
@@ -80,7 +80,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
             currency
                 .copperTo(
                   widget.peer!.delegatedStake ?? 0,
-                  currency.CvxUnit.gold,
+                  toUnit: currency.CvxUnit.gold,
                 )
                 .toDouble(),
           ),
@@ -89,7 +89,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
             currency
                 .copperTo(
                   widget.peer!.stakes![appState.model.activeAddress!] ?? 0,
-                  currency.CvxUnit.gold,
+                  toUnit: currency.CvxUnit.gold,
                 )
                 .toDouble(),
           ),
@@ -134,7 +134,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                       text: currency
                           .copperTo(
                             widget.peer?.stake ?? 0,
-                            currency.CvxUnit.gold,
+                            toUnit: currency.CvxUnit.gold,
                           )
                           .toStringAsPrecision(5),
                     ),
@@ -143,7 +143,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                       text: currency
                           .copperTo(
                             widget.peer?.delegatedStake ?? 0,
-                            currency.CvxUnit.gold,
+                            toUnit: currency.CvxUnit.gold,
                           )
                           .toStringAsPrecision(5),
                     ),
@@ -154,7 +154,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                             widget.peer
                                     ?.stakes![appState.model.activeAddress!] ??
                                 0,
-                            currency.CvxUnit.gold,
+                            toUnit: currency.CvxUnit.gold,
                           )
                           .toStringAsPrecision(5),
                     ),

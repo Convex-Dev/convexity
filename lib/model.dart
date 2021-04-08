@@ -49,7 +49,10 @@ class ExchangeParams {
   });
 
   int get amountInt => ofToken == null
-      ? currency.toCopper(currency.decimal(amount!), currency.CvxUnit.gold)
+      ? currency.toCopper(
+          currency.decimal(amount!),
+          fromUnit: currency.CvxUnit.gold,
+        )
       : format.readFungibleCurrency(metadata: ofToken!.metadata, s: amount!);
 
   bool get isAmountValid {

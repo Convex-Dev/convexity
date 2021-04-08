@@ -372,7 +372,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                                 ? currency
                                     .copperTo(
                                       snapshot.data!.item1 ?? 0,
-                                      currency.CvxUnit.gold,
+                                      toUnit: currency.CvxUnit.gold,
                                     )
                                     .toStringAsPrecision(9)
                                 : format.formatFungibleCurrency(
@@ -398,7 +398,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                                 ? currency
                                     .copperTo(
                                       snapshot.data!.item2!,
-                                      currency.CvxUnit.gold,
+                                      toUnit: currency.CvxUnit.gold,
                                     )
                                     .toStringAsPrecision(9)
                                 : format.formatFungibleCurrency(
@@ -862,7 +862,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
           : currency
               .copperTo(
                 quote,
-                currency.CvxUnit.gold,
+                toUnit: currency.CvxUnit.gold,
               )
               .toStringAsPrecision(9);
 }
@@ -959,7 +959,7 @@ class _Balance extends StatelessWidget {
                 ? currency
                     .copperTo(
                       balance,
-                      currency.CvxUnit.gold,
+                      toUnit: currency.CvxUnit.gold,
                     )
                     .toStringAsPrecision(9)
                 : format.formatFungibleCurrency(
@@ -1279,7 +1279,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                           currency
                               .copperTo(
                                 snapshot.data!.value[0],
-                                currency.CvxUnit.gold,
+                                toUnit: currency.CvxUnit.gold,
                               )
                               .toStringAsPrecision(9),
                           style: Theme.of(context).textTheme.bodyText2,
