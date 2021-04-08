@@ -8,7 +8,7 @@ import 'package:tuple/tuple.dart';
 import '../convex.dart';
 import '../widget.dart';
 import '../model.dart';
-import '../format.dart' as format;
+import '../currency.dart' as currency;
 
 class StakingPeerScreen extends StatelessWidget {
   final Peer? peer;
@@ -60,23 +60,38 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
     final appState = context.watch<AppState>();
 
     final series = [
-      charts.Series<Tuple2<String, int?>, String>(
+      charts.Series<Tuple2<String, double>, String>(
         id: 'Staking',
         domainFn: (datum, index) => datum.item1,
         measureFn: (datum, index) => datum.item2!,
         labelAccessorFn: (datum, index) => datum.item1,
         data: [
-          Tuple2<String, int?>(
+          Tuple2<String, double>(
             'Stake',
-            widget.peer!.stake,
+            currency
+                .copperTo(
+                  widget.peer!.stake ?? 0,
+                  currency.CvxUnit.gold,
+                )
+                .toDouble(),
           ),
-          Tuple2<String, int?>(
+          Tuple2<String, double>(
             'Delegated Stake',
-            widget.peer!.delegatedStake,
+            currency
+                .copperTo(
+                  widget.peer!.delegatedStake ?? 0,
+                  currency.CvxUnit.gold,
+                )
+                .toDouble(),
           ),
-          Tuple2<String, int>(
+          Tuple2<String, double>(
             'Owned Stake',
-            widget.peer!.stakes![appState.model.activeAddress!] ?? 0,
+            currency
+                .copperTo(
+                  widget.peer!.stakes![appState.model.activeAddress!] ?? 0,
+                  currency.CvxUnit.gold,
+                )
+                .toDouble(),
           ),
         ],
       ),
@@ -116,18 +131,32 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
                   children: [
                     _cell(
                       context,
-                      text: format.formatCVX(widget.peer?.stake ?? 0),
+                      text: currency
+                          .copperTo(
+                            widget.peer?.stake ?? 0,
+                            currency.CvxUnit.gold,
+                          )
+                          .toStringAsPrecision(5),
                     ),
                     _cell(
                       context,
-                      text: format.formatCVX(widget.peer?.delegatedStake ?? 0),
+                      text: currency
+                          .copperTo(
+                            widget.peer?.delegatedStake ?? 0,
+                            currency.CvxUnit.gold,
+                          )
+                          .toStringAsPrecision(5),
                     ),
                     _cell(
                       context,
-                      text: format.formatCVX(
-                        widget.peer?.stakes![appState.model.activeAddress!] ??
-                            0,
-                      ),
+                      text: currency
+                          .copperTo(
+                            widget.peer
+                                    ?.stakes![appState.model.activeAddress!] ??
+                                0,
+                            currency.CvxUnit.gold,
+                          )
+                          .toStringAsPrecision(5),
                     ),
                   ],
                 )

@@ -14,6 +14,7 @@ import 'model.dart';
 import 'convex.dart' as convex;
 import 'format.dart';
 import 'nav.dart' as nav;
+import 'currency.dart' as currency;
 
 const defaultScreenPadding = EdgeInsets.all(12);
 
@@ -807,7 +808,9 @@ class AccountTable extends StatelessWidget {
           children: [
             _cell(
               context,
-              text: formatCVX(account.balance),
+              text: currency
+                  .copperTo(account.balance, currency.CvxUnit.gold)
+                  .toStringAsPrecision(9),
             ),
             _cell(
               context,

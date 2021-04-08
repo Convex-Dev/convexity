@@ -13,6 +13,7 @@ import '../widget.dart';
 import '../route.dart' as route;
 import '../convex.dart' as convex;
 import '../format.dart' as format;
+import '../currency.dart' as currency;
 
 class TransferScreen extends StatelessWidget {
   @override
@@ -275,7 +276,14 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                           'Balance ',
                           style: Theme.of(context).textTheme.caption,
                         ),
-                        Text(format.formatCVX(snapshot.data as int))
+                        Text(
+                          currency
+                              .copperTo(
+                                snapshot.data as int,
+                                currency.CvxUnit.gold,
+                              )
+                              .toStringAsPrecision(9),
+                        )
                       ]
                     ],
                   ),

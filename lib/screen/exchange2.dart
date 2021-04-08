@@ -9,6 +9,7 @@ import '../logger.dart';
 import '../model.dart';
 import '../widget.dart';
 import '../format.dart' as format;
+import '../currency.dart' as currency;
 
 class ExchangeScreen2 extends StatelessWidget {
   @override
@@ -368,7 +369,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                             }
 
                             final s = _ofToken == CVX
-                                ? format.formatCVX(snapshot.data!.item1!)
+                                ? currency
+                                    .copperTo(
+                                      snapshot.data!.item1 ?? 0,
+                                      currency.CvxUnit.gold,
+                                    )
+                                    .toStringAsPrecision(9)
                                 : format.formatFungibleCurrency(
                                     metadata: _ofToken.metadata,
                                     number: snapshot.data!.item1,
@@ -389,7 +395,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                             }
 
                             final s = _withToken == CVX
-                                ? format.formatCVX(snapshot.data!.item2!)
+                                ? currency
+                                    .copperTo(
+                                      snapshot.data!.item2!,
+                                      currency.CvxUnit.gold,
+                                    )
+                                    .toStringAsPrecision(9)
                                 : format.formatFungibleCurrency(
                                     metadata: _withToken.metadata,
                                     number: snapshot.data!.item2,
@@ -848,7 +859,12 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
               metadata: _params!.withToken!.metadata,
               number: quote,
             )
-          : format.formatCVX(quote);
+          : currency
+              .copperTo(
+                quote,
+                currency.CvxUnit.gold,
+              )
+              .toStringAsPrecision(9);
 }
 
 class _BuySellToggle extends StatelessWidget {
@@ -940,7 +956,12 @@ class _Balance extends StatelessWidget {
             logger.d('Token $token balance is null.');
           } else {
             balanceText = token == null
-                ? format.formatCVX(balance)
+                ? currency
+                    .copperTo(
+                      balance,
+                      currency.CvxUnit.gold,
+                    )
+                    .toStringAsPrecision(9)
                 : format.formatFungibleCurrency(
                     metadata: token!.metadata,
                     number: balance,
@@ -1254,11 +1275,13 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                           return Spinner();
                         }
 
-                        final userBalance =
-                            format.formatCVX(snapshot.data!.value[0]);
-
                         return Text(
-                          userBalance,
+                          currency
+                              .copperTo(
+                                snapshot.data!.value[0],
+                                currency.CvxUnit.gold,
+                              )
+                              .toStringAsPrecision(9),
                           style: Theme.of(context).textTheme.bodyText2,
                         );
                       },

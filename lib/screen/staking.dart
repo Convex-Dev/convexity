@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import '../widget.dart';
 import '../nav.dart' as nav;
 import '../convex.dart';
 import '../model.dart';
-import '../format.dart' as format;
+import '../currency.dart' as currency;
 
 class StakingScreen extends StatelessWidget {
   const StakingScreen({Key? key}) : super(key: key);
@@ -94,14 +93,24 @@ class _StakingScreenBodyState extends State<StakingScreenBody> {
                     children: [
                       TableCell(
                         child: Text(
-                          format.formatCVX(peer.stake ?? 0),
+                          currency
+                              .copperTo(
+                                peer.stake ?? 0,
+                                currency.CvxUnit.gold,
+                              )
+                              .toStringAsPrecision(5),
                           textAlign: TextAlign.right,
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
                       ),
                       TableCell(
                         child: Text(
-                          format.formatCVX(peer.delegatedStake ?? 0),
+                          currency
+                              .copperTo(
+                                peer.delegatedStake ?? 0,
+                                currency.CvxUnit.gold,
+                              )
+                              .toStringAsPrecision(5),
                           textAlign: TextAlign.right,
                           style: Theme.of(context).textTheme.bodyText2,
                         ),
