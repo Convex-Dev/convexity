@@ -1076,7 +1076,7 @@ class _MarketPrice extends StatelessWidget {
     return FutureBuilder<double?>(
       future: price,
       builder: (context, snapshot) {
-        final goldDecimals = currency.unitDecimals(currency.CvxUnit.gold);
+        final goldDecimals = currency.cvxUnitDecimals(currency.CvxUnit.gold);
 
         final withPriceText = currency
             .price(

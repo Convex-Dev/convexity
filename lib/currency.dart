@@ -1,5 +1,7 @@
 import 'package:decimal/decimal.dart';
 
+Decimal decimal(String value) => Decimal.parse(value);
+
 enum CvxUnit {
   copper,
   bronze,
@@ -7,9 +9,7 @@ enum CvxUnit {
   gold,
 }
 
-Decimal decimal(String value) => Decimal.parse(value);
-
-int unitDecimals(CvxUnit unit) {
+int cvxUnitDecimals(CvxUnit unit) {
   switch (unit) {
     case CvxUnit.copper:
       return 0;
@@ -31,10 +31,10 @@ Decimal shift(x, int decimals) {
 }
 
 Decimal copperTo(int coins, {required CvxUnit toUnit}) =>
-    shift(coins, unitDecimals(toUnit) * -1);
+    shift(coins, cvxUnitDecimals(toUnit) * -1);
 
 int toCopper(Decimal coins, {required CvxUnit fromUnit}) =>
-    shift(coins, unitDecimals(fromUnit)).toInt();
+    shift(coins, cvxUnitDecimals(fromUnit)).toInt();
 
 Decimal price(
   double x, {

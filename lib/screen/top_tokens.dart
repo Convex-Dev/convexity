@@ -131,7 +131,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                   );
 
                   final goldDecimals =
-                      currency.unitDecimals(currency.CvxUnit.gold);
+                      currency.cvxUnitDecimals(currency.CvxUnit.gold);
 
                   return AnimatedOpacity(
                     opacity: snapshot.connectionState == ConnectionState.waiting
