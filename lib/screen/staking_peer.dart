@@ -63,7 +63,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
       charts.Series<Tuple2<String, double>, String>(
         id: 'Staking',
         domainFn: (datum, index) => datum.item1,
-        measureFn: (datum, index) => datum.item2!,
+        measureFn: (datum, index) => datum.item2,
         labelAccessorFn: (datum, index) => datum.item1,
         data: [
           Tuple2<String, double>(
