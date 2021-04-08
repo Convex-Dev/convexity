@@ -53,8 +53,6 @@ int readFungibleCurrency({
   }
 }
 
-String formatCVX(int n) => formatWithDecimals(n, config.CONVEX_GOLD_DECIMALS);
-
 int readCVX(String s) => readWithDecimals(s, config.CONVEX_GOLD_DECIMALS);
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
