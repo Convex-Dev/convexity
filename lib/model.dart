@@ -15,6 +15,7 @@ import 'preferences.dart' as p;
 import 'route.dart' as route;
 import 'format.dart' as format;
 import 'config.dart' as config;
+import 'currency.dart' as currency;
 
 // ignore: non_constant_identifier_names
 final CVX = FungibleToken(
@@ -48,7 +49,7 @@ class ExchangeParams {
   });
 
   int get amountInt => ofToken == null
-      ? format.readCVX(amount!)
+      ? currency.toCopper(currency.decimal(amount!), currency.CvxUnit.gold)
       : format.readFungibleCurrency(metadata: ofToken!.metadata, s: amount!);
 
   bool get isAmountValid {

@@ -123,7 +123,8 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     }
 
     final transferInProgress = appState.convexClient().transact(
-          source: '(transfer $to ${format.readCVX(amount)})',
+          source:
+              '(transfer $to ${currency.toCopper(currency.decimal(amount), currency.CvxUnit.gold)})',
         );
 
     showModalBottomSheet(

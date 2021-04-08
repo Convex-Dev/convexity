@@ -30,8 +30,8 @@ Decimal shift(x, int decimals) {
   }
 }
 
-Decimal copperTo(int coins, CvxUnit unit) =>
-    shift(coins, unitDecimals(unit) * -1);
+Decimal copperTo(int coins, CvxUnit toUnit) =>
+    shift(coins, unitDecimals(toUnit) * -1);
 
-int toCopper(Decimal coins, CvxUnit unit) =>
-    shift(coins, unitDecimals(unit)).toInt();
+int toCopper(Decimal coins, CvxUnit fromUnit) =>
+    shift(coins, unitDecimals(fromUnit)).toInt();
