@@ -25,6 +25,15 @@ void main() {
   });
 
   test('Shift decimal place', () {
+    expect(() => currency.shift(null, 1), throwsFormatException);
+    expect(() => currency.shift('', 1), throwsFormatException);
+    expect(() => currency.shift('x', 1), throwsFormatException);
+    expect(() => currency.shift(' 1', 1), throwsFormatException);
+    expect(() => currency.shift('1 ', 1), throwsFormatException);
+    expect(() => currency.shift(' 1 ', 1), throwsFormatException);
+
+    expect(currency.shift('1', -1), currency.shift(1, -1));
+    expect(currency.shift('-1', -1), currency.shift(-1, -1));
     expect(currency.shift(1, -1), currency.decimal('0.1'));
     expect(currency.shift(1, 0), currency.decimal('1'));
     expect(currency.shift(1, 1), currency.decimal('10'));
