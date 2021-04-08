@@ -1076,13 +1076,17 @@ class _MarketPrice extends StatelessWidget {
     return FutureBuilder<double?>(
       future: price,
       builder: (context, snapshot) {
-        final withPriceText = format.marketPriceStr(
-          format.marketPrice(
-            ofToken: params.ofToken,
-            withToken: params.withToken,
-            price: snapshot.data ?? 0,
-          ),
-        );
+        final goldDecimals = currency.unitDecimals(currency.CvxUnit.gold);
+
+        final withPriceText = currency
+            .price(
+              snapshot.data ?? 0,
+              ofTokenDecimals:
+                  params.ofToken?.metadata.decimals ?? goldDecimals,
+              withTokenDecimals:
+                  params.withToken?.metadata.decimals ?? goldDecimals,
+            )
+            .toStringAsPrecision(5);
 
         logger.d('Market price is $withPriceText (${snapshot.data}).');
 

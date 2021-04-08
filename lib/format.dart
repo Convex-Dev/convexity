@@ -5,9 +5,6 @@ import 'package:decimal/decimal.dart';
 
 import 'logger.dart';
 import 'convex.dart';
-import 'config.dart' as config;
-
-const int SIGNIFICANT_DIGITS = 5;
 
 final customNumberFormat = NumberFormat('#,###');
 
@@ -54,20 +51,3 @@ int readFungibleCurrency({
 }
 
 String defaultDateTimeFormat(DateTime x) => DateFormat('d/M/y H:m:s').format(x);
-
-double shiftDecimalPlace(double x, int decimals) => x * pow(10, decimals);
-
-double marketPrice({
-  FungibleToken? ofToken,
-  FungibleToken? withToken,
-  required double price,
-}) =>
-    // A null 'of Token' or 'with Token' is interpreted as CVX.
-    shiftDecimalPlace(
-      price,
-      (ofToken?.metadata.decimals ?? config.CONVEX_GOLD_DECIMALS) -
-          (withToken?.metadata.decimals ?? config.CONVEX_GOLD_DECIMALS),
-    );
-
-String marketPriceStr(double price) =>
-    price.toStringAsPrecision(SIGNIFICANT_DIGITS);

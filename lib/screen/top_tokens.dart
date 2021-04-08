@@ -8,6 +8,7 @@ import '../model.dart';
 import '../widget.dart';
 import '../format.dart' as format;
 import '../nav.dart' as nav;
+import '../currency.dart' as currency;
 
 class TopTokensScreen extends StatelessWidget {
   @override
@@ -129,6 +130,9 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                     orElse: () => null,
                   );
 
+                  final goldDecimals =
+                      currency.unitDecimals(currency.CvxUnit.gold);
+
                   return AnimatedOpacity(
                     opacity: snapshot.connectionState == ConnectionState.waiting
                         ? 0
@@ -138,13 +142,19 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                       (e == null || e['price'] == null)
                           ? ''
                           : _withToken(context).metadata.currencySymbol! +
-                              format.marketPriceStr(
-                                format.marketPrice(
-                                  ofToken: token,
-                                  price: e['price'],
-                                  withToken: appState.model.defaultWithToken,
-                                ),
-                              ),
+                              currency
+                                  .price(
+                                    e['price'],
+                                    ofTokenDecimals:
+                                        token.metadata.decimals ?? goldDecimals,
+                                    withTokenDecimals: appState
+                                            .model
+                                            .defaultWithToken
+                                            ?.metadata
+                                            .decimals ??
+                                        goldDecimals,
+                                  )
+                                  .toStringAsPrecision(5),
                       textAlign: TextAlign.right,
                     ),
                   );

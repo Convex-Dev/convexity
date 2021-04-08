@@ -35,3 +35,10 @@ Decimal copperTo(int coins, {required CvxUnit toUnit}) =>
 
 int toCopper(Decimal coins, {required CvxUnit fromUnit}) =>
     shift(coins, unitDecimals(fromUnit)).toInt();
+
+Decimal price(
+  double x, {
+  required int ofTokenDecimals,
+  required int withTokenDecimals,
+}) =>
+    shift(x, ofTokenDecimals - withTokenDecimals);

@@ -23,15 +23,4 @@ void main() {
     expect(format.readWithDecimals('1000', 2), 100000);
     expect(format.readWithDecimals('1000', 3), 1000000);
   });
-
-  test('Shift decimal place', () {
-    expect(format.shiftDecimalPlace(1, -1), 0.1);
-    expect(format.shiftDecimalPlace(1, 0), 1);
-    expect(format.shiftDecimalPlace(1, 1), 10);
-  });
-
-  test('Market Price precision', () {
-    expect(format.marketPriceStr(1000), '1000.0');
-    expect(format.marketPriceStr(0.00001), '0.000010000');
-  });
 }
