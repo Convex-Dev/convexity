@@ -95,8 +95,8 @@ class _NewContactScreenBodyState extends State<NewContactScreenBody> {
                 if (_formKey.currentState!.validate()) {
                   context.read<AppState>().addContact(
                         Contact(
-                          name: _name,
-                          address: _address,
+                          name: _name!,
+                          address: _address!,
                         ),
                         isPersistent: true,
                       );

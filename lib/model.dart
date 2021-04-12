@@ -140,8 +140,8 @@ class ExchangeParams {
 
 @immutable
 class Contact {
-  final String? name;
-  final Address? address;
+  final String name;
+  final Address address;
 
   Contact({
     required this.name,

@@ -227,8 +227,8 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
       print('Alias $alias');
 
       final _newContact = Contact(
-        name: alias,
-        address: address,
+        name: alias!,
+        address: address!,
       );
 
       _appState.addContact(_newContact, isPersistent: true);
