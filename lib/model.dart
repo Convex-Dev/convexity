@@ -361,7 +361,7 @@ enum AddressInputOption {
   scan,
 }
 
-final convexityAddress = Address(60);
+final convexityAddress = Address(700);
 
 /// Immutable Model data class.
 ///
