@@ -474,8 +474,8 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon(contact.address!),
-        title: Text(contact.name!),
+        leading: aidenticon(contact.address),
+        title: Text(contact.name),
         subtitle: Text(contact.address.toString()),
         onTap: () {
           Navigator.pop(context, contact.address);

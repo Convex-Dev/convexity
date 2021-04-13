@@ -139,10 +139,10 @@ class _EditState extends State<_Edit> {
 
     nameTextController = TextEditingController.fromValue(
       TextEditingValue(
-        text: widget.contact!.name!,
+        text: widget.contact!.name,
         selection: TextSelection(
           baseOffset: 0,
-          extentOffset: widget.contact!.name!.length,
+          extentOffset: widget.contact!.name.length,
         ),
       ),
     );
@@ -165,7 +165,7 @@ class _EditState extends State<_Edit> {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Gap(20),
-                aidenticon(widget.contact!.address!, width: 80, height: 80),
+                aidenticon(widget.contact!.address, width: 80, height: 80),
                 Gap(5),
                 Text(
                   widget.contact!.address.toString(),
@@ -240,7 +240,7 @@ class _RemoveState extends State<_Remove> {
                 style: Theme.of(context).textTheme.headline6,
               ),
               Gap(20),
-              aidenticon(widget.contact!.address!, width: 80, height: 80),
+              aidenticon(widget.contact!.address, width: 80, height: 80),
               Gap(5),
               Text(
                 widget.contact!.address.toString(),

@@ -60,22 +60,12 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
       builder: (context, snapshot) {
         final assets = snapshot.data ?? <AAsset>[];
 
-        final defaultTokens = {
-          34,
-          28,
-          40,
-          42,
-          30,
-          32,
-          44,
-          38,
-          36,
-        };
-
         final fungibles = assets
-            .where((e) =>
-                e.type == AssetType.fungible &&
-                defaultTokens.contains(e.asset.address.value))
+            .where(
+              (e) =>
+                  e.type == AssetType.fungible &&
+                  isDefaultFungibleToken(e.asset),
+            )
             .map((e) => e.asset as FungibleToken?);
 
         if (snapshot.connectionState == ConnectionState.waiting) {

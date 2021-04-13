@@ -11,7 +11,8 @@ class NonFungibleTokenScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Tuple of NFT + ID + Data.
     final Tuple3<NonFungibleToken, int, Future<Result>> t =
-        ModalRoute.of(context)!.settings.arguments as Tuple3<NonFungibleToken, int, Future<Result>>;
+        ModalRoute.of(context)!.settings.arguments
+            as Tuple3<NonFungibleToken, int, Future<Result>>;
 
     return WillPopScope(
       child: Scaffold(
@@ -96,7 +97,8 @@ class _NonFungibleTokenScreenBodyState
                   return imageTransparent;
                 }
 
-                if (Uri.parse(snapshot.data!.value['uri']).isAbsolute == false) {
+                if (Uri.parse(snapshot.data!.value['uri']).isAbsolute ==
+                    false) {
                   return imageTransparent;
                 }
 
@@ -107,6 +109,16 @@ class _NonFungibleTokenScreenBodyState
               }
 
               return imageTransparent;
+            },
+          ),
+          ElevatedButton(
+            child: Text('Sell'),
+            onPressed: () {
+              pushNonFungibleSell(
+                context,
+                nonFungibleToken: widget.nonFungibleToken,
+                tokenId: widget.tokenId,
+              );
             },
           ),
           ElevatedButton(

@@ -149,7 +149,7 @@ class _FungibleTransferScreenBodyState
                         ),
                       ),
                     ] else
-                      Text(contact.name!),
+                      Text(contact.name),
                     Text(
                       '?',
                     )
@@ -263,7 +263,7 @@ class _FungibleTransferScreenBodyState
                               ),
                             ),
                           ] else
-                            Text(contact.name!),
+                            Text(contact.name),
                         ],
                       ),
                     ),
@@ -337,7 +337,7 @@ class _FungibleTransferScreenBodyState
                 : Padding(
                     padding: const EdgeInsets.all(8),
                     child: Text(
-                      contact == null ? 'Not in Address Book' : contact.name!,
+                      contact == null ? 'Not in Address Book' : contact.name,
                     ),
                   ),
             TextFormField(

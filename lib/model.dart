@@ -29,6 +29,22 @@ final CVX = FungibleToken(
   ),
 );
 
+bool isDefaultFungibleToken(FungibleToken token) {
+  final defaultTokens = {
+    34,
+    28,
+    40,
+    42,
+    30,
+    32,
+    44,
+    38,
+    36,
+  };
+
+  return defaultTokens.contains(token.address.value);
+}
+
 enum ExchangeAction {
   buy,
   sell,
@@ -154,7 +170,7 @@ class Contact {
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'address': address!.toJson(),
+        'address': address.toJson(),
       };
 
   @override
