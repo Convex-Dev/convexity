@@ -516,11 +516,11 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             crossAxisCount: columnCount,
                             children: ids.asMap().entries.map(
                               (entry) {
-                                final dataSource =
-                                    '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))';
+                                final tokenId = entry.value as int;
 
-                                final data =
-                                    convexClient.query(source: dataSource);
+                                final data = convexClient.query(
+                                    source:
+                                        '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))');
 
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,
@@ -528,10 +528,31 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                   columnCount: columnCount,
                                   child: ScaleAnimation(
                                     child: FadeInAnimation(
-                                      child: _nonFungibleToken(
-                                        tokenId: entry.value as int,
-                                        data: data,
-                                      ),
+                                      child: NonFungibleGridTile(
+                                          tokenId: tokenId,
+                                          data: data,
+                                          onTap: () {
+                                            final f = nav.pushNonFungibleToken(
+                                              context,
+                                              nonFungibleToken:
+                                                  widget.aasset!.asset,
+                                              tokenId: tokenId,
+                                              data: data,
+                                            );
+
+                                            f.then(
+                                              (result) {
+                                                // Query balance when 'returning' from a Transfer (result is null).
+                                                if (result == null) {
+                                                  // Query the potentially updated balance.
+                                                  setState(() {
+                                                    _balance =
+                                                        queryBalance(context);
+                                                  });
+                                                }
+                                              },
+                                            );
+                                          }),
                                     ),
                                   ),
                                 );
@@ -576,97 +597,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
           ),
         );
       });
-
-  Widget _nonFungibleImage(String uri) {
-    final fallback = Icon(
-      Icons.image,
-      size: 40,
-    );
-
-    try {
-      if (Uri.parse(uri).isAbsolute == false) {
-        return fallback;
-      }
-
-      return FadeInImage.memoryNetwork(
-        placeholder: kTransparentImage,
-        image: uri,
-      );
-    } catch (e) {
-      logger.e('Failed to load image: $e');
-
-      return fallback;
-    }
-  }
-
-  Widget _nonFungibleToken({
-    int? tokenId,
-    Future<Result>? data,
-  }) =>
-      FutureBuilder<Result>(
-        future: data,
-        builder: (context, snapshot) {
-          final subtitle = AnimatedSwitcher(
-            duration: Duration(milliseconds: 500),
-            child: snapshot.connectionState == ConnectionState.waiting
-                ? Text('')
-                : (snapshot.data!.errorCode != null
-                    ? Text('')
-                    : Text(snapshot.data!.value['name'])),
-          );
-
-          final child = AnimatedSwitcher(
-            duration: Duration(milliseconds: 500),
-            child: snapshot.connectionState == ConnectionState.waiting
-                ? Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  )
-                : (snapshot.data!.value['uri'] == null
-                    ? Icon(
-                        Icons.image,
-                        size: 40,
-                      )
-                    : _nonFungibleImage(snapshot.data!.value['uri'])),
-          );
-
-          return InkWell(
-            child: GridTile(
-              footer: GridTileBar(
-                title: Text('#$tokenId'),
-                subtitle: subtitle,
-                backgroundColor: Colors.black45,
-              ),
-              child: child,
-            ),
-            onTap: () {
-              final f = nav.pushNonFungibleToken(
-                context,
-                nonFungibleToken: widget.aasset!.asset,
-                tokenId: tokenId,
-                data: data,
-              );
-
-              f.then(
-                (result) {
-                  // Query balance when 'returning' from a Transfer (result is null).
-                  if (result == null) {
-                    // Query the potentially updated balance.
-                    setState(() {
-                      _balance = queryBalance(context);
-                    });
-                  }
-                },
-              );
-            },
-          );
-        },
-      );
 
   /// Check the user's balance for this Token.
   Future<dynamic> queryBalance(BuildContext context) {
