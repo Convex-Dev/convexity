@@ -25,7 +25,6 @@ import 'screen/activity.dart';
 import 'screen/staking.dart';
 import 'screen/select_fungible.dart';
 import 'screen/top_tokens.dart';
-import 'screen/non_fungible_sell.dart';
 
 const String DEV = '/dev';
 const String LAUNCHER = '/launcher';
@@ -76,7 +75,6 @@ Map<String, WidgetBuilder> routes() => {
       SELECT_ACCOUNT: (context) => selectAccountScreen(),
       NON_FUNGIBLE_TOKEN: (context) => NonFungibleTokenScreen(),
       NON_FUNGIBLE_TRANSFER: (context) => NonFungibleTransferScreen(),
-      NON_FUNGIBLE_SELL: (context) => NonFungibleSellScreen(),
       ACTIVITY: (context) => ActivityScreen(),
       STAKING: (context) => StakingScreen(),
       STAKING_PEER: (context) => StakingPeerScreen(),

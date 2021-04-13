@@ -150,20 +150,6 @@ Future<dynamic> pushNonFungibleTransfer(
       ),
     );
 
-Future<dynamic> pushNonFungibleSell(
-  BuildContext context, {
-  required convex.NonFungibleToken nonFungibleToken,
-  required int tokenId,
-}) =>
-    Navigator.pushNamed(
-      context,
-      route.NON_FUNGIBLE_SELL,
-      arguments: Tuple2(
-        nonFungibleToken,
-        tokenId,
-      ),
-    );
-
 Future<dynamic> pushActivity(
   BuildContext context, {
   required Activity activity,
