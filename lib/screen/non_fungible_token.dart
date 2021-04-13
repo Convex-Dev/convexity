@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:tuple/tuple.dart';
+import 'package:provider/provider.dart';
 
+import '../model.dart';
 import '../widget.dart';
 import '../convex.dart';
 import '../nav.dart';
@@ -114,11 +117,7 @@ class _NonFungibleTokenScreenBodyState
           ElevatedButton(
             child: Text('Sell'),
             onPressed: () {
-              pushNonFungibleSell(
-                context,
-                nonFungibleToken: widget.nonFungibleToken,
-                tokenId: widget.tokenId,
-              );
+              _sell();
             },
           ),
           ElevatedButton(
@@ -133,4 +132,152 @@ class _NonFungibleTokenScreenBodyState
           ),
         ],
       );
+
+  void _sell() async {
+    final confirmation = await showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        height: 260,
+        padding: EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: _NonFungibleSell(
+            nonFungibleToken: widget.nonFungibleToken,
+            tokenId: widget.tokenId,
+            data: widget.data,
+          ),
+        ),
+      ),
+    );
+
+    if (confirmation == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        height: 260,
+        padding: EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: ElevatedButton(
+            child: Text('Done'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NonFungibleSell extends StatefulWidget {
+  final NonFungibleToken nonFungibleToken;
+  final int tokenId;
+  final Future<Result> data;
+
+  const _NonFungibleSell(
+      {Key? key,
+      required this.nonFungibleToken,
+      required this.tokenId,
+      required this.data})
+      : super(key: key);
+
+  @override
+  _NonFungibleSellState createState() => _NonFungibleSellState();
+}
+
+class _NonFungibleSellState extends State<_NonFungibleSell> {
+  FungibleToken? _token;
+  Future<Set<AAsset>?>? _assets;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _assets = context.read<AppState>().convexityClient().assets();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    return Column(
+      children: [
+        Text(
+          'Sell ',
+          style: Theme.of(context).textTheme.headline5,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: TextField(
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: 'Price',
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+            ),
+            Gap(10),
+            FutureBuilder<Set<AAsset>?>(
+              future: _assets,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Spinner();
+                }
+
+                final assets = snapshot.data ?? <AAsset>[];
+
+                final fungibles = assets
+                    .where(
+                      (e) =>
+                          e.type == AssetType.fungible &&
+                          isDefaultFungibleToken(e.asset),
+                    )
+                    .map((e) => e.asset as FungibleToken);
+
+                return Dropdown<FungibleToken>(
+                  active: _token ?? appState.model.defaultWithToken ?? CVX,
+                  items: [CVX, ...fungibles]..sort(
+                      (a, b) => a.metadata.tickerSymbol!
+                          .compareTo(b.metadata.tickerSymbol!),
+                    ),
+                  itemWidget: (FungibleToken token) {
+                    return Text(token.metadata.tickerSymbol!);
+                  },
+                  onChanged: (t) {
+                    setState(() {
+                      _token = t;
+                    });
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        Gap(40),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            OutlinedButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Gap(20),
+            ElevatedButton(
+              child: Text('Sell'),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
