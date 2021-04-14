@@ -1,20 +1,19 @@
 (def nft-market
   (deploy
    '(do
-      (def -for-sale [])
+      (def counter 0)
+
+      (def -for-sale {})
 
       (defn for-sale []
         -for-sale)
 
       (defn sell [listing]
-        (def -for-sale (conj -for-sale {:cover-image-uri (:cover-image-uri listing)
-                                        :nft-address (:nft-address listing)
-                                        :token-id (:token-id listing)
-                                        :fungible-address (:fungible-address listing)
-                                        :price (:price listing)}))
+        (let [id (inc counter)]
+          (def -for-sale (assoc -for-sale id listing))
 
-        ;; What could we return when creating a listing?
-        ;; Does a return value even make sense?
-        nil)
+          (def counter id)
+
+          id))
 
       (export for-sale sell))))

@@ -31,7 +31,7 @@ class NonFungibleMarketScreen extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
 
-            List forSale = snapshot.data?.value ?? [];
+            Iterable forSale = snapshot.data?.value.values ?? [];
 
             return AnimationLimiter(
               child: GridView.count(
@@ -41,8 +41,8 @@ class NonFungibleMarketScreen extends StatelessWidget {
                 children: forSale
                     .map(
                       (e) => Tuple2<Address, int>(
-                        Address(e['nft-address']),
-                        e['token-id'],
+                        Address(e['asset'].first),
+                        e['asset'].last,
                       ),
                     )
                     .toList()

@@ -17,4 +17,4 @@ Uri convexServerUri() => isDebug()
       );
 
 // This is temporary.
-const NFT_MARKET_ADDRESS = '#3333';
+const NFT_MARKET_ADDRESS = '#3335';
