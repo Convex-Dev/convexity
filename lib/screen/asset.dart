@@ -488,14 +488,27 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   future: balance,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
+                      return Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ],
+                        ),
                       );
                     }
 
                     if (snapshot.hasError) {
-                      return Text(
-                        'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                      return Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                            ),
+                          ],
+                        ),
                       );
                     }
 
@@ -503,7 +516,13 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       final ids = snapshot.data as List;
 
                       if (ids.isEmpty) {
-                        return Text("You don't own any Non-Fungible Token.");
+                        return Expanded(
+                          child: Column(
+                            children: [
+                              Text("You don't own any Non-Fungible Token."),
+                            ],
+                          ),
+                        );
                       }
 
                       final columnCount = 2;
