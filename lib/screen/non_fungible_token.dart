@@ -226,7 +226,12 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
               future: _assets,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Spinner();
+                  return Container(
+                    width: 59,
+                    child: Center(
+                      child: Spinner(),
+                    ),
+                  );
                 }
 
                 final assets = snapshot.data ?? <AAsset>[];
