@@ -1,0 +1,15 @@
+(def nft-market
+  (deploy
+   '(do
+      (def -for-sale [])
+
+      (defn for-sale []
+        -for-sale)
+
+      (defn sell [listing]
+        (def -for-sale (conj -for-sale {:nft-address (:nft-address listing)
+                                        :token-id (:token-id listing)
+                                        :fungible-address (:fungible-address listing)
+                                        :price (:price listing)})))
+
+      (export for-sale sell))))
