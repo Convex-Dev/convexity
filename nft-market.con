@@ -7,9 +7,14 @@
         -for-sale)
 
       (defn sell [listing]
-        (def -for-sale (conj -for-sale {:nft-address (:nft-address listing)
+        (def -for-sale (conj -for-sale {:cover-image-uri (:cover-image-uri listing)
+                                        :nft-address (:nft-address listing)
                                         :token-id (:token-id listing)
                                         :fungible-address (:fungible-address listing)
-                                        :price (:price listing)})))
+                                        :price (:price listing)}))
+
+        ;; What could we return when creating a listing?
+        ;; Does a return value even make sense?
+        nil)
 
       (export for-sale sell))))

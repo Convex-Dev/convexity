@@ -8,6 +8,7 @@ import '../model.dart';
 import '../widget.dart';
 import '../convex.dart';
 import '../nav.dart';
+import '../config.dart' as config;
 
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
@@ -117,7 +118,7 @@ class _NonFungibleTokenScreenBodyState
           ElevatedButton(
             child: Text('Sell'),
             onPressed: () {
-              _sell();
+              _sell(context);
             },
           ),
           ElevatedButton(
@@ -133,8 +134,8 @@ class _NonFungibleTokenScreenBodyState
         ],
       );
 
-  void _sell() async {
-    final confirmation = await showModalBottomSheet(
+  void _sell(BuildContext context) async {
+    final Tuple2<String, FungibleToken?>? price = await showModalBottomSheet(
       context: context,
       builder: (context) => Container(
         height: 260,
@@ -149,7 +150,20 @@ class _NonFungibleTokenScreenBodyState
       ),
     );
 
-    if (confirmation == null) return;
+    if (price == null) return;
+
+    final appState = context.read<AppState>();
+
+    final listing = '{'
+        ' :cover-image-uri "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/300px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg"'
+        ' :nft-address ${widget.nonFungibleToken.address}'
+        ' :token-id ${widget.tokenId}'
+        ' :price ${price.item1}'
+        ' :fungible-address ${price.item2?.address ?? 'nil'}'
+        '}';
+
+    final Future<Result> transaction = appState.convexClient().transact(
+        source: '(call ${config.NFT_MARKET_ADDRESS} (sell $listing))');
 
     showModalBottomSheet(
       context: context,
@@ -157,10 +171,22 @@ class _NonFungibleTokenScreenBodyState
         height: 260,
         padding: EdgeInsets.all(20),
         child: SingleChildScrollView(
-          child: ElevatedButton(
-            child: Text('Done'),
-            onPressed: () {
-              Navigator.pop(context);
+          child: FutureBuilder(
+            future: transaction,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+
+              return Center(
+                child: ElevatedButton(
+                  child: Text('Done'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              );
             },
           ),
         ),
@@ -186,6 +212,7 @@ class _NonFungibleSell extends StatefulWidget {
 }
 
 class _NonFungibleSellState extends State<_NonFungibleSell> {
+  String? _price;
   FungibleToken? _token;
   Future<Set<AAsset>?>? _assets;
 
@@ -217,7 +244,9 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
                 ),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {
+                    _price = value;
+                  });
                 },
               ),
             ),
@@ -255,7 +284,7 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
                   },
                   onChanged: (t) {
                     setState(() {
-                      _token = t;
+                      _token = t == CVX ? null : t;
                     });
                   },
                 );
@@ -277,7 +306,8 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
             ElevatedButton(
               child: Text('Sell'),
               onPressed: () {
-                Navigator.pop(context, true);
+                Navigator.pop(
+                    context, Tuple2<String, FungibleToken?>(_price!, _token));
               },
             ),
           ],
