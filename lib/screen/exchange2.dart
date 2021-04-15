@@ -423,7 +423,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
             future: _quote,
             builder: (context, snapshot) => SizedBox(
               width: double.infinity,
-              height: 60,
+              height: defaultButtonHeight,
               child: ElevatedButton(
                 child: Text(
                   _actionText,

@@ -19,6 +19,8 @@ import 'currency.dart' as currency;
 
 const defaultScreenPadding = EdgeInsets.all(12);
 
+const defaultButtonHeight = 60.0;
+
 class StatelessWidgetBuilder extends StatelessWidget {
   final Widget Function(BuildContext) builder;
 

@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../logger.dart';
 import '../route.dart' as route;
 import '../convex.dart';
 import '../model.dart';
+import '../widget.dart';
 
 enum _NewTokenStatus {
   creatingToken,
@@ -415,35 +417,39 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       child: ListView(
         children: [
           ..._fields(),
+          Gap(20),
           Container(
             padding: EdgeInsets.all(15),
-            child: ElevatedButton(
-              child: Text('Create Token'),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  final newToken = _NewFungibleToken(
-                    name: _name,
-                    description: _description,
-                    symbol: _symbol,
-                    currencySymbol: _currencySymbol,
-                    decimals: _decimals,
-                    supply: _supply,
-                  );
-                  showModalBottomSheet(
-                    isDismissible: false,
-                    enableDrag: false,
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                        height: 300,
-                        child: Center(
-                          child: _CreateToken(newToken),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
+            child: SizedBox(
+              height: defaultButtonHeight,
+              child: ElevatedButton(
+                child: Text('Create Token'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final newToken = _NewFungibleToken(
+                      name: _name,
+                      description: _description,
+                      symbol: _symbol,
+                      currencySymbol: _currencySymbol,
+                      decimals: _decimals,
+                      supply: _supply,
+                    );
+                    showModalBottomSheet(
+                      isDismissible: false,
+                      enableDrag: false,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 300,
+                          child: Center(
+                            child: _CreateToken(newToken),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ],

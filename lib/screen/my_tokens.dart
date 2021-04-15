@@ -27,8 +27,11 @@ class MyTokensScreen extends StatelessWidget {
               ),
               SizedBox(
                 width: double.infinity,
+                height: defaultButtonHeight,
                 child: ElevatedButton(
-                  child: Text('Create Fungible Token'),
+                  child: Text(
+                    'Create Fungible Token',
+                  ),
                   onPressed: () {
                     nav.pushNewToken(context);
                   },

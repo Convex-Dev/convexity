@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../convex.dart';
@@ -83,35 +84,39 @@ class _NewNonFungibleTokenScreenBodyState
             ),
             subtitle: Text('URI'),
           ),
+          Gap(10),
           Container(
             padding: EdgeInsets.only(top: 20),
-            child: ElevatedButton(
-              child: Text('Create Token'),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  final _newToken = _NewNonFungibleToken(
-                    name: _name,
-                    uri: _uri,
-                  );
+            child: SizedBox(
+              height: defaultButtonHeight,
+              child: ElevatedButton(
+                child: Text('Create Token'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final _newToken = _NewNonFungibleToken(
+                      name: _name,
+                      uri: _uri,
+                    );
 
-                  showModalBottomSheet(
-                    isDismissible: false,
-                    enableDrag: false,
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                        height: 300,
-                        child: Center(
-                          child: _CreateToken(
-                            nonFungibleToken: widget._nonFungibleToken,
-                            newToken: _newToken,
+                    showModalBottomSheet(
+                      isDismissible: false,
+                      enableDrag: false,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 300,
+                          child: Center(
+                            child: _CreateToken(
+                              nonFungibleToken: widget._nonFungibleToken,
+                              newToken: _newToken,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ],

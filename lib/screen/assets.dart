@@ -51,6 +51,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                 ),
               ),
               SizedBox(
+                height: defaultButtonHeight,
                 width: double.infinity,
                 child: ElevatedButton(
                   child: Text('Follow more Assets...'),
