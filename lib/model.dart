@@ -14,7 +14,6 @@ import 'logger.dart';
 import 'preferences.dart' as p;
 import 'route.dart' as route;
 import 'format.dart' as format;
-import 'config.dart' as config;
 import 'currency.dart' as currency;
 
 // ignore: non_constant_identifier_names
@@ -25,9 +24,25 @@ final CVX = FungibleToken(
     description: 'Convex Gold Coin.',
     tickerSymbol: 'CVX',
     currencySymbol: '',
-    decimals: config.CONVEX_GOLD_DECIMALS,
+    decimals: currency.cvxUnitDecimals(currency.CvxUnit.gold),
   ),
 );
+
+bool isDefaultFungibleToken(FungibleToken token) {
+  final defaultTokens = {
+    34,
+    28,
+    40,
+    42,
+    30,
+    32,
+    44,
+    38,
+    36,
+  };
+
+  return defaultTokens.contains(token.address.value);
+}
 
 enum ExchangeAction {
   buy,
@@ -154,7 +169,7 @@ class Contact {
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'address': address!.toJson(),
+        'address': address.toJson(),
       };
 
   @override

@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:jdenticon_dart/jdenticon_dart.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import 'convex.dart';
 import 'logger.dart';
@@ -474,8 +475,8 @@ class _ContactItem implements _AWidget {
   _ContactItem(this.contact);
 
   Widget build(BuildContext context) => ListTile(
-        leading: aidenticon(contact.address!),
-        title: Text(contact.name!),
+        leading: aidenticon(contact.address),
+        title: Text(contact.name),
         subtitle: Text(contact.address.toString()),
         onTap: () {
           Navigator.pop(context, contact.address);
@@ -914,5 +915,89 @@ class Dropdown<T> extends StatelessWidget {
           .toList(),
       onChanged: onChanged,
     );
+  }
+}
+
+class NonFungibleGridTile extends StatelessWidget {
+  final int tokenId;
+  final Future<Result> data;
+  final void Function() onTap;
+
+  const NonFungibleGridTile({
+    Key? key,
+    required this.tokenId,
+    required this.data,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Result>(
+      future: data,
+      builder: (context, snapshot) {
+        final subtitle = AnimatedSwitcher(
+          duration: Duration(milliseconds: 500),
+          child: snapshot.connectionState == ConnectionState.waiting
+              ? Text('')
+              : (snapshot.data!.errorCode != null
+                  ? Text('')
+                  : Text(snapshot.data!.value['name'])),
+        );
+
+        final child = AnimatedSwitcher(
+          duration: Duration(milliseconds: 500),
+          child: snapshot.connectionState == ConnectionState.waiting
+              ? Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              : (snapshot.data!.value['uri'] == null
+                  ? Icon(
+                      Icons.image,
+                      size: 40,
+                    )
+                  : _nonFungibleImage(snapshot.data!.value['uri'])),
+        );
+
+        return InkWell(
+          child: GridTile(
+            footer: GridTileBar(
+              title: Text('#$tokenId'),
+              subtitle: subtitle,
+              backgroundColor: Colors.black45,
+            ),
+            child: child,
+          ),
+          onTap: onTap,
+        );
+      },
+    );
+  }
+
+  Widget _nonFungibleImage(String uri) {
+    final fallback = Icon(
+      Icons.image,
+      size: 40,
+    );
+
+    try {
+      if (Uri.parse(uri).isAbsolute == false) {
+        return fallback;
+      }
+
+      return FadeInImage.memoryNetwork(
+        placeholder: kTransparentImage,
+        image: uri,
+      );
+    } catch (e) {
+      logger.e('Failed to load image: $e');
+
+      return fallback;
+    }
   }
 }

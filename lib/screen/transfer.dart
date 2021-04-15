@@ -98,7 +98,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                     if (contact == null)
                       Text(to.toString())
                     else
-                      Text(contact.name!),
+                      Text(contact.name),
                     Text(
                       '?',
                     )
@@ -205,7 +205,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                           if (contact == null)
                             aidenticon(to)
                           else
-                            Text(contact.name! + '.'),
+                            Text(contact.name + '.'),
                         ],
                       ),
                     ),
@@ -245,7 +245,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
     final fromContact = appState.findContact(appState.model.activeAddress);
 
     fromController.text = fromContact != null
-        ? fromContact.name!
+        ? fromContact.name
         : appState.model.activeAddress.toString();
 
     return Padding(
@@ -320,7 +320,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
                       target = selectedAddress;
 
                       targetController.text = targetContact != null
-                          ? targetContact.name!
+                          ? targetContact.name
                           : selectedAddress.toString();
                     });
                   }
