@@ -6,10 +6,8 @@ import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:tuple/tuple.dart';
 
-import '../logger.dart';
 import '../model.dart';
 import '../format.dart';
 import '../convex.dart';
@@ -217,30 +215,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
         ),
       ));
 
-  Widget _action({
-    required String label,
-    required void Function() onPressed,
-  }) =>
-      StatelessWidgetBuilder(
-        (context) => Column(
-          children: [
-            Ink(
-              decoration: const ShapeDecoration(
-                color: Colors.lightBlue,
-                shape: CircleBorder(),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.money),
-                color: Colors.white,
-                onPressed: onPressed,
-              ),
-            ),
-            Gap(6),
-            Text(label)
-          ],
-        ),
-      );
-
   Widget _follow(
     BuildContext context,
     AppState appState,
@@ -357,8 +331,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                     ),
                     Row(
                       children: [
-                        _action(
-                          label: 'Buy',
+                        TextButton(
+                          child: Text('BUY'),
                           onPressed: () {
                             final future = nav.pushExchange(
                               context,
@@ -375,9 +349,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             });
                           },
                         ),
-                        Gap(30),
-                        _action(
-                          label: 'Sell',
+                        TextButton(
+                          child: Text('SELL'),
                           onPressed: () {
                             final future = nav.pushExchange(
                               context,
@@ -394,9 +367,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                             });
                           },
                         ),
-                        Gap(30),
-                        _action(
-                          label: 'Transfer',
+                        TextButton(
+                          child: Text('TRANSFER'),
                           onPressed: () {
                             final fungible =
                                 widget.aasset!.asset as FungibleToken?;

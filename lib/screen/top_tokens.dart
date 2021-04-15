@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../convex.dart';
 import '../model.dart';
 import '../widget.dart';
-import '../format.dart' as format;
 import '../nav.dart' as nav;
 import '../currency.dart' as currency;
 

@@ -12,7 +12,6 @@ import '../nav.dart';
 import '../widget.dart';
 import '../route.dart' as route;
 import '../convex.dart' as convex;
-import '../format.dart' as format;
 import '../currency.dart' as currency;
 
 class TransferScreen extends StatelessWidget {
