@@ -302,10 +302,13 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    _quoteText(snapshot.data as int),
-                                    style:
-                                        Theme.of(context).textTheme.headline6,
+                                  Expanded(
+                                    child: Text(
+                                      _quoteText(snapshot.data as int),
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
                                   ),
                                   Gap(5),
                                   Text(
