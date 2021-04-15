@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -8,7 +9,7 @@ import '../convex.dart';
 import '../model.dart';
 import '../config.dart' as config;
 
-class NonFungibleMarketScreen extends StatelessWidget {
+class NonFungibleShopScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -16,11 +17,11 @@ class NonFungibleMarketScreen extends StatelessWidget {
     final convexClient = appState.convexClient();
 
     final Future<Result> forSale = convexClient.query(
-      source: '(call ${config.NFT_MARKET_ADDRESS} (for-sale))',
+      source: '(call ${config.NFT_SHOP_ADDRESS} (for-sale))',
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('Non-Fungible Market')),
+      appBar: AppBar(title: Text('NFT Shop')),
       body: Container(
         padding: defaultScreenPadding,
         child: FutureBuilder<Result>(
@@ -32,6 +33,25 @@ class NonFungibleMarketScreen extends StatelessWidget {
               );
 
             Iterable forSale = snapshot.data?.value.values ?? [];
+
+            if (forSale.isEmpty)
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_bag_rounded,
+                      size: 120,
+                      color: Colors.black12,
+                    ),
+                    Gap(10),
+                    Text(
+                      'There is nothing for sale at the moment.',
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ],
+                ),
+              );
 
             return AnimationLimiter(
               child: GridView.count(

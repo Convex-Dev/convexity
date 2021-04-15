@@ -101,12 +101,12 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
         subtitle: Text('View top currencies in the Exchange'),
         onTap: () => nav.pushTopTokens(context).then(rebuild),
       ),
-      // ListTile(
-      //   leading: Icon(Icons.videogame_asset),
-      //   title: Text('NFT Market'),
-      //   subtitle: Text('View NFTs for sale'),
-      //   onTap: () => nav.pushNonFungibleMarket(context).then(rebuild),
-      // ),
+      ListTile(
+        leading: Icon(Icons.shopping_bag),
+        title: Text('NFT Shop'),
+        subtitle: Text('View NFTs for sale'),
+        onTap: () => nav.pushNonFungibleMarket(context).then(rebuild),
+      ),
       ListTile(
         leading: Icon(Icons.videogame_asset_rounded),
         title: Text('Digital Assets'),

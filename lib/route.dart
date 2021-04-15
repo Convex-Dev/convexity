@@ -21,7 +21,7 @@ import 'screen/address_book.dart';
 import 'screen/new_contact.dart';
 import 'screen/non_fungible_token.dart';
 import 'screen/non_fungible_transfer.dart';
-import 'screen/non_fungible_market.dart';
+import 'screen/non_fungible_shop.dart';
 import 'screen/activity.dart';
 import 'screen/staking.dart';
 import 'screen/select_fungible.dart';
@@ -76,7 +76,7 @@ Map<String, WidgetBuilder> routes() => {
       SELECT_ACCOUNT: (context) => selectAccountScreen(),
       NON_FUNGIBLE_TOKEN: (context) => NonFungibleTokenScreen(),
       NON_FUNGIBLE_TRANSFER: (context) => NonFungibleTransferScreen(),
-      NON_FUNGIBLE_MARKET: (context) => NonFungibleMarketScreen(),
+      NON_FUNGIBLE_MARKET: (context) => NonFungibleShopScreen(),
       ACTIVITY: (context) => ActivityScreen(),
       STAKING: (context) => StakingScreen(),
       STAKING_PEER: (context) => StakingPeerScreen(),

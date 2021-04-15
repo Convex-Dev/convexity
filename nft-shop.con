@@ -3,11 +3,14 @@
    '(do
       (def counter 0)
 
-      (def for-sale {})
+      (def selling {})
+
+      (defn for-sale []
+        selling)
 
       (defn sell [listing]
         (let [id counter]
-          (def for-sale (assoc for-sale id listing))
+          (def selling (assoc selling id listing))
 
           (def counter (inc counter))
 

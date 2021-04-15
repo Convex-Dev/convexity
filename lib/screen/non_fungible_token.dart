@@ -160,8 +160,9 @@ class _NonFungibleTokenScreenBodyState
         ' :price-with ${price.item2?.address ?? 'nil'}'
         '}';
 
-    final Future<Result> transaction = appState.convexClient().transact(
-        source: '(call ${config.NFT_MARKET_ADDRESS} (sell $listing))');
+    final Future<Result> transaction = appState
+        .convexClient()
+        .transact(source: '(call ${config.NFT_SHOP_ADDRESS} (sell $listing))');
 
     showModalBottomSheet(
       context: context,
