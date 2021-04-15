@@ -115,12 +115,12 @@ class _NonFungibleTokenScreenBodyState
               return imageTransparent;
             },
           ),
-          ElevatedButton(
-            child: Text('Sell'),
-            onPressed: () {
-              _sell(context);
-            },
-          ),
+          // ElevatedButton(
+          //   child: Text('Sell'),
+          //   onPressed: () {
+          //     _sell(context);
+          //   },
+          // ),
           ElevatedButton(
             child: Text('Transfer'),
             onPressed: () {
