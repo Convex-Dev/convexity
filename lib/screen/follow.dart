@@ -164,7 +164,8 @@ class _RecommendedState extends State<_Recommended> {
       );
     } else {
       return GridView.count(
-        padding: const EdgeInsets.all(20),
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
         crossAxisCount: 2,
         children: _assets
             .where(
