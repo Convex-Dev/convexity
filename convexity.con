@@ -11,7 +11,7 @@
               :symbol "GBP"
               :name "Pound Sterling"
               :description "UK National Currency"
-              :currency-symbol "€"
+              :currency-symbol "£"
               :decimals 2}
          #28 {:type :fungible
               :symbol "USD"
