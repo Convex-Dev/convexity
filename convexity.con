@@ -121,3 +121,9 @@
           (fail :unauthorized "You're not authorized to modify the registry.")))
 
       (export all-assets asset-metadata register-asset request-registry unregister-asset))))
+
+(import asset.nft-tokens :as nft)
+
+(call convexity (register-asset (get *aliases* 'nft) {:name "Non-Fungible Tokens"
+                                                      :description "Convex Non-Fungible Tokens Actor."
+                                                      :type :non-fungible}))
