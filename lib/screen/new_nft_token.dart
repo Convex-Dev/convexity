@@ -50,8 +50,9 @@ class _NewNonFungibleTokenScreenBodyState
         children: [
           ListTile(
             title: TextFormField(
+              autofocus: true,
               validator: (value) {
-                if (value!.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return 'Required';
                 }
 
@@ -68,6 +69,10 @@ class _NewNonFungibleTokenScreenBodyState
           ListTile(
             title: TextFormField(
               validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Required';
+                }
+
                 return null;
               },
               onChanged: (value) {
