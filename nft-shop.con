@@ -9,7 +9,7 @@
       ;; Listings indexed by ID.
       (def listing {})
 
-      (defn create-listing [new-listing]
+      (defn add-listing [new-listing]
         (let [owner *caller*
 
               ;; Counter is a simple and good-enough mechanism to manage IDs.
@@ -18,15 +18,35 @@
               owner-selling (get selling owner #{})
               owner-selling (conj owner-selling id)]
 
-          ;; Update owner's set of Listing IDs.
+          ;; Update owner's set of Listing IDs to add a new Listing.
           (def selling (assoc selling owner owner-selling))
 
           ;; Update available Listings (indexed by ID).
-          (def listing (assoc listing id new-listing))
+          (def listing (assoc listing id (merge new-listing {:id id :owner owner})))
 
           (def counter (inc counter))
 
           id))
+
+      (defn remove-listing [id]
+        (let [owner *caller*
+
+              owner-selling (get selling owner #{})
+              owner-selling (disj owner-selling id)]
+
+          ;; The owner is the only one allowed to remove the Listing.
+          (when (not (= *caller* (get-in listing [id :owner])))
+            (fail "Not allowed."))
+
+          ;; Update owner's set of Listing IDs to remove an existing Listing.
+          (def selling (assoc selling owner owner-selling))
+
+          ;; Update available Listings (indexed by ID).
+          (def listing (dissoc listing id))
+
+          (def counter (inc counter))
+
+          nil))
 
       ;; Returns a list with all Listings.
       (defn shop []
@@ -45,4 +65,4 @@
            (get listing id))
          (get selling seller #{})))
 
-      (export create-listing shop shop-of))))
+      (export add-listing remove-listing shop shop-of))))

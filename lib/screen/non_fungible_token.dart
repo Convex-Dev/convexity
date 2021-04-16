@@ -160,7 +160,7 @@ class _NonFungibleTokenScreenBodyState
         '}';
 
     final Future<Result> transaction = appState.convexClient().transact(
-          source: '(call ${config.NFT_SHOP_ADDRESS} (create-listing $listing))',
+          source: '(call ${config.NFT_SHOP_ADDRESS} (add-listing $listing))',
         );
 
     showModalBottomSheet(

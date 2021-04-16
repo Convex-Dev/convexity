@@ -510,8 +510,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                 final tokenId = entry.value as int;
 
                                 final data = convexClient.query(
-                                    source:
-                                        '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))');
+                                  source:
+                                      '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))',
+                                );
 
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,
