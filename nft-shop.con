@@ -9,7 +9,7 @@
       ;; Listings indexed by ID.
       (def listing {})
 
-      (defn create-listing [listing]
+      (defn create-listing [new-listing]
         (let [owner *caller*
 
               id counter
@@ -19,7 +19,7 @@
 
           (def selling (assoc selling owner owner-selling))
 
-          (def listing (assoc listing id listing))
+          (def listing (assoc listing id new-listing))
 
           (def counter (inc counter))
 

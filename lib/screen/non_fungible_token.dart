@@ -115,12 +115,12 @@ class _NonFungibleTokenScreenBodyState
               return imageTransparent;
             },
           ),
-          // ElevatedButton(
-          //   child: Text('Sell'),
-          //   onPressed: () {
-          //     _sell(context);
-          //   },
-          // ),
+          ElevatedButton(
+            child: Text('Sell'),
+            onPressed: () {
+              _sell(context);
+            },
+          ),
           ElevatedButton(
             child: Text('Transfer'),
             onPressed: () {
@@ -156,13 +156,12 @@ class _NonFungibleTokenScreenBodyState
 
     final listing = '{'
         ' :asset [${widget.nonFungibleToken.address} ${widget.tokenId}]'
-        ' :price ${price.item1}'
-        ' :price-with ${price.item2?.address ?? 'nil'}'
+        ' :price [${price.item1} ${price.item2?.address ?? ''}]'
         '}';
 
-    final Future<Result> transaction = appState
-        .convexClient()
-        .transact(source: '(call ${config.NFT_SHOP_ADDRESS} (sell $listing))');
+    final Future<Result> transaction = appState.convexClient().transact(
+          source: '(call ${config.NFT_SHOP_ADDRESS} (create-listing $listing))',
+        );
 
     showModalBottomSheet(
       context: context,

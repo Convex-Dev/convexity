@@ -18,4 +18,4 @@ Uri convexServerUri() => isDebug()
       );
 
 // This is temporary.
-const NFT_SHOP_ADDRESS = const Address(3358);
+const NFT_SHOP_ADDRESS = const Address(3378);

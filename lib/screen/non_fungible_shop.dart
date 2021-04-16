@@ -17,7 +17,7 @@ class NonFungibleShopScreen extends StatelessWidget {
     final convexClient = appState.convexClient();
 
     final Future<Result> forSale = convexClient.query(
-      source: '(call ${config.NFT_SHOP_ADDRESS} (for-sale))',
+      source: '(call ${config.NFT_SHOP_ADDRESS} (shop))',
     );
 
     return Scaffold(
@@ -32,9 +32,9 @@ class NonFungibleShopScreen extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
 
-            Iterable forSale = snapshot.data?.value.values ?? [];
+            Iterable shop = snapshot.data?.value ?? [];
 
-            if (forSale.isEmpty)
+            if (shop.isEmpty)
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -58,7 +58,7 @@ class NonFungibleShopScreen extends StatelessWidget {
                 crossAxisSpacing: 6,
                 mainAxisSpacing: 6,
                 crossAxisCount: 2,
-                children: forSale
+                children: shop
                     .map(
                       (e) => Tuple2<Address, int>(
                         Address(e['asset'].first),
