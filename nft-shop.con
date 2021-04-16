@@ -3,17 +3,36 @@
    '(do
       (def counter 0)
 
+      ;; Mapping of owner to a set of Listing ID.
       (def selling {})
 
-      (defn for-sale []
-        selling)
+      ;; Listings indexed by ID.
+      (def listing {})
 
-      (defn sell [listing]
-        (let [id counter]
-          (def selling (assoc selling id listing))
+      (defn create-listing [listing]
+        (let [owner *caller*
+
+              id counter
+
+              owner-selling (get selling owner #{})
+              owner-selling (conj owner-selling id)]
+
+          (def selling (assoc selling owner owner-selling))
+
+          (def listing (assoc listing id listing))
 
           (def counter (inc counter))
 
           id))
 
-      (export for-sale sell))))
+      ;; Returns a list of Listings.
+      (defn shop []
+        (mapcat
+         (fn [owner+ids]
+           (map
+            (fn [id]
+              (get listing id))
+            (last owner+ids)))
+         selling))
+
+      (export create-listing shop))))
