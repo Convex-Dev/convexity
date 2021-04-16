@@ -35,4 +35,10 @@
             (last owner+ids)))
          selling))
 
-      (export create-listing shop))))
+      (defn shop-of [seller]
+        (map
+         (fn [id]
+           (get listing id))
+         (get selling seller #{})))
+
+      (export create-listing shop shop-of))))
