@@ -12,20 +12,23 @@
       (defn create-listing [new-listing]
         (let [owner *caller*
 
+              ;; Counter is a simple and good-enough mechanism to manage IDs.
               id counter
 
               owner-selling (get selling owner #{})
               owner-selling (conj owner-selling id)]
 
+          ;; Update owner's set of Listing IDs.
           (def selling (assoc selling owner owner-selling))
 
+          ;; Update available Listings (indexed by ID).
           (def listing (assoc listing id new-listing))
 
           (def counter (inc counter))
 
           id))
 
-      ;; Returns a list of Listings.
+      ;; Returns a list with all Listings.
       (defn shop []
         (mapcat
          (fn [owner+ids]
@@ -35,6 +38,7 @@
             (last owner+ids)))
          selling))
 
+      ;; Returns a list of Listings of a particular account.
       (defn shop-of [seller]
         (map
          (fn [id]
