@@ -153,7 +153,7 @@ Future<dynamic> pushNonFungibleTransfer(
 Future<dynamic> pushNonFungibleMarket(BuildContext context) =>
     Navigator.pushNamed(
       context,
-      route.NON_FUNGIBLE_MARKET,
+      route.SHOP,
     );
 
 Future<dynamic> pushActivity(

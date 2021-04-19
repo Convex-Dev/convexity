@@ -9,7 +9,7 @@ import '../convex.dart';
 import '../model.dart';
 import '../config.dart' as config;
 
-class NonFungibleShopScreen extends StatelessWidget {
+class ShopScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -21,7 +21,7 @@ class NonFungibleShopScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('NFT Shop')),
+      appBar: AppBar(title: Text('Shop')),
       body: Container(
         padding: defaultScreenPadding,
         child: FutureBuilder<Result>(

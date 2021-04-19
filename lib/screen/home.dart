@@ -103,8 +103,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
       ),
       ListTile(
         leading: Icon(Icons.shopping_bag),
-        title: Text('NFT Shop'),
-        subtitle: Text('View NFTs for sale'),
+        title: Text('Shop'),
+        subtitle: Text('Buy Tokens'),
         onTap: () => nav.pushNonFungibleMarket(context).then(rebuild),
       ),
       ListTile(
