@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -515,7 +516,15 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))',
                                 );
 
-                                final listings = shop.listings(convexClient);
+                                final listing = shop.listing(
+                                  convexClient,
+                                  Tuple2<Address, int>(
+                                    widget.aasset!.asset.address,
+                                    entry.value,
+                                  ),
+                                );
+
+                                listing.then((value) => logger.d(value));
 
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,

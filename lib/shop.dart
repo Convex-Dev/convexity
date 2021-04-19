@@ -15,10 +15,22 @@ class Listing {
     required this.asset,
     required this.owner,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'price': [price.item1, price.item2?.toJson()],
+        'asset': [asset.item1.toJson(), asset.item2],
+        'owner': owner.toJson(),
+      };
+
+  String toString() => toJson().toString();
 }
 
-Future<List<Listing>> listings(ConvexClient client) async {
-  Result result = await client.query(source: '(call $SHOP_ADDRESS (shop))');
+/// Returns available Listings.
+Future<List<Listing>> listings(ConvexClient convexClient) async {
+  Result result = await convexClient.query(
+    source: '(call $SHOP_ADDRESS (shop))',
+  );
 
   if (result.errorCode != null)
     throw Exception(
@@ -51,4 +63,14 @@ Future<List<Listing>> listings(ConvexClient client) async {
   }).toList();
 
   return listings;
+}
+
+/// Returns a Listing for Asset, or null if there isn't one.
+Future<Listing?> listing(
+  ConvexClient convexClient,
+  Tuple2<Address, int> asset,
+) async {
+  List<Listing> l = await listings(convexClient);
+
+  return l.firstWhere((listing) => listing.asset == asset, orElse: null);
 }
