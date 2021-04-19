@@ -21,6 +21,12 @@ class ListingScreen extends StatelessWidget {
           children: [
             ListTile(
               title: Text(
+                '${_listing.id}',
+              ),
+              subtitle: Text('ID'),
+            ),
+            ListTile(
+              title: Text(
                 '${_listing.asset.item1}, ${_listing.asset.item2}',
               ),
               subtitle: Text('Asset'),
