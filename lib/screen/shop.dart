@@ -7,7 +7,6 @@ import 'package:tuple/tuple.dart';
 import '../widget.dart';
 import '../convex.dart';
 import '../model.dart';
-import '../config.dart' as config;
 
 class ShopScreen extends StatelessWidget {
   @override
@@ -17,7 +16,7 @@ class ShopScreen extends StatelessWidget {
     final convexClient = appState.convexClient();
 
     final Future<Result> forSale = convexClient.query(
-      source: '(call ${config.NFT_SHOP_ADDRESS} (shop))',
+      source: '(call $SHOP_ADDRESS (shop))',
     );
 
     return Scaffold(

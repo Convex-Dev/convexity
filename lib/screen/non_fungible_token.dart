@@ -8,7 +8,6 @@ import '../model.dart';
 import '../widget.dart';
 import '../convex.dart';
 import '../nav.dart';
-import '../config.dart' as config;
 
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
@@ -160,7 +159,7 @@ class _NonFungibleTokenScreenBodyState
         '}';
 
     final Future<Result> transaction = appState.convexClient().transact(
-          source: '(call ${config.NFT_SHOP_ADDRESS} (add-listing $listing))',
+          source: '(call $SHOP_ADDRESS (add-listing $listing))',
         );
 
     showModalBottomSheet(

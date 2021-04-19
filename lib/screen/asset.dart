@@ -13,6 +13,7 @@ import '../format.dart';
 import '../convex.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../shop.dart' as shop;
 
 Widget fungibleTransferActivityView(Activity activity) =>
     StatelessWidgetBuilder((context) {
@@ -513,6 +514,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                   source:
                                       '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))',
                                 );
+
+                                final listings = shop.listings(convexClient);
 
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,

@@ -1,4 +1,3 @@
-import 'package:convex_wallet/convex.dart';
 import 'package:flutter/foundation.dart' as foundation;
 
 const CONVEX_WORLD_HOST = 'convex.world';
@@ -16,6 +15,3 @@ Uri convexServerUri() => isDebug()
         host: CONVEX_WORLD_HOST,
         port: 443,
       );
-
-// This is temporary.
-const NFT_SHOP_ADDRESS = const Address(62);
