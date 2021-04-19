@@ -67,10 +67,8 @@ class ShopScreen extends StatelessWidget {
                       columnCount: 2,
                       child: ScaleAnimation(
                         child: FadeInAnimation(
-                          child: NonFungibleGridTile(
-                            tokenId: entry.value.asset.item2,
-                            data: data,
-                            listing: Future.value(entry.value),
+                          child: _ListingGridTile(
+                            listing: entry.value,
                             onTap: () {
                               nav.pushListing(
                                 context,
@@ -89,5 +87,35 @@ class ShopScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ListingGridTile extends StatelessWidget {
+  final shop.Listing listing;
+  final void Function() onTap;
+
+  const _ListingGridTile({
+    Key? key,
+    required this.listing,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: GridTile(
+        child: Text(''),
+        footer: GridTileBar(
+          title: Text(
+            '${listing.price.item1} ${listing.price.item2 ?? 'CVX'}',
+            style: TextStyle(color: Colors.black87),
+          ),
+          backgroundColor: Colors.black12,
+        ),
+      ),
+      onTap: onTap,
+    );
+
+    return Container();
   }
 }
