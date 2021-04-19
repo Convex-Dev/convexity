@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:convex_wallet/shop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -923,6 +924,7 @@ class Dropdown<T> extends StatelessWidget {
 class NonFungibleGridTile extends StatelessWidget {
   final int tokenId;
   final Future<Result> data;
+  final Future<Listing?>? listing;
   final void Function() onTap;
 
   const NonFungibleGridTile({
@@ -930,6 +932,7 @@ class NonFungibleGridTile extends StatelessWidget {
     required this.tokenId,
     required this.data,
     required this.onTap,
+    this.listing,
   }) : super(key: key);
 
   @override

@@ -524,8 +524,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                   ),
                                 );
 
-                                listing.then((value) => logger.d(value));
-
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,
                                   duration: const Duration(milliseconds: 375),
@@ -535,6 +533,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       child: NonFungibleGridTile(
                                           tokenId: tokenId,
                                           data: data,
+                                          listing: listing,
                                           onTap: () {
                                             final f = nav.pushNonFungibleToken(
                                               context,

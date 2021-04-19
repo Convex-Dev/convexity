@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 
 import '../widget.dart';
-import '../convex.dart';
 import '../model.dart';
+import '../shop.dart' as shop;
 
 class ShopScreen extends StatelessWidget {
   @override
@@ -15,25 +14,22 @@ class ShopScreen extends StatelessWidget {
 
     final convexClient = appState.convexClient();
 
-    final Future<Result> forSale = convexClient.query(
-      source: '(call $SHOP_ADDRESS (shop))',
-    );
-
     return Scaffold(
       appBar: AppBar(title: Text('Shop')),
       body: Container(
         padding: defaultScreenPadding,
-        child: FutureBuilder<Result>(
-          future: forSale,
+        child: FutureBuilder<List<shop.Listing>>(
+          future: shop.listings(convexClient),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting)
               return Center(
                 child: CircularProgressIndicator(),
               );
 
-            Iterable shop = snapshot.data?.value ?? [];
+            List<shop.Listing> listings =
+                snapshot.data == null ? [] : snapshot.data!;
 
-            if (shop.isEmpty)
+            if (listings.isEmpty)
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -57,20 +53,10 @@ class ShopScreen extends StatelessWidget {
                 crossAxisSpacing: 6,
                 mainAxisSpacing: 6,
                 crossAxisCount: 2,
-                children: shop
-                    .map(
-                      (e) => Tuple2<Address, int>(
-                        Address(e['asset'].first),
-                        e['asset'].last,
-                      ),
-                    )
-                    .toList()
-                    .asMap()
-                    .entries
-                    .map(
+                children: listings.asMap().entries.map(
                   (entry) {
                     final dataSource =
-                        '(call ${entry.value.item1} (get-token-data ${entry.value.item2}))';
+                        '(call ${entry.value.asset.item1} (get-token-data ${entry.value.asset.item2}))';
 
                     final data = convexClient.query(source: dataSource);
 
@@ -81,8 +67,9 @@ class ShopScreen extends StatelessWidget {
                       child: ScaleAnimation(
                         child: FadeInAnimation(
                           child: NonFungibleGridTile(
-                            tokenId: entry.value.item2,
+                            tokenId: entry.value.asset.item2,
                             data: data,
+                            listing: Future.value(entry.value),
                             onTap: () {},
                           ),
                         ),
