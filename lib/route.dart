@@ -26,6 +26,7 @@ import 'screen/activity.dart';
 import 'screen/staking.dart';
 import 'screen/select_fungible.dart';
 import 'screen/top_tokens.dart';
+import 'screen/listing.dart';
 
 const String DEV = '/dev';
 const String LAUNCHER = '/launcher';
@@ -55,6 +56,7 @@ const String STAKING_PEER = '/stakingPeer';
 const String EXCHANGE = '/exchange';
 const String SELECT_FUNGIBLE = '/selectFungigle';
 const String TOP_TOKENS = '/topTokens';
+const String LISTING = '/listing';
 
 Map<String, WidgetBuilder> routes() => {
       DEV: (context) => DevScreen(),
@@ -83,4 +85,5 @@ Map<String, WidgetBuilder> routes() => {
       EXCHANGE: (context) => ExchangeScreen2(),
       SELECT_FUNGIBLE: (context) => SelectFungibleScreen(),
       TOP_TOKENS: (context) => TopTokensScreen(),
+      LISTING: (context) => ListingScreen(),
     };

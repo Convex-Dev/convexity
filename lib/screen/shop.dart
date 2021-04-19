@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../widget.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
+import '../nav.dart' as nav;
 
 class ShopScreen extends StatelessWidget {
   @override
@@ -70,7 +71,12 @@ class ShopScreen extends StatelessWidget {
                             tokenId: entry.value.asset.item2,
                             data: data,
                             listing: Future.value(entry.value),
-                            onTap: () {},
+                            onTap: () {
+                              nav.pushListing(
+                                context,
+                                listing: entry.value,
+                              );
+                            },
                           ),
                         ),
                       ),
