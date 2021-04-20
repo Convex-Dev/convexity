@@ -77,7 +77,32 @@ Future<Listing?> listing(
   return l.firstWhere((listing) => listing.asset == asset, orElse: null);
 }
 
-Future<bool> remove(ConvexClient convexClient, int id) async {
+Future<int> addListing(
+  ConvexClient convexClient, {
+  required Tuple2<Address, int> asset,
+  required Tuple2<double, Address?> price,
+}) async {
+  final l = '{'
+      ' :asset [${asset.item1} ${asset.item2}]'
+      ' :price [${price.item1} ${price.item2 ?? ''}]'
+      '}';
+
+  Result result = await convexClient.transact(
+    source: '(call $SHOP_ADDRESS (add-listing $l))',
+  );
+
+  if (result.errorCode != null)
+    throw Exception(
+      'Failed to add listing. Error: ${result.errorCode} - ${result.value}.',
+    );
+
+  return result.value;
+}
+
+Future<bool> removeListing(
+  ConvexClient convexClient, {
+  required int id,
+}) async {
   Result result = await convexClient.transact(
     source: '(call $SHOP_ADDRESS (remove-listing $id))',
   );

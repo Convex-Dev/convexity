@@ -378,8 +378,6 @@ enum AddressInputOption {
 
 const CONVEXITY_ADDRESS = Address(50);
 
-const SHOP_ADDRESS = Address(62);
-
 /// Immutable Model data class.
 ///
 /// An instance of this class represents a snapshot of the state of the app.

@@ -98,7 +98,8 @@ class ListingScreen extends StatelessWidget {
             return Container(
               height: 300,
               child: FutureBuilder(
-                future: shop.remove(appState.convexClient(), listing.id),
+                future:
+                    shop.removeListing(appState.convexClient(), id: listing.id),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting)
                     return Center(

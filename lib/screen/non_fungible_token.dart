@@ -8,6 +8,7 @@ import '../model.dart';
 import '../widget.dart';
 import '../convex.dart';
 import '../nav.dart';
+import '../shop.dart' as shop;
 
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
@@ -153,14 +154,15 @@ class _NonFungibleTokenScreenBodyState
 
     final appState = context.read<AppState>();
 
-    final listing = '{'
-        ' :asset [${widget.nonFungibleToken.address} ${widget.tokenId}]'
-        ' :price [${price.item1} ${price.item2?.address ?? ''}]'
-        '}';
+    Tuple2<Address, int> listingAsset = Tuple2(
+      widget.nonFungibleToken.address,
+      widget.tokenId,
+    );
 
-    final Future<Result> transaction = appState.convexClient().transact(
-          source: '(call $SHOP_ADDRESS (add-listing $listing))',
-        );
+    Tuple2<double, Address?> listingPrice = Tuple2(
+      double.parse(price.item1),
+      price.item2?.address,
+    );
 
     showModalBottomSheet(
       context: context,
@@ -169,7 +171,11 @@ class _NonFungibleTokenScreenBodyState
         padding: EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: FutureBuilder(
-            future: transaction,
+            future: shop.addListing(
+              appState.convexClient(),
+              asset: listingAsset,
+              price: listingPrice,
+            ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
                 return Center(
