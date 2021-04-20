@@ -43,6 +43,27 @@ class ListingScreen extends StatelessWidget {
               ),
               subtitle: Text('Owner'),
             ),
+            ElevatedButton(
+              child: Text('Buy'),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      height: 300,
+                      child: Center(
+                        child: ElevatedButton(
+                          child: Text('Done'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),

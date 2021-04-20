@@ -56,11 +56,6 @@ class ShopScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 children: listings.asMap().entries.map(
                   (entry) {
-                    final dataSource =
-                        '(call ${entry.value.asset.item1} (get-token-data ${entry.value.asset.item2}))';
-
-                    final data = convexClient.query(source: dataSource);
-
                     return AnimationConfiguration.staggeredGrid(
                       position: entry.key,
                       duration: const Duration(milliseconds: 375),
