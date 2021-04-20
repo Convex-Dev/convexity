@@ -1,15 +1,15 @@
-import 'dart:ffi';
-
 import 'package:convex_wallet/convex.dart';
 import 'package:tuple/tuple.dart';
 
-const SHOP_ADDRESS = Address(62);
+const SHOP_ADDRESS = Address(52);
 
 class Listing {
   int id;
   Tuple2<double, Address?> price;
   Tuple2<Address, int> asset;
   Address owner;
+
+  // Add string description.
 
   Listing({
     required this.id,

@@ -1,66 +1,38 @@
-(def nft-shop
+(def shop
   (deploy
    '(do
       (def counter 0)
 
-      ;; Mapping of owner to a set of Listing ID.
-      (def selling {})
-
       ;; Listings indexed by ID.
-      (def listing {})
+      (def listings {})
 
-      (defn add-listing [new-listing]
+      (defn add-listing [listing]
         (let [owner *caller*
 
               ;; Counter is a simple and good-enough mechanism to manage IDs.
-              id counter
-
-              owner-selling (get selling owner #{})
-              owner-selling (conj owner-selling id)]
-
-          ;; Update owner's set of Listing IDs to add a new Listing.
-          (def selling (assoc selling owner owner-selling))
+              id counter]
 
           ;; Update available Listings (indexed by ID).
-          (def listing (assoc listing id (merge new-listing {:id id :owner owner})))
+          (def listings (assoc listings id (merge listing {:id id :owner owner})))
 
           (def counter (inc counter))
 
           id))
 
       (defn remove-listing [id]
-        (let [owner *caller*
-
-              owner-selling (get selling owner #{})
-              owner-selling (disj owner-selling id)]
+        (let [owner *caller*]
 
           ;; The owner is the only one allowed to remove the Listing.
-          (when (not (= *caller* (get-in listing [id :owner])))
+          (when (not (= *caller* (get-in listings [id :owner])))
             (fail "Not allowed."))
 
-          ;; Update owner's set of Listing IDs to remove an existing Listing.
-          (def selling (assoc selling owner owner-selling))
-
           ;; Update available Listings (indexed by ID).
-          (def listing (dissoc listing id))
+          (def listings (dissoc listings id))
 
           nil))
 
       ;; Returns a list with all Listings.
       (defn shop []
-        (mapcat
-         (fn [owner+ids]
-           (map
-            (fn [id]
-              (get listing id))
-            (last owner+ids)))
-         selling))
+        (values listings))
 
-      ;; Returns a list of Listings of a particular account.
-      (defn shop-of [seller]
-        (map
-         (fn [id]
-           (get listing id))
-         (get selling seller #{})))
-
-      (export add-listing remove-listing shop shop-of))))
+      (export add-listing remove-listing shop))))

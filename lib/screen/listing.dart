@@ -71,7 +71,7 @@ class ListingScreen extends StatelessWidget {
     required shop.Listing listing,
     required bool isOwnerSelf,
   }) async {
-    final result = await showModalBottomSheet(
+    bool? confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
         return Container(
@@ -90,7 +90,7 @@ class ListingScreen extends StatelessWidget {
 
     final appState = context.read<AppState>();
 
-    if (result == true) {
+    if (confirmation == true) {
       if (isOwnerSelf) {
         showModalBottomSheet(
           context: context,

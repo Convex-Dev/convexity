@@ -376,7 +376,7 @@ enum AddressInputOption {
   scan,
 }
 
-const CONVEXITY_ADDRESS = Address(60);
+const CONVEXITY_ADDRESS = Address(50);
 
 const SHOP_ADDRESS = Address(62);
 
