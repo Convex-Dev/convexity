@@ -44,8 +44,6 @@
           ;; Update available Listings (indexed by ID).
           (def listing (dissoc listing id))
 
-          (def counter (inc counter))
-
           nil))
 
       ;; Returns a list with all Listings.

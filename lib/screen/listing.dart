@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../model.dart';
 import '../shop.dart' as shop;
 import '../widget.dart' as widget;
+import '../route.dart' as route;
 
 class ListingScreen extends StatelessWidget {
   final shop.Listing? listing;
@@ -12,6 +15,10 @@ class ListingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final shop.Listing _listing =
         listing ?? ModalRoute.of(context)!.settings.arguments as shop.Listing;
+
+    final appState = context.read<AppState>();
+
+    final isOwnerSelf = _listing.owner == appState.model.activeAddress;
 
     return Scaffold(
       appBar: AppBar(title: Text('Listing')),
@@ -44,23 +51,12 @@ class ListingScreen extends StatelessWidget {
               subtitle: Text('Owner'),
             ),
             ElevatedButton(
-              child: Text('Buy'),
+              child: Text(isOwnerSelf ? 'Remove' : 'Buy'),
               onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      height: 300,
-                      child: Center(
-                        child: ElevatedButton(
-                          child: Text('Done'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    );
-                  },
+                _confirm(
+                  context,
+                  listing: _listing,
+                  isOwnerSelf: isOwnerSelf,
                 );
               },
             ),
@@ -68,5 +64,64 @@ class ListingScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _confirm(
+    BuildContext context, {
+    required shop.Listing listing,
+    required bool isOwnerSelf,
+  }) async {
+    final result = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Center(
+            child: ElevatedButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            ),
+          ),
+        );
+      },
+    );
+
+    final appState = context.read<AppState>();
+
+    if (result == true) {
+      if (isOwnerSelf) {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Container(
+              height: 300,
+              child: FutureBuilder(
+                future: shop.remove(appState.convexClient(), listing.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+
+                  return Center(
+                    child: ElevatedButton(
+                      child: Text('Done'),
+                      onPressed: () {
+                        Navigator.popUntil(
+                          context,
+                          ModalRoute.withName(route.SHOP),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      }
+    }
   }
 }

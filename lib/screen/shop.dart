@@ -8,7 +8,12 @@ import '../model.dart';
 import '../shop.dart' as shop;
 import '../nav.dart' as nav;
 
-class ShopScreen extends StatelessWidget {
+class ShopScreen extends StatefulWidget {
+  @override
+  _ShopScreenState createState() => _ShopScreenState();
+}
+
+class _ShopScreenState extends State<ShopScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -65,10 +70,12 @@ class ShopScreen extends StatelessWidget {
                           child: _ListingGridTile(
                             listing: entry.value,
                             onTap: () {
-                              nav.pushListing(
+                              Future result = nav.pushListing(
                                 context,
                                 listing: entry.value,
                               );
+
+                              result.then((value) => setState(() {}));
                             },
                           ),
                         ),

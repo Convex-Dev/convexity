@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:convex_wallet/convex.dart';
 import 'package:tuple/tuple.dart';
 
@@ -73,4 +75,17 @@ Future<Listing?> listing(
   List<Listing> l = await listings(convexClient);
 
   return l.firstWhere((listing) => listing.asset == asset, orElse: null);
+}
+
+Future<bool> remove(ConvexClient convexClient, int id) async {
+  Result result = await convexClient.transact(
+    source: '(call $SHOP_ADDRESS (remove-listing $id))',
+  );
+
+  if (result.errorCode != null)
+    throw Exception(
+      'Failed to remove listing. Error: ${result.errorCode} - ${result.value}.',
+    );
+
+  return true;
 }
