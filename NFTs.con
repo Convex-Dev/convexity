@@ -1,3 +1,7 @@
+;; Script to create NFTs and put it for sale on the shop.
+;;
+;; https://tweegeemee.com/top10?days=365
+
 (def images
   [["200506_073142_D" "https://pbs.twimg.com/media/EXUWTWxXQAENFf5.png"]
    ["200831_193153_C" "https://pbs.twimg.com/media/EgxecvGXkAIvQsK.png"]
@@ -12,18 +16,19 @@
 
 (def NFT-actor-address #25)
 
+(def shop-actor-address #73)
+
 (def NFTs
   (map
    (fn [name+uri]
      (call NFT-actor-address (create-token {:name (first name+uri) :uri (last name+uri)} nil)))
    images))
 
-(def shop-actor-address #52)
-
 (def listings
   (map
    (fn [token-id name+uri]
      (call shop-actor-address (add-listing {:description (first name+uri)
+                                            :image (last name+uri)
                                             :asset [NFT-actor-address token-id]
                                             :price [500]})))
    NFTs images))

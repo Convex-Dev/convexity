@@ -2,7 +2,7 @@ import 'package:convex_wallet/convex.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
-const SHOP_ADDRESS = Address(52);
+const SHOP_ADDRESS = Address(73);
 
 @immutable
 class NewListing {
@@ -21,6 +21,7 @@ class NewListing {
 class Listing {
   final int id;
   final String description;
+  final String? image;
   final Tuple2<double, Address?> price;
   final Tuple2<Address, int> asset;
   final Address owner;
@@ -31,11 +32,13 @@ class Listing {
     required this.price,
     required this.asset,
     required this.owner,
+    this.image,
   });
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'description': description,
+        'image': image,
         'price': [price.item1, price.item2?.toJson()],
         'asset': [asset.item1.toJson(), asset.item2],
         'owner': owner.toJson(),
@@ -61,6 +64,7 @@ class Listing {
     return Listing(
       id: json['id'],
       description: json['description'] ?? 'No description',
+      image: json['image'],
       price: price,
       asset: asset,
       owner: Address(json['owner']),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../widget.dart';
 import '../model.dart';
@@ -106,14 +107,18 @@ class _ListingGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       child: GridTile(
-        child: Container(
-          color: Colors.black12,
-          child: Center(
-            child: Text(listing.description),
-          ),
-        ),
+        child: listing.image == null
+            ? Image.memory(kTransparentImage)
+            : FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: listing.image!,
+              ),
         footer: GridTileBar(
           title: Text(
+            listing.description,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
             '${listing.price.item1} ${listing.price.item2 ?? 'CVX'}',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(color: Colors.white),

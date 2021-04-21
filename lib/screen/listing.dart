@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../model.dart';
 import '../shop.dart' as shop;
@@ -21,11 +22,21 @@ class ListingScreen extends StatelessWidget {
     final isOwnerSelf = _listing.owner == appState.model.activeAddress;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Listing')),
+      appBar: AppBar(
+        title: Text(
+          _listing.description,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       body: Container(
         padding: widget.defaultScreenPadding,
         child: ListView(
           children: [
+            if (_listing.image != null)
+              FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: _listing.image!,
+              ),
             ListTile(
               title: Text(
                 'ID',
