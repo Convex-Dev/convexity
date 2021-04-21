@@ -1,0 +1,29 @@
+(def images
+  [["200506_073142_D" "https://pbs.twimg.com/media/EXUWTWxXQAENFf5.png"]
+   ["200831_193153_C" "https://pbs.twimg.com/media/EgxecvGXkAIvQsK.png"]
+   ["200626_013056_D" "https://pbs.twimg.com/media/EbZs457WkAAY_Qw.png"]
+   ["201227_073147_D" "https://pbs.twimg.com/media/EqOk8H4UcAA9BtH.png"]
+   ["201006_223057_C" "https://pbs.twimg.com/media/Ejrfz84UYAAgw9X.png"]
+   ["200812_193129_C" "https://pbs.twimg.com/media/EfPoWfoXYAIWW5S.png"]
+   ["210109_053140_N" "https://pbs.twimg.com/media/ErRFr8XXIAA09Ae.png"]
+   ["201211_013057_D" "https://pbs.twimg.com/media/Eo65QdSXMAA4AlF.png"]
+   ["210325_073144_D" "https://pbs.twimg.com/media/ExTxHhdXAAAMi6Q.png"]
+   ["201204_013108_D" "https://pbs.twimg.com/media/EoW00ZsWMAE4qYf.png"]])
+
+(def NFT-actor-address #25)
+
+(def NFTs
+  (map
+   (fn [name+uri]
+     (call NFT-actor-address (create-token {:name (first name+uri) :uri (last name+uri)} nil)))
+   images))
+
+(def shop-actor-address #52)
+
+(def listings
+  (map
+   (fn [token-id name+uri]
+     (call shop-actor-address (add-listing {:description (first name+uri)
+                                            :asset [NFT-actor-address token-id]
+                                            :price [500]})))
+   NFTs images))
