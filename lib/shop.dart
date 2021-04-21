@@ -1,18 +1,33 @@
 import 'package:convex_wallet/convex.dart';
+import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
 const SHOP_ADDRESS = Address(52);
 
+@immutable
+class NewListing {
+  final String description;
+  final Tuple2<double, Address?> price;
+  final Tuple2<Address, int> asset;
+
+  const NewListing({
+    required this.description,
+    required this.price,
+    required this.asset,
+  });
+}
+
+@immutable
 class Listing {
-  int id;
-  Tuple2<double, Address?> price;
-  Tuple2<Address, int> asset;
-  Address owner;
+  final int id;
+  final String description;
+  final Tuple2<double, Address?> price;
+  final Tuple2<Address, int> asset;
+  final Address owner;
 
-  // Add string description.
-
-  Listing({
+  const Listing({
     required this.id,
+    required this.description,
     required this.price,
     required this.asset,
     required this.owner,
@@ -20,12 +35,37 @@ class Listing {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'description': description,
         'price': [price.item1, price.item2?.toJson()],
         'asset': [asset.item1.toJson(), asset.item2],
         'owner': owner.toJson(),
       };
 
   String toString() => toJson().toString();
+
+  static Listing fromJson(Map<String, dynamic> json) {
+    List p = json['price'];
+
+    final price = Tuple2<double, Address?>(
+      (p.first as num).toDouble(),
+      p.length == 2 ? Address(p.last) : null,
+    );
+
+    List a = json['asset'];
+
+    final asset = Tuple2<Address, int>(
+      Address(a.first),
+      a.last,
+    );
+
+    return Listing(
+      id: json['id'],
+      description: json['description'] ?? 'No description',
+      price: price,
+      asset: asset,
+      owner: Address(json['owner']),
+    );
+  }
 }
 
 /// Returns available Listings.
@@ -41,28 +81,8 @@ Future<List<Listing>> listings(ConvexClient convexClient) async {
 
   final Iterable l = result.value as Iterable;
 
-  final List<Listing> listings = l.map((m) {
-    List p = m['price'];
-
-    final price = Tuple2<double, Address?>(
-      (p.first as num).toDouble(),
-      p.length == 2 ? Address(p.last) : null,
-    );
-
-    List a = m['asset'];
-
-    final asset = Tuple2<Address, int>(
-      Address(a.first),
-      a.last,
-    );
-
-    return Listing(
-      id: m['id'],
-      price: price,
-      asset: asset,
-      owner: Address(m['owner']),
-    );
-  }).toList();
+  final List<Listing> listings =
+      l.map((json) => Listing.fromJson(json)).toList();
 
   return listings;
 }
@@ -77,14 +97,14 @@ Future<Listing?> listing(
   return l.firstWhere((listing) => listing.asset == asset, orElse: null);
 }
 
-Future<int> addListing(
-  ConvexClient convexClient, {
-  required Tuple2<Address, int> asset,
-  required Tuple2<double, Address?> price,
+Future<int> addListing({
+  required ConvexClient convexClient,
+  required NewListing newListing,
 }) async {
   final l = '{'
-      ' :asset [${asset.item1} ${asset.item2}]'
-      ' :price [${price.item1} ${price.item2 ?? ''}]'
+      ' :description "${newListing.description}"'
+      ' :asset [${newListing.asset.item1} ${newListing.asset.item2}]'
+      ' :price [${newListing.price.item1} ${newListing.price.item2 ?? ''}]'
       '}';
 
   Result result = await convexClient.transact(

@@ -106,13 +106,19 @@ class _ListingGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       child: GridTile(
-        child: Text(''),
+        child: Container(
+          color: Colors.black12,
+          child: Center(
+            child: Text(listing.description),
+          ),
+        ),
         footer: GridTileBar(
           title: Text(
             '${listing.price.item1} ${listing.price.item2 ?? 'CVX'}',
-            style: TextStyle(color: Colors.black87),
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: Colors.white),
           ),
-          backgroundColor: Colors.black12,
+          backgroundColor: Colors.black38,
         ),
       ),
       onTap: onTap,

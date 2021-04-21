@@ -135,7 +135,7 @@ class _NonFungibleTokenScreenBodyState
       );
 
   void _sell(BuildContext context) async {
-    final Tuple2<String, FungibleToken?>? price = await showModalBottomSheet(
+    final shop.NewListing? newListing = await showModalBottomSheet(
       context: context,
       builder: (context) => Container(
         height: 260,
@@ -150,19 +150,9 @@ class _NonFungibleTokenScreenBodyState
       ),
     );
 
-    if (price == null) return;
+    if (newListing == null) return;
 
     final appState = context.read<AppState>();
-
-    Tuple2<Address, int> listingAsset = Tuple2(
-      widget.nonFungibleToken.address,
-      widget.tokenId,
-    );
-
-    Tuple2<double, Address?> listingPrice = Tuple2(
-      double.parse(price.item1),
-      price.item2?.address,
-    );
 
     showModalBottomSheet(
       context: context,
@@ -172,9 +162,8 @@ class _NonFungibleTokenScreenBodyState
         child: SingleChildScrollView(
           child: FutureBuilder(
             future: shop.addListing(
-              appState.convexClient(),
-              asset: listingAsset,
-              price: listingPrice,
+              convexClient: appState.convexClient(),
+              newListing: newListing,
             ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
@@ -309,8 +298,23 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
             ElevatedButton(
               child: Text('Sell'),
               onPressed: () {
-                Navigator.pop(
-                    context, Tuple2<String, FungibleToken?>(_price!, _token));
+                Tuple2<Address, int> asset = Tuple2(
+                  widget.nonFungibleToken.address,
+                  widget.tokenId,
+                );
+
+                Tuple2<double, Address?> price = Tuple2(
+                  double.tryParse(_price ?? '0') ?? 0,
+                  _token?.address,
+                );
+
+                final newListing = shop.NewListing(
+                  description: 'Example Listing',
+                  asset: asset,
+                  price: price,
+                );
+
+                Navigator.pop(context, newListing);
               },
             ),
           ],

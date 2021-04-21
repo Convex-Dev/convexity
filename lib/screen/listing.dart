@@ -28,27 +28,36 @@ class ListingScreen extends StatelessWidget {
           children: [
             ListTile(
               title: Text(
-                '${_listing.id}',
+                'ID',
               ),
-              subtitle: Text('ID'),
+              subtitle: Text(_listing.id.toString()),
             ),
             ListTile(
               title: Text(
-                '${_listing.asset.item1}, ${_listing.asset.item2}',
+                'Description',
+                overflow: TextOverflow.ellipsis,
               ),
-              subtitle: Text('Asset'),
+              subtitle: Text(_listing.description),
             ),
             ListTile(
               title: Text(
-                '${_listing.price.item1}, ${_listing.price.item2 ?? ''}',
+                'Asset',
               ),
-              subtitle: Text('Price'),
+              subtitle:
+                  Text('${_listing.asset.item1}, ${_listing.asset.item2}'),
             ),
             ListTile(
               title: Text(
-                '${_listing.owner}',
+                'Owner',
               ),
-              subtitle: Text('Owner'),
+              subtitle: Text(_listing.owner.toString()),
+            ),
+            ListTile(
+              title: Text(
+                'Price',
+              ),
+              subtitle:
+                  Text('${_listing.price.item1} ${_listing.price.item2 ?? ''}'),
             ),
             ElevatedButton(
               child: Text(isOwnerSelf ? 'Remove' : 'Buy'),
