@@ -30,57 +30,69 @@ class ListingScreen extends StatelessWidget {
       ),
       body: Container(
         padding: widget.defaultScreenPadding,
-        child: ListView(
-          children: [
-            if (_listing.image != null)
-              FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: _listing.image!,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    if (_listing.image != null)
+                      FadeInImage.memoryNetwork(
+                        placeholder: kTransparentImage,
+                        image: _listing.image!,
+                      ),
+                    ListTile(
+                      title: Text(
+                        'ID',
+                      ),
+                      subtitle: Text(_listing.id.toString()),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Description',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(_listing.description),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Asset',
+                      ),
+                      subtitle: Text(
+                          '${_listing.asset.item1}, ${_listing.asset.item2}'),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Owner',
+                      ),
+                      subtitle: Text(_listing.owner.toString()),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Price',
+                      ),
+                      subtitle: Text(
+                          '${_listing.price.item1} ${_listing.price.item2 ?? ''}'),
+                    ),
+                  ],
+                ),
               ),
-            ListTile(
-              title: Text(
-                'ID',
+              SizedBox(
+                height: widget.defaultButtonHeight,
+                width: double.infinity,
+                child: ElevatedButton(
+                  child: Text(isOwnerSelf ? 'Remove' : 'Buy'),
+                  onPressed: () {
+                    _confirm(
+                      context,
+                      listing: _listing,
+                      isOwnerSelf: isOwnerSelf,
+                    );
+                  },
+                ),
               ),
-              subtitle: Text(_listing.id.toString()),
-            ),
-            ListTile(
-              title: Text(
-                'Description',
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(_listing.description),
-            ),
-            ListTile(
-              title: Text(
-                'Asset',
-              ),
-              subtitle:
-                  Text('${_listing.asset.item1}, ${_listing.asset.item2}'),
-            ),
-            ListTile(
-              title: Text(
-                'Owner',
-              ),
-              subtitle: Text(_listing.owner.toString()),
-            ),
-            ListTile(
-              title: Text(
-                'Price',
-              ),
-              subtitle:
-                  Text('${_listing.price.item1} ${_listing.price.item2 ?? ''}'),
-            ),
-            ElevatedButton(
-              child: Text(isOwnerSelf ? 'Remove' : 'Buy'),
-              onPressed: () {
-                _confirm(
-                  context,
-                  listing: _listing,
-                  isOwnerSelf: isOwnerSelf,
-                );
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
