@@ -1,0 +1,38 @@
+(def shop
+  (deploy
+   '(do
+      (def counter 0)
+
+      ;; Listings indexed by ID.
+      (def listings {})
+
+      (defn add-listing [listing]
+        (let [owner *caller*
+
+              ;; Counter is a simple and good-enough mechanism to manage IDs.
+              id counter]
+
+          ;; Update available Listings (indexed by ID).
+          (def listings (assoc listings id (merge listing {:id id :owner owner})))
+
+          (def counter (inc counter))
+
+          id))
+
+      (defn remove-listing [id]
+        (let [owner *caller*]
+
+          ;; The owner is the only one allowed to remove the Listing.
+          (when (not (= *caller* (get-in listings [id :owner])))
+            (fail "Not allowed."))
+
+          ;; Update available Listings (indexed by ID).
+          (def listings (dissoc listings id))
+
+          nil))
+
+      ;; Returns a list with all Listings.
+      (defn shop []
+        (values listings))
+
+      (export add-listing remove-listing shop))))

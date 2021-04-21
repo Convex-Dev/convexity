@@ -1,0 +1,140 @@
+import 'package:convex_wallet/convex.dart';
+import 'package:meta/meta.dart';
+import 'package:tuple/tuple.dart';
+
+const SHOP_ADDRESS = Address(73);
+
+@immutable
+class NewListing {
+  final String description;
+  final Tuple2<double, Address?> price;
+  final Tuple2<Address, int> asset;
+
+  const NewListing({
+    required this.description,
+    required this.price,
+    required this.asset,
+  });
+}
+
+@immutable
+class Listing {
+  final int id;
+  final String description;
+  final String? image;
+  final Tuple2<double, Address?> price;
+  final Tuple2<Address, int> asset;
+  final Address owner;
+
+  const Listing({
+    required this.id,
+    required this.description,
+    required this.price,
+    required this.asset,
+    required this.owner,
+    this.image,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'description': description,
+        'image': image,
+        'price': [price.item1, price.item2?.toJson()],
+        'asset': [asset.item1.toJson(), asset.item2],
+        'owner': owner.toJson(),
+      };
+
+  String toString() => toJson().toString();
+
+  static Listing fromJson(Map<String, dynamic> json) {
+    List p = json['price'];
+
+    final price = Tuple2<double, Address?>(
+      (p.first as num).toDouble(),
+      p.length == 2 ? Address(p.last) : null,
+    );
+
+    List a = json['asset'];
+
+    final asset = Tuple2<Address, int>(
+      Address(a.first),
+      a.last,
+    );
+
+    return Listing(
+      id: json['id'],
+      description: json['description'] ?? 'No description',
+      image: json['image'],
+      price: price,
+      asset: asset,
+      owner: Address(json['owner']),
+    );
+  }
+}
+
+/// Returns available Listings.
+Future<List<Listing>> listings(ConvexClient convexClient) async {
+  Result result = await convexClient.query(
+    source: '(call $SHOP_ADDRESS (shop))',
+  );
+
+  if (result.errorCode != null)
+    throw Exception(
+      'Failed to query listings. Error: ${result.errorCode} - ${result.value}.',
+    );
+
+  final Iterable l = result.value as Iterable;
+
+  final List<Listing> listings =
+      l.map((json) => Listing.fromJson(json)).toList();
+
+  return listings;
+}
+
+/// Returns a Listing for Asset, or null if there isn't one.
+Future<Listing?> listing(
+  ConvexClient convexClient,
+  Tuple2<Address, int> asset,
+) async {
+  List<Listing> l = await listings(convexClient);
+
+  return l.firstWhere((listing) => listing.asset == asset, orElse: null);
+}
+
+Future<int> addListing({
+  required ConvexClient convexClient,
+  required NewListing newListing,
+}) async {
+  final l = '{'
+      ' :description "${newListing.description}"'
+      ' :asset [${newListing.asset.item1} ${newListing.asset.item2}]'
+      ' :price [${newListing.price.item1} ${newListing.price.item2 ?? ''}]'
+      '}';
+
+  Result result = await convexClient.transact(
+    source: '(call $SHOP_ADDRESS (add-listing $l))',
+  );
+
+  if (result.errorCode != null)
+    throw Exception(
+      'Failed to add listing. Error: ${result.errorCode} - ${result.value}.',
+    );
+
+  return result.value;
+}
+
+Future<bool> removeListing(
+  ConvexClient convexClient, {
+  required int id,
+}) async {
+  Result result = await convexClient.transact(
+    source: '(call $SHOP_ADDRESS (remove-listing $id))',
+  );
+
+  if (result.errorCode != null)
+    throw Exception(
+      'Failed to remove listing. Error: ${result.errorCode} - ${result.value}.',
+    );
+
+  return true;
+}

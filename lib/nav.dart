@@ -7,6 +7,7 @@ import 'convex.dart' as convex;
 import 'model.dart';
 import 'route.dart' as route;
 import 'widget.dart';
+import 'shop.dart' as shop;
 
 Future<dynamic> pushLauncher(BuildContext context) =>
     Navigator.pushReplacementNamed(
@@ -153,7 +154,7 @@ Future<dynamic> pushNonFungibleTransfer(
 Future<dynamic> pushNonFungibleMarket(BuildContext context) =>
     Navigator.pushNamed(
       context,
-      route.NON_FUNGIBLE_MARKET,
+      route.SHOP,
     );
 
 Future<dynamic> pushActivity(
@@ -211,4 +212,14 @@ Future<dynamic> pushSelectFungible(BuildContext context) => Navigator.pushNamed(
 Future<dynamic> pushTopTokens(BuildContext context) => Navigator.pushNamed(
       context,
       route.TOP_TOKENS,
+    );
+
+Future<dynamic> pushListing(
+  BuildContext context, {
+  required shop.Listing listing,
+}) =>
+    Navigator.pushNamed(
+      context,
+      route.LISTING,
+      arguments: listing,
     );

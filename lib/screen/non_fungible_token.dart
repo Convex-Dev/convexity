@@ -8,7 +8,7 @@ import '../model.dart';
 import '../widget.dart';
 import '../convex.dart';
 import '../nav.dart';
-import '../config.dart' as config;
+import '../shop.dart' as shop;
 
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
@@ -115,12 +115,12 @@ class _NonFungibleTokenScreenBodyState
               return imageTransparent;
             },
           ),
-          // ElevatedButton(
-          //   child: Text('Sell'),
-          //   onPressed: () {
-          //     _sell(context);
-          //   },
-          // ),
+          ElevatedButton(
+            child: Text('Sell'),
+            onPressed: () {
+              _sell(context);
+            },
+          ),
           ElevatedButton(
             child: Text('Transfer'),
             onPressed: () {
@@ -135,7 +135,7 @@ class _NonFungibleTokenScreenBodyState
       );
 
   void _sell(BuildContext context) async {
-    final Tuple2<String, FungibleToken?>? price = await showModalBottomSheet(
+    final shop.NewListing? newListing = await showModalBottomSheet(
       context: context,
       builder: (context) => Container(
         height: 260,
@@ -150,18 +150,9 @@ class _NonFungibleTokenScreenBodyState
       ),
     );
 
-    if (price == null) return;
+    if (newListing == null) return;
 
     final appState = context.read<AppState>();
-
-    final listing = '{'
-        ' :asset [${widget.nonFungibleToken.address} ${widget.tokenId}]'
-        ' :price ${price.item1}'
-        ' :price-with ${price.item2?.address ?? 'nil'}'
-        '}';
-
-    final Future<Result> transaction = appState.convexClient().transact(
-        source: '(call ${config.NFT_MARKET_ADDRESS} (sell $listing))');
 
     showModalBottomSheet(
       context: context,
@@ -170,7 +161,10 @@ class _NonFungibleTokenScreenBodyState
         padding: EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: FutureBuilder(
-            future: transaction,
+            future: shop.addListing(
+              convexClient: appState.convexClient(),
+              newListing: newListing,
+            ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
                 return Center(
@@ -304,8 +298,23 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
             ElevatedButton(
               child: Text('Sell'),
               onPressed: () {
-                Navigator.pop(
-                    context, Tuple2<String, FungibleToken?>(_price!, _token));
+                Tuple2<Address, int> asset = Tuple2(
+                  widget.nonFungibleToken.address,
+                  widget.tokenId,
+                );
+
+                Tuple2<double, Address?> price = Tuple2(
+                  double.tryParse(_price ?? '0') ?? 0,
+                  _token?.address,
+                );
+
+                final newListing = shop.NewListing(
+                  description: 'Example Listing',
+                  asset: asset,
+                  price: price,
+                );
+
+                Navigator.pop(context, newListing);
               },
             ),
           ],

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
@@ -13,6 +14,7 @@ import '../format.dart';
 import '../convex.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../shop.dart' as shop;
 
 Widget fungibleTransferActivityView(Activity activity) =>
     StatelessWidgetBuilder((context) {
@@ -510,8 +512,17 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                 final tokenId = entry.value as int;
 
                                 final data = convexClient.query(
-                                    source:
-                                        '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))');
+                                  source:
+                                      '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))',
+                                );
+
+                                final listing = shop.listing(
+                                  convexClient,
+                                  Tuple2<Address, int>(
+                                    widget.aasset!.asset.address,
+                                    entry.value,
+                                  ),
+                                );
 
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,
@@ -522,6 +533,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       child: NonFungibleGridTile(
                                           tokenId: tokenId,
                                           data: data,
+                                          listing: listing,
                                           onTap: () {
                                             final f = nav.pushNonFungibleToken(
                                               context,

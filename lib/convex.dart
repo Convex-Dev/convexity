@@ -28,7 +28,7 @@ String langString(Lang lang) {
 class Address {
   final int value;
 
-  Address(this.value);
+  const Address(this.value);
 
   Address.fromStr(String s) : value = int.parse(s.replaceFirst('#', ''));
 

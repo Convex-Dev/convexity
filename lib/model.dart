@@ -376,7 +376,7 @@ enum AddressInputOption {
   scan,
 }
 
-final convexityAddress = Address(47);
+const CONVEXITY_ADDRESS = Address(50);
 
 /// Immutable Model data class.
 ///
@@ -493,7 +493,7 @@ void bootstrap({
 
     final _model = Model(
       convexServerUri: convexWorldUri,
-      convexityAddress: convexityAddress,
+      convexityAddress: CONVEXITY_ADDRESS,
       keyring: keyring,
       activeAddress: activeAddress,
       following: following,

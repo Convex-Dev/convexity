@@ -15,6 +15,3 @@ Uri convexServerUri() => isDebug()
         host: CONVEX_WORLD_HOST,
         port: 443,
       );
-
-// This is temporary.
-const NFT_MARKET_ADDRESS = '#3335';

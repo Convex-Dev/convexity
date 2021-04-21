@@ -80,7 +80,7 @@ void main() {
 
     final convexityClient = ConvexityClient(
       convexClient: convexClient,
-      actor: convexityAddress,
+      actor: CONVEXITY_ADDRESS,
     );
 
     final result2 = await convexityClient.requestToRegister(aasset: aasset);

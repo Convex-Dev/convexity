@@ -16,7 +16,7 @@ void main() {
       create: (_) => AppState(
         model: Model(
           convexServerUri: convexWorldUri,
-          convexityAddress: convexityAddress,
+          convexityAddress: CONVEXITY_ADDRESS,
         ),
       ),
       child: App(),
