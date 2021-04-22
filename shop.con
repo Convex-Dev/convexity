@@ -1,6 +1,8 @@
 (def shop
   (deploy
    '(do
+      (import convex.asset :as asset)
+
       (def counter 0)
 
       ;; Listings indexed by ID.
@@ -9,8 +11,13 @@
       (defn add-listing [listing]
         (let [owner *caller*
 
-              ;; Counter is a simple and good-enough mechanism to manage IDs.
+              ;; Counter is a good-enough mechanism to manage IDs.
               id counter]
+
+          ;; Accept offer (caller must offer the Asset first).
+          ;; This call will in turn call the `accept` function of the Asset Actor.
+          ;; See the Asset library source for more details.
+          (asset/accept *caller* (:asset listing))
 
           ;; Update available Listings (indexed by ID).
           (def listings (assoc listings id (merge listing {:id id :owner owner})))
@@ -26,6 +33,9 @@
           (when (not (= *caller* (get-in listings [id :owner])))
             (fail "Not allowed."))
 
+          ;; Offer Asset to owner.
+          (asset/offer *caller* (get-in listings [id :asset]))
+
           ;; Update available Listings (indexed by ID).
           (def listings (dissoc listings id))
 
@@ -35,4 +45,20 @@
       (defn shop []
         (values listings))
 
-      (export add-listing remove-listing shop))))
+      (defn buy-listing [id]
+        (let [listing (get listings id)
+
+              asset (first (:asset listing))
+
+              price (first (:price listing))
+
+              offer (asset/get-offer asset *caller* (:owner listing))]
+
+          (when-not (= price offer)
+            (fail (str "Offer doesn't match price (" price ").")))
+
+          (asset/accept *caller* (:asset listing))
+
+          ))
+
+      (export add-listing remove-listing shop buy-listing))))

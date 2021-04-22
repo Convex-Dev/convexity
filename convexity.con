@@ -127,3 +127,4 @@
 (call convexity (register-asset (get *aliases* 'nft) {:name "Non-Fungible Tokens"
                                                       :description "Convex Non-Fungible Tokens Actor."
                                                       :type :non-fungible}))
+convexity

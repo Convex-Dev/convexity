@@ -2,7 +2,7 @@ import 'package:convex_wallet/convex.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
-const SHOP_ADDRESS = Address(73);
+const SHOP_ADDRESS = Address(104);
 
 @immutable
 class NewListing {
@@ -98,7 +98,11 @@ Future<Listing?> listing(
 ) async {
   List<Listing> l = await listings(convexClient);
 
-  return l.firstWhere((listing) => listing.asset == asset, orElse: null);
+  try {
+    return l.firstWhere((listing) => listing.asset == asset);
+  } catch (e) {
+    return null;
+  }
 }
 
 Future<int> addListing({
@@ -112,7 +116,9 @@ Future<int> addListing({
       '}';
 
   Result result = await convexClient.transact(
-    source: '(call $SHOP_ADDRESS (add-listing $l))',
+    source: '(import convex.asset :as asset)'
+        '(asset/offer $SHOP_ADDRESS [${newListing.asset.item1} ${newListing.asset.item2}])'
+        '(call $SHOP_ADDRESS (add-listing $l))',
   );
 
   if (result.errorCode != null)
