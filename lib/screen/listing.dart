@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -107,14 +108,51 @@ class ListingScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return Container(
-          height: 300,
-          child: Center(
-            child: ElevatedButton(
-              child: Text('Confirm'),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            ),
+          height: 260,
+          padding: EdgeInsets.only(top: 14),
+          child: Column(
+            children: [
+              Icon(
+                Icons.help,
+                size: 80,
+                color: Colors.black12,
+              ),
+              Gap(5),
+              Text(
+                'Please confirm your purchase.',
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Gap(5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Buy ',
+                  ),
+                  Text(
+                    '${listing.description}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    ' for ',
+                  ),
+                  Text(
+                    '${listing.price.item1} ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                  Text(
+                    '${listing.price.item2 == null ? 'CVX' : ''}?',
+                  ),
+                ],
+              ),
+              Gap(10),
+              ElevatedButton(
+                child: Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
+            ],
           ),
         );
       },
