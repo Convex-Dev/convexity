@@ -48,17 +48,28 @@
       (defn buy-listing [id]
         (let [listing (get listings id)
 
-              asset (first (:asset listing))
+              seller (:owner listing)
 
-              price (first (:price listing))
+              ;; Price is in CVX if `price-with` is nil.
+              [price price-with] (:price listing)]
+          (cond
+            price-with
+            (let [offer (asset/get-offer price-with *caller* *address*)]
+              (if (asset/quantity-contains? price-with offer price)
+                (do
+                  (asset/accept *caller* [price-with offer])
+                  (asset/transfer seller [price-with offer]))
+                (fail (str offer " < " price))))
 
-              offer (asset/get-offer asset *caller* (:owner listing))]
+            :else
+            (let [accepted (accept *offer*)]
+              (if (< accepted price)
+                (fail (str accepted " < " price))
+                (transfer seller accepted))))
 
-          (when-not (= price offer)
-            (fail (str "Offer doesn't match price (" price ").")))
+          ;; Remove listing.
+          (def listings (dissoc listings id))
 
-          (asset/accept *caller* (:asset listing))
-
-          ))
+          true))
 
       (export add-listing remove-listing shop buy-listing))))
