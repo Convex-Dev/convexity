@@ -54,12 +54,9 @@
               [price price-with] (:price listing)]
           (cond
             price-with
-            (let [offer (asset/get-offer price-with *caller* *address*)]
-              (if (asset/quantity-contains? price-with offer price)
-                (do
-                  (asset/accept *caller* [price-with offer])
-                  (asset/transfer seller [price-with offer]))
-                (fail (str offer " < " price))))
+            (do
+              (asset/accept *caller* [price-with price])
+              (asset/transfer seller [price-with price]))
 
             :else
             (let [accepted (accept *offer*)]
