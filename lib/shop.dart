@@ -2,7 +2,7 @@ import 'package:convex_wallet/convex.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
-const SHOP_ADDRESS = Address(343);
+const SHOP_ADDRESS = Address(347);
 
 @immutable
 class NewListing {
