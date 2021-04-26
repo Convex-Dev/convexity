@@ -171,13 +171,27 @@ class _NonFungibleTokenScreenBodyState
                   child: CircularProgressIndicator(),
                 );
 
-              return Center(
-                child: ElevatedButton(
-                  child: Text('Done'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check,
+                    size: 80,
+                    color: Colors.green,
+                  ),
+                  Gap(10),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text('Your listing is now available in the Shop.'),
+                  ),
+                  Gap(20),
+                  ElevatedButton(
+                    child: Text('Done'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               );
             },
           ),
