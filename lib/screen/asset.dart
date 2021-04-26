@@ -572,7 +572,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text('New Token'),
+                    child: Text('Mint NFT'),
                     onPressed: () {
                       final result = nav.pushNewNonFungibleToken(
                         context,

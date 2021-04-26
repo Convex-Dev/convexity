@@ -116,7 +116,7 @@ class _NonFungibleTokenScreenBodyState
             },
           ),
           ElevatedButton(
-            child: Text('Sell'),
+            child: Text('Offer for Sale...'),
             onPressed: () {
               _sell(context);
             },
@@ -236,7 +236,7 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
     return Column(
       children: [
         Text(
-          'Sell ',
+          'Set sale price for NFT',
           style: Theme.of(context).textTheme.headline5,
         ),
         Row(
@@ -310,7 +310,7 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
             ),
             Gap(20),
             ElevatedButton(
-              child: Text('Sell'),
+              child: Text('Offer for Sale!'),
               onPressed: () {
                 Tuple2<Address, int> asset = Tuple2(
                   widget.nonFungibleToken.address,

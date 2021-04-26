@@ -15,7 +15,7 @@ class NewNonFungibleTokenScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('New NFT'),
+        title: Text('Mint New NFT'),
       ),
       body: Container(
         padding: defaultScreenPadding,
@@ -213,7 +213,7 @@ class _CreateTokenState extends State<_CreateToken> {
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             CircularProgressIndicator(),
-            const Text('Creating Token...'),
+            const Text('Minting NFT...'),
           ],
         );
       case _NewTokenStatus.creatingTokenError:
@@ -226,7 +226,7 @@ class _CreateTokenState extends State<_CreateToken> {
               size: 80,
               color: Colors.black12,
             ),
-            const Text('Sorry. It was not possible to create your Token.'),
+            const Text('Sorry. It was not possible to create your NFT.'),
             ElevatedButton(
               child: const Text('Okay'),
               onPressed: () => Navigator.pop(context),
