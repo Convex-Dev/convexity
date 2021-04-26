@@ -640,8 +640,11 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            '$boughtOrSold ${_params!.amount} ${_ofToken.metadata.tickerSymbol} ${_actionWithForText.toLowerCase()} $quoteText.',
+                          Expanded(
+                            child: Text(
+                              '$boughtOrSold ${_params!.amount} ${_ofToken.metadata.tickerSymbol} ${_actionWithForText.toLowerCase()} $quoteText.',
+                              style: Theme.of(context).textTheme.bodyText2,
+                            ),
                           ),
                         ],
                       ),
