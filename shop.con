@@ -30,11 +30,11 @@
         (let [owner *caller*]
 
           ;; The owner is the only one allowed to remove the Listing.
-          (when (not (= *caller* (get-in listings [id :owner])))
+          (when (not (= owner (get-in listings [id :owner])))
             (fail "Not allowed."))
 
           ;; Offer Asset to owner.
-          (asset/offer *caller* (get-in listings [id :asset]))
+          (asset/transfer owner (get-in listings [id :asset]))
 
           ;; Update available Listings (indexed by ID).
           (def listings (dissoc listings id))
