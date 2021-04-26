@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -15,7 +16,10 @@ class ListingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shop.Listing _listing =
-        listing ?? ModalRoute.of(context)!.settings.arguments as shop.Listing;
+        listing ?? ModalRoute
+            .of(context)!
+            .settings
+            .arguments as shop.Listing;
 
     final appState = context.read<AppState>();
 
@@ -72,7 +76,8 @@ class ListingScreen extends StatelessWidget {
                         'Price',
                       ),
                       subtitle: Text(
-                          '${_listing.price.item1} ${_listing.price.item2 ?? ''}'),
+                        '${_listing.price.item1} ${_listing.price.item2 ??
+                            ''}',),
                     ),
                   ],
                 ),
@@ -98,22 +103,63 @@ class ListingScreen extends StatelessWidget {
     );
   }
 
-  void _confirm(
-    BuildContext context, {
+  void _confirm(BuildContext context, {
     required shop.Listing listing,
     required bool isOwnerSelf,
   }) async {
     bool? confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
-          height: 300,
-          child: Center(
-            child: ElevatedButton(
-              child: Text('Confirm'),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
+        return SingleChildScrollView(
+          child: Container(
+            height: 260,
+            padding: EdgeInsets.only(top: 14),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.help,
+                  size: 80,
+                  color: Colors.black12,
+                ),
+                Gap(5),
+                Text(
+                  'Please confirm your purchase.',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .caption,
+                ),
+                Gap(5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Buy ',
+                    ),
+                    Text(
+                      '${listing.description}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      ' for ',
+                    ),
+                    Text(
+                      '${listing.price.item1} ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )
+                    Text(
+                      '${listing.price.item2 == null ? 'CVX' : ''}?',
+                    ),
+                  ],
+                ),
+                Gap(20),
+                ElevatedButton(
+                  child: Text('Confirm'),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                ),
+              ],
             ),
           ),
         );
@@ -131,7 +177,7 @@ class ListingScreen extends StatelessWidget {
               height: 300,
               child: FutureBuilder(
                 future:
-                    shop.removeListing(appState.convexClient(), id: listing.id),
+                shop.removeListing(appState.convexClient(), id: listing.id),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting)
                     return Center(

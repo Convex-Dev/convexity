@@ -1,6 +1,8 @@
 (def shop
   (deploy
    '(do
+      (import convex.asset :as asset)
+
       (def counter 0)
 
       ;; Listings indexed by ID.
@@ -9,8 +11,13 @@
       (defn add-listing [listing]
         (let [owner *caller*
 
-              ;; Counter is a simple and good-enough mechanism to manage IDs.
+              ;; Counter is a good-enough mechanism to manage IDs.
               id counter]
+
+          ;; Accept offer (caller must offer the Asset first).
+          ;; This call will in turn call the `accept` function of the Asset Actor.
+          ;; See the Asset library source for more details.
+          (asset/accept *caller* (:asset listing))
 
           ;; Update available Listings (indexed by ID).
           (def listings (assoc listings id (merge listing {:id id :owner owner})))
@@ -23,8 +30,11 @@
         (let [owner *caller*]
 
           ;; The owner is the only one allowed to remove the Listing.
-          (when (not (= *caller* (get-in listings [id :owner])))
+          (when (not (= owner (get-in listings [id :owner])))
             (fail "Not allowed."))
+
+          ;; Offer Asset to owner.
+          (asset/transfer owner (get-in listings [id :asset]))
 
           ;; Update available Listings (indexed by ID).
           (def listings (dissoc listings id))
@@ -35,4 +45,28 @@
       (defn shop []
         (values listings))
 
-      (export add-listing remove-listing shop))))
+      (defn buy-listing [id]
+        (let [listing (get listings id)
+
+              seller (:owner listing)
+
+              ;; Price is in CVX if `price-with` is nil.
+              [price price-with] (:price listing)]
+          (cond
+            price-with
+            (do
+              (asset/accept *caller* [price-with price])
+              (asset/transfer seller [price-with price]))
+
+            :else
+            (let [accepted (accept *offer*)]
+              (if (< accepted price)
+                (fail (str accepted " < " price))
+                (transfer seller accepted))))
+
+          ;; Remove listing.
+          (def listings (dissoc listings id))
+
+          true))
+
+      (export add-listing remove-listing shop buy-listing))))
