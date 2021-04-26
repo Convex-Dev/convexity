@@ -535,7 +535,8 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                           data: data,
                                           listing: listing,
                                           onTap: () {
-                                            final f = nav.pushNonFungibleToken(
+                                            final result =
+                                                nav.pushNonFungibleToken(
                                               context,
                                               nonFungibleToken:
                                                   widget.aasset!.asset,
@@ -543,16 +544,12 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                               data: data,
                                             );
 
-                                            f.then(
+                                            result.then(
                                               (result) {
-                                                // Query balance when 'returning' from a Transfer (result is null).
-                                                if (result == null) {
-                                                  // Query the potentially updated balance.
-                                                  setState(() {
-                                                    _balance =
-                                                        queryBalance(context);
-                                                  });
-                                                }
+                                                setState(() {
+                                                  _balance =
+                                                      queryBalance(context);
+                                                });
                                               },
                                             );
                                           }),
