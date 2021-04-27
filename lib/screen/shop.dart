@@ -8,6 +8,7 @@ import '../widget.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
 import '../nav.dart' as nav;
+import '../currency.dart' as currency;
 
 class ShopScreen extends StatefulWidget {
   @override
@@ -119,7 +120,7 @@ class _ListingGridTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
-            '${listing.price.item1} ${listing.price.item2 ?? 'CVX'}',
+            '${shop.priceStr(listing.price)} ${listing.price.item2 ?? 'CVX'}',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(color: Colors.white),
           ),

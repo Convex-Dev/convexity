@@ -2,7 +2,11 @@ import 'package:convex_wallet/convex.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
+import 'currency.dart' as currency;
+
 const SHOP_ADDRESS = Address(347);
+
+const PRICE_PRECISION = 5;
 
 @immutable
 class NewListing {
@@ -144,3 +148,12 @@ Future<bool> removeListing(
 
   return true;
 }
+
+String priceStr(Tuple2<double, Address?> price) => price.item2 == null
+    ? currency
+        .copperTo(
+          price.item1.toInt(),
+          toUnit: currency.CvxUnit.gold,
+        )
+        .toStringAsPrecision(PRICE_PRECISION)
+    : price.item1.toStringAsPrecision(PRICE_PRECISION);

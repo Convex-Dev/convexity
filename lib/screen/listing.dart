@@ -76,8 +76,9 @@ class ListingScreen extends StatelessWidget {
                         'Price',
                       ),
                       subtitle: Text(
-                        '${_listing.price.item1} ${_listing.price.item2 ??
-                            ''}',),
+                        '${shop.priceStr(_listing.price)}'
+                            '${_listing.price.item2 ?? ' CVX'}',
+                      ),
                     ),
                   ],
                 ),
