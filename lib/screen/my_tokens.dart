@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,7 @@ class MyTokensScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
+              Text("You can create your own tokens for business or personal use. Any token supply you create will be owned by you."),
               Expanded(
                 child: AssetCollection(
                   assets: appState.model.myTokens,

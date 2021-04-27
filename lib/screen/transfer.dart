@@ -18,7 +18,7 @@ class TransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Transfer')),
+      appBar: AppBar(title: Text('Transfer Convex Coins')),
       body: Container(
         padding: defaultScreenPadding,
         child: TransferScreenBody(),

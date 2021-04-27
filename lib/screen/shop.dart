@@ -22,7 +22,7 @@ class _ShopScreenState extends State<ShopScreen> {
     final convexClient = appState.convexClient();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Shop')),
+      appBar: AppBar(title: Text('NFT Shop')),
       body: Container(
         padding: defaultScreenPadding,
         child: FutureBuilder<List<shop.Listing>>(
@@ -59,7 +59,7 @@ class _ShopScreenState extends State<ShopScreen> {
               child: GridView.count(
                 crossAxisSpacing: 6,
                 mainAxisSpacing: 6,
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 children: listings.asMap().entries.map(
                   (entry) {
                     return AnimationConfiguration.staggeredGrid(

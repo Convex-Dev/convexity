@@ -86,7 +86,7 @@ class ListingScreen extends StatelessWidget {
                 height: widget.defaultButtonHeight,
                 width: double.infinity,
                 child: ElevatedButton(
-                  child: Text(isOwnerSelf ? 'Remove' : 'Buy'),
+                  child: Text(isOwnerSelf ? 'Remove Listing' : 'Buy'),
                   onPressed: () {
                     _confirm(
                       context,
