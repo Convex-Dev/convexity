@@ -206,17 +206,55 @@ class ListingScreen extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
 
-                return Center(
-                  child: ElevatedButton(
-                    child: Text('Done'),
-                    onPressed: () {
-                      Navigator.popUntil(
-                        context,
-                        ModalRoute.withName(route.SHOP),
-                      );
-                    },
-                  ),
+                if (snapshot.hasError) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error,
+                          size: 80,
+                          color: Colors.black12,
+                        ),
+                        Gap(20),
+                        Text(snapshot.error.toString()),
+                        Gap(20),
+                        ElevatedButton(
+                          child: Text('Okay'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],),
+                  );
+                }
+
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.check,
+                        size: 80,
+                        color: Colors.black12,
+                      ),
+                      Gap(20),
+                      Text(isOwnerSelf ? 'successfully removed listing.' : 'Congratulations! You have successfully bought the asset.'),
+                      Gap(20),
+                      ElevatedButton(
+                        child: Text('Okay'),
+                        onPressed: () {
+                          Navigator.popUntil(
+                            context,
+                            ModalRoute.withName(route.SHOP),
+                          );
+                        },
+                      )
+                    ],),
                 );
+
               },
             ),
           );
