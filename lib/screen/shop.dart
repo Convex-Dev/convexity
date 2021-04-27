@@ -9,7 +9,6 @@ import '../widget.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
 import '../nav.dart' as nav;
-import '../format.dart' as format;
 
 class ShopScreen extends StatefulWidget {
   @override
@@ -162,7 +161,5 @@ class _ListingGridTile extends StatelessWidget {
       ),
       onTap: onTap,
     );
-
-    return Container();
   }
 }

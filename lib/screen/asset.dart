@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:convex_wallet/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
