@@ -37,6 +37,8 @@ class _ShopScreenState extends State<ShopScreen> {
             List<shop.Listing> listings =
                 snapshot.data == null ? [] : snapshot.data!;
 
+            listings.sort((l1, l2) => l2.id.compareTo(l1.id));
+
             if (listings.isEmpty)
               return Center(
                 child: Column(

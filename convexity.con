@@ -124,7 +124,7 @@
 
 (import asset.nft-tokens :as nft)
 
-(call convexity (register-asset (get *aliases* 'nft) {:name "Non-Fungible Tokens"
-                                                      :description "Convex Non-Fungible Tokens Actor."
+(call convexity (register-asset (get *aliases* 'nft) {:name "NFTs"
+                                                      :description "Convex NFT Library"
                                                       :type :non-fungible}))
 convexity

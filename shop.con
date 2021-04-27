@@ -48,6 +48,7 @@
       (defn buy-listing [id]
         (let [listing (get listings id)
 
+              buyer *caller*
               seller (:owner listing)
 
               ;; Price is in CVX if `price-with` is nil.
@@ -55,7 +56,7 @@
           (cond
             price-with
             (do
-              (asset/accept *caller* [price-with price])
+              (asset/accept buyer [price-with price])
               (asset/transfer seller [price-with price]))
 
             :else
@@ -63,6 +64,9 @@
               (if (< accepted price)
                 (fail (str accepted " < " price))
                 (transfer seller accepted))))
+
+          ;; Transfer Asset to buyer.
+          (asset/transfer buyer (:asset listing))
 
           ;; Remove listing.
           (def listings (dissoc listings id))

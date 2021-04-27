@@ -47,9 +47,12 @@ class ListingScreen extends StatelessWidget {
                       ),
                     ListTile(
                       title: Text(
-                        'ID',
+                        'Price',
                       ),
-                      subtitle: Text(_listing.id.toString()),
+                      subtitle: Text(
+                        '${shop.priceStr(_listing.price)}'
+                            '${_listing.price.item2 ?? ' CVX'}',
+                      ),
                     ),
                     ListTile(
                       title: Text(
@@ -60,6 +63,12 @@ class ListingScreen extends StatelessWidget {
                     ),
                     ListTile(
                       title: Text(
+                        'Seller',
+                      ),
+                      subtitle: Text(_listing.owner.toString()),
+                    ),
+                    ListTile(
+                      title: Text(
                         'Asset',
                       ),
                       subtitle: Text(
@@ -67,18 +76,9 @@ class ListingScreen extends StatelessWidget {
                     ),
                     ListTile(
                       title: Text(
-                        'Owner',
+                        'Listing ID',
                       ),
-                      subtitle: Text(_listing.owner.toString()),
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Price',
-                      ),
-                      subtitle: Text(
-                        '${shop.priceStr(_listing.price)}'
-                            '${_listing.price.item2 ?? ' CVX'}',
-                      ),
+                      subtitle: Text(_listing.id.toString()),
                     ),
                   ],
                 ),
@@ -124,35 +124,54 @@ class ListingScreen extends StatelessWidget {
                 ),
                 Gap(5),
                 Text(
-                  'Please confirm your purchase.',
+                  isOwnerSelf
+                      ? 'Please confirm.'
+                      : 'Please confirm your purchase.',
                   style: Theme
                       .of(context)
                       .textTheme
                       .caption,
                 ),
-                Gap(5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Buy ',
-                    ),
-                    Text(
-                      '${listing.description}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      ' for ',
-                    ),
-                    Text(
-                      '${listing.price.item1} ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                    Text(
-                      '${listing.price.item2 == null ? 'CVX' : ''}?',
-                    ),
-                  ],
-                ),
+                Gap(10),
+                if (isOwnerSelf)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Remove ',
+                      ),
+                      Text(
+                        '${listing.description}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '?',
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Buy ',
+                      ),
+                      Text(
+                        '${listing.description}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        ' for ',
+                      ),
+                      Text(
+                        '${listing.price.item1} ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                      Text(
+                        '${listing.price.item2 == null ? 'CVX' : ''}?',
+                      ),
+                    ],
+                  ),
                 Gap(20),
                 ElevatedButton(
                   child: Text('Confirm'),
@@ -170,38 +189,39 @@ class ListingScreen extends StatelessWidget {
     final appState = context.read<AppState>();
 
     if (confirmation == true) {
-      if (isOwnerSelf) {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) {
-            return Container(
-              height: 300,
-              child: FutureBuilder(
-                future:
-                shop.removeListing(appState.convexClient(), id: listing.id),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting)
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+      final Future result = isOwnerSelf
+          ? shop.removeListing(appState.convexClient(), id: listing.id)
+          : shop.buyListing(appState.convexClient(), listing: listing);
 
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 300,
+            child: FutureBuilder(
+              future: result,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting)
                   return Center(
-                    child: ElevatedButton(
-                      child: Text('Done'),
-                      onPressed: () {
-                        Navigator.popUntil(
-                          context,
-                          ModalRoute.withName(route.SHOP),
-                        );
-                      },
-                    ),
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
-            );
-          },
-        );
-      }
+
+                return Center(
+                  child: ElevatedButton(
+                    child: Text('Done'),
+                    onPressed: () {
+                      Navigator.popUntil(
+                        context,
+                        ModalRoute.withName(route.SHOP),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      );
     }
   }
 }
