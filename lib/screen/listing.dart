@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../convex.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
 import '../widget.dart' as widget;
@@ -24,6 +25,38 @@ class ListingScreen extends StatelessWidget {
     final appState = context.read<AppState>();
 
     final isOwnerSelf = _listing.owner == appState.model.activeAddress;
+
+    final Future<AAsset?>? aasset = _listing.price.item2 != null
+        ? context
+        .watch<AppState>()
+        .convexityClient()
+        .asset(_listing.price.item2!)
+        : null;
+
+    final Widget priceWidget = aasset == null
+        ? Text(
+      '${shop.priceStr(_listing.price)} CVX',
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(color: Colors.white),
+    )
+        : FutureBuilder<AAsset?>(
+      future: aasset,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text(
+            '${shop.priceStr(_listing.price)}',
+            overflow: TextOverflow.ellipsis,
+          );
+        }
+
+        FungibleTokenMetadata metadata = snapshot.data?.asset.metadata;
+
+        return Text(
+          '${shop.priceStr(_listing.price)} ${metadata.tickerSymbol}',
+          overflow: TextOverflow.ellipsis,
+        );
+      },
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -49,10 +82,7 @@ class ListingScreen extends StatelessWidget {
                       title: Text(
                         'Price',
                       ),
-                      subtitle: Text(
-                        '${shop.priceStr(_listing.price)}'
-                            '${_listing.price.item2 ?? ' CVX'}',
-                      ),
+                      subtitle: priceWidget,
                     ),
                     ListTile(
                       title: Text(
