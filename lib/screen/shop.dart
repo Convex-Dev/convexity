@@ -23,7 +23,7 @@ class _ShopScreenState extends State<ShopScreen> {
     final convexClient = appState.convexClient();
 
     return Scaffold(
-      appBar: AppBar(title: Text('NFT Shop')),
+      appBar: AppBar(title: Text('Shop')),
       body: Container(
         padding: defaultScreenPadding,
         child: FutureBuilder<List<shop.Listing>>(
@@ -128,7 +128,10 @@ class _ListingGridTile extends StatelessWidget {
                 return Text(
                   '${shop.priceStr(listing.price)}',
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                  ),
                 );
               }
 
@@ -137,7 +140,10 @@ class _ListingGridTile extends StatelessWidget {
               return Text(
                 '${shop.priceStr(listing.price)} ${metadata.name}',
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                ),
               );
             },
           );
@@ -156,7 +162,7 @@ class _ListingGridTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           subtitle: priceWidget,
-          backgroundColor: Colors.black38,
+          backgroundColor: Colors.black54,
         ),
       ),
       onTap: onTap,
