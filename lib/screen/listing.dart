@@ -124,35 +124,54 @@ class ListingScreen extends StatelessWidget {
                 ),
                 Gap(5),
                 Text(
-                  'Please confirm your purchase.',
+                  isOwnerSelf
+                      ? 'Please confirm.'
+                      : 'Please confirm your purchase.',
                   style: Theme
                       .of(context)
                       .textTheme
                       .caption,
                 ),
-                Gap(5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Buy ',
-                    ),
-                    Text(
-                      '${listing.description}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      ' for ',
-                    ),
-                    Text(
-                      '${listing.price.item1} ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                    Text(
-                      '${listing.price.item2 == null ? 'CVX' : ''}?',
-                    ),
-                  ],
-                ),
+                Gap(10),
+                if (isOwnerSelf)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Remove ',
+                      ),
+                      Text(
+                        '${listing.description}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '?',
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Buy ',
+                      ),
+                      Text(
+                        '${listing.description}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        ' for ',
+                      ),
+                      Text(
+                        '${listing.price.item1} ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                      Text(
+                        '${listing.price.item2 == null ? 'CVX' : ''}?',
+                      ),
+                    ],
+                  ),
                 Gap(20),
                 ElevatedButton(
                   child: Text('Confirm'),
@@ -170,8 +189,8 @@ class ListingScreen extends StatelessWidget {
     final appState = context.read<AppState>();
 
     if (confirmation == true) {
-      final Future result = isOwnerSelf ?
-      shop.removeListing(appState.convexClient(), id: listing.id)
+      final Future result = isOwnerSelf
+          ? shop.removeListing(appState.convexClient(), id: listing.id)
           : shop.buyListing(appState.convexClient(), listing: listing);
 
       showModalBottomSheet(
