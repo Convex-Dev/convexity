@@ -47,9 +47,12 @@ class ListingScreen extends StatelessWidget {
                       ),
                     ListTile(
                       title: Text(
-                        'ID',
+                        'Price',
                       ),
-                      subtitle: Text(_listing.id.toString()),
+                      subtitle: Text(
+                        '${shop.priceStr(_listing.price)}'
+                            '${_listing.price.item2 ?? ' CVX'}',
+                      ),
                     ),
                     ListTile(
                       title: Text(
@@ -60,6 +63,12 @@ class ListingScreen extends StatelessWidget {
                     ),
                     ListTile(
                       title: Text(
+                        'Seller',
+                      ),
+                      subtitle: Text(_listing.owner.toString()),
+                    ),
+                    ListTile(
+                      title: Text(
                         'Asset',
                       ),
                       subtitle: Text(
@@ -67,18 +76,9 @@ class ListingScreen extends StatelessWidget {
                     ),
                     ListTile(
                       title: Text(
-                        'Owner',
+                        'Listing ID',
                       ),
-                      subtitle: Text(_listing.owner.toString()),
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Price',
-                      ),
-                      subtitle: Text(
-                        '${shop.priceStr(_listing.price)}'
-                            '${_listing.price.item2 ?? ' CVX'}',
-                      ),
+                      subtitle: Text(_listing.id.toString()),
                     ),
                   ],
                 ),
