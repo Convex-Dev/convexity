@@ -1,9 +1,13 @@
 import 'convex.dart' as convex;
 import 'model.dart';
+import 'config.dart' as config;
+import 'logger.dart';
 
 class ConvexityClient {
   final convex.ConvexClient convexClient;
   final convex.Address? actor;
+
+  final Map<convex.Address, AAsset> _cache = {};
 
   ConvexityClient({
     required this.convexClient,
@@ -14,9 +18,23 @@ class ConvexityClient {
   ///
   /// Returns `null` if there is not metadata, or if there was an error.
   Future<AAsset?> asset(convex.Address addr) async {
+    final aasset = _cache[addr];
+
+    if (aasset != null) {
+      return aasset;
+    }
+
     var source = '(call ${this.actor} (asset-metadata $addr))';
 
+    if (config.isDebug()) {
+      logger.d(source);
+    }
+
     var result = await convexClient.query(source: source);
+
+    if (config.isDebug()) {
+      logger.d(result);
+    }
 
     if (result.errorCode != null) {
       return null;
@@ -29,13 +47,17 @@ class ConvexityClient {
     var metadata = result.value as Map<String, dynamic>;
 
     if (metadata['type'] == 'fungible') {
-      return AAsset(
+      final aasset = AAsset(
         type: AssetType.fungible,
         asset: convex.FungibleToken(
           address: addr,
           metadata: convex.FungibleTokenMetadata.fromJson(metadata),
         ),
       );
+
+      _cache[addr] = aasset;
+
+      return aasset;
     }
 
     return null;
