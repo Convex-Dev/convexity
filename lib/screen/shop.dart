@@ -1,3 +1,4 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:gap/gap.dart';
@@ -8,7 +9,7 @@ import '../widget.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
 import '../nav.dart' as nav;
-import '../currency.dart' as currency;
+import '../format.dart' as format;
 
 class ShopScreen extends StatefulWidget {
   @override
@@ -108,6 +109,40 @@ class _ListingGridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Future<AAsset?>? aasset = listing.price.item2 != null
+        ? context
+            .watch<AppState>()
+            .convexityClient()
+            .asset(listing.price.item2!)
+        : null;
+
+    final Widget priceWidget = aasset == null
+        ? Text(
+            '${shop.priceStr(listing.price)} CVX',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: Colors.white),
+          )
+        : FutureBuilder<AAsset?>(
+            future: aasset,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text(
+                  '${shop.priceStr(listing.price)}',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.white),
+                );
+              }
+
+              FungibleTokenMetadata metadata = snapshot.data?.asset.metadata;
+
+              return Text(
+                '${shop.priceStr(listing.price)} ${metadata.name}',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.white),
+              );
+            },
+          );
+
     return InkWell(
       child: GridTile(
         child: listing.image == null
@@ -121,11 +156,7 @@ class _ListingGridTile extends StatelessWidget {
             listing.description,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text(
-            '${shop.priceStr(listing.price)} ${listing.price.item2 ?? 'CVX'}',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.white),
-          ),
+          subtitle: priceWidget,
           backgroundColor: Colors.black38,
         ),
       ),
