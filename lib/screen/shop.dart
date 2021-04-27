@@ -9,6 +9,7 @@ import '../widget.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
 import '../nav.dart' as nav;
+import '../format.dart' as format;
 
 class ShopScreen extends StatefulWidget {
   @override
@@ -126,7 +127,7 @@ class _ListingGridTile extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Text(
-                  '${shop.priceStr(listing.price)}',
+                  'Getting price...',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
@@ -138,7 +139,7 @@ class _ListingGridTile extends StatelessWidget {
               FungibleTokenMetadata metadata = snapshot.data?.asset.metadata;
 
               return Text(
-                '${shop.priceStr(listing.price)} ${metadata.name}',
+                '${format.formatFungibleCurrency(metadata: metadata, number: listing.price.item1)} ${metadata.tickerSymbol}',
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: Colors.white,

@@ -9,6 +9,7 @@ import '../widget.dart';
 import '../convex.dart';
 import '../nav.dart';
 import '../shop.dart' as shop;
+import '../format.dart' as format;
 
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
@@ -317,8 +318,15 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
                   widget.tokenId,
                 );
 
-                Tuple2<double, Address?> price = Tuple2(
-                  double.tryParse(_price ?? '0') ?? 0,
+                // TODO Make this code better.
+                Tuple2<int, Address?> price = Tuple2(
+                  (_token == null
+                          ? int.tryParse(_price ?? '0')
+                          : format.readFungibleCurrency(
+                              metadata: _token!.metadata,
+                              s: _price!,
+                            )) ??
+                      0,
                   _token?.address,
                 );
 

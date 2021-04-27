@@ -8,19 +8,33 @@ import '../model.dart';
 import '../shop.dart' as shop;
 import '../widget.dart' as widget;
 import '../route.dart' as route;
+import '../format.dart' as format;
 
-class ListingScreen extends StatelessWidget {
+class ListingScreen extends StatefulWidget {
   final shop.Listing? listing;
 
   const ListingScreen({Key? key, this.listing}) : super(key: key);
 
   @override
+  _ListingScreenState createState() => _ListingScreenState();
+}
+
+class _ListingScreenState extends State<ListingScreen> {
+  Future<AAsset?>? _fungible;
+
+  @override
   Widget build(BuildContext context) {
     final shop.Listing _listing =
-        listing ?? ModalRoute
-            .of(context)!
-            .settings
-            .arguments as shop.Listing;
+        ModalRoute.of(context)!.settings.arguments as shop.Listing;
+
+    if (_listing.price.item2 != null) {
+      setState(() {
+        _fungible = context
+            .read<AppState>()
+            .convexityClient()
+            .asset(_listing.price.item2!);
+      });
+    }
 
     final appState = context.read<AppState>();
 
@@ -28,35 +42,32 @@ class ListingScreen extends StatelessWidget {
 
     final Future<AAsset?>? aasset = _listing.price.item2 != null
         ? context
-        .watch<AppState>()
-        .convexityClient()
-        .asset(_listing.price.item2!)
+            .watch<AppState>()
+            .convexityClient()
+            .asset(_listing.price.item2!)
         : null;
 
     final Widget priceWidget = aasset == null
         ? Text(
-      '${shop.priceStr(_listing.price)} CVX',
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(color: Colors.white),
-    )
-        : FutureBuilder<AAsset?>(
-      future: aasset,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text(
-            '${shop.priceStr(_listing.price)}',
+            '${shop.priceStr(_listing.price)} CVX',
             overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: Colors.white),
+          )
+        : FutureBuilder<AAsset?>(
+            future: aasset,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text('Getting price...');
+              }
+
+              FungibleTokenMetadata metadata = snapshot.data?.asset.metadata;
+
+              return Text(
+                '${format.formatFungibleCurrency(metadata: metadata, number: _listing.price.item1)} ${metadata.tickerSymbol}',
+                overflow: TextOverflow.ellipsis,
+              );
+            },
           );
-        }
-
-        FungibleTokenMetadata metadata = snapshot.data?.asset.metadata;
-
-        return Text(
-          '${shop.priceStr(_listing.price)} ${metadata.tickerSymbol}',
-          overflow: TextOverflow.ellipsis,
-        );
-      },
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -134,13 +145,39 @@ class ListingScreen extends StatelessWidget {
     );
   }
 
-  void _confirm(BuildContext context, {
+  void _confirm(
+    BuildContext context, {
     required shop.Listing listing,
     required bool isOwnerSelf,
   }) async {
     bool? confirmation = await showModalBottomSheet(
       context: context,
       builder: (context) {
+        final Widget priceWidget = _fungible == null
+            ? Text(
+                '${shop.priceStr(listing.price)} CVX',
+                overflow: TextOverflow.ellipsis,
+              )
+            : FutureBuilder<AAsset?>(
+                future: _fungible,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text(
+                      'Getting price...',
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  }
+
+                  FungibleTokenMetadata metadata =
+                      snapshot.data?.asset.metadata;
+
+                  return Text(
+                    '${format.formatFungibleCurrency(metadata: metadata, number: listing.price.item1)} ${metadata.tickerSymbol}',
+                    overflow: TextOverflow.ellipsis,
+                  );
+                },
+              );
+
         return SingleChildScrollView(
           child: Container(
             height: 260,
@@ -157,10 +194,7 @@ class ListingScreen extends StatelessWidget {
                   isOwnerSelf
                       ? 'Please confirm.'
                       : 'Please confirm your purchase.',
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .caption,
+                  style: Theme.of(context).textTheme.caption,
                 ),
                 Gap(10),
                 if (isOwnerSelf)
@@ -193,10 +227,7 @@ class ListingScreen extends StatelessWidget {
                       Text(
                         ' for ',
                       ),
-                      Text(
-                        '${listing.price.item1} ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )
+                      priceWidget,
                       Text(
                         '${listing.price.item2 == null ? 'CVX' : ''}?',
                       ),
@@ -256,7 +287,8 @@ class ListingScreen extends StatelessWidget {
                             Navigator.pop(context);
                           },
                         )
-                      ],),
+                      ],
+                    ),
                   );
                 }
 
@@ -271,7 +303,9 @@ class ListingScreen extends StatelessWidget {
                         color: Colors.black12,
                       ),
                       Gap(20),
-                      Text(isOwnerSelf ? 'successfully removed listing.' : 'Congratulations! You have successfully bought the asset.'),
+                      Text(isOwnerSelf
+                          ? 'successfully removed listing.'
+                          : 'Congratulations! You have successfully bought the asset.'),
                       Gap(20),
                       ElevatedButton(
                         child: Text('Okay'),
@@ -282,9 +316,9 @@ class ListingScreen extends StatelessWidget {
                           );
                         },
                       )
-                    ],),
+                    ],
+                  ),
                 );
-
               },
             ),
           );

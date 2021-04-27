@@ -11,7 +11,7 @@ const PRICE_PRECISION = 5;
 @immutable
 class NewListing {
   final String description;
-  final Tuple2<double, Address?> price;
+  final Tuple2<int, Address?> price;
   final Tuple2<Address, int> asset;
 
   const NewListing({
@@ -26,7 +26,7 @@ class Listing {
   final int id;
   final String description;
   final String? image;
-  final Tuple2<double, Address?> price;
+  final Tuple2<int, Address?> price;
   final Tuple2<Address, int> asset;
   final Address owner;
 
@@ -53,8 +53,8 @@ class Listing {
   static Listing fromJson(Map<String, dynamic> json) {
     List p = json['price'];
 
-    final price = Tuple2<double, Address?>(
-      (p.first as num).toDouble(),
+    final price = Tuple2<int, Address?>(
+      p.first,
       p.length == 2 ? Address(p.last) : null,
     );
 
@@ -170,7 +170,7 @@ Future<bool> buyListing(
   return true;
 }
 
-String priceStr(Tuple2<double, Address?> price) => price.item2 == null
+String priceStr(Tuple2<int, Address?> price) => price.item2 == null
     ? currency
         .copperTo(
           price.item1.toInt(),
