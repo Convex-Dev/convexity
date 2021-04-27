@@ -4,16 +4,24 @@
 
 ;; Name + URI + description
 (def images
-  [["200506_073142_D" "https://pbs.twimg.com/media/EXUWTWxXQAENFf5.png" ""]
-   ["200831_193153_C" "https://pbs.twimg.com/media/EgxecvGXkAIvQsK.png" ""]
-   ["200626_013056_D" "https://pbs.twimg.com/media/EbZs457WkAAY_Qw.png" ""]
-   ["201227_073147_D" "https://pbs.twimg.com/media/EqOk8H4UcAA9BtH.png" ""]
-   ["201006_223057_C" "https://pbs.twimg.com/media/Ejrfz84UYAAgw9X.png" ""]
-   ["200812_193129_C" "https://pbs.twimg.com/media/EfPoWfoXYAIWW5S.png" ""]
-   ["210109_053140_N" "https://pbs.twimg.com/media/ErRFr8XXIAA09Ae.png" ""]
-   ["201211_013057_D" "https://pbs.twimg.com/media/Eo65QdSXMAA4AlF.png" ""]
-   ["210325_073144_D" "https://pbs.twimg.com/media/ExTxHhdXAAAMi6Q.png" ""]
-   ["201204_013108_D" "https://pbs.twimg.com/media/EoW00ZsWMAE4qYf.png" ""]])
+  [["Concentricity" "https://pbs.twimg.com/media/EXUWTWxXQAENFf5.png" "Concentricity"]
+   ["Skylight" "https://pbs.twimg.com/media/EgxecvGXkAIvQsK.png" "Skylight"]
+   ["Jelly Nightmare" "https://pbs.twimg.com/media/EbZs457WkAAY_Qw.png" "Jelly Nightmare"]
+   ["Inner Peace" "https://pbs.twimg.com/media/EqOk8H4UcAA9BtH.png" "Inner Peace"]
+   ["5D Chess" "https://pbs.twimg.com/media/Ejrfz84UYAAgw9X.png" "5D Chess"]
+   ["Continent of Colour" "https://pbs.twimg.com/media/EfPoWfoXYAIWW5S.png" "Continent of Colour"]
+   ["Northern Lights" "https://pbs.twimg.com/media/ErRFr8XXIAA09Ae.png" "Northern Lights"]
+   ["Malbolge" "https://pbs.twimg.com/media/Eo65QdSXMAA4AlF.png" "Malbolge"]
+   ["Crazy 77" "https://pbs.twimg.com/media/ExTxHhdXAAAMi6Q.png" "Crazy 77"]
+   ["Geometrica" "https://pbs.twimg.com/media/EoW00ZsWMAE4qYf.png" "Geometrica"]
+   ["Mitosis" "https://pbs.twimg.com/media/Ez95yvqVgAAIJx3.png" "Mitosis"]
+   ["The Beginning" "https://pbs.twimg.com/media/Ez95urjXoAAk-rF.png" "The Beginning"]
+   ["Hyperbole" "https://pbs.twimg.com/media/Ez9sswuXEAMBXPl.png" "Hyperbole"]
+   ["Swarm of Dust" "https://pbs.twimg.com/media/Ez8npy3XMAAS6XW.png" "Swarm of Dust"]
+   ["Black Mass" "https://pbs.twimg.com/media/Ez6QttaXEAQv6vO.png" "Black Mass"]
+   ["Perlin's Brain" "https://pbs.twimg.com/media/Ez5pBZRXIAI4w5L.png" "Perlin's Brain"]
+   ["Sandscape" "https://pbs.twimg.com/media/Ez0CGgHWYAAs7v2.png" "Sandscape"]
+   ["Perspective" "https://pbs.twimg.com/media/EzvUEWUXIAMFVP0.png" "Perspective"]])
 
 (def NFT-actor-address #25)
 
