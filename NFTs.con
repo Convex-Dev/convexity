@@ -16,7 +16,7 @@
 
 (def NFT-actor-address #25)
 
-(def shop-actor-address #347)
+(def shop-actor-address #543)
 
 (def NFTs
   (map
@@ -35,5 +35,5 @@
        (call shop-actor-address (add-listing {:description (first name+uri)
                                             :image (last name+uri)
                                             :asset [NFT-actor-address token-id]
-                                            :price [5000000]}))))
+                                            :price [1000 #28]}))))
    NFTs images))
