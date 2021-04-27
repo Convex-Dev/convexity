@@ -170,38 +170,39 @@ class ListingScreen extends StatelessWidget {
     final appState = context.read<AppState>();
 
     if (confirmation == true) {
-      if (isOwnerSelf) {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) {
-            return Container(
-              height: 300,
-              child: FutureBuilder(
-                future:
-                shop.removeListing(appState.convexClient(), id: listing.id),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting)
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+      final Future result = isOwnerSelf ?
+      shop.removeListing(appState.convexClient(), id: listing.id)
+          : shop.buyListing(appState.convexClient(), listing: listing);
 
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 300,
+            child: FutureBuilder(
+              future: result,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting)
                   return Center(
-                    child: ElevatedButton(
-                      child: Text('Done'),
-                      onPressed: () {
-                        Navigator.popUntil(
-                          context,
-                          ModalRoute.withName(route.SHOP),
-                        );
-                      },
-                    ),
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
-            );
-          },
-        );
-      }
+
+                return Center(
+                  child: ElevatedButton(
+                    child: Text('Done'),
+                    onPressed: () {
+                      Navigator.popUntil(
+                        context,
+                        ModalRoute.withName(route.SHOP),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      );
     }
   }
 }
