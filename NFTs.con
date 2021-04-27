@@ -25,7 +25,7 @@
 
 (def NFT-actor-address #25)
 
-(def shop-actor-address #554)
+(def shop-actor-address #558)
 
 (def NFTs
   (map

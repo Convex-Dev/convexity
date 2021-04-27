@@ -304,7 +304,7 @@ class _ListingScreenState extends State<ListingScreen> {
                       ),
                       Gap(20),
                       Text(isOwnerSelf
-                          ? 'successfully removed listing.'
+                          ? 'Successfully removed listing.'
                           : 'Congratulations! You have successfully bought the asset.'),
                       Gap(20),
                       ElevatedButton(
