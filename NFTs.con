@@ -35,5 +35,5 @@
        (call shop-actor-address (add-listing {:description (first name+uri)
                                             :image (last name+uri)
                                             :asset [NFT-actor-address token-id]
-                                            :price [500]}))))
+                                            :price [5000000]}))))
    NFTs images))
