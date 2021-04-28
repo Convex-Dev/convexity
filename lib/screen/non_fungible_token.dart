@@ -116,21 +116,29 @@ class _NonFungibleTokenScreenBodyState
               return imageTransparent;
             },
           ),
-          ElevatedButton(
-            child: Text('Offer for Sale...'),
-            onPressed: () {
-              _sell(context);
-            },
+          Gap(20),
+          SizedBox(
+            height: defaultButtonHeight,
+            child: ElevatedButton(
+              child: Text('Offer for Sale...'),
+              onPressed: () {
+                _sell(context);
+              },
+            ),
           ),
-          ElevatedButton(
-            child: Text('Transfer'),
-            onPressed: () {
-              pushNonFungibleTransfer(
-                context,
-                nonFungibleToken: widget.nonFungibleToken,
-                tokenId: widget.tokenId,
-              );
-            },
+          Gap(10),
+          SizedBox(
+            height: defaultButtonHeight,
+            child: ElevatedButton(
+              child: Text('Transfer'),
+              onPressed: () {
+                pushNonFungibleTransfer(
+                  context,
+                  nonFungibleToken: widget.nonFungibleToken,
+                  tokenId: widget.tokenId,
+                );
+              },
+            ),
           ),
         ],
       );

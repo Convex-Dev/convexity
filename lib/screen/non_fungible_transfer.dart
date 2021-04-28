@@ -287,8 +287,8 @@ class _NonFungibleTransferScreenBodyState
               children: [
                 Gap(20),
                 SizedBox(
-                  height: 60,
-                  width: 100,
+                  height: defaultButtonHeight,
+                  width: double.infinity,
                   child: ElevatedButton(
                     child: Text('SEND'),
                     onPressed: () {
