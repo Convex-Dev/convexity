@@ -14,7 +14,7 @@ import '../format.dart' as format;
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Tuple of NFT + ID + Data.
+    // Tuple of NFT + Token ID + Data.
     final Tuple3<NonFungibleToken, int, Future<Result>> t =
         ModalRoute.of(context)!.settings.arguments
             as Tuple3<NonFungibleToken, int, Future<Result>>;
@@ -59,91 +59,78 @@ class NonFungibleTokenScreenBody extends StatefulWidget {
 class _NonFungibleTokenScreenBodyState
     extends State<NonFungibleTokenScreenBody> {
   @override
-  Widget build(BuildContext context) => ListView(
-        children: [
-          ListTile(
-            title: Text(widget.tokenId.toString()),
-            subtitle: Text('ID'),
-          ),
-          FutureBuilder<Result>(
-            future: widget.data,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                // Result value is a map of attribute name to value - unless there's an error.
-                if (snapshot.data!.errorCode != null) {
-                  return ListTile(
-                    leading: Icon(Icons.error),
-                    title: Text(
-                      'Sorry. It was not possible to query data for this token.',
+  Widget build(BuildContext context) {
+    return FutureBuilder<Result>(
+      future: widget.data,
+      builder: (context, snapshot) {
+        return ListView(
+          children: [
+            ListTile(
+              title: Text('ID'),
+              subtitle: Text(widget.tokenId.toString()),
+            ),
+            if (snapshot.connectionState == ConnectionState.waiting)
+              Center(
+                child: CircularProgressIndicator(),
+              )
+            else if (snapshot.hasError)
+              ListTile(
+                leading: Icon(Icons.error),
+                title: Text(
+                  'Sorry. It was not possible to query data for this token.',
+                ),
+              )
+            else ...[
+              ListTile(
+                title: Text('Name'),
+                subtitle: Text(
+                  _nonFungibleName(snapshot.data?.value) ?? 'No name',
+                ),
+              ),
+              _nonFungibleUri(snapshot.data?.value) == null
+                  ? Image.memory(kTransparentImage)
+                  : FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: _nonFungibleUri(snapshot.data?.value)!,
                     ),
-                  );
-                }
+              Gap(20),
+              SizedBox(
+                height: defaultButtonHeight,
+                child: ElevatedButton(
+                  child: Text('Offer for Sale...'),
+                  onPressed: () {
+                    _sell(context, data: snapshot.data?.value);
+                  },
+                ),
+              ),
+              Gap(10),
+              SizedBox(
+                height: defaultButtonHeight,
+                child: ElevatedButton(
+                  child: Text('Transfer'),
+                  onPressed: () {
+                    pushNonFungibleTransfer(
+                      context,
+                      nonFungibleToken: widget.nonFungibleToken,
+                      tokenId: widget.tokenId,
+                    );
+                  },
+                ),
+              ),
+            ]
+          ],
+        );
+      },
+    );
+  }
 
-                return ListTile(
-                  title: Text(snapshot.data!.value['name']),
-                  subtitle: Text('Name'),
-                );
-              }
+  String? _nonFungibleName(Map<String, dynamic>? data) =>
+      data == null ? null : data['name'] as String;
 
-              return Center(child: CircularProgressIndicator());
-            },
-          ),
-          FutureBuilder<Result>(
-            future: widget.data,
-            builder: (context, snapshot) {
-              final imageTransparent = Image.memory(kTransparentImage);
+  String? _nonFungibleUri(Map<String, dynamic>? data) =>
+      data == null ? null : data['uri'] as String;
 
-              if (snapshot.hasData) {
-                if (snapshot.data!.errorCode != null) {
-                  return imageTransparent;
-                }
-
-                if (snapshot.data!.value['uri'] == null) {
-                  return imageTransparent;
-                }
-
-                if (Uri.parse(snapshot.data!.value['uri']).isAbsolute ==
-                    false) {
-                  return imageTransparent;
-                }
-
-                return FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: snapshot.data!.value['uri'],
-                );
-              }
-
-              return imageTransparent;
-            },
-          ),
-          Gap(20),
-          SizedBox(
-            height: defaultButtonHeight,
-            child: ElevatedButton(
-              child: Text('Offer for Sale...'),
-              onPressed: () {
-                _sell(context);
-              },
-            ),
-          ),
-          Gap(10),
-          SizedBox(
-            height: defaultButtonHeight,
-            child: ElevatedButton(
-              child: Text('Transfer'),
-              onPressed: () {
-                pushNonFungibleTransfer(
-                  context,
-                  nonFungibleToken: widget.nonFungibleToken,
-                  tokenId: widget.tokenId,
-                );
-              },
-            ),
-          ),
-        ],
-      );
-
-  void _sell(BuildContext context) async {
+  void _sell(BuildContext context, {Map<String, dynamic>? data}) async {
     final shop.NewListing? newListing = await showModalBottomSheet(
       context: context,
       builder: (context) => Container(
