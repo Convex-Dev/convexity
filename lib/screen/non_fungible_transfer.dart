@@ -210,6 +210,7 @@ class _NonFungibleTransferScreenBodyState
                             width: 30,
                             height: 30,
                           ),
+                          Text('$_receiver.'),
                         ],
                       ),
                     ),

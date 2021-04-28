@@ -90,7 +90,8 @@ class Identicon2 extends StatelessWidget {
           ),
           if (isAddressVisible)
             Text(
-              address.toString().substring(0, 15) + '...',
+              address.toString(),
+              overflow: TextOverflow.ellipsis,
             ),
         ],
       );
