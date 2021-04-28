@@ -10,6 +10,7 @@ import '../convex.dart';
 import '../nav.dart';
 import '../shop.dart' as shop;
 import '../format.dart' as format;
+import '../currency.dart' as currency;
 
 String? _nonFungibleName(Map<String, dynamic>? data) =>
     data == null ? null : data['name'] as String;
@@ -315,14 +316,17 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
 
                 // If price is in Tokens, amount needs to be read
                 // considering decimal places.
+                // If price is in CVX, it needs to be converted to Copper.
                 Tuple2<int, Address?> price = Tuple2(
-                  (_token == null
-                          ? int.tryParse(_price ?? '0')
-                          : format.readFungibleCurrency(
-                              metadata: _token!.metadata,
-                              s: _price!,
-                            )) ??
-                      0,
+                  _token == null
+                      ? currency.toCopper(
+                          currency.decimal(_price ?? '0'),
+                          fromUnit: currency.CvxUnit.gold,
+                        )
+                      : format.readFungibleCurrency(
+                          metadata: _token!.metadata,
+                          s: _price ?? '0',
+                        ),
                   _token?.address,
                 );
 
