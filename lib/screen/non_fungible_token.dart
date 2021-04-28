@@ -313,7 +313,8 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
                   widget.tokenId,
                 );
 
-                // TODO Make this code better.
+                // If price is in Tokens, amount needs to be read
+                // considering decimal places.
                 Tuple2<int, Address?> price = Tuple2(
                   (_token == null
                           ? int.tryParse(_price ?? '0')
