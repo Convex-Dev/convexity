@@ -13,11 +13,13 @@ class NewListing {
   final String description;
   final Tuple2<int, Address?> price;
   final Tuple2<Address, int> asset;
+  final String? image;
 
   const NewListing({
     required this.description,
     required this.price,
     required this.asset,
+    this.image,
   });
 }
 
@@ -117,6 +119,7 @@ Future<int> addListing({
       ' :description "${newListing.description}"'
       ' :asset [${newListing.asset.item1} ${newListing.asset.item2}]'
       ' :price [${newListing.price.item1} ${newListing.price.item2 ?? ''}]'
+      ' ${newListing.image != null ? ':image "${newListing.image}"' : ''}'
       '}';
 
   Result result = await convexClient.transact(

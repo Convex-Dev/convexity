@@ -11,6 +11,12 @@ import '../nav.dart';
 import '../shop.dart' as shop;
 import '../format.dart' as format;
 
+String? _nonFungibleName(Map<String, dynamic>? data) =>
+    data == null ? null : data['name'] as String;
+
+String? _nonFungibleUri(Map<String, dynamic>? data) =>
+    data == null ? null : data['uri'] as String;
+
 class NonFungibleTokenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -124,12 +130,6 @@ class _NonFungibleTokenScreenBodyState
     );
   }
 
-  String? _nonFungibleName(Map<String, dynamic>? data) =>
-      data == null ? null : data['name'] as String;
-
-  String? _nonFungibleUri(Map<String, dynamic>? data) =>
-      data == null ? null : data['uri'] as String;
-
   void _sell(BuildContext context, {Map<String, dynamic>? data}) async {
     final shop.NewListing? newListing = await showModalBottomSheet(
       context: context,
@@ -140,7 +140,7 @@ class _NonFungibleTokenScreenBodyState
           child: _NonFungibleSell(
             nonFungibleToken: widget.nonFungibleToken,
             tokenId: widget.tokenId,
-            data: widget.data,
+            data: data,
           ),
         ),
       ),
@@ -200,7 +200,7 @@ class _NonFungibleTokenScreenBodyState
 class _NonFungibleSell extends StatefulWidget {
   final NonFungibleToken nonFungibleToken;
   final int tokenId;
-  final Future<Result> data;
+  final Map<String, dynamic>? data;
 
   const _NonFungibleSell(
       {Key? key,
@@ -326,9 +326,11 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
                 );
 
                 final newListing = shop.NewListing(
-                  description: 'Example Listing',
+                  description: _nonFungibleName(widget.data) ??
+                      'Listing for ${asset.item1}',
                   asset: asset,
                   price: price,
+                  image: _nonFungibleUri(widget.data),
                 );
 
                 Navigator.pop(context, newListing);
