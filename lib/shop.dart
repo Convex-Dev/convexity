@@ -4,7 +4,7 @@ import 'package:tuple/tuple.dart';
 
 import 'currency.dart' as currency;
 
-const SHOP_ADDRESS = Address(575);
+const SHOP_ADDRESS = Address(678);
 
 const PRICE_PRECISION = 5;
 
@@ -57,7 +57,7 @@ class Listing {
 
     final price = Tuple2<int, Address?>(
       p.first,
-      p.length == 2 ? Address(p.last) : null,
+      p.last != null ? Address(p.last) : null,
     );
 
     List a = json['asset'];
@@ -118,7 +118,7 @@ Future<int> addListing({
   final l = '{'
       ' :description "${newListing.description}"'
       ' :asset [${newListing.asset.item1} ${newListing.asset.item2}]'
-      ' :price [${newListing.price.item1} ${newListing.price.item2 ?? ''}]'
+      ' :price [${newListing.price.item1} ${newListing.price.item2 ?? 'nil'}]'
       ' ${newListing.image != null ? ':image "${newListing.image}"' : ''}'
       '}';
 
