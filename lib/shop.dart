@@ -4,7 +4,7 @@ import 'package:tuple/tuple.dart';
 
 import 'currency.dart' as currency;
 
-const SHOP_ADDRESS = Address(678);
+const SHOP_ADDRESS = Address(558);
 
 const PRICE_PRECISION = 5;
 
