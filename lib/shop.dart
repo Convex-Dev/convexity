@@ -4,7 +4,7 @@ import 'package:tuple/tuple.dart';
 
 import 'currency.dart' as currency;
 
-const SHOP_ADDRESS = Address(558);
+const SHOP_ADDRESS = Address(575);
 
 const PRICE_PRECISION = 5;
 
@@ -157,12 +157,13 @@ Future<bool> buyListing(
   required Listing listing,
 }) async {
   Result result = await convexClient.transact(
-    source: ''
-        '(do'
-        '(import convex.asset :as asset)'
-        '(asset/offer $SHOP_ADDRESS [${listing.price.item2} ${listing.price.item1}])'
-        '(call $SHOP_ADDRESS (buy-listing ${listing.id}))'
-        ')',
+    source: listing.price.item2 == null
+        ? '(call $SHOP_ADDRESS ${listing.price.item1} (buy-listing ${listing.id}))'
+        : '(do'
+            '(import convex.asset :as asset)'
+            '(asset/offer $SHOP_ADDRESS [${listing.price.item2} ${listing.price.item1}])'
+            '(call $SHOP_ADDRESS (buy-listing ${listing.id}))'
+            ')',
   );
 
   if (result.errorCode != null)

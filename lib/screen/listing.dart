@@ -228,7 +228,7 @@ class _ListingScreenState extends State<ListingScreen> {
                       ),
                       priceWidget,
                       Text(
-                        '${listing.price.item2 == null ? 'CVX' : ''}?',
+                        '?',
                       ),
                     ],
                   ),
