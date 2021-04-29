@@ -308,38 +308,40 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
             Gap(20),
             ElevatedButton(
               child: Text('Offer for Sale!'),
-              onPressed: () {
-                Tuple2<Address, int> asset = Tuple2(
-                  widget.nonFungibleToken.address,
-                  widget.tokenId,
-                );
+              onPressed: (_price ?? '').isEmpty
+                  ? null
+                  : () {
+                      Tuple2<Address, int> asset = Tuple2(
+                        widget.nonFungibleToken.address,
+                        widget.tokenId,
+                      );
 
-                // If price is in Tokens, amount needs to be read
-                // considering decimal places.
-                // If price is in CVX, it needs to be converted to Copper.
-                Tuple2<int, Address?> price = Tuple2(
-                  _token == null
-                      ? currency.toCopper(
-                          currency.decimal(_price ?? '0'),
-                          fromUnit: currency.CvxUnit.gold,
-                        )
-                      : format.readFungibleCurrency(
-                          metadata: _token!.metadata,
-                          s: _price ?? '0',
-                        ),
-                  _token?.address,
-                );
+                      // If price is in Tokens, amount needs to be read
+                      // considering decimal places.
+                      // If price is in CVX, it needs to be converted to Copper.
+                      Tuple2<int, Address?> price = Tuple2(
+                        _token == null
+                            ? currency.toCopper(
+                                currency.decimal(_price ?? '0'),
+                                fromUnit: currency.CvxUnit.gold,
+                              )
+                            : format.readFungibleCurrency(
+                                metadata: _token!.metadata,
+                                s: _price ?? '0',
+                              ),
+                        _token?.address,
+                      );
 
-                final newListing = shop.NewListing(
-                  description: _nonFungibleName(widget.data) ??
-                      'Listing for ${asset.item1}',
-                  asset: asset,
-                  price: price,
-                  image: _nonFungibleUri(widget.data),
-                );
+                      final newListing = shop.NewListing(
+                        description: _nonFungibleName(widget.data) ??
+                            'Listing for ${asset.item1}',
+                        asset: asset,
+                        price: price,
+                        image: _nonFungibleUri(widget.data),
+                      );
 
-                Navigator.pop(context, newListing);
-              },
+                      Navigator.pop(context, newListing);
+                    },
             ),
           ],
         ),
