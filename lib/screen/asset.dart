@@ -45,6 +45,7 @@ class AssetScreen extends StatelessWidget {
   }
 }
 
+/// Interface for Fungible and Non-Fungible Tokens.
 class AssetScreenBody extends StatefulWidget {
   final AAsset aasset;
   final Future balance;
@@ -60,9 +61,11 @@ class AssetScreenBody extends StatefulWidget {
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
-  // Local balance set whenever this Widget asks to refresh.
-  //
-  // See Fungible and Non-Fungible Widgets.
+  /// Local balance set whenever this Widget asks to refresh.
+  ///
+  /// Balance semantics is based on the type of Asset - Fungible or Non-Fungible.
+  ///
+  /// See Fungible and Non-Fungible Widgets.
   Future? _balance;
 
   Future get balance => _balance ?? widget.balance;
@@ -109,6 +112,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
 class _FungibleBody extends StatelessWidget {
   final AAsset aasset;
+  // A Fungible Asset balance is a number.
   final Future balance;
   final void Function() refresh;
 
@@ -278,6 +282,7 @@ class _FungibleBody extends StatelessWidget {
 
 class _NonFungibleBody extends StatelessWidget {
   final AAsset aasset;
+  // A Non-Fungible Asset balance is a set of Token IDs.
   final Future balance;
   final void Function() refresh;
 
