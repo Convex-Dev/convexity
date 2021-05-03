@@ -174,6 +174,15 @@ Future<bool> buyListing(
   return true;
 }
 
+Future<List<Listing>> myListings({
+  required ConvexClient convexClient,
+  required Address myAddress,
+}) async {
+  final available = await listings(convexClient);
+
+  return available.where((listing) => listing.owner == myAddress).toList();
+}
+
 String priceStr(Tuple2<int, Address?> price) => price.item2 == null
     ? currency
         .copperTo(
