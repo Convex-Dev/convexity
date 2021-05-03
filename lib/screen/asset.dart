@@ -14,175 +14,6 @@ import '../convex.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
 
-class _Info extends StatelessWidget {
-  final AAsset aasset;
-
-  const _Info({Key? key, required this.aasset}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    aasset.asset.metadata.name,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Gap(4),
-                  Text(
-                    aasset.asset.metadata.description,
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                  Gap(4),
-                  SelectableText(
-                    aasset.asset.address.toString(),
-                    showCursor: false,
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ],
-              ),
-            ),
-            QrImage(
-              data: aasset.asset.address.value.toString(),
-              version: QrVersions.auto,
-              size: 80,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FungibleTransferActivityView extends StatelessWidget {
-  final Activity activity;
-
-  const _FungibleTransferActivityView({
-    Key? key,
-    required this.activity,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final fungibleTransferActivity =
-        activity.payload as FungibleTransferActivity;
-
-    final appState = context.watch<AppState>();
-
-    return Card(
-      child: InkWell(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Transfer',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Gap(20),
-                  Text(
-                    defaultDateTimeFormat(fungibleTransferActivity.timestamp),
-                    style: Theme.of(context).textTheme.caption,
-                  )
-                ],
-              ),
-              Gap(4),
-              Row(
-                children: [
-                  aidenticon(
-                    fungibleTransferActivity.from!,
-                    height: 30,
-                    width: 30,
-                  ),
-                  Gap(10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appState
-                                  .findContact(fungibleTransferActivity.from)
-                                  ?.name ??
-                              'Not in Address Book',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          fungibleTransferActivity.from.toString(),
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Gap(10),
-                  Icon(Icons.arrow_right_alt),
-                  Gap(10),
-                  aidenticon(
-                    fungibleTransferActivity.to!,
-                    height: 30,
-                    width: 30,
-                  ),
-                  Gap(10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          appState
-                                  .findContact(fungibleTransferActivity.to)
-                                  ?.name ??
-                              'Not in Address Book',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          fungibleTransferActivity.to.toString(),
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.caption,
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              Gap(4),
-              Text(
-                'Amount: ${formatFungibleCurrency(
-                  metadata: fungibleTransferActivity.token!.metadata,
-                  number: fungibleTransferActivity.amount,
-                )}',
-                style: TextStyle(
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-        ),
-        onTap: () {
-          nav.pushActivity(
-            context,
-            activity: activity,
-          );
-        },
-      ),
-    );
-  }
-}
-
 class AssetScreen extends StatelessWidget {
   final AAsset? aasset;
   final Future? balance;
@@ -229,6 +60,9 @@ class AssetScreenBody extends StatefulWidget {
 }
 
 class _AssetScreenBodyState extends State<AssetScreenBody> {
+  // Local balance set whenever this Widget asks to refresh.
+  //
+  // See Fungible and Non-Fungible Widgets.
   Future? _balance;
 
   Future get balance => _balance ?? widget.balance;
@@ -673,6 +507,175 @@ class _Unfollow extends StatelessWidget {
                 ),
               ),
             );
+        },
+      ),
+    );
+  }
+}
+
+class _Info extends StatelessWidget {
+  final AAsset aasset;
+
+  const _Info({Key? key, required this.aasset}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    aasset.asset.metadata.name,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Gap(4),
+                  Text(
+                    aasset.asset.metadata.description,
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                  Gap(4),
+                  SelectableText(
+                    aasset.asset.address.toString(),
+                    showCursor: false,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ],
+              ),
+            ),
+            QrImage(
+              data: aasset.asset.address.value.toString(),
+              version: QrVersions.auto,
+              size: 80,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FungibleTransferActivityView extends StatelessWidget {
+  final Activity activity;
+
+  const _FungibleTransferActivityView({
+    Key? key,
+    required this.activity,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final fungibleTransferActivity =
+        activity.payload as FungibleTransferActivity;
+
+    final appState = context.watch<AppState>();
+
+    return Card(
+      child: InkWell(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Transfer',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Gap(20),
+                  Text(
+                    defaultDateTimeFormat(fungibleTransferActivity.timestamp),
+                    style: Theme.of(context).textTheme.caption,
+                  )
+                ],
+              ),
+              Gap(4),
+              Row(
+                children: [
+                  aidenticon(
+                    fungibleTransferActivity.from!,
+                    height: 30,
+                    width: 30,
+                  ),
+                  Gap(10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appState
+                                  .findContact(fungibleTransferActivity.from)
+                                  ?.name ??
+                              'Not in Address Book',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          fungibleTransferActivity.from.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Gap(10),
+                  Icon(Icons.arrow_right_alt),
+                  Gap(10),
+                  aidenticon(
+                    fungibleTransferActivity.to!,
+                    height: 30,
+                    width: 30,
+                  ),
+                  Gap(10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          appState
+                                  .findContact(fungibleTransferActivity.to)
+                                  ?.name ??
+                              'Not in Address Book',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          fungibleTransferActivity.to.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.caption,
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              Gap(4),
+              Text(
+                'Amount: ${formatFungibleCurrency(
+                  metadata: fungibleTransferActivity.token!.metadata,
+                  number: fungibleTransferActivity.amount,
+                )}',
+                style: TextStyle(
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+        onTap: () {
+          nav.pushActivity(
+            context,
+            activity: activity,
+          );
         },
       ),
     );
