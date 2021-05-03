@@ -13,7 +13,6 @@ import '../format.dart';
 import '../convex.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
-import '../shop.dart' as shop;
 
 class _Info extends StatelessWidget {
   final AAsset aasset;
@@ -200,7 +199,7 @@ class AssetScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as Tuple2<AAsset, Future>?;
 
     // AAsset and balance can be passed directly to the constructor,
-    // or via the Navigator arguments.
+    // or via Navigator arguments.
     AAsset _aasset = aasset ?? arguments!.item1;
     Future _balance = balance ?? arguments!.item2;
 
@@ -216,13 +215,13 @@ class AssetScreen extends StatelessWidget {
 }
 
 class AssetScreenBody extends StatefulWidget {
-  final AAsset? aasset;
-  final Future? balance;
+  final AAsset aasset;
+  final Future balance;
 
   const AssetScreenBody({
     Key? key,
-    this.aasset,
-    this.balance,
+    required this.aasset,
+    required this.balance,
   }) : super(key: key);
 
   @override
@@ -232,57 +231,7 @@ class AssetScreenBody extends StatefulWidget {
 class _AssetScreenBodyState extends State<AssetScreenBody> {
   Future? _balance;
 
-  Future? get balance => _balance ?? widget.balance;
-
-  Widget _follow(
-    BuildContext context,
-    AppState appState,
-  ) =>
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          child: Text('Follow'),
-          onPressed: () {
-            appState.follow(widget.aasset!);
-
-            ScaffoldMessenger.of(context)
-              ..removeCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'You are following ${widget.aasset!.asset.metadata.name}',
-                    overflow: TextOverflow.clip,
-                  ),
-                ),
-              );
-          },
-        ),
-      );
-
-  Widget _unfollow(
-    BuildContext context,
-    AppState appState,
-  ) =>
-      SizedBox(
-        width: double.infinity,
-        child: OutlinedButton(
-          child: Text('Unfollow'),
-          onPressed: () {
-            appState.unfollow(widget.aasset);
-
-            ScaffoldMessenger.of(context)
-              ..removeCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Unfollowed ${widget.aasset!.asset.metadata.name}',
-                    overflow: TextOverflow.clip,
-                  ),
-                ),
-              );
-          },
-        ),
-      );
+  Future get balance => _balance ?? widget.balance;
 
   Widget _fungible() => StatelessWidgetBuilder((context) {
         final appState = context.watch<AppState>();
@@ -296,7 +245,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
                 final a = activity.payload as FungibleTransferActivity;
 
-                return a.token == widget.aasset!.asset;
+                return a.token == widget.aasset.asset;
               },
             )
             .toList()
@@ -309,7 +258,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _Info(aasset: widget.aasset!),
+              _Info(aasset: widget.aasset),
               Gap(20),
               Padding(
                 padding: const EdgeInsets.all(12),
@@ -340,7 +289,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                   )
                                 : Text(
                                     formatFungibleCurrency(
-                                      metadata: widget.aasset!.asset.metadata,
+                                      metadata: widget.aasset.asset.metadata,
                                       number: snapshot.data as int,
                                     ),
                                   );
@@ -357,7 +306,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                               context,
                               params: ExchangeParams(
                                 action: ExchangeAction.buy,
-                                ofToken: widget.aasset!.asset,
+                                ofToken: widget.aasset.asset,
                               ),
                             );
 
@@ -375,7 +324,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                               context,
                               params: ExchangeParams(
                                 action: ExchangeAction.sell,
-                                ofToken: widget.aasset!.asset,
+                                ofToken: widget.aasset.asset,
                               ),
                             );
 
@@ -390,7 +339,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                           child: Text('TRANSFER'),
                           onPressed: () {
                             final fungible =
-                                widget.aasset!.asset as FungibleToken?;
+                                widget.aasset.asset as FungibleToken?;
 
                             var future = nav.pushFungibleTransfer(
                               context,
@@ -438,9 +387,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                 ),
               ],
               if (appState.model.following.contains(widget.aasset))
-                _unfollow(context, appState)
+                _Unfollow(aasset: widget.aasset)
               else
-                _follow(context, appState),
+                _Follow(aasset: widget.aasset),
             ],
           ),
         );
@@ -457,7 +406,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Info(aasset: widget.aasset!),
+                _Info(aasset: widget.aasset),
                 Gap(20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -532,7 +481,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
                                 final data = convexClient.query(
                                   source:
-                                      '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))',
+                                      '(call ${widget.aasset.asset.address} (get-token-data ${entry.value}))',
                                 );
 
                                 return AnimationConfiguration.staggeredGrid(
@@ -549,7 +498,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                               nav.pushNonFungibleToken(
                                             context,
                                             nonFungibleToken:
-                                                widget.aasset!.asset,
+                                                widget.aasset.asset,
                                             tokenId: tokenId,
                                             data: data,
                                           );
@@ -588,7 +537,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                       final result = nav.pushNewNonFungibleToken(
                         context,
                         nonFungibleToken:
-                            widget.aasset!.asset as NonFungibleToken?,
+                            widget.aasset.asset as NonFungibleToken?,
                       );
 
                       result.then(
@@ -600,9 +549,9 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                   ),
                 ),
                 if (appState.model.following.contains(widget.aasset))
-                  _unfollow(context, appState)
+                  _Unfollow(aasset: widget.aasset)
                 else
-                  _follow(context, appState),
+                  _Follow(aasset: widget.aasset),
               ],
             ),
           ),
@@ -614,7 +563,7 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
     final appState = context.read<AppState>();
 
     return appState.assetLibrary().balance(
-          asset: widget.aasset!.asset.address,
+          asset: widget.aasset.asset.address,
           owner: appState.model.activeAddress,
         );
   }
@@ -622,9 +571,16 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   @override
   Widget build(BuildContext context) => WillPopScope(
         child: SafeArea(
-          child: widget.aasset!.type == AssetType.fungible
+          child: widget.aasset.type == AssetType.fungible
               ? _fungible()
-              : _nonFungible(),
+              : _NonFungibleBody(
+                  aasset: widget.aasset,
+                  balance: balance,
+                  refresh: () {
+                    setState(() {
+                      _balance = queryBalance(context);
+                    });
+                  }),
         ),
         onWillPop: () async {
           // Pop with a potentially updated balance.
@@ -633,4 +589,235 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
           return false;
         },
       );
+}
+
+class _NonFungibleBody extends StatelessWidget {
+  final AAsset aasset;
+  final Future balance;
+  final void Function() refresh;
+
+  const _NonFungibleBody({
+    Key? key,
+    required this.aasset,
+    required this.balance,
+    required this.refresh,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    final convexClient = appState.convexClient();
+
+    return Padding(
+      padding: defaultScreenPadding,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Info(aasset: aasset),
+            Gap(20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tokens',
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: refresh,
+                ),
+              ],
+            ),
+            Gap(10),
+            FutureBuilder(
+              future: balance,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (snapshot.hasData) {
+                  final ids = snapshot.data as List;
+
+                  if (ids.isEmpty) {
+                    return Expanded(
+                      child: Column(
+                        children: [
+                          Text("You don't own any Non-Fungible Token."),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final columnCount = 2;
+
+                  return Expanded(
+                    child: AnimationLimiter(
+                      child: GridView.count(
+                        crossAxisSpacing: 6,
+                        mainAxisSpacing: 6,
+                        crossAxisCount: columnCount,
+                        children: ids.asMap().entries.map(
+                          (entry) {
+                            final tokenId = entry.value as int;
+
+                            final data = convexClient.query(
+                              source:
+                                  '(call ${aasset.asset.address} (get-token-data ${entry.value}))',
+                            );
+
+                            return AnimationConfiguration.staggeredGrid(
+                              position: entry.key,
+                              duration: const Duration(milliseconds: 375),
+                              columnCount: columnCount,
+                              child: ScaleAnimation(
+                                child: FadeInAnimation(
+                                  child: NonFungibleGridTile(
+                                    tokenId: tokenId,
+                                    data: data,
+                                    onTap: () {
+                                      // Navigate to NFT screen.
+                                      final result = nav.pushNonFungibleToken(
+                                        context,
+                                        nonFungibleToken: aasset.asset,
+                                        tokenId: tokenId,
+                                        data: data,
+                                      );
+
+                                      // Refresh after popping the screen.
+                                      result.then((result) {
+                                        refresh();
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
+                  );
+                }
+
+                return Text(
+                  'Sorry. It was not possible to check for Non-Fungible Tokens.',
+                );
+              },
+            ),
+            Gap(10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                child: Text('Mint NFT'),
+                onPressed: () {
+                  // Navigate to new NFT screen.
+                  final result = nav.pushNewNonFungibleToken(
+                    context,
+                    nonFungibleToken: aasset.asset as NonFungibleToken?,
+                  );
+
+                  // Refresh after popping the screen.
+                  result.then((value) {
+                    refresh();
+                  });
+                },
+              ),
+            ),
+            if (appState.model.following.contains(aasset))
+              _Unfollow(aasset: aasset)
+            else
+              _Follow(aasset: aasset),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Follow extends StatelessWidget {
+  final AAsset aasset;
+
+  const _Follow({Key? key, required this.aasset}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        child: Text('Follow'),
+        onPressed: () {
+          appState.follow(aasset);
+
+          ScaffoldMessenger.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  'You are following ${aasset.asset.metadata.name}',
+                  overflow: TextOverflow.clip,
+                ),
+              ),
+            );
+        },
+      ),
+    );
+  }
+}
+
+class _Unfollow extends StatelessWidget {
+  final AAsset aasset;
+
+  const _Unfollow({Key? key, required this.aasset}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        child: Text('Unfollow'),
+        onPressed: () {
+          appState.unfollow(aasset);
+
+          ScaffoldMessenger.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Unfollowed ${aasset.asset.metadata.name}',
+                  overflow: TextOverflow.clip,
+                ),
+              ),
+            );
+        },
+      ),
+    );
+  }
 }
