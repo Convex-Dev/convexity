@@ -120,7 +120,10 @@ class _ListingGridTile extends StatelessWidget {
         ? Text(
             '${shop.priceStr(listing.price)} CVX',
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+            ),
           )
         : FutureBuilder<AAsset?>(
             future: aasset,

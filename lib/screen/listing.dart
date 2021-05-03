@@ -51,7 +51,6 @@ class _ListingScreenState extends State<ListingScreen> {
         ? Text(
             '${shop.priceStr(_listing.price)} CVX',
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.white),
           )
         : FutureBuilder<AAsset?>(
             future: aasset,
@@ -229,7 +228,7 @@ class _ListingScreenState extends State<ListingScreen> {
                       ),
                       priceWidget,
                       Text(
-                        '${listing.price.item2 == null ? 'CVX' : ''}?',
+                        '?',
                       ),
                     ],
                   ),

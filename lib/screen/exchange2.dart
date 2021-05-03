@@ -525,7 +525,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     Future<int?>? x;
 
-    switch (_params!.action) {
+    switch (_params!.action!) {
       case ExchangeAction.buy:
         if (_ofToken == CVX) {
           x = appState.torus().buyCVX(

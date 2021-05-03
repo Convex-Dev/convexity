@@ -57,7 +57,7 @@ class Listing {
 
     final price = Tuple2<int, Address?>(
       p.first,
-      p.length == 2 ? Address(p.last) : null,
+      p.last != null ? Address(p.last) : null,
     );
 
     List a = json['asset'];
@@ -118,7 +118,7 @@ Future<int> addListing({
   final l = '{'
       ' :description "${newListing.description}"'
       ' :asset [${newListing.asset.item1} ${newListing.asset.item2}]'
-      ' :price [${newListing.price.item1} ${newListing.price.item2 ?? ''}]'
+      ' :price [${newListing.price.item1} ${newListing.price.item2 ?? 'nil'}]'
       ' ${newListing.image != null ? ':image "${newListing.image}"' : ''}'
       '}';
 
@@ -157,12 +157,13 @@ Future<bool> buyListing(
   required Listing listing,
 }) async {
   Result result = await convexClient.transact(
-    source: ''
-        '(do'
-        '(import convex.asset :as asset)'
-        '(asset/offer $SHOP_ADDRESS [${listing.price.item2} ${listing.price.item1}])'
-        '(call $SHOP_ADDRESS (buy-listing ${listing.id}))'
-        ')',
+    source: listing.price.item2 == null
+        ? '(call $SHOP_ADDRESS ${listing.price.item1} (buy-listing ${listing.id}))'
+        : '(do'
+            '(import convex.asset :as asset)'
+            '(asset/offer $SHOP_ADDRESS [${listing.price.item2} ${listing.price.item1}])'
+            '(call $SHOP_ADDRESS (buy-listing ${listing.id}))'
+            ')',
   );
 
   if (result.errorCode != null)
@@ -171,6 +172,15 @@ Future<bool> buyListing(
     );
 
   return true;
+}
+
+Future<List<Listing>> myListings({
+  required ConvexClient convexClient,
+  required Address myAddress,
+}) async {
+  final available = await listings(convexClient);
+
+  return available.where((listing) => listing.owner == myAddress).toList();
 }
 
 String priceStr(Tuple2<int, Address?> price) => price.item2 == null
