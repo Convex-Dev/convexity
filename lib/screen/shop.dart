@@ -24,7 +24,7 @@ class _ShopScreenState extends State<ShopScreen> {
     final convexClient = appState.convexClient();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Shop')),
+      appBar: AppBar(title: Text('NFT Shop')),
       body: Container(
         padding: defaultScreenPadding,
         child: FutureBuilder<List<shop.Listing>>(
