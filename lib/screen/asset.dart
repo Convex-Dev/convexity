@@ -515,14 +515,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                       '(call ${widget.aasset!.asset.address} (get-token-data ${entry.value}))',
                                 );
 
-                                final listing = shop.listing(
-                                  convexClient,
-                                  Tuple2<Address, int>(
-                                    widget.aasset!.asset.address,
-                                    entry.value,
-                                  ),
-                                );
-
                                 return AnimationConfiguration.staggeredGrid(
                                   position: entry.key,
                                   duration: const Duration(milliseconds: 375),
@@ -530,28 +522,28 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
                                   child: ScaleAnimation(
                                     child: FadeInAnimation(
                                       child: NonFungibleGridTile(
-                                          tokenId: tokenId,
-                                          data: data,
-                                          listing: listing,
-                                          onTap: () {
-                                            final result =
-                                                nav.pushNonFungibleToken(
-                                              context,
-                                              nonFungibleToken:
-                                                  widget.aasset!.asset,
-                                              tokenId: tokenId,
-                                              data: data,
-                                            );
+                                        tokenId: tokenId,
+                                        data: data,
+                                        onTap: () {
+                                          final result =
+                                              nav.pushNonFungibleToken(
+                                            context,
+                                            nonFungibleToken:
+                                                widget.aasset!.asset,
+                                            tokenId: tokenId,
+                                            data: data,
+                                          );
 
-                                            result.then(
-                                              (result) {
-                                                setState(() {
-                                                  _balance =
-                                                      queryBalance(context);
-                                                });
-                                              },
-                                            );
-                                          }),
+                                          result.then(
+                                            (result) {
+                                              setState(() {
+                                                _balance =
+                                                    queryBalance(context);
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
                                 );
