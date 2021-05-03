@@ -233,168 +233,6 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
 
   Future get balance => _balance ?? widget.balance;
 
-  Widget _fungible() => StatelessWidgetBuilder((context) {
-        final appState = context.watch<AppState>();
-
-        final activities = appState.model.activities
-            .where(
-              (activity) {
-                if (activity.type != ActivityType.transfer) {
-                  return false;
-                }
-
-                final a = activity.payload as FungibleTransferActivity;
-
-                return a.token == widget.aasset.asset;
-              },
-            )
-            .toList()
-            .reversed
-            .toList();
-
-        return Padding(
-          padding: defaultScreenPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _Info(aasset: widget.aasset),
-              Gap(20),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Balance',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        Gap(4),
-                        FutureBuilder(
-                          future: balance,
-                          builder: (context, snapshot) {
-                            return snapshot.connectionState ==
-                                    ConnectionState.waiting
-                                ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(
-                                    formatFungibleCurrency(
-                                      metadata: widget.aasset.asset.metadata,
-                                      number: snapshot.data as int,
-                                    ),
-                                  );
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        TextButton(
-                          child: Text('BUY'),
-                          onPressed: () {
-                            final future = nav.pushExchange(
-                              context,
-                              params: ExchangeParams(
-                                action: ExchangeAction.buy,
-                                ofToken: widget.aasset.asset,
-                              ),
-                            );
-
-                            future.then((value) {
-                              setState(() {
-                                _balance = queryBalance(context);
-                              });
-                            });
-                          },
-                        ),
-                        TextButton(
-                          child: Text('SELL'),
-                          onPressed: () {
-                            final future = nav.pushExchange(
-                              context,
-                              params: ExchangeParams(
-                                action: ExchangeAction.sell,
-                                ofToken: widget.aasset.asset,
-                              ),
-                            );
-
-                            future.then((value) {
-                              setState(() {
-                                _balance = queryBalance(context);
-                              });
-                            });
-                          },
-                        ),
-                        TextButton(
-                          child: Text('TRANSFER'),
-                          onPressed: () {
-                            final fungible =
-                                widget.aasset.asset as FungibleToken?;
-
-                            var future = nav.pushFungibleTransfer(
-                              context,
-                              fungible,
-                              balance,
-                            );
-
-                            future.then((result) {
-                              // Transfer will pop with a false value
-                              // if the user didn't make a transfer.
-                              if (result != false) {
-                                setState(() {
-                                  _balance = queryBalance(context);
-                                });
-                              }
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Gap(20),
-              if (activities.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    'Recent activity',
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                ),
-                Expanded(
-                  child: SafeArea(
-                    child: ListView.separated(
-                      itemCount: activities.length,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(),
-                      itemBuilder: (context, index) =>
-                          _FungibleTransferActivityView(
-                        activity: activities[index],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              if (appState.model.following.contains(widget.aasset))
-                _Unfollow(aasset: widget.aasset)
-              else
-                _Follow(aasset: widget.aasset),
-            ],
-          ),
-        );
-      });
-
   /// Check the user's balance for this Token.
   Future<dynamic> queryBalance(BuildContext context) {
     final appState = context.read<AppState>();
@@ -409,7 +247,14 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Widget build(BuildContext context) => WillPopScope(
         child: SafeArea(
           child: widget.aasset.type == AssetType.fungible
-              ? _fungible()
+              ? _FungibleBody(
+                  aasset: widget.aasset,
+                  balance: balance,
+                  refresh: () {
+                    setState(() {
+                      _balance = queryBalance(context);
+                    });
+                  })
               : _NonFungibleBody(
                   aasset: widget.aasset,
                   balance: balance,
@@ -426,6 +271,175 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
           return false;
         },
       );
+}
+
+class _FungibleBody extends StatelessWidget {
+  final AAsset aasset;
+  final Future balance;
+  final void Function() refresh;
+
+  const _FungibleBody({
+    Key? key,
+    required this.aasset,
+    required this.balance,
+    required this.refresh,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    final activities = appState.model.activities
+        .where(
+          (activity) {
+            if (activity.type != ActivityType.transfer) {
+              return false;
+            }
+
+            final a = activity.payload as FungibleTransferActivity;
+
+            return a.token == aasset.asset;
+          },
+        )
+        .toList()
+        .reversed
+        .toList();
+
+    return Padding(
+      padding: defaultScreenPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Info(aasset: aasset),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Balance',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Gap(4),
+                    FutureBuilder(
+                      future: balance,
+                      builder: (context, snapshot) {
+                        return snapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                formatFungibleCurrency(
+                                  metadata: aasset.asset.metadata,
+                                  number: snapshot.data as int,
+                                ),
+                              );
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      child: Text('BUY'),
+                      onPressed: () {
+                        final future = nav.pushExchange(
+                          context,
+                          params: ExchangeParams(
+                            action: ExchangeAction.buy,
+                            ofToken: aasset.asset,
+                          ),
+                        );
+
+                        future.then((value) {
+                          refresh();
+                        });
+                      },
+                    ),
+                    TextButton(
+                      child: Text('SELL'),
+                      onPressed: () {
+                        final future = nav.pushExchange(
+                          context,
+                          params: ExchangeParams(
+                            action: ExchangeAction.sell,
+                            ofToken: aasset.asset,
+                          ),
+                        );
+
+                        future.then((value) {
+                          refresh();
+                        });
+                      },
+                    ),
+                    TextButton(
+                      child: Text('TRANSFER'),
+                      onPressed: () {
+                        final fungible = aasset.asset as FungibleToken?;
+
+                        var future = nav.pushFungibleTransfer(
+                          context,
+                          fungible,
+                          balance,
+                        );
+
+                        future.then((result) {
+                          // Transfer will pop with a false value
+                          // if the user didn't make a transfer.
+                          if (result != false) {
+                            refresh();
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Gap(20),
+          if (activities.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                'Recent activity',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+            ),
+            Expanded(
+              child: SafeArea(
+                child: ListView.separated(
+                  itemCount: activities.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(),
+                  itemBuilder: (context, index) =>
+                      _FungibleTransferActivityView(
+                    activity: activities[index],
+                  ),
+                ),
+              ),
+            ),
+          ],
+          if (appState.model.following.contains(aasset))
+            _Unfollow(aasset: aasset)
+          else
+            _Follow(aasset: aasset),
+        ],
+      ),
+    );
+  }
 }
 
 class _NonFungibleBody extends StatelessWidget {
