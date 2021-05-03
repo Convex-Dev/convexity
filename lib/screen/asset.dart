@@ -595,6 +595,9 @@ class _NonFungibleBody extends StatelessWidget {
   }
 }
 
+/// Button Widget to follow an Asset.
+///
+/// Following is an app-state change.
 class _Follow extends StatelessWidget {
   final AAsset aasset;
 
@@ -627,6 +630,9 @@ class _Follow extends StatelessWidget {
   }
 }
 
+/// Button Widget to unfollow an Asset.
+///
+/// Unfollowing is an app-state change.
 class _Unfollow extends StatelessWidget {
   final AAsset aasset;
 
