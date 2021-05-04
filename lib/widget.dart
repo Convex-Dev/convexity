@@ -158,11 +158,17 @@ class FungibleTokenCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.attach_money,
-            size: 30,
-            color: Colors.orangeAccent,
-          ),
+          fungible.metadata.image != null
+              ? FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: fungible.metadata.image.toString(),
+                  width: 50,
+                )
+              : Icon(
+                  Icons.attach_money,
+                  size: 30,
+                  color: Colors.orangeAccent,
+                ),
           Gap(10),
           Text(
             fungible.metadata.tickerSymbol,
