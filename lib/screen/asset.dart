@@ -13,6 +13,7 @@ import '../format.dart';
 import '../convex.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../shop.dart' as shop;
 
 class AssetScreen extends StatelessWidget {
   final AAsset? aasset;
@@ -282,8 +283,10 @@ class _FungibleBody extends StatelessWidget {
 
 class _NonFungibleBody extends StatelessWidget {
   final AAsset aasset;
-  // A Non-Fungible Asset balance is a set of Token IDs.
+
+  /// A Non-Fungible Asset balance is a set of Token IDs.
   final Future balance;
+
   final void Function() refresh;
 
   const _NonFungibleBody({
@@ -378,6 +381,14 @@ class _NonFungibleBody extends StatelessWidget {
                               source:
                                   '(call ${aasset.asset.address} (get-token-data ${entry.value}))',
                             );
+
+                            final myListings = shop.myListings(
+                              convexClient: convexClient,
+                              myAddress: appState.model.activeAddress!,
+                            );
+
+                            myListings.then((myListings) =>
+                                print('My Listings: ${myListings.length}'));
 
                             return AnimationConfiguration.staggeredGrid(
                               position: entry.key,
