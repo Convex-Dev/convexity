@@ -35,6 +35,7 @@ class NewTokenScreen extends StatelessWidget {
 class _NewFungibleToken {
   final String? name;
   final String? description;
+  final Uri? image;
   final String? symbol;
   final String? currencySymbol;
   final int? decimals;
@@ -43,6 +44,7 @@ class _NewFungibleToken {
   _NewFungibleToken({
     required this.name,
     required this.description,
+    required this.image,
     required this.symbol,
     required this.currencySymbol,
     required this.decimals,
@@ -109,6 +111,7 @@ class _CreateTokenState extends State<_CreateToken> {
     var metadata = FungibleTokenMetadata(
       name: _newFungibleToken.name ?? '',
       description: _newFungibleToken.description ?? '',
+      image: _newFungibleToken.image,
       tickerSymbol: _newFungibleToken.symbol ?? '',
       currencySymbol: _newFungibleToken.currencySymbol ?? '',
       decimals: _newFungibleToken.decimals ?? 0,
@@ -280,6 +283,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
 
   String? _name;
   String? _description;
+  Uri? _image;
   String? _symbol;
   String? _currencySymbol;
   int? _decimals;
@@ -320,6 +324,16 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
           },
         ),
         subtitle: Text('Description'),
+      ),
+      ListTile(
+        title: TextFormField(
+          onChanged: (value) {
+            setState(() {
+              _image = Uri.tryParse(value);
+            });
+          },
+        ),
+        subtitle: Text('Image'),
       ),
       ListTile(
         title: TextFormField(
@@ -422,6 +436,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
                     final newToken = _NewFungibleToken(
                       name: _name,
                       description: _description,
+                      image: _image,
                       symbol: _symbol,
                       currencySymbol: _currencySymbol,
                       decimals: _decimals,

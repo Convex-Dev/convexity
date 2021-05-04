@@ -133,8 +133,8 @@ class _RecommendedState extends State<_Recommended> {
 
   void follow(
     BuildContext context, {
-    AssetType? type,
-    Asset? asset,
+    required AssetType type,
+    required Asset asset,
   }) {
     var aasset = AAsset(
       type: type,
@@ -176,7 +176,7 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (asset) => asset.type == AssetType.fungible
                   ? FungibleTokenCard(
-                      fungible: asset.asset as FungibleToken?,
+                      fungible: asset.asset as FungibleToken,
                       balance: _balanceCache[asset.asset.address],
                       onTap: (FungibleToken fungible) {
                         follow(
