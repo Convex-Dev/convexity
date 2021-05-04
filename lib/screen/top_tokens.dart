@@ -82,11 +82,11 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
               Dropdown<FungibleToken?>(
                 active: appState.model.defaultWithToken ?? CVX,
                 items: [CVX, ...fungibles]..sort(
-                    (a, b) => a!.metadata.tickerSymbol!
-                        .compareTo(b!.metadata.tickerSymbol!),
+                    (a, b) => a!.metadata.tickerSymbol
+                        .compareTo(b!.metadata.tickerSymbol),
                   ),
                 itemWidget: (FungibleToken? token) {
-                  return Text(token!.metadata.tickerSymbol!);
+                  return Text(token!.metadata.tickerSymbol);
                 },
                 onChanged: (t) {
                   final defaultWithToken = t == CVX ? null : t;
@@ -107,8 +107,8 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
           ...fungibles.map(
             (token) => ListTile(
               leading: _currencyIcon(token!),
-              title: Text(token.metadata.tickerSymbol!),
-              subtitle: Text(token.metadata.name!),
+              title: Text(token.metadata.tickerSymbol),
+              subtitle: Text(token.metadata.name),
               trailing: FutureBuilder<Result>(
                 future: _prices,
                 builder: (context, snapshot) {
@@ -130,12 +130,11 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                     child: Text(
                       (e == null || e['price'] == null)
                           ? ''
-                          : _withToken(context).metadata.currencySymbol! +
+                          : _withToken(context).metadata.currencySymbol +
                               currency
                                   .price(
                                     e['price'],
-                                    ofTokenDecimals:
-                                        token.metadata.decimals ?? goldDecimals,
+                                    ofTokenDecimals: token.metadata.decimals,
                                     withTokenDecimals: appState
                                             .model
                                             .defaultWithToken
@@ -226,7 +225,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   }
 
   Widget _currencyIcon(FungibleToken token) => Image.asset(
-        'icons/currency/${token.metadata.tickerSymbol!.toLowerCase()}.png',
+        'icons/currency/${token.metadata.tickerSymbol.toLowerCase()}.png',
         package: 'currency_icons',
         width: 40,
         height: 40,

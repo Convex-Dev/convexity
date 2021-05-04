@@ -165,13 +165,13 @@ class FungibleTokenCard extends StatelessWidget {
           ),
           Gap(10),
           Text(
-            fungible!.metadata.tickerSymbol!,
+            fungible!.metadata.tickerSymbol,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption,
           ),
           Gap(4),
           Text(
-            fungible!.metadata.name!,
+            fungible!.metadata.name,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyText1,

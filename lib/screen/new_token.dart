@@ -107,11 +107,11 @@ class _CreateTokenState extends State<_CreateToken> {
 
     // Step 2 - register metadata.
     var metadata = FungibleTokenMetadata(
-      name: _newFungibleToken.name,
-      description: _newFungibleToken.description,
-      tickerSymbol: _newFungibleToken.symbol,
-      currencySymbol: _newFungibleToken.currencySymbol,
-      decimals: _newFungibleToken.decimals,
+      name: _newFungibleToken.name ?? '',
+      description: _newFungibleToken.description ?? '',
+      tickerSymbol: _newFungibleToken.symbol ?? '',
+      currencySymbol: _newFungibleToken.currencySymbol ?? '',
+      decimals: _newFungibleToken.decimals ?? 0,
     );
 
     var fungible = FungibleToken(
@@ -340,13 +340,6 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       ),
       ListTile(
         title: TextFormField(
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Required';
-            }
-
-            return null;
-          },
           onChanged: (value) {
             setState(() {
               _currencySymbol = value;

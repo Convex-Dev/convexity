@@ -189,7 +189,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                             active: _ofToken,
                             items: [CVX, ...dropdownItems],
                             itemWidget: (fungible) => Text(
-                              fungible!.metadata.tickerSymbol!,
+                              fungible!.metadata.tickerSymbol,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             onChanged: (e) {
@@ -202,7 +202,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                               });
                             },
                           ),
-                          Text(_ofToken.metadata.name!),
+                          Text(_ofToken.metadata.name),
                         ],
                       ),
                     ],
@@ -327,7 +327,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                             active: _withToken,
                             items: [CVX, ...dropdownItems],
                             itemWidget: (fungible) => Text(
-                              fungible!.metadata.tickerSymbol!,
+                              fungible!.metadata.tickerSymbol,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             onChanged: (e) {
@@ -343,7 +343,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                               });
                             },
                           ),
-                          Text(_withToken.metadata.name!),
+                          Text(_withToken.metadata.name),
                         ],
                       ),
                     ],
@@ -362,7 +362,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     title: Text('Liquidity'),
                     children: [
                       ListTile(
-                        title: Text(_ofToken.metadata.name!),
+                        title: Text(_ofToken.metadata.name),
                         trailing: FutureBuilder<Tuple2<int?, int?>>(
                           future: _liquidity,
                           builder: (context, snapshot) {
@@ -388,7 +388,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                         ),
                       ),
                       ListTile(
-                        title: Text(_withToken.metadata.name!),
+                        title: Text(_withToken.metadata.name),
                         trailing: FutureBuilder<Tuple2<int?, int?>>(
                           future: _liquidity,
                           builder: (context, snapshot) {
@@ -1117,7 +1117,7 @@ class _MarketPrice extends StatelessWidget {
                     ),
                     Text(
                       params.ofToken?.metadata.tickerSymbol ??
-                          CVX.metadata.tickerSymbol!,
+                          CVX.metadata.tickerSymbol,
                       style: Theme.of(context)
                           .textTheme
                           .headline6!
@@ -1133,7 +1133,7 @@ class _MarketPrice extends StatelessWidget {
                     ),
                     Text(
                       (params.withToken?.metadata.tickerSymbol ??
-                          CVX.metadata.tickerSymbol!),
+                          CVX.metadata.tickerSymbol),
                       style: Theme.of(context)
                           .textTheme
                           .headline6!

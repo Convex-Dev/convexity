@@ -416,16 +416,15 @@ abstract class Asset {}
 
 @immutable
 class FungibleTokenMetadata {
-  final String? name;
-  final String? description;
-  final String? tickerSymbol;
-  final String? currencySymbol;
-  final int? decimals;
+  final String name;
+  final String description;
+  final String tickerSymbol;
+  final String currencySymbol;
+  final int decimals;
 
   FungibleTokenMetadata({
     required this.name,
     required this.description,
-    // It's like a PK for the Asset - also change things in Convexity Actor.
     required this.tickerSymbol,
     required this.currencySymbol,
     required this.decimals,
