@@ -321,7 +321,9 @@ enum AssetType {
   nonFungible,
 }
 
-/// Returns an (optional) AssetType from string.
+/// Returns an AssetType from string.
+///
+/// Throws if [s] is not valid.
 AssetType assetType(String s) {
   if (AssetType.fungible.toString() == s) {
     return AssetType.fungible;
