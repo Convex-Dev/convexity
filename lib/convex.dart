@@ -446,7 +446,7 @@ class FungibleTokenMetadata {
         'symbol': tickerSymbol,
         'currency-symbol': currencySymbol,
         'decimals': decimals,
-        'image': image?.toString() ?? null,
+        'image': image?.toString(),
       };
 
   @override
