@@ -386,7 +386,7 @@ class _FungibleTransferScreenBodyState
               },
               onChanged: (value) {
                 final amount = num.tryParse(value)! *
-                    pow(10, widget.token!.metadata.decimals!);
+                    pow(10, widget.token!.metadata.decimals);
 
                 logger.d(
                   'Set amount: ${amount.toInt()} ' +

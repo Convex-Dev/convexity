@@ -29,10 +29,10 @@ String formatFungibleCurrency({
   required FungibleTokenMetadata metadata,
   required int? number,
 }) =>
-    metadata.currencySymbol! +
+    metadata.currencySymbol +
     (metadata.decimals == 0
         ? formatIntegerPart(number)
-        : formatWithDecimals(number!, metadata.decimals!));
+        : formatWithDecimals(number!, metadata.decimals));
 
 int readWithDecimals(String s, int decimals) =>
     (Decimal.parse(s) * Decimal.fromInt(pow(10, decimals) as int)).toInt();
@@ -42,7 +42,7 @@ int readFungibleCurrency({
   required String s,
 }) {
   try {
-    return readWithDecimals(s, metadata.decimals!);
+    return readWithDecimals(s, metadata.decimals);
   } catch (e, s) {
     logger.e(s);
 

@@ -35,6 +35,7 @@ class NewTokenScreen extends StatelessWidget {
 class _NewFungibleToken {
   final String? name;
   final String? description;
+  final Uri? image;
   final String? symbol;
   final String? currencySymbol;
   final int? decimals;
@@ -43,6 +44,7 @@ class _NewFungibleToken {
   _NewFungibleToken({
     required this.name,
     required this.description,
+    required this.image,
     required this.symbol,
     required this.currencySymbol,
     required this.decimals,
@@ -107,11 +109,12 @@ class _CreateTokenState extends State<_CreateToken> {
 
     // Step 2 - register metadata.
     var metadata = FungibleTokenMetadata(
-      name: _newFungibleToken.name,
-      description: _newFungibleToken.description,
-      tickerSymbol: _newFungibleToken.symbol,
-      currencySymbol: _newFungibleToken.currencySymbol,
-      decimals: _newFungibleToken.decimals,
+      name: _newFungibleToken.name ?? '',
+      description: _newFungibleToken.description ?? '',
+      image: _newFungibleToken.image,
+      tickerSymbol: _newFungibleToken.symbol ?? '',
+      currencySymbol: _newFungibleToken.currencySymbol ?? '',
+      decimals: _newFungibleToken.decimals ?? 0,
     );
 
     var fungible = FungibleToken(
@@ -280,6 +283,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
 
   String? _name;
   String? _description;
+  Uri? _image;
   String? _symbol;
   String? _currencySymbol;
   int? _decimals;
@@ -323,6 +327,16 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       ),
       ListTile(
         title: TextFormField(
+          onChanged: (value) {
+            setState(() {
+              _image = Uri.tryParse(value);
+            });
+          },
+        ),
+        subtitle: Text('Image'),
+      ),
+      ListTile(
+        title: TextFormField(
           validator: (value) {
             if (value!.isEmpty) {
               return 'Required';
@@ -340,13 +354,6 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
       ),
       ListTile(
         title: TextFormField(
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Required';
-            }
-
-            return null;
-          },
           onChanged: (value) {
             setState(() {
               _currencySymbol = value;
@@ -429,6 +436,7 @@ class _NewTokenScreenBodyState extends State<NewTokenScreenBody> {
                     final newToken = _NewFungibleToken(
                       name: _name,
                       description: _description,
+                      image: _image,
                       symbol: _symbol,
                       currencySymbol: _currencySymbol,
                       decimals: _decimals,

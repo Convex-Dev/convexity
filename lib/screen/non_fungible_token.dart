@@ -279,11 +279,11 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
                 return Dropdown<FungibleToken>(
                   active: _token ?? appState.model.defaultWithToken ?? CVX,
                   items: [CVX, ...fungibles]..sort(
-                      (a, b) => a.metadata.tickerSymbol!
-                          .compareTo(b.metadata.tickerSymbol!),
+                      (a, b) => a.metadata.tickerSymbol
+                          .compareTo(b.metadata.tickerSymbol),
                     ),
                   itemWidget: (FungibleToken token) {
-                    return Text(token.metadata.tickerSymbol!);
+                    return Text(token.metadata.tickerSymbol);
                   },
                   onChanged: (t) {
                     setState(() {
