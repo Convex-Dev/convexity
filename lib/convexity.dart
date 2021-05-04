@@ -121,7 +121,7 @@ class ConvexityClient {
     var metadataStr = '{'
         ':name "${fungible.metadata.name}",'
         ':description "${fungible.metadata.description}",'
-        ':image "${fungible.metadata.image}",'
+        ':image ${fungible.metadata.image == null ? 'nil' : '"${fungible.metadata.image}"'},'
         ':type :fungible,'
         ':symbol "${fungible.metadata.tickerSymbol}",'
         ':currency-symbol "${fungible.metadata.currencySymbol}",'
