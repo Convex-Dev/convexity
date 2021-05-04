@@ -137,16 +137,16 @@ class IdenticonDropdown extends StatelessWidget {
 }
 
 class FungibleTokenCard extends StatelessWidget {
-  final convex.FungibleToken? fungible;
+  final convex.FungibleToken fungible;
   final Future? balance;
-  final bool? isMine;
+  final bool isMine;
   final void Function(convex.FungibleToken)? onTap;
 
   const FungibleTokenCard({
     Key? key,
     required this.fungible,
     required this.balance,
-    this.isMine,
+    this.isMine = false,
     this.onTap,
   }) : super(key: key);
 
@@ -165,13 +165,13 @@ class FungibleTokenCard extends StatelessWidget {
           ),
           Gap(10),
           Text(
-            fungible!.metadata.tickerSymbol,
+            fungible.metadata.tickerSymbol,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption,
           ),
           Gap(4),
           Text(
-            fungible!.metadata.name,
+            fungible.metadata.name,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyText1,
@@ -195,7 +195,7 @@ class FungibleTokenCard extends StatelessWidget {
                   : Text(
                       snapshot.data != null
                           ? formatFungibleCurrency(
-                              metadata: fungible!.metadata,
+                              metadata: fungible.metadata,
                               number: snapshot.data as int,
                             )
                           : '-',
@@ -213,7 +213,7 @@ class FungibleTokenCard extends StatelessWidget {
         Positioned.fill(
           child: Card(
             child: InkWell(
-              child: isMine ?? false
+              child: isMine
                   ? ClipRect(
                       child: Banner(
                         message: "My Token",
@@ -225,7 +225,7 @@ class FungibleTokenCard extends StatelessWidget {
                   : container,
               onTap: () {
                 if (onTap != null) {
-                  onTap!(fungible!);
+                  onTap!(fungible);
                 }
               },
             ),
@@ -386,7 +386,7 @@ class _AssetCollectionState extends State<AssetCollection> {
 
           return FungibleTokenCard(
             isMine: mine != null,
-            fungible: aasset.asset as convex.FungibleToken?,
+            fungible: aasset.asset as convex.FungibleToken,
             balance: balance,
             onTap: (fungible) {
               final asset = AAsset(

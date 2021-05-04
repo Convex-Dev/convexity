@@ -322,7 +322,7 @@ enum AssetType {
 }
 
 /// Returns an (optional) AssetType from string.
-AssetType? assetType(String? s) {
+AssetType assetType(String s) {
   if (AssetType.fungible.toString() == s) {
     return AssetType.fungible;
   }
@@ -331,12 +331,12 @@ AssetType? assetType(String? s) {
     return AssetType.nonFungible;
   }
 
-  return null;
+  throw Exception('$s is not a valid type.');
 }
 
 @immutable
 class AAsset {
-  final AssetType? type;
+  final AssetType type;
   final dynamic asset;
 
   AAsset({
