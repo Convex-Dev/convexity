@@ -287,6 +287,10 @@ class _NonFungibleBody extends StatelessWidget {
   /// A Non-Fungible Asset balance is a set of Token IDs.
   final Future balance;
 
+  /// A function which is called to update the balance (Token IDs).
+  ///
+  /// This function is called when the user taps
+  /// on the refresh button or when poping a screen.
   final void Function() refresh;
 
   const _NonFungibleBody({
