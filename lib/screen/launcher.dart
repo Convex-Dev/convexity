@@ -7,7 +7,6 @@ import '../widget.dart';
 import './home.dart';
 import './wallet.dart';
 import './account.dart';
-import '../nav.dart' as nav;
 import '../logger.dart';
 import '../convex.dart';
 import '../model.dart';
@@ -46,11 +45,11 @@ class _LauncherScreenState extends State<LauncherScreen> {
                 PopupMenuButton<_PopupChoice>(
                   itemBuilder: (context) => [
                     PopupMenuItem(
-                      child: Text('Settings'),
+                      child: Text('Reset'),
                       value: _PopupChoice.settings,
                     )
                   ],
-                  onSelected: (s) => nav.pushSettings(context),
+                  onSelected: (s) => appState.reset(context),
                 )
               ]
             : null,
