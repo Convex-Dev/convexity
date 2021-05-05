@@ -357,7 +357,20 @@ class _NonFungibleBody extends StatelessWidget {
                 }
 
                 if (snapshot.hasData) {
+                  final myListings = shop.myListings(
+                    convexClient: convexClient,
+                    myAddress: appState.model.activeAddress!,
+                  );
+
+                  // TODO: Extract into a FutureBuilder Widget
+                  // so we can pass myListings.
+
+                  myListings
+                      .then((myListings) => print('My Listings: $myListings'));
+
                   final ids = snapshot.data as List;
+
+                  // TODO: Combine IDs: from my listings and snapshot data.
 
                   if (ids.isEmpty) {
                     return Expanded(
@@ -385,14 +398,6 @@ class _NonFungibleBody extends StatelessWidget {
                               source:
                                   '(call ${aasset.asset.address} (get-token-data ${entry.value}))',
                             );
-
-                            final myListings = shop.myListings(
-                              convexClient: convexClient,
-                              myAddress: appState.model.activeAddress!,
-                            );
-
-                            myListings.then((myListings) =>
-                                print('My Listings: ${myListings.length}'));
 
                             return AnimationConfiguration.staggeredGrid(
                               position: entry.key,
