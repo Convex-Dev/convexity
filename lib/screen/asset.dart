@@ -306,6 +306,11 @@ class _NonFungibleBody extends StatelessWidget {
 
     final convexClient = appState.convexClient();
 
+    final myListings = shop.myListings(
+      convexClient: convexClient,
+      myAddress: appState.model.activeAddress!,
+    );
+
     return Padding(
       padding: defaultScreenPadding,
       child: SafeArea(
@@ -328,8 +333,9 @@ class _NonFungibleBody extends StatelessWidget {
               ],
             ),
             Gap(10),
-            FutureBuilder(
-              future: balance,
+            FutureBuilder<dynamic>(
+              // Query balance (Token IDs) and user Listings because IDs need to be combined.
+              future: Future.wait([balance, myListings]),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Expanded(
@@ -357,22 +363,18 @@ class _NonFungibleBody extends StatelessWidget {
                 }
 
                 if (snapshot.hasData) {
-                  final myListings = shop.myListings(
-                    convexClient: convexClient,
-                    myAddress: appState.model.activeAddress!,
-                  );
+                  // User NFT IDs.
+                  final List<int> ids = snapshot.data.first.cast<int>();
 
-                  // TODO: Extract into a FutureBuilder Widget
-                  // so we can pass myListings.
+                  // User Listings.
+                  final List<shop.Listing> listings =
+                      snapshot.data.last.cast<shop.Listing>();
 
-                  myListings
-                      .then((myListings) => print('My Listings: $myListings'));
+                  // Combine IDs from NFTs and Listings - it's all about NFTs after all.
+                  List<int> _combinedIds = List.from(ids)
+                    ..addAll(listings.map((listing) => listing.asset.item2));
 
-                  final ids = snapshot.data as List;
-
-                  // TODO: Combine IDs: from my listings and snapshot data.
-
-                  if (ids.isEmpty) {
+                  if (_combinedIds.isEmpty) {
                     return Expanded(
                       child: Column(
                         children: [
@@ -390,9 +392,9 @@ class _NonFungibleBody extends StatelessWidget {
                         crossAxisSpacing: 6,
                         mainAxisSpacing: 6,
                         crossAxisCount: columnCount,
-                        children: ids.asMap().entries.map(
+                        children: _combinedIds.asMap().entries.map(
                           (entry) {
-                            final tokenId = entry.value as int;
+                            final tokenId = entry.value;
 
                             final data = convexClient.query(
                               source:
