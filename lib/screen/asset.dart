@@ -411,13 +411,32 @@ class _NonFungibleBody extends StatelessWidget {
                                     tokenId: tokenId,
                                     data: data,
                                     onTap: () {
-                                      // Navigate to NFT screen.
-                                      final result = nav.pushNonFungibleToken(
-                                        context,
-                                        nonFungibleToken: aasset.asset,
-                                        tokenId: tokenId,
-                                        data: data,
-                                      );
+                                      var result;
+
+                                      // ---
+                                      // If there is a Listing for this Token ID, navigate to Listing screen.
+                                      // If there isn't a Listing for this Token ID, navigate to NFT screen.
+                                      // ---
+
+                                      try {
+                                        shop.Listing listing =
+                                            listings.firstWhere((element) =>
+                                                element.asset.item2 == tokenId);
+
+                                        // Navigate to Listing screen.
+                                        result = nav.pushListing(
+                                          context,
+                                          listing: listing,
+                                        );
+                                      } on Exception {
+                                        // Navigate to NFT screen.
+                                        result = nav.pushNonFungibleToken(
+                                          context,
+                                          nonFungibleToken: aasset.asset,
+                                          tokenId: tokenId,
+                                          data: data,
+                                        );
+                                      }
 
                                       // Refresh after popping the screen.
                                       result.then((result) {
