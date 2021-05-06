@@ -428,7 +428,7 @@ class _NonFungibleBody extends StatelessWidget {
                                           context,
                                           listing: listing,
                                         );
-                                      } on Exception {
+                                      } on StateError {
                                         // Navigate to NFT screen.
                                         result = nav.pushNonFungibleToken(
                                           context,
