@@ -401,49 +401,58 @@ class _NonFungibleBody extends StatelessWidget {
                                   '(call ${aasset.asset.address} (get-token-data ${entry.value}))',
                             );
 
+                            shop.Listing? listing;
+
+                            try {
+                              listing = listings.firstWhere(
+                                  (element) => element.asset.item2 == tokenId);
+                            } on StateError {
+                              // Noop.
+                            }
+
+                            Widget tile = NonFungibleGridTile(
+                              tokenId: tokenId,
+                              data: data,
+                              onTap: () {
+                                // ---
+                                // If there is a Listing for this Token ID, navigate to Listing screen.
+                                // If there isn't a Listing for this Token ID, navigate to NFT screen.
+                                // ---
+                                var result = listing != null
+                                    ? nav.pushListing(
+                                        context,
+                                        listing: listing,
+                                      )
+                                    : nav.pushNonFungibleToken(
+                                        context,
+                                        nonFungibleToken: aasset.asset,
+                                        tokenId: tokenId,
+                                        data: data,
+                                      );
+
+                                // Refresh after popping the screen.
+                                result.then((result) {
+                                  refresh();
+                                });
+                              },
+                            );
+
                             return AnimationConfiguration.staggeredGrid(
                               position: entry.key,
                               duration: const Duration(milliseconds: 375),
                               columnCount: columnCount,
                               child: ScaleAnimation(
                                 child: FadeInAnimation(
-                                  child: NonFungibleGridTile(
-                                    tokenId: tokenId,
-                                    data: data,
-                                    onTap: () {
-                                      var result;
-
-                                      // ---
-                                      // If there is a Listing for this Token ID, navigate to Listing screen.
-                                      // If there isn't a Listing for this Token ID, navigate to NFT screen.
-                                      // ---
-
-                                      try {
-                                        shop.Listing listing =
-                                            listings.firstWhere((element) =>
-                                                element.asset.item2 == tokenId);
-
-                                        // Navigate to Listing screen.
-                                        result = nav.pushListing(
-                                          context,
-                                          listing: listing,
-                                        );
-                                      } on StateError {
-                                        // Navigate to NFT screen.
-                                        result = nav.pushNonFungibleToken(
-                                          context,
-                                          nonFungibleToken: aasset.asset,
-                                          tokenId: tokenId,
-                                          data: data,
-                                        );
-                                      }
-
-                                      // Refresh after popping the screen.
-                                      result.then((result) {
-                                        refresh();
-                                      });
-                                    },
-                                  ),
+                                  child: listing != null
+                                      ? ClipRect(
+                                          child: Banner(
+                                            message: 'For Sale',
+                                            color: Colors.green,
+                                            location: BannerLocation.topEnd,
+                                            child: tile,
+                                          ),
+                                        )
+                                      : tile,
                                 ),
                               ),
                             );
