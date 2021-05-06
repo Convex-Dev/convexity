@@ -287,6 +287,10 @@ class _NonFungibleBody extends StatelessWidget {
   /// A Non-Fungible Asset balance is a set of Token IDs.
   final Future balance;
 
+  /// A function which is called to update the balance (Token IDs).
+  ///
+  /// This function is called when the user taps
+  /// on the refresh button or when poping a screen.
   final void Function() refresh;
 
   const _NonFungibleBody({
@@ -301,6 +305,11 @@ class _NonFungibleBody extends StatelessWidget {
     final appState = context.watch<AppState>();
 
     final convexClient = appState.convexClient();
+
+    final myListings = shop.myListings(
+      convexClient: convexClient,
+      myAddress: appState.model.activeAddress!,
+    );
 
     return Padding(
       padding: defaultScreenPadding,
@@ -324,8 +333,9 @@ class _NonFungibleBody extends StatelessWidget {
               ],
             ),
             Gap(10),
-            FutureBuilder(
-              future: balance,
+            FutureBuilder<dynamic>(
+              // Query balance (Token IDs) and user Listings because IDs need to be combined.
+              future: Future.wait([balance, myListings]),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Expanded(
@@ -353,9 +363,18 @@ class _NonFungibleBody extends StatelessWidget {
                 }
 
                 if (snapshot.hasData) {
-                  final ids = snapshot.data as List;
+                  // User NFT IDs.
+                  final List<int> ids = snapshot.data.first.cast<int>();
 
-                  if (ids.isEmpty) {
+                  // User Listings.
+                  final List<shop.Listing> listings =
+                      snapshot.data.last.cast<shop.Listing>();
+
+                  // Combine IDs from NFTs and Listings - it's all about NFTs after all.
+                  List<int> _combinedIds = List.from(ids)
+                    ..addAll(listings.map((listing) => listing.asset.item2));
+
+                  if (_combinedIds.isEmpty) {
                     return Expanded(
                       child: Column(
                         children: [
@@ -373,22 +392,50 @@ class _NonFungibleBody extends StatelessWidget {
                         crossAxisSpacing: 6,
                         mainAxisSpacing: 6,
                         crossAxisCount: columnCount,
-                        children: ids.asMap().entries.map(
+                        children: _combinedIds.asMap().entries.map(
                           (entry) {
-                            final tokenId = entry.value as int;
+                            final tokenId = entry.value;
 
                             final data = convexClient.query(
                               source:
                                   '(call ${aasset.asset.address} (get-token-data ${entry.value}))',
                             );
 
-                            final myListings = shop.myListings(
-                              convexClient: convexClient,
-                              myAddress: appState.model.activeAddress!,
-                            );
+                            shop.Listing? listing;
 
-                            myListings.then((myListings) =>
-                                print('My Listings: ${myListings.length}'));
+                            try {
+                              listing = listings.firstWhere(
+                                  (element) => element.asset.item2 == tokenId);
+                            } on StateError {
+                              // Noop.
+                            }
+
+                            Widget tile = NonFungibleGridTile(
+                              tokenId: tokenId,
+                              data: data,
+                              onTap: () {
+                                // ---
+                                // If there is a Listing for this Token ID, navigate to Listing screen.
+                                // If there isn't a Listing for this Token ID, navigate to NFT screen.
+                                // ---
+                                var result = listing != null
+                                    ? nav.pushListing(
+                                        context,
+                                        listing: listing,
+                                      )
+                                    : nav.pushNonFungibleToken(
+                                        context,
+                                        nonFungibleToken: aasset.asset,
+                                        tokenId: tokenId,
+                                        data: data,
+                                      );
+
+                                // Refresh after popping the screen.
+                                result.then((result) {
+                                  refresh();
+                                });
+                              },
+                            );
 
                             return AnimationConfiguration.staggeredGrid(
                               position: entry.key,
@@ -396,24 +443,16 @@ class _NonFungibleBody extends StatelessWidget {
                               columnCount: columnCount,
                               child: ScaleAnimation(
                                 child: FadeInAnimation(
-                                  child: NonFungibleGridTile(
-                                    tokenId: tokenId,
-                                    data: data,
-                                    onTap: () {
-                                      // Navigate to NFT screen.
-                                      final result = nav.pushNonFungibleToken(
-                                        context,
-                                        nonFungibleToken: aasset.asset,
-                                        tokenId: tokenId,
-                                        data: data,
-                                      );
-
-                                      // Refresh after popping the screen.
-                                      result.then((result) {
-                                        refresh();
-                                      });
-                                    },
-                                  ),
+                                  child: listing != null
+                                      ? ClipRect(
+                                          child: Banner(
+                                            message: 'For Sale',
+                                            color: Colors.green,
+                                            location: BannerLocation.topEnd,
+                                            child: tile,
+                                          ),
+                                        )
+                                      : tile,
                                 ),
                               ),
                             );

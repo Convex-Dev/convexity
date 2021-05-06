@@ -309,10 +309,10 @@ class _ListingScreenState extends State<ListingScreen> {
                       ElevatedButton(
                         child: Text('Okay'),
                         onPressed: () {
-                          Navigator.popUntil(
-                            context,
-                            ModalRoute.withName(route.SHOP),
-                          );
+                          // Pop Modal.
+                          Navigator.pop(context);
+                          // Pop Listing.
+                          Navigator.pop(context);
                         },
                       )
                     ],
