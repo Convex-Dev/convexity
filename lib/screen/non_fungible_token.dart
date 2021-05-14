@@ -185,6 +185,9 @@ class _NonFungibleTokenScreenBodyState
                   ElevatedButton(
                     child: Text('Done'),
                     onPressed: () {
+                      // Pop Modal.
+                      Navigator.pop(context);
+                      // Pop NFT.
                       Navigator.pop(context);
                     },
                   ),
