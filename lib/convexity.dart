@@ -129,7 +129,7 @@ class ConvexityClient {
         '}';
 
     var source =
-        '(call ${this.actor!.value} (request-registry ${fungible.address} $metadataStr))';
+        '(call #${this.actor!.value} (request-registry ${fungible.address} $metadataStr))';
 
     return convexClient.transact(source: source);
   }
