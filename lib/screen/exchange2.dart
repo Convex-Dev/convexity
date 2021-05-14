@@ -1094,6 +1094,12 @@ class _MarketPrice extends StatelessWidget {
             )
             .toStringAsPrecision(5);
 
+        if (snapshot.data == null) {
+          logger.w(
+            'Market price is null: ${params.toJson()}',
+          );
+        }
+
         logger.d('Market price is $withPriceText (${snapshot.data}).');
 
         return Container(
