@@ -727,8 +727,8 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   void _refreshPrice() {
     final torus = context.read<AppState>().torus();
 
-    logger.d(
-      'Of Token: ${_params!.ofToken?.address}, With Token: ${_params!.withToken?.address}',
+    logger.i(
+      'Refresh price. Of Token: ${_params!.ofToken?.address}, With Token: ${_params!.withToken?.address}',
     );
 
     _price = torus.price(
@@ -973,7 +973,7 @@ class _Balance extends StatelessWidget {
                     number: balance,
                   );
 
-            logger.d(
+            logger.i(
               '${token == null ? 'CVX' : token!.metadata.tickerSymbol} balance is $balanceText ($balance).',
             );
           }
@@ -1095,12 +1095,12 @@ class _MarketPrice extends StatelessWidget {
             .toStringAsPrecision(5);
 
         if (snapshot.data == null) {
-          logger.w(
-            'Market price is null: ${params.toJson()}',
+          logger.i(
+            'Market price is null. Of Token: ${params.ofToken?.address}, With Token: ${params.withToken?.address}',
           );
         }
 
-        logger.d('Market price is $withPriceText (${snapshot.data}).');
+        logger.i('Market price is $withPriceText (${snapshot.data}).');
 
         return Container(
           height: 50,
