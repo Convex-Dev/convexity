@@ -168,7 +168,7 @@ Future<bool> buyListing(
 
   if (result.errorCode != null)
     throw Exception(
-      'Failed to remove listing. Error: ${result.errorCode} - ${result.value}.',
+      'Failed to buy listing. Error: ${result.errorCode} - ${result.value}.',
     );
 
   return true;
