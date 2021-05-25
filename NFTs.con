@@ -23,9 +23,12 @@
    ["Sandscape" "https://pbs.twimg.com/media/Ez0CGgHWYAAs7v2.png" "Sandscape"]
    ["Perspective" "https://pbs.twimg.com/media/EzvUEWUXIAMFVP0.png" "Perspective"]])
 
+
+;; This addreess is unlikely to change.
 (def NFT-actor-address #25)
 
-(def shop-actor-address #558)
+;; This address changes whenever we reset the database and deploy a new Actor.
+(def shop-actor-address #57)
 
 (def NFTs
   (map
