@@ -7,7 +7,6 @@ import '../convex.dart';
 import '../model.dart';
 import '../shop.dart' as shop;
 import '../widget.dart' as widget;
-import '../route.dart' as route;
 import '../format.dart' as format;
 
 class ListingScreen extends StatefulWidget {
