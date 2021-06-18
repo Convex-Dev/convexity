@@ -89,7 +89,7 @@ class _NewSocialCurrencyScreenBodyState
         var metadata = FungibleTokenMetadata(
           name: 'Mike Anderson Social Currency',
           description: '',
-          tickerSymbol: '',
+          tickerSymbol: 'SC'+socialCurrencyAddress.value.toString(),
           currencySymbol: '',
           decimals: 0,
         );

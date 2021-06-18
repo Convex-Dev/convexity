@@ -1225,7 +1225,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Text(
-                  'Explanatory text.',
+                  'Adding liquidity enables the decentralised exchange to function. By adding liquidity, you can earn a share of commission on all trades. You can add any amount of currency that you hold, and must add an equal value of Convex Coins.',
                   style: Theme.of(context).textTheme.caption,
                 ),
                 Gap(40),
@@ -1264,7 +1264,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   decoration: InputDecoration(
                     labelText:
                         'Amount of ${widget.token!.metadata.tickerSymbol}',
-                    helperText: 'Helper text',
+                    helperText: 'Amount of this currency to add as liquidity',
                     border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
@@ -1309,13 +1309,14 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   autofocus: false,
                   decoration: InputDecoration(
                     labelText: 'Amount of CVX',
-                    helperText: 'Helper text',
+                    helperText: 'Amount of Convex Gold to add as liquidity',
                     border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      cvxAmount = int.tryParse(value) ?? 0;
+                      double goldAmount=double.tryParse(value)??0;
+                      cvxAmount = (goldAmount*1000000000).toInt() ?? 0;
                     });
                   },
                 ),
