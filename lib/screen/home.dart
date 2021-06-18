@@ -96,6 +96,12 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
         account: appState.convexClient().accountDetails(activeAddress),
       ),
       ListTile(
+        leading: Icon(Icons.person),
+        title: Text('Social Currency'),
+        subtitle: Text('View your personal social currency'),
+        onTap: () => nav.pushTopTokens(context).then(rebuild),
+      ),
+      ListTile(
         leading: Icon(Icons.show_chart),
         title: Text('Top Currencies'),
         subtitle: Text('View top currencies in the Exchange'),
