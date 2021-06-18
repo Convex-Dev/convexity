@@ -281,7 +281,7 @@ Future<bool> writeSocialCurrencyOwner(
 
   final encoded = jsonEncode(socialCurrencyOwner.toJson());
 
-  logger.d('Write social currency address: $encoded');
+  logger.d('Write social currency owner address: $encoded');
 
   return preferences.setString(PREF_SOCIAL_CURRENCY_OWNER, encoded);
 }

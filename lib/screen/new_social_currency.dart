@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +28,16 @@ class NewSocialCurrencyScreenBody extends StatefulWidget {
 
 class _NewSocialCurrencyScreenBodyState
     extends State<NewSocialCurrencyScreenBody> {
+  bool isPending = false;
+
   @override
   Widget build(BuildContext context) {
+    if (isPending) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return ListView(
       children: [
         ListTile(
@@ -48,18 +58,36 @@ class _NewSocialCurrencyScreenBodyState
           child: ElevatedButton(
             child: const Text('Confirm'),
             onPressed: () {
-              final appState = context.read<AppState>();
-
-              appState.setSocialCurrency(
-                address: Address(8),
-                owner: appState.model.activeAddress,
-              );
-
-              Navigator.of(context).pop();
+              createSocialCurrency(context, supply: 1000);
             },
           ),
         )
       ],
     );
+  }
+
+  createSocialCurrency(
+    BuildContext context, {
+    required int supply,
+  }) async {
+    try {
+      setState(() {
+        isPending = true;
+      });
+
+      final appState = context.read<AppState>();
+
+      Result result =
+          await appState.fungibleLibrary().createToken(supply: supply);
+
+      if (result.errorCode == null) {
+        appState.setSocialCurrency(
+          address: Address(result.value),
+          owner: appState.model.activeAddress,
+        );
+      }
+    } finally {
+      Navigator.of(context).pop();
+    }
   }
 }
