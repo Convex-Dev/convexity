@@ -24,13 +24,17 @@ class SocialCurrencyScreen extends StatelessWidget {
                   Center(child: Text(appState.model.socialCurrency.toString())),
                 ],
               )
-            : Center(
-                child: ElevatedButton(
+            : Column(
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 children: [
+                   Text('Create your own Personal Currency.'),
+                   Center(child: ElevatedButton(
+
                   child: const Text('Create Social Currency'),
                   onPressed: () {
                     nav.pushNewSocialCurrency(context);
                   },
-                ),
+                ))],
               ),
       ),
     );
