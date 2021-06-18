@@ -484,6 +484,7 @@ class Model {
         'keyring': keyring.toString(),
         'activeAddress': activeAddress?.toString(),
         'defaultWithToken': defaultWithToken?.toString(),
+        'socialCurrency': socialCurrency?.toString(),
       }.toString();
 }
 
@@ -735,5 +736,18 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) => m!.copyWith2(defaultWithToken: () => defaultWithToken));
+  }
+
+  void setSocialCurrency(
+    Address? address, {
+    bool isPersistent = true,
+  }) {
+    if (isPersistent) {
+      SharedPreferences.getInstance().then(
+        (preferences) => p.writeSocialCurrency(preferences, address!),
+      );
+    }
+
+    setState((m) => m!.copyWith2(socialCurrency: () => address));
   }
 }

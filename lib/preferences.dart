@@ -16,6 +16,7 @@ const PREF_CONTACTS = 'CONTACTS';
 const PREF_WHITELISTS = 'WHITELISTS';
 const PREF_ACTIVE_ADDRESS = 'ACTIVE_ADDRESS';
 const PREF_DEFAULT_WITH_TOKEN = 'DEFAULT_WITH_TOKEN';
+const PREF_SOCIAL_CURRENCY = 'SOCIAL_CURRENCY';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -216,4 +217,37 @@ Future<bool> writeDefaultWithToken(
   logger.d('Write default with Token: $encoded');
 
   return preferences.setString(PREF_DEFAULT_WITH_TOKEN, encoded);
+}
+
+/// Reads user's social currency address.
+///
+/// Returns null if there isn't a social currency address persisted.
+Address? readSocialCurrency(SharedPreferences preferences) {
+  final encoded = preferences.getString(PREF_SOCIAL_CURRENCY);
+
+  if (encoded != null) {
+    return Address.fromJson(jsonDecode(encoded));
+  }
+
+  return null;
+}
+
+/// Persists user's social currency address.
+///
+/// [socialCurrency] will be persisted as a JSON encoded string.
+Future<bool> writeSocialCurrency(
+  SharedPreferences preferences,
+  Address? socialCurrency,
+) {
+  if (socialCurrency == null) {
+    logger.d('Reset social currency address');
+
+    return preferences.remove(PREF_SOCIAL_CURRENCY);
+  }
+
+  final encoded = jsonEncode(socialCurrency.toJson());
+
+  logger.d('Write social currency address: $encoded');
+
+  return preferences.setString(PREF_SOCIAL_CURRENCY, encoded);
 }
