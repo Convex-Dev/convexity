@@ -394,6 +394,7 @@ class Model {
   final Map<Address, KeyPair> keyring;
   final Address? activeAddress;
   final FungibleToken? defaultWithToken;
+  final Address? socialCurrency;
 
   const Model({
     required this.convexServerUri,
@@ -405,6 +406,7 @@ class Model {
     this.keyring = const {},
     this.activeAddress,
     this.defaultWithToken,
+    this.socialCurrency,
   });
 
   KeyPair? get activeKeyPair => keyring[activeAddress];
@@ -412,6 +414,8 @@ class Model {
   AccountKey? get activeAccountKey =>
       activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair!.pk) : null;
 
+  // Deprecated. Use copyWith2 instead.
+  // TODO: replace usages.
   Model copyWith({
     Uri? convexServerUri,
     Address? convexityAddress,
@@ -447,6 +451,7 @@ class Model {
     Map<Address, KeyPair> Function()? keyring,
     Address Function()? activeAddress,
     FungibleToken? Function()? defaultWithToken,
+    Address? Function()? socialCurrency,
   }) =>
       Model(
         convexServerUri:
@@ -465,6 +470,8 @@ class Model {
         defaultWithToken: defaultWithToken != null
             ? defaultWithToken()
             : this.defaultWithToken,
+        socialCurrency:
+            socialCurrency != null ? socialCurrency() : this.socialCurrency,
       );
 
   String toString() => {

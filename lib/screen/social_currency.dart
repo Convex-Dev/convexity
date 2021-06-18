@@ -10,8 +10,11 @@ class SocialCurrencyScreen extends StatelessWidget {
         title: Text('Social Currency'),
       ),
       body: Center(
-        child: Row(
-          children: [],
+        child: ElevatedButton(
+          child: const Text('Create Social Currency'),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
         ),
       ),
     );
