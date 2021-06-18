@@ -378,7 +378,7 @@ enum AddressInputOption {
   scan,
 }
 
-const CONVEXITY_ADDRESS = Address(181);
+const CONVEXITY_ADDRESS = Address(2167);
 
 /// Immutable Model data class.
 ///

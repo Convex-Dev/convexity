@@ -28,7 +28,7 @@
 (def NFT-actor-address #25)
 
 ;; This address changes whenever we reset the database and deploy a new Actor.
-(def shop-actor-address #183)
+(def shop-actor-address #2169)
 
 (def NFTs
   (map
