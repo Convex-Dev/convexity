@@ -223,3 +223,6 @@ Future<dynamic> pushListing(
       route.LISTING,
       arguments: listing,
     );
+
+Future<dynamic> pushSocialCurrency(BuildContext context) =>
+    Navigator.pushNamed(context, route.SOCIAL_CURRENCY);

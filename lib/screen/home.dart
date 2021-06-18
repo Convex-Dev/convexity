@@ -99,7 +99,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
         leading: Icon(Icons.person),
         title: Text('Social Currency'),
         subtitle: Text('View your personal social currency'),
-        onTap: () => nav.pushTopTokens(context).then(rebuild),
+        onTap: () => nav.pushSocialCurrency(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.show_chart),
