@@ -597,7 +597,7 @@ class FungibleLibrary {
   }) =>
       convexClient.transact(
         source: '(import convex.fungible :as fungible)'
-            '(deploy (fungible/build-token {:supply $supply}))',
+            '(deploy [(fungible/build-token {:supply $supply}) (fungible/add-mint {})])',
       );
 
   /// **Creates (deploys) a Fungible Token on the Convex Network.**

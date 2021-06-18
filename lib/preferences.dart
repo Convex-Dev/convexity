@@ -17,6 +17,7 @@ const PREF_WHITELISTS = 'WHITELISTS';
 const PREF_ACTIVE_ADDRESS = 'ACTIVE_ADDRESS';
 const PREF_DEFAULT_WITH_TOKEN = 'DEFAULT_WITH_TOKEN';
 const PREF_SOCIAL_CURRENCY = 'SOCIAL_CURRENCY';
+const PREF_SOCIAL_CURRENCY_OWNER = 'SOCIAL_CURRENCY_OWNER';
 
 String encodeKeyPair(KeyPair keyPair) =>
     '${Sodium.bin2hex(keyPair.pk)};${Sodium.bin2hex(keyPair.sk)}';
@@ -250,4 +251,37 @@ Future<bool> writeSocialCurrency(
   logger.d('Write social currency address: $encoded');
 
   return preferences.setString(PREF_SOCIAL_CURRENCY, encoded);
+}
+
+/// Reads user's social currency onwer address.
+///
+/// Returns null if there isn't a social currency address persisted.
+Address? readSocialCurrencyOwner(SharedPreferences preferences) {
+  final encoded = preferences.getString(PREF_SOCIAL_CURRENCY_OWNER);
+
+  if (encoded != null) {
+    return Address.fromJson(jsonDecode(encoded));
+  }
+
+  return null;
+}
+
+/// Persists user's social currency owner address.
+///
+/// [socialCurrencyOwner] will be persisted as a JSON encoded string.
+Future<bool> writeSocialCurrencyOwner(
+  SharedPreferences preferences,
+  Address? socialCurrencyOwner,
+) {
+  if (socialCurrencyOwner == null) {
+    logger.d('Reset social currency owner address');
+
+    return preferences.remove(PREF_SOCIAL_CURRENCY_OWNER);
+  }
+
+  final encoded = jsonEncode(socialCurrencyOwner.toJson());
+
+  logger.d('Write social currency owner address: $encoded');
+
+  return preferences.setString(PREF_SOCIAL_CURRENCY_OWNER, encoded);
 }

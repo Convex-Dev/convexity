@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +28,27 @@ class NewSocialCurrencyScreenBody extends StatefulWidget {
 
 class _NewSocialCurrencyScreenBodyState
     extends State<NewSocialCurrencyScreenBody> {
+  bool _isPending = false;
+  int _supply = 0;
+
   @override
   Widget build(BuildContext context) {
+    if (_isPending) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return ListView(
       children: [
         ListTile(
           title: TextFormField(
             autofocus: true,
-            onChanged: (value) {},
+            onChanged: (value) {
+              setState(() {
+                _supply = int.tryParse(value) ?? 0;
+              });
+            },
           ),
           subtitle: Text('Supply'),
         ),
@@ -48,15 +63,36 @@ class _NewSocialCurrencyScreenBodyState
           child: ElevatedButton(
             child: const Text('Confirm'),
             onPressed: () {
-              final appState = context.read<AppState>();
-
-              appState.setSocialCurrency(Address(8));
-
-              Navigator.of(context).pop();
+              createSocialCurrency(context, supply: _supply);
             },
           ),
         )
       ],
     );
+  }
+
+  createSocialCurrency(
+    BuildContext context, {
+    required int supply,
+  }) async {
+    try {
+      setState(() {
+        _isPending = true;
+      });
+
+      final appState = context.read<AppState>();
+
+      Result result =
+          await appState.fungibleLibrary().createToken(supply: supply);
+
+      if (result.errorCode == null) {
+        appState.setSocialCurrency(
+          address: Address(result.value),
+          owner: appState.model.activeAddress,
+        );
+      }
+    } finally {
+      Navigator.of(context).pop();
+    }
   }
 }
