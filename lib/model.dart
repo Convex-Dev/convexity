@@ -427,6 +427,7 @@ class Model {
     Map<Address, KeyPair>? keyring,
     Address? activeAddress,
     FungibleToken? defaultWithToken,
+    Address? socialCurrency,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -438,6 +439,7 @@ class Model {
         keyring: keyring ?? this.keyring,
         activeAddress: activeAddress ?? this.activeAddress,
         defaultWithToken: defaultWithToken ?? this.defaultWithToken,
+        socialCurrency: socialCurrency ?? this.socialCurrency,
       );
 
   Model copyWith2({
@@ -500,6 +502,7 @@ void bootstrap({
     final activities = p.readActivities(preferences);
     final contacts = p.readContacts(preferences);
     final defaultWithToken = p.readDefaultWithToken(preferences);
+    final socialCurrency = p.readSocialCurrency(preferences);
 
     final _model = Model(
       convexServerUri: convexWorldUri,
@@ -511,6 +514,7 @@ void bootstrap({
       activities: activities,
       contacts: contacts,
       defaultWithToken: defaultWithToken,
+      socialCurrency: socialCurrency,
     );
 
     logger.d(_model);
