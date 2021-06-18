@@ -50,7 +50,10 @@ class _NewSocialCurrencyScreenBodyState
             onPressed: () {
               final appState = context.read<AppState>();
 
-              appState.setSocialCurrency(Address(8));
+              appState.setSocialCurrency(
+                address: Address(8),
+                owner: appState.model.activeAddress,
+              );
 
               Navigator.of(context).pop();
             },

@@ -395,6 +395,7 @@ class Model {
   final Address? activeAddress;
   final FungibleToken? defaultWithToken;
   final Address? socialCurrency;
+  final Address? socialCurrencyOwner;
 
   const Model({
     required this.convexServerUri,
@@ -407,6 +408,7 @@ class Model {
     this.activeAddress,
     this.defaultWithToken,
     this.socialCurrency,
+    this.socialCurrencyOwner,
   });
 
   KeyPair? get activeKeyPair => keyring[activeAddress];
@@ -428,6 +430,7 @@ class Model {
     Address? activeAddress,
     FungibleToken? defaultWithToken,
     Address? socialCurrency,
+    Address? socialCurrencyOwner,
   }) =>
       Model(
         convexServerUri: convexServerUri ?? this.convexServerUri,
@@ -440,6 +443,7 @@ class Model {
         activeAddress: activeAddress ?? this.activeAddress,
         defaultWithToken: defaultWithToken ?? this.defaultWithToken,
         socialCurrency: socialCurrency ?? this.socialCurrency,
+        socialCurrencyOwner: socialCurrencyOwner ?? this.socialCurrencyOwner,
       );
 
   Model copyWith2({
@@ -454,6 +458,7 @@ class Model {
     Address Function()? activeAddress,
     FungibleToken? Function()? defaultWithToken,
     Address? Function()? socialCurrency,
+    Address? Function()? socialCurrencyOwner,
   }) =>
       Model(
         convexServerUri:
@@ -474,6 +479,9 @@ class Model {
             : this.defaultWithToken,
         socialCurrency:
             socialCurrency != null ? socialCurrency() : this.socialCurrency,
+        socialCurrencyOwner: socialCurrencyOwner != null
+            ? socialCurrencyOwner()
+            : this.socialCurrencyOwner,
       );
 
   String toString() => {
@@ -487,6 +495,7 @@ class Model {
         'activeAddress': activeAddress?.toString(),
         'defaultWithToken': defaultWithToken?.toString(),
         'socialCurrency': socialCurrency?.toString(),
+        'socialCurrencyOwner': socialCurrencyOwner?.toString(),
       }.toString();
 }
 
@@ -503,6 +512,7 @@ void bootstrap({
     final contacts = p.readContacts(preferences);
     final defaultWithToken = p.readDefaultWithToken(preferences);
     final socialCurrency = p.readSocialCurrency(preferences);
+    final socialCurrencyOwner = p.readSocialCurrencyOwner(preferences);
 
     final _model = Model(
       convexServerUri: convexWorldUri,
@@ -515,6 +525,7 @@ void bootstrap({
       contacts: contacts,
       defaultWithToken: defaultWithToken,
       socialCurrency: socialCurrency,
+      socialCurrencyOwner: socialCurrencyOwner,
     );
 
     logger.d(_model);
@@ -742,16 +753,23 @@ class AppState with ChangeNotifier {
     setState((m) => m!.copyWith2(defaultWithToken: () => defaultWithToken));
   }
 
-  void setSocialCurrency(
-    Address? address, {
+  void setSocialCurrency({
+    Address? address,
+    Address? owner,
     bool isPersistent = true,
   }) {
     if (isPersistent) {
-      SharedPreferences.getInstance().then(
-        (preferences) => p.writeSocialCurrency(preferences, address!),
-      );
+      SharedPreferences.getInstance().then((preferences) {
+        p.writeSocialCurrency(preferences, address);
+        p.writeSocialCurrencyOwner(preferences, owner);
+      });
     }
 
-    setState((m) => m!.copyWith2(socialCurrency: () => address));
+    setState(
+      (m) => m!.copyWith2(
+        socialCurrency: () => address,
+        socialCurrencyOwner: () => owner,
+      ),
+    );
   }
 }
