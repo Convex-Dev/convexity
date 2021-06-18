@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -86,8 +84,30 @@ class _NewSocialCurrencyScreenBodyState
           await appState.fungibleLibrary().createToken(supply: supply);
 
       if (result.errorCode == null) {
+        Address socialCurrencyAddress = Address(result.value);
+
+        var metadata = FungibleTokenMetadata(
+          name: 'Mike Anderson Social Currency',
+          description: '',
+          tickerSymbol: '',
+          currencySymbol: '',
+          decimals: 0,
+        );
+
+        var fungible = FungibleToken(
+          address: socialCurrencyAddress,
+          metadata: metadata,
+        );
+
+        var aasset = AAsset(
+          type: AssetType.fungible,
+          asset: fungible,
+        );
+
+        await appState.convexityClient().requestToRegister(aasset: aasset);
+
         appState.setSocialCurrency(
-          address: Address(result.value),
+          address: socialCurrencyAddress,
           owner: appState.model.activeAddress,
         );
       }
