@@ -28,11 +28,12 @@ class NewSocialCurrencyScreenBody extends StatefulWidget {
 
 class _NewSocialCurrencyScreenBodyState
     extends State<NewSocialCurrencyScreenBody> {
-  bool isPending = false;
+  bool _isPending = false;
+  int _supply = 0;
 
   @override
   Widget build(BuildContext context) {
-    if (isPending) {
+    if (_isPending) {
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -43,7 +44,11 @@ class _NewSocialCurrencyScreenBodyState
         ListTile(
           title: TextFormField(
             autofocus: true,
-            onChanged: (value) {},
+            onChanged: (value) {
+              setState(() {
+                _supply = int.tryParse(value) ?? 0;
+              });
+            },
           ),
           subtitle: Text('Supply'),
         ),
@@ -58,7 +63,7 @@ class _NewSocialCurrencyScreenBodyState
           child: ElevatedButton(
             child: const Text('Confirm'),
             onPressed: () {
-              createSocialCurrency(context, supply: 1000);
+              createSocialCurrency(context, supply: _supply);
             },
           ),
         )
@@ -72,7 +77,7 @@ class _NewSocialCurrencyScreenBodyState
   }) async {
     try {
       setState(() {
-        isPending = true;
+        _isPending = true;
       });
 
       final appState = context.read<AppState>();
