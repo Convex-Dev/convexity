@@ -21,12 +21,14 @@ class SocialCurrencyScreen extends StatelessWidget {
         child: appState.model.socialCurrency != null
             ? Column(
                 children: [
+                  image(),
                   Center(child: Text(appState.model.socialCurrency.toString())),
                 ],
               )
             : Column(
                  crossAxisAlignment: CrossAxisAlignment.center,
                  children: [
+                   image(),
                    Text('Create your own Personal Currency.'),
                    Center(child: ElevatedButton(
 
@@ -38,5 +40,9 @@ class SocialCurrencyScreen extends StatelessWidget {
               ),
       ),
     );
+  }
+
+  Widget image() {
+    return Image.asset('assets/mike.png',width: 160);
   }
 }

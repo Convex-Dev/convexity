@@ -91,7 +91,7 @@ class _NewSocialCurrencyScreenBodyState
           description: '',
           tickerSymbol: 'SC'+socialCurrencyAddress.value.toString(),
           currencySymbol: '',
-          decimals: 0,
+          decimals: 0
         );
 
         var fungible = FungibleToken(
