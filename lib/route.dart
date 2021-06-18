@@ -28,6 +28,7 @@ import 'screen/select_fungible.dart';
 import 'screen/top_tokens.dart';
 import 'screen/listing.dart';
 import 'screen/social_currency.dart';
+import 'screen/new_social_currency.dart';
 
 const String DEV = '/dev';
 const String LAUNCHER = '/launcher';
@@ -59,6 +60,7 @@ const String SELECT_FUNGIBLE = '/selectFungigle';
 const String TOP_TOKENS = '/topTokens';
 const String LISTING = '/listing';
 const String SOCIAL_CURRENCY = '/socialCurrency';
+const String NEW_SOCIAL_CURRENCY = '/newSocialCurrency';
 
 Map<String, WidgetBuilder> routes() => {
       DEV: (context) => DevScreen(),
@@ -89,4 +91,5 @@ Map<String, WidgetBuilder> routes() => {
       TOP_TOKENS: (context) => TopTokensScreen(),
       LISTING: (context) => ListingScreen(),
       SOCIAL_CURRENCY: (context) => SocialCurrencyScreen(),
+      NEW_SOCIAL_CURRENCY: (context) => NewSocialCurrencyScreen(),
     };

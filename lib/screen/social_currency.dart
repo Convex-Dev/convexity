@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../nav.dart' as nav;
+
 class SocialCurrencyScreen extends StatelessWidget {
   const SocialCurrencyScreen({Key? key}) : super(key: key);
 
@@ -13,7 +15,7 @@ class SocialCurrencyScreen extends StatelessWidget {
         child: ElevatedButton(
           child: const Text('Create Social Currency'),
           onPressed: () {
-            Navigator.pop(context, true);
+            nav.pushNewSocialCurrency(context);
           },
         ),
       ),
