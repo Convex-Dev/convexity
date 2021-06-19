@@ -6,6 +6,7 @@ import '../model.dart';
 import '../nav.dart' as nav;
 import '../widget.dart';
 
+// Screen for Digital Assets
 class AssetsScreen extends StatefulWidget {
   @override
   _AssetsScreenState createState() => _AssetsScreenState();
