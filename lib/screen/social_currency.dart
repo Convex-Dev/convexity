@@ -18,47 +18,34 @@ class SocialCurrencyScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          
           image(),
-          Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
-          Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
+          Text  ('Mike Anderson',style: Theme.of(context).textTheme.headline4),
+          Text  ('Digital Artist',style: Theme.of(context).textTheme.headline5),
           appState.model.socialCurrency != null
-              ? Column(
-                  children: [
-                    Center(
-                        child: Text(appState.model.socialCurrency.toString())),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Create your own Personal Currency.'),
-                    Center(
-                        child: ElevatedButton(
-                      child: const Text('Create Social Currency'),
-                      onPressed: () {
-                        nav.pushNewSocialCurrency(context);
-                      },
-                    ))
-                  ],
-                ),
-          Spacer(),
-          Column(
-            children: [
-              ElevatedButton(
-                child: Text('Gift'),
-                onPressed: () {
-                  //nav.pushFungibleTransfer(
-                  //    context, appState.model.socialCurrency, null);
-                },
+            ? Column(
+                children: [
+
+                  Center(child: Text(appState.model.socialCurrency.toString())),
+                ],
               )
-            ],
-          )
-        ],
+            : Column(
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 children: [
+                   Text('Create your own Personal Currency.'),
+                   Center(child: ElevatedButton(
+
+                  child: const Text('Create Social Currency'),
+                  onPressed: () {
+                    nav.pushNewSocialCurrency(context);
+                  },
+                ))],
+              )],
       ),
     );
   }
 
   Widget image() {
-    return Image.asset('assets/mike.png', width: 160);
+    return Image.asset('assets/mike.png',width: 160);
   }
 }
