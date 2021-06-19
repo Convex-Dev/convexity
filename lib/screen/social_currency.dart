@@ -13,17 +13,9 @@ class SocialCurrencyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final convexityClient = appState.convexityClient();
-    final convexClient = appState.convexClient();
 
-    List<Future> futures = [];
 
-    if (appState.model.socialCurrency != null) {
-      futures.addAll([
-        convexityClient.asset(appState.model.socialCurrency!),
-        convexClient.query(source: "*address*"),
-      ]);
-    }
+    Address? socialCurrency=appState.model.socialCurrency;
 
     return Scaffold(
       appBar: AppBar(
@@ -31,44 +23,8 @@ class SocialCurrencyScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          appState.model.socialCurrency != null
-              ? Column(
-                  children: [
-                    image(),
-                    Text('Mike Anderson',
-                        style: Theme.of(context).textTheme.headline4),
-                    Text('Digital Artist',
-                        style: Theme.of(context).textTheme.headline5),
-                    FutureBuilder<List>(
-                      future: Future.wait(futures),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        FungibleToken? fungible =
-                            snapshot.data?.first?.asset as FungibleToken?;
-
-                        print(snapshot.data?.last.toString());
-
-                        // nav.pushFungibleTransfer(
-                        //   context,
-                        //   fungible,
-                        //   appState
-                        //       .convexClient()
-                        //       .balance(appState.model.socialCurrency),
-                        // );
-
-                        return Text(fungible.toString());
-                      },
-                    ),
-                    Center(
-                        child: Text(appState.model.socialCurrency.toString())),
-                  ],
-                )
+          socialCurrency != null
+              ? buildDetails(context,socialCurrency)
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -85,6 +41,57 @@ class SocialCurrencyScreen extends StatelessWidget {
                 )
         ],
       ),
+    );
+  }
+
+  Widget buildDetails(BuildContext context, Address socialCurrency) {
+    final appState = context.watch<AppState>();
+    final convexityClient = appState.convexityClient();
+    final convexClient = appState.convexClient();
+
+    List<Future> futures = [];
+
+    futures.addAll([
+      convexityClient.asset(appState.model.socialCurrency!),
+      convexClient.query(source: "*address*"),
+    ]);
+
+    return Column(
+      children: [
+        image(),
+        Text('Mike Anderson',
+            style: Theme.of(context).textTheme.headline4),
+        Text('Digital Artist',
+            style: Theme.of(context).textTheme.headline5),
+        FutureBuilder<List>(
+          future: Future.wait(futures),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState ==
+                ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            FungibleToken? fungible =
+            snapshot.data?.first?.asset as FungibleToken?;
+
+            print(snapshot.data?.last.toString());
+
+            // nav.pushFungibleTransfer(
+            //   context,
+            //   fungible,
+            //   appState
+            //       .convexClient()
+            //       .balance(appState.model.socialCurrency),
+            // );
+
+            return Text(fungible.toString());
+          },
+        ),
+        Center(
+            child: Text(appState.model.socialCurrency.toString())),
+      ],
     );
   }
 
