@@ -1,5 +1,6 @@
 import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../widget.dart';
@@ -21,9 +22,11 @@ class SocialCurrencyScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          Gap(30),
           image(),
           Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
           Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
+          Gap(30),
           socialCurrency != null
               ? buildDetails(context, socialCurrency)
               : Column(
@@ -72,8 +75,9 @@ class SocialCurrencyScreen extends StatelessWidget {
 
         return Column(children: [
           Text(fungible.toString()),
+         Gap(20),
           ElevatedButton(
-            child: Text('TRANSFER'),
+            child: Text('Gift'),
             onPressed: () {
               nav.pushFungibleTransfer(
                 context,
