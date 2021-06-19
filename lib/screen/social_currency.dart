@@ -13,9 +13,7 @@ class SocialCurrencyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-
-
-    Address? socialCurrency=appState.model.socialCurrency;
+    Address? socialCurrency = appState.model.socialCurrency;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,8 +21,11 @@ class SocialCurrencyScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          image(),
+          Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
+          Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
           socialCurrency != null
-              ? buildDetails(context,socialCurrency)
+              ? buildDetails(context, socialCurrency)
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -56,42 +57,32 @@ class SocialCurrencyScreen extends StatelessWidget {
       convexClient.query(source: "*address*"),
     ]);
 
-    return Column(
-      children: [
-        image(),
-        Text('Mike Anderson',
-            style: Theme.of(context).textTheme.headline4),
-        Text('Digital Artist',
-            style: Theme.of(context).textTheme.headline5),
-        FutureBuilder<List>(
-          future: Future.wait(futures),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState ==
-                ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
+    return FutureBuilder<List>(
+      future: Future.wait(futures),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        FungibleToken? fungible = snapshot.data?.first?.asset as FungibleToken?;
+
+        print(snapshot.data?.last.toString());
+
+        return Column(children: [
+          Text(fungible.toString()),
+          ElevatedButton(
+            child: Text('TRANSFER'),
+            onPressed: () {
+              nav.pushFungibleTransfer(
+                context,
+                fungible,
+                appState.convexClient().balance(socialCurrency),
               );
-            }
-
-            FungibleToken? fungible =
-            snapshot.data?.first?.asset as FungibleToken?;
-
-            print(snapshot.data?.last.toString());
-
-            // nav.pushFungibleTransfer(
-            //   context,
-            //   fungible,
-            //   appState
-            //       .convexClient()
-            //       .balance(appState.model.socialCurrency),
-            // );
-
-            return Text(fungible.toString());
-          },
-        ),
-        Center(
-            child: Text(appState.model.socialCurrency.toString())),
-      ],
+            },
+          )]);
+      },
     );
   }
 

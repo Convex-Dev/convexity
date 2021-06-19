@@ -289,10 +289,12 @@ class _FungibleTransferScreenBodyState
                           isPersistent: true,
                         );
 
-                        Navigator.popUntil(
-                          context,
-                          ModalRoute.withName(route.ASSET),
-                        );
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        //Navigator.popUntil(
+                        //  context,
+                        //  ModalRoute.withName(route.ASSET),
+                       // );
                       },
                     )
                   ],
