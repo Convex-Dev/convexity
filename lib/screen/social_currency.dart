@@ -1,3 +1,4 @@
+import 'package:convex_wallet/convex.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,34 +19,62 @@ class SocialCurrencyScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          
           image(),
-          Text  ('Mike Anderson',style: Theme.of(context).textTheme.headline4),
-          Text  ('Digital Artist',style: Theme.of(context).textTheme.headline5),
+          Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
+          Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
           appState.model.socialCurrency != null
-            ? Column(
-                children: [
+              ? Column(
+                  children: [
+                    FutureBuilder<AAsset?>(
+                      future: appState
+                          .convexityClient()
+                          .asset(appState.model.socialCurrency!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                  Center(child: Text(appState.model.socialCurrency.toString())),
-                ],
-              )
-            : Column(
-                 crossAxisAlignment: CrossAxisAlignment.center,
-                 children: [
-                   Text('Create your own Personal Currency.'),
-                   Center(child: ElevatedButton(
+                        FungibleToken? fungible =
+                            snapshot.data?.asset as FungibleToken;
 
-                  child: const Text('Create Social Currency'),
-                  onPressed: () {
-                    nav.pushNewSocialCurrency(context);
-                  },
-                ))],
-              )],
+                        // nav.pushFungibleTransfer(
+                        //   context,
+                        //   fungible,
+                        //   appState
+                        //       .convexClient()
+                        //       .balance(appState.model.socialCurrency),
+                        // );
+
+                        return Text(fungible.toString());
+                      },
+                    ),
+                    Center(
+                        child: Text(appState.model.socialCurrency.toString())),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Create your own Personal Currency.'),
+                    Center(
+                      child: ElevatedButton(
+                        child: const Text('Create Social Currency'),
+                        onPressed: () {
+                          nav.pushNewSocialCurrency(context);
+                        },
+                      ),
+                    )
+                  ],
+                )
+        ],
       ),
     );
   }
 
   Widget image() {
-    return Image.asset('assets/mike.png',width: 160);
+    return Image.asset('assets/mike.png', width: 160);
   }
 }
