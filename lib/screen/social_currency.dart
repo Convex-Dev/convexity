@@ -16,19 +16,22 @@ class SocialCurrencyScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Social Currency'),
       ),
-      body: Container(
-        padding: defaultScreenPadding,
-        child: appState.model.socialCurrency != null
+      body: Column(
+        children: [
+          
+          image(),
+          Text  ('Mike Anderson',style: Theme.of(context).textTheme.headline4),
+          Text  ('Digital Artist',style: Theme.of(context).textTheme.headline5),
+          appState.model.socialCurrency != null
             ? Column(
                 children: [
-                  image(),
+
                   Center(child: Text(appState.model.socialCurrency.toString())),
                 ],
               )
             : Column(
                  crossAxisAlignment: CrossAxisAlignment.center,
                  children: [
-                   image(),
                    Text('Create your own Personal Currency.'),
                    Center(child: ElevatedButton(
 
@@ -37,7 +40,7 @@ class SocialCurrencyScreen extends StatelessWidget {
                     nav.pushNewSocialCurrency(context);
                   },
                 ))],
-              ),
+              )],
       ),
     );
   }

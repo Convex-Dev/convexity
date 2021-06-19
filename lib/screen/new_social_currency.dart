@@ -28,6 +28,7 @@ class _NewSocialCurrencyScreenBodyState
     extends State<NewSocialCurrencyScreenBody> {
   bool _isPending = false;
   int _supply = 0;
+  String _description = '';
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,11 @@ class _NewSocialCurrencyScreenBodyState
         ),
         ListTile(
           title: TextFormField(
-            onChanged: (value) {},
+            onChanged: (value) {
+              setState(() {
+                _description = value.toString();
+              });
+            },
           ),
           subtitle: Text('Description'),
         ),
@@ -61,7 +66,7 @@ class _NewSocialCurrencyScreenBodyState
           child: ElevatedButton(
             child: const Text('Confirm'),
             onPressed: () {
-              createSocialCurrency(context, supply: _supply);
+              createSocialCurrency(context, supply: _supply, description: _description );
             },
           ),
         )
@@ -71,7 +76,7 @@ class _NewSocialCurrencyScreenBodyState
 
   createSocialCurrency(
     BuildContext context, {
-    required int supply,
+    required int supply, required String description
   }) async {
     try {
       setState(() {
@@ -87,8 +92,8 @@ class _NewSocialCurrencyScreenBodyState
         Address socialCurrencyAddress = Address(result.value);
 
         var metadata = FungibleTokenMetadata(
-          name: 'Mike Anderson Social Currency',
-          description: '',
+          name: 'Mike Anderson Token',
+          description: description,
           tickerSymbol: 'SC'+socialCurrencyAddress.value.toString(),
           currencySymbol: '',
           decimals: 0
