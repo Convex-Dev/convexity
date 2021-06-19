@@ -1316,7 +1316,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   onChanged: (value) {
                     setState(() {
                       double goldAmount=double.tryParse(value)??0;
-                      cvxAmount = (goldAmount*1000000000).toInt() ?? 0;
+                      cvxAmount = (goldAmount*1000000000).toInt();
                     });
                   },
                 ),
