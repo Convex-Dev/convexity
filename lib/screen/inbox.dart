@@ -3,6 +3,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../widget.dart';
 import '../nav.dart' as nav;
+import '../inbox.dart' as inbox;
 
 class InboxScreen extends StatelessWidget {
   const InboxScreen({Key? key}) : super(key: key);
@@ -12,15 +13,15 @@ class InboxScreen extends StatelessWidget {
     final widgets = [
       ListTile(
         leading: Icon(Icons.mark_email_unread),
-        title: Text('Unread'),
+        title: Text('Foo'),
         subtitle: Text('Subtitle'),
-        onTap: () => nav.pushMessage(context),
+        onTap: () => nav.pushMessage(context, inbox.Message(subject: "Foo")),
       ),
       ListTile(
         leading: Icon(Icons.mark_email_read),
-        title: Text('Read'),
+        title: Text('Bar'),
         subtitle: Text('Subtitle'),
-        onTap: () => nav.pushMessage(context),
+        onTap: () => nav.pushMessage(context, inbox.Message(subject: "Bar")),
       ),
     ];
 

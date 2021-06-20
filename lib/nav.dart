@@ -8,6 +8,7 @@ import 'model.dart';
 import 'route.dart' as route;
 import 'widget.dart';
 import 'shop.dart' as shop;
+import 'inbox.dart' as inbox;
 
 Future<dynamic> pushLauncher(BuildContext context) =>
     Navigator.pushReplacementNamed(
@@ -233,5 +234,8 @@ Future<dynamic> pushNewSocialCurrency(BuildContext context) =>
 Future<dynamic> pushInbox(BuildContext context) =>
     Navigator.pushNamed(context, route.INBOX);
 
-Future<dynamic> pushMessage(BuildContext context) =>
-    Navigator.pushNamed(context, route.MESSAGE);
+Future<dynamic> pushMessage(
+  BuildContext context,
+  inbox.Message message,
+) =>
+    Navigator.pushNamed(context, route.MESSAGE, arguments: message);
