@@ -102,6 +102,12 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
         onTap: () => nav.pushSocialCurrency(context).then(rebuild),
       ),
       ListTile(
+        leading: Icon(Icons.mail),
+        title: Text('Inbox'),
+        subtitle: Text('View your mailbox'),
+        onTap: () => nav.pushInbox(context).then(rebuild),
+      ),
+      ListTile(
         leading: Icon(Icons.show_chart),
         title: Text('Top Currencies'),
         subtitle: Text('View top currencies in the Exchange'),
