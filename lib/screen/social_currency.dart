@@ -17,11 +17,11 @@ class SocialCurrencyScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Social Currency'),
+        title: Text('Social Token'),
       ),
       body: Column(
         children: [
-          Gap(60),
+          Gap(30),
           image(),
           Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
           Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
