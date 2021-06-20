@@ -73,23 +73,27 @@ class SocialCurrencyScreen extends StatelessWidget {
 
         List data=snapshot.data!;
         FungibleToken? fungible = data.first?.asset as FungibleToken?;
-        List resultList=(data.elementAt(1) as Result).value as List;
+        Result queryResult = (data.elementAt(1) as Result);
+        List resultList=queryResult.value as List;
+
+        int balance=resultList[1] as int;
 
         print(snapshot.data?.last.toString());
         String? symbol = fungible?.metadata.tickerSymbol;
         String? description = fungible?.metadata.description;
         GridView tab = GridView.count(
             crossAxisCount: 2,
+            crossAxisSpacing: 20,
             shrinkWrap: true,
             childAspectRatio: 8.0,
             padding: EdgeInsets.all(20),
             children: [
-              Text("Currency Symbol"),
+              Text("Token Symbol:",textAlign: TextAlign.right),
               Text((symbol != null) ? symbol : "not defined"),
-              Text("Total Issued Supply"),
+              Text("Total Issued:",textAlign: TextAlign.right),
               Text(resultList[0].toString()),
-              Text("Your Holding"),
-              Text(resultList[1].toString())
+              Text("Your Holding:",textAlign: TextAlign.right),
+              Text(balance.toString())
             ]);
 
         GridView buttons = GridView.count(
@@ -105,7 +109,7 @@ class SocialCurrencyScreen extends StatelessWidget {
                 nav.pushFungibleTransfer(
                   context,
                   fungible,
-                  appState.convexClient().balance(socialCurrency),
+                  Future<int>.value(balance),
                 );
               },
             ),
@@ -114,7 +118,7 @@ class SocialCurrencyScreen extends StatelessWidget {
                 nav.pushFungibleTransfer(
                   context,
                   fungible,
-                  appState.convexClient().balance(socialCurrency),
+                  Future<int>.value(balance),
                 );
               },
             ),
