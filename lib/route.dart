@@ -30,6 +30,7 @@ import 'screen/listing.dart';
 import 'screen/social_currency.dart';
 import 'screen/new_social_currency.dart';
 import 'screen/inbox.dart';
+import 'screen/message.dart';
 
 const String DEV = '/dev';
 const String LAUNCHER = '/launcher';
@@ -63,6 +64,7 @@ const String LISTING = '/listing';
 const String SOCIAL_CURRENCY = '/socialCurrency';
 const String NEW_SOCIAL_CURRENCY = '/newSocialCurrency';
 const String INBOX = '/inbox';
+const String MESSAGE = '/message';
 
 Map<String, WidgetBuilder> routes() => {
       DEV: (context) => DevScreen(),
@@ -95,4 +97,5 @@ Map<String, WidgetBuilder> routes() => {
       SOCIAL_CURRENCY: (context) => SocialCurrencyScreen(),
       NEW_SOCIAL_CURRENCY: (context) => NewSocialCurrencyScreen(),
       INBOX: (context) => InboxScreen(),
+      MESSAGE: (context) => MessageScreen(),
     };
