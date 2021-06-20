@@ -4,26 +4,34 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../widget.dart';
 import '../nav.dart' as nav;
 import '../inbox.dart' as inbox;
+import '../convex.dart' as convex;
 
 class InboxScreen extends StatelessWidget {
   const InboxScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final widgets = [
-      ListTile(
-        leading: Icon(Icons.mark_email_unread),
-        title: Text('Foo'),
-        subtitle: Text('Subtitle'),
-        onTap: () => nav.pushMessage(context, inbox.Message(subject: "Foo")),
+    final messages = [
+      inbox.Message(
+        subject: "Foo",
+        from: convex.Address(8),
       ),
-      ListTile(
-        leading: Icon(Icons.mark_email_read),
-        title: Text('Bar'),
-        subtitle: Text('Subtitle'),
-        onTap: () => nav.pushMessage(context, inbox.Message(subject: "Bar")),
+      inbox.Message(
+        subject: "Bar",
+        from: convex.Address(8),
       ),
     ];
+
+    final widgets = messages
+        .map(
+          (message) => ListTile(
+            leading: Icon(Icons.mark_email_unread),
+            title: Text(message.subject),
+            subtitle: Text('Subtitle'),
+            onTap: () => nav.pushMessage(context, message),
+          ),
+        )
+        .toList();
 
     final animated = widgets
         .asMap()

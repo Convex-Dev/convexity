@@ -14,7 +14,13 @@ class MessageScreen extends StatelessWidget {
       appBar: AppBar(title: Text(message.subject)),
       body: Container(
         padding: defaultScreenPadding,
-        child: Container(),
+        child: Column(
+          children: [
+            Text(
+              message.from.toString(),
+            )
+          ],
+        ),
       ),
     );
   }
