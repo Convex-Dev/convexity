@@ -24,6 +24,7 @@ class SocialCurrencyScreen extends StatelessWidget {
         children: [
           Gap(30),
           image(),
+          Gap(20),
           Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
           Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
           Gap(30),
@@ -145,6 +146,18 @@ class SocialCurrencyScreen extends StatelessWidget {
   }
 
   Widget image() {
-    return Image.asset('assets/mike.png', width: 160);
+    return Stack(
+        alignment:AlignmentDirectional.center,
+        children: [
+          Container(
+            width: 180.0,
+            height: 180.0,
+            decoration: new BoxDecoration(
+              color: Colors.blueGrey,
+              shape: BoxShape.circle,
+            )),
+          Image.asset('assets/mike.png', width: 160)
+        ]
+    );
   }
 }
