@@ -71,24 +71,26 @@ class SocialCurrencyScreen extends StatelessWidget {
         FungibleToken? fungible = snapshot.data?.first?.asset as FungibleToken?;
 
         print(snapshot.data?.last.toString());
-        String? symbol=fungible?.metadata.tickerSymbol;
+        String? symbol = fungible?.metadata.tickerSymbol;
         String? description = fungible?.metadata.description;
-        GridView tab=GridView.count(
+        GridView tab = GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
             childAspectRatio: 8.0,
             padding: EdgeInsets.all(20),
             children: [
-              Text("Currency Symbol"),Text((symbol!=null)?symbol:"not defined"),
-              Text("Total Issued Supply"),Text("1000"),
-                        Text("Your Holding"),Text("xxx")]
-        );
+              Text("Currency Symbol"),
+              Text((symbol != null) ? symbol : "not defined"),
+              Text("Total Issued Supply"),
+              Text("1000"),
+              Text("Your Holding"),
+              Text("xxx")
+            ]);
 
         return Column(children: [
-          Text(description!=null ? description : "No description"),
+          Text(description != null ? description : "No description"),
           Divider(height: 20),
-          SizedBox(
-              child: tab),
+          SizedBox(child: tab),
           Divider(height: 20),
           ElevatedButton(
             child: Text('Gift'),
@@ -109,7 +111,14 @@ class SocialCurrencyScreen extends StatelessWidget {
                 appState.convexClient().balance(socialCurrency),
               );
             },
-          )]);
+          ),
+          ElevatedButton(
+            child: Text('Inbox'),
+            onPressed: () {
+              nav.pushInbox(context);
+            },
+          )
+        ]);
       },
     );
   }
