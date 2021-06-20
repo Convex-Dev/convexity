@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../widget.dart';
 import '../model.dart';
 import '../nav.dart' as nav;
 
@@ -22,7 +21,7 @@ class SocialCurrencyScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Gap(30),
+          Gap(60),
           image(),
           Text('Mike Anderson', style: Theme.of(context).textTheme.headline4),
           Text('Digital Artist', style: Theme.of(context).textTheme.headline5),
@@ -78,6 +77,16 @@ class SocialCurrencyScreen extends StatelessWidget {
          Gap(20),
           ElevatedButton(
             child: Text('Gift'),
+            onPressed: () {
+              nav.pushFungibleTransfer(
+                context,
+                fungible,
+                appState.convexClient().balance(socialCurrency),
+              );
+            },
+          ),
+          ElevatedButton(
+            child: Text('Mint'),
             onPressed: () {
               nav.pushFungibleTransfer(
                 context,
