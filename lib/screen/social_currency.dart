@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../model.dart';
 import '../nav.dart' as nav;
+import "components.dart";
 
 class SocialCurrencyScreen extends StatelessWidget {
   const SocialCurrencyScreen({Key? key}) : super(key: key);
@@ -56,7 +57,9 @@ class SocialCurrencyScreen extends StatelessWidget {
 
     futures.addAll([
       convexityClient.asset(appState.model.socialCurrency!),
-      convexClient.query(source: "*address*"),
+      convexClient.query(source: '(let [sc #${socialCurrency.value}]'
+          '[sc/supply '
+          '(call sc (balance *address*))])'),
     ]);
 
     return FutureBuilder<List>(
@@ -68,7 +71,9 @@ class SocialCurrencyScreen extends StatelessWidget {
           );
         }
 
-        FungibleToken? fungible = snapshot.data?.first?.asset as FungibleToken?;
+        List data=snapshot.data!;
+        FungibleToken? fungible = data.first?.asset as FungibleToken?;
+        List resultList=(data.elementAt(1) as Result).value as List;
 
         print(snapshot.data?.last.toString());
         String? symbol = fungible?.metadata.tickerSymbol;
@@ -82,42 +87,54 @@ class SocialCurrencyScreen extends StatelessWidget {
               Text("Currency Symbol"),
               Text((symbol != null) ? symbol : "not defined"),
               Text("Total Issued Supply"),
-              Text("1000"),
+              Text(resultList[0].toString()),
               Text("Your Holding"),
-              Text("xxx")
+              Text(resultList[1].toString())
             ]);
+
+        GridView buttons = GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          childAspectRatio: 5.0,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          padding: EdgeInsets.all(20),
+          children: [
+            Components.button("Gift",
+              onPressed: () {
+                nav.pushFungibleTransfer(
+                  context,
+                  fungible,
+                  appState.convexClient().balance(socialCurrency),
+                );
+              },
+            ),
+            Components.button("Mint",
+              onPressed: () {
+                nav.pushFungibleTransfer(
+                  context,
+                  fungible,
+                  appState.convexClient().balance(socialCurrency),
+                );
+              },
+            ),
+            Components.button("Edit Profile...",
+              onPressed: () {
+              },
+            ),
+            Components.button("Inbox",onPressed: () {
+              nav.pushInbox(context);
+            })
+          ]
+
+        );
 
         return Column(children: [
           Text(description != null ? description : "No description"),
           Divider(height: 20),
           SizedBox(child: tab),
           Divider(height: 20),
-          ElevatedButton(
-            child: Text('Gift'),
-            onPressed: () {
-              nav.pushFungibleTransfer(
-                context,
-                fungible,
-                appState.convexClient().balance(socialCurrency),
-              );
-            },
-          ),
-          ElevatedButton(
-            child: Text('Mint'),
-            onPressed: () {
-              nav.pushFungibleTransfer(
-                context,
-                fungible,
-                appState.convexClient().balance(socialCurrency),
-              );
-            },
-          ),
-          ElevatedButton(
-            child: Text('Inbox'),
-            onPressed: () {
-              nav.pushInbox(context);
-            },
-          )
+          buttons
         ]);
       },
     );
