@@ -39,11 +39,10 @@ class FungibleTransferScreen extends StatelessWidget {
     return WillPopScope(
       child: Scaffold(
         appBar: AppBar(
-          title: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+          title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'Transfer ${_token.metadata.tickerSymbol}',
@@ -67,7 +66,6 @@ class FungibleTransferScreen extends StatelessWidget {
                   },
                 )
               ],
-            ),
           ),
         ),
         body: FungibleTransferScreenBody(token: _token),
@@ -117,7 +115,7 @@ class _FungibleTransferScreenBodyState
       context: context,
       builder: (context) {
         return Container(
-          height: 300,
+          height: 200,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -129,7 +127,7 @@ class _FungibleTransferScreenBodyState
               ),
               Gap(10),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -324,8 +322,8 @@ class _FungibleTransferScreenBodyState
           children: [
             _receiver == null
                 ? SizedBox(
-                    width: 120,
                     height: 120,
+                    child: Text('Select a destination Account for the transfer, and an amount to transfer.')
                   )
                 : aidenticon(
                     _receiver!,
