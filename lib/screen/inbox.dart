@@ -15,6 +15,8 @@ class InboxScreen extends StatelessWidget {
       inbox.Message(
         subject: "Foo",
         from: convex.Address(8),
+        text: "Sample text",
+        amount: 10,
       ),
       inbox.Message(
         subject: "Bar",

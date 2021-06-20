@@ -5,9 +5,13 @@ import 'convex.dart' as convex;
 class Message {
   final String subject;
   final convex.Address from;
+  final int? amount;
+  final String? text;
 
   Message({
     required this.subject,
     required this.from,
+    this.text,
+    this.amount,
   });
 }

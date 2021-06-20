@@ -18,7 +18,9 @@ class MessageScreen extends StatelessWidget {
           children: [
             Text(
               message.from.toString(),
-            )
+            ),
+            if (message.text != null) Text(message.text!),
+            if (message.amount != null) Text(message.amount!.toString()),
           ],
         ),
       ),
