@@ -229,3 +229,6 @@ Future<dynamic> pushSocialCurrency(BuildContext context) =>
 
 Future<dynamic> pushNewSocialCurrency(BuildContext context) =>
     Navigator.pushNamed(context, route.NEW_SOCIAL_CURRENCY);
+
+Future<dynamic> pushInbox(BuildContext context) =>
+    Navigator.pushNamed(context, route.INBOX);
