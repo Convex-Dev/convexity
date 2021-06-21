@@ -416,36 +416,6 @@ class Model {
   AccountKey? get activeAccountKey =>
       activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair!.pk) : null;
 
-  // Deprecated. Use copyWith2 instead.
-  // TODO: replace usages.
-  Model copyWith({
-    Uri? convexServerUri,
-    Address? convexityAddress,
-    KeyPair? activeKeyPair,
-    Set<AAsset>? following,
-    Set<AAsset>? myTokens,
-    List<Activity>? activities,
-    Set<Contact>? contacts,
-    Map<Address, KeyPair>? keyring,
-    Address? activeAddress,
-    FungibleToken? defaultWithToken,
-    Address? socialCurrency,
-    Address? socialCurrencyOwner,
-  }) =>
-      Model(
-        convexServerUri: convexServerUri ?? this.convexServerUri,
-        convexityAddress: convexityAddress ?? this.convexityAddress,
-        following: following ?? this.following,
-        myTokens: myTokens ?? this.myTokens,
-        activities: activities ?? this.activities,
-        contacts: contacts ?? this.contacts,
-        keyring: keyring ?? this.keyring,
-        activeAddress: activeAddress ?? this.activeAddress,
-        defaultWithToken: defaultWithToken ?? this.defaultWithToken,
-        socialCurrency: socialCurrency ?? this.socialCurrency,
-        socialCurrencyOwner: socialCurrencyOwner ?? this.socialCurrencyOwner,
-      );
-
   Model copyWith2({
     Uri Function()? convexServerUri,
     Address Function()? convexityAddress,
@@ -455,7 +425,7 @@ class Model {
     List<Activity> Function()? activities,
     Set<Contact> Function()? contacts,
     Map<Address, KeyPair> Function()? keyring,
-    Address Function()? activeAddress,
+    Address? Function()? activeAddress,
     FungibleToken? Function()? defaultWithToken,
     Address? Function()? socialCurrency,
     Address? Function()? socialCurrencyOwner,
@@ -582,7 +552,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith(following: Set<AAsset>.from(following)));
+    setState((m) => m.copyWith2(following: () => Set<AAsset>.from(following)));
   }
 
   void follow(AAsset aasset, {bool isPersistent = true}) {
@@ -608,8 +578,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
-        myTokens: myTokens,
+      (model) => model.copyWith2(
+        myTokens: () => myTokens,
       ),
     );
   }
@@ -625,8 +595,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
-        activities: activities,
+      (model) => model.copyWith2(
+        activities: () => activities,
       ),
     );
   }
@@ -648,8 +618,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
-        contacts: contacts,
+      (model) => model.copyWith2(
+        contacts: () => contacts,
       ),
     );
   }
@@ -666,8 +636,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith(
-        contacts: contacts,
+      (model) => model.copyWith2(
+        contacts: () => contacts,
       ),
     );
   }
@@ -707,7 +677,7 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) {
-      return m.copyWith(keyring: _keyring);
+      return m.copyWith2(keyring: () => _keyring);
     });
   }
 
@@ -722,7 +692,7 @@ class AppState with ChangeNotifier {
 
     setState(
       (m) {
-        return m.copyWith(keyring: _keyring);
+        return m.copyWith2(keyring: () => _keyring);
       },
     );
   }
@@ -737,7 +707,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith(activeAddress: address));
+    setState((m) => m.copyWith2(activeAddress: () => address));
   }
 
   void setDefaultWithToken(
