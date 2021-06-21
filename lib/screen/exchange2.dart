@@ -118,7 +118,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     selected: _params!.action,
                     onPressed: (action) {
                       setState(() {
-                        _params = _params!.copyWith(action: action);
+                        _params = _params!.copyWith2(action: () => action);
 
                         // Changing between *buy* and *sell* must refresh quote.
 
@@ -173,7 +173,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                               enabled: _ofToken == CVX || snapshot.hasData,
                               onChanged: (s) {
                                 setState(() {
-                                  _params = _params!.copyWith(amount: s);
+                                  _params = _params!.copyWith2(amount: () => s);
 
                                   _refreshQuote();
                                 });
@@ -1315,8 +1315,8 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      double goldAmount=double.tryParse(value)??0;
-                      cvxAmount = (goldAmount*1000000000).toInt();
+                      double goldAmount = double.tryParse(value) ?? 0;
+                      cvxAmount = (goldAmount * 1000000000).toInt();
                     });
                   },
                 ),

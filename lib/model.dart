@@ -119,19 +119,6 @@ class ExchangeParams {
         withToken: this.withToken,
       );
 
-  ExchangeParams copyWith({
-    ExchangeAction? action,
-    FungibleToken? ofToken,
-    String? amount,
-    FungibleToken? withToken,
-  }) =>
-      ExchangeParams(
-        action: action ?? this.action,
-        ofToken: ofToken ?? this.ofToken,
-        amount: amount ?? this.amount,
-        withToken: withToken ?? this.withToken,
-      );
-
   ExchangeParams copyWith2({
     ExchangeAction Function()? action,
     FungibleToken Function()? ofToken,
