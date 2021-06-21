@@ -569,7 +569,7 @@ class AppState with ChangeNotifier {
         actor: model.convexityAddress,
       );
 
-  void setState(Model f(Model? m)) {
+  void setState(Model f(Model m)) {
     model = f(model);
 
     notifyListeners();
@@ -582,7 +582,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m!.copyWith(following: Set<AAsset>.from(following)));
+    setState((m) => m.copyWith(following: Set<AAsset>.from(following)));
   }
 
   void follow(AAsset aasset, {bool isPersistent = true}) {
@@ -608,7 +608,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
+      (model) => model.copyWith(
         myTokens: myTokens,
       ),
     );
@@ -625,7 +625,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
+      (model) => model.copyWith(
         activities: activities,
       ),
     );
@@ -648,7 +648,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
+      (model) => model.copyWith(
         contacts: contacts,
       ),
     );
@@ -666,7 +666,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
+      (model) => model.copyWith(
         contacts: contacts,
       ),
     );
@@ -707,7 +707,7 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) {
-      return m!.copyWith(keyring: _keyring);
+      return m.copyWith(keyring: _keyring);
     });
   }
 
@@ -722,7 +722,7 @@ class AppState with ChangeNotifier {
 
     setState(
       (m) {
-        return m!.copyWith(keyring: _keyring);
+        return m.copyWith(keyring: _keyring);
       },
     );
   }
@@ -737,7 +737,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m!.copyWith(activeAddress: address));
+    setState((m) => m.copyWith(activeAddress: address));
   }
 
   void setDefaultWithToken(
@@ -750,7 +750,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m!.copyWith2(defaultWithToken: () => defaultWithToken));
+    setState((m) => m.copyWith2(defaultWithToken: () => defaultWithToken));
   }
 
   void setSocialCurrency({
@@ -766,7 +766,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (m) => m!.copyWith2(
+      (m) => m.copyWith2(
         socialCurrency: () => address,
         socialCurrencyOwner: () => owner,
       ),
