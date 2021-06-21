@@ -18,7 +18,7 @@ class SocialCurrencyScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Social Token'),
+        title: Text('Personal Token'),
       ),
       body: Column(
         children: [
@@ -33,10 +33,11 @@ class SocialCurrencyScreen extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Create your own Personal Currency.'),
+                    Text('Create your own Currency, backed by your time and skills.'),
+                    Gap(20),
                     Center(
                       child: ElevatedButton(
-                        child: const Text('Create Social Currency'),
+                        child: const Text('Create Personal Token'),
                         onPressed: () {
                           nav.pushNewSocialCurrency(context);
                         },

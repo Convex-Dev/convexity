@@ -15,13 +15,13 @@ class InboxScreen extends StatelessWidget {
     final messages = [
       inbox.Message(
         subject: "Commission from Alice",
-        from: convex.Address(2216),
+        from: convex.Address(2229),
         text: "I'd like two hours of your time to create a new Logo icon for my website!",
         amount: 120,
       ),
       inbox.Message(
         subject: "Commission from Bob",
-        from: convex.Address(800),
+        from: convex.Address(2231),
         text: "Looking to create a batch of 10 new pixel art NFTs. Can you help?"
       ),
     ];

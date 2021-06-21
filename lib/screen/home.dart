@@ -97,8 +97,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
       ),
       ListTile(
         leading: Icon(Icons.person),
-        title: Text('Social Token'),
-        subtitle: Text('Manage your own personal social token'),
+        title: Text('Personal Token'),
+        subtitle: Text('Manage your own personal token'),
         onTap: () => nav.pushSocialCurrency(context).then(rebuild),
       ),
       ListTile(

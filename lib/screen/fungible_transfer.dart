@@ -318,13 +318,14 @@ class _FungibleTransferScreenBodyState
       child: Container(
         padding: EdgeInsets.all(12),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _receiver == null
                 ? SizedBox(
                     height: 120,
-                    child: Text('Select a destination Account for the transfer, and an amount to transfer.')
-                  )
+                    child: Center(
+                        child: Text('Select a destination Account for the transfer, and an amount to transfer.')
+                  ))
                 : aidenticon(
                     _receiver!,
                     height: 120,
