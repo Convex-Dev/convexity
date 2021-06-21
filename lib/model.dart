@@ -119,7 +119,7 @@ class ExchangeParams {
         withToken: this.withToken,
       );
 
-  ExchangeParams copyWith2({
+  ExchangeParams copyWith({
     ExchangeAction Function()? action,
     FungibleToken Function()? ofToken,
     String Function()? amount,
@@ -403,7 +403,7 @@ class Model {
   AccountKey? get activeAccountKey =>
       activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair!.pk) : null;
 
-  Model copyWith2({
+  Model copyWith({
     Uri Function()? convexServerUri,
     Address Function()? convexityAddress,
     KeyPair Function()? activeKeyPair,
@@ -539,7 +539,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith2(following: () => Set<AAsset>.from(following)));
+    setState((m) => m.copyWith(following: () => Set<AAsset>.from(following)));
   }
 
   void follow(AAsset aasset, {bool isPersistent = true}) {
@@ -565,7 +565,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith2(
+      (model) => model.copyWith(
         myTokens: () => myTokens,
       ),
     );
@@ -582,7 +582,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith2(
+      (model) => model.copyWith(
         activities: () => activities,
       ),
     );
@@ -605,7 +605,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith2(
+      (model) => model.copyWith(
         contacts: () => contacts,
       ),
     );
@@ -623,7 +623,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model.copyWith2(
+      (model) => model.copyWith(
         contacts: () => contacts,
       ),
     );
@@ -664,7 +664,7 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) {
-      return m.copyWith2(keyring: () => _keyring);
+      return m.copyWith(keyring: () => _keyring);
     });
   }
 
@@ -679,7 +679,7 @@ class AppState with ChangeNotifier {
 
     setState(
       (m) {
-        return m.copyWith2(keyring: () => _keyring);
+        return m.copyWith(keyring: () => _keyring);
       },
     );
   }
@@ -694,7 +694,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith2(activeAddress: () => address));
+    setState((m) => m.copyWith(activeAddress: () => address));
   }
 
   void setDefaultWithToken(
@@ -707,7 +707,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m.copyWith2(defaultWithToken: () => defaultWithToken));
+    setState((m) => m.copyWith(defaultWithToken: () => defaultWithToken));
   }
 
   void setSocialCurrency({
@@ -723,7 +723,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (m) => m.copyWith2(
+      (m) => m.copyWith(
         socialCurrency: () => address,
         socialCurrencyOwner: () => owner,
       ),

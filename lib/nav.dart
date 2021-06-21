@@ -200,7 +200,7 @@ Future<dynamic> pushExchange(
     context,
     route.EXCHANGE,
     arguments: withToken != null
-        ? params.copyWith2(withToken: () => defaultWithToken)
+        ? params.copyWith(withToken: () => defaultWithToken)
         : params,
   );
 }

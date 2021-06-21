@@ -118,7 +118,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                     selected: _params!.action,
                     onPressed: (action) {
                       setState(() {
-                        _params = _params!.copyWith2(action: () => action);
+                        _params = _params!.copyWith(action: () => action);
 
                         // Changing between *buy* and *sell* must refresh quote.
 
@@ -173,7 +173,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
                               enabled: _ofToken == CVX || snapshot.hasData,
                               onChanged: (s) {
                                 setState(() {
-                                  _params = _params!.copyWith2(amount: () => s);
+                                  _params = _params!.copyWith(amount: () => s);
 
                                   _refreshQuote();
                                 });

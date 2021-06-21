@@ -38,7 +38,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
       log('Scanned QR Code: ${result.rawContent}');
 
       context.read<AppState>().setState(
-            (model) => model.copyWith2(
+            (model) => model.copyWith(
               convexityAddress: () => Address.fromStr(result.rawContent),
             ),
           );
@@ -75,7 +75,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 groupValue: appState.model.convexServerUri,
                 onChanged: (value) {
                   appState.setState(
-                      (m) => m.copyWith2(convexServerUri: () => value!));
+                      (m) => m.copyWith(convexServerUri: () => value!));
                 },
               ),
               RadioListTile<Uri>(
@@ -85,7 +85,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 groupValue: appState.model.convexServerUri,
                 onChanged: (value) {
                   appState.setState(
-                    (m) => m.copyWith2(
+                    (m) => m.copyWith(
                       convexServerUri: () => value!,
                     ),
                   );
@@ -114,7 +114,7 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 child: Text('Start'),
                 onPressed: () {
                   appState.setState(
-                    (model) => model.copyWith2(
+                    (model) => model.copyWith(
                       convexityAddress: () =>
                           Address.fromStr(convexityController.text),
                     ),
