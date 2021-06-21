@@ -6,12 +6,12 @@ class Message {
   final String subject;
   final convex.Address from;
   final int? amount;
-  final String? text;
+  final String text;
 
   Message({
     required this.subject,
     required this.from,
-    this.text,
+    this.text = '',
     this.amount,
   });
 }

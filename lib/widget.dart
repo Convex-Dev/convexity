@@ -667,11 +667,13 @@ class _SelectAccountState extends State<_SelectAccount> {
 class AccountCard extends StatelessWidget {
   final Address address;
   final Future<Account> account;
+  final bool showDetails;
 
   const AccountCard({
     Key? key,
     required this.address,
     required this.account,
+    this.showDetails = true
   }) : super(key: key);
 
   @override
@@ -679,8 +681,8 @@ class AccountCard extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          AddressTile(address: address),
-          FutureBuilder<Account>(
+          AddressTile(address: address, showDetails: showDetails),
+          if (showDetails) FutureBuilder<Account>(
             future: account,
             builder: (context, snapshot) {
               var animatedChild;
@@ -718,11 +720,13 @@ class AccountCard extends StatelessWidget {
 class AddressTile extends StatelessWidget {
   final Address? address;
   final void Function()? onTap;
+  final bool showDetails;
 
   const AddressTile({
     Key? key,
     this.address,
     this.onTap,
+    this.showDetails=true,
   }) : super(key: key);
 
   @override
@@ -743,7 +747,7 @@ class AddressTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (isAddressMine)
+        if (showDetails&&isAddressMine)
           Text(
             '(Owned by me)',
             style: Theme.of(context).textTheme.overline,

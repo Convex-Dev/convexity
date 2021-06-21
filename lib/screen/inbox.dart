@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -13,23 +14,25 @@ class InboxScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final messages = [
       inbox.Message(
-        subject: "Foo",
-        from: convex.Address(8),
-        text: "Sample text",
-        amount: 10,
+        subject: "Commission from Alice",
+        from: convex.Address(2216),
+        text: "I'd like two hours of your time to create a new Logo icon for my website!",
+        amount: 120,
       ),
       inbox.Message(
-        subject: "Bar",
-        from: convex.Address(8),
+        subject: "Commission from Bob",
+        from: convex.Address(800),
+        text: "Looking to create a batch of 10 new pixel art NFTs. Can you help?"
       ),
     ];
 
     final widgets = messages
         .map(
           (message) => ListTile(
-            leading: Icon(Icons.mark_email_unread),
+            contentPadding: EdgeInsets.all(10),
+            leading: Icon(Icons.markunread_rounded),
             title: Text(message.subject),
-            subtitle: Text('Subtitle'),
+            subtitle: Text(message.text),
             onTap: () => nav.pushMessage(context, message),
           ),
         )
