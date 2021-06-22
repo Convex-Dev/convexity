@@ -514,7 +514,7 @@ class AppState with ChangeNotifier {
             : null,
       );
 
-  FungibleLibrary fungibleLibrary() =>
+  FungibleLibrary get fungibleLibrary =>
       FungibleLibrary(convexClient: convexClient);
 
   AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient);

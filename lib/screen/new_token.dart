@@ -79,10 +79,10 @@ class _CreateTokenState extends State<_CreateToken> {
 
     // Step 1 - deploy.
     try {
-      _result = await appState.fungibleLibrary().createToken(
-            supply: _newFungibleToken.supply! *
-                (pow(10, _newFungibleToken.decimals!) as int),
-          );
+      _result = await appState.fungibleLibrary.createToken(
+        supply: _newFungibleToken.supply! *
+            (pow(10, _newFungibleToken.decimals!) as int),
+      );
     } on Exception catch (e, s) {
       logger.e('Failed to create Token: $e $s');
 
