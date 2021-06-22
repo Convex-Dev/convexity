@@ -226,7 +226,7 @@ class _NonFungibleSellState extends State<_NonFungibleSell> {
   void initState() {
     super.initState();
 
-    _assets = context.read<AppState>().convexityClient().assets();
+    _assets = context.read<AppState>().convexityClient.assets();
   }
 
   @override

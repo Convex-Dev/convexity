@@ -135,7 +135,7 @@ class _CreateTokenState extends State<_CreateToken> {
 
     try {
       registerResult =
-          await appState.convexityClient().requestToRegister(aasset: aasset);
+          await appState.convexityClient.requestToRegister(aasset: aasset);
     } on Exception catch (e) {
       print('Failed to register Token: $e');
 

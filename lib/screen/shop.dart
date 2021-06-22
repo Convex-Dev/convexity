@@ -110,10 +110,7 @@ class _ListingGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Future<AAsset?>? aasset = listing.price.item2 != null
-        ? context
-            .watch<AppState>()
-            .convexityClient()
-            .asset(listing.price.item2!)
+        ? context.watch<AppState>().convexityClient.asset(listing.price.item2!)
         : null;
 
     final Widget priceWidget = aasset == null

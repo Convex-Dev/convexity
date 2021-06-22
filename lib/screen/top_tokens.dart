@@ -38,7 +38,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
   void initState() {
     super.initState();
 
-    _assets = context.read<AppState>().convexityClient().assets();
+    _assets = context.read<AppState>().convexityClient.assets();
     _assets!.then((assets) {
       setState(() {
         _refreshPrices(

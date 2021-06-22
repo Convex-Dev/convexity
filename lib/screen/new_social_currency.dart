@@ -107,7 +107,7 @@ class _NewSocialCurrencyScreenBodyState
           asset: fungible,
         );
 
-        await appState.convexityClient().requestToRegister(aasset: aasset);
+        await appState.convexityClient.requestToRegister(aasset: aasset);
 
         appState.setSocialCurrency(
           address: socialCurrencyAddress,

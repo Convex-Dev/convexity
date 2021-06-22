@@ -521,7 +521,7 @@ class AppState with ChangeNotifier {
 
   TorusLibrary get torus => TorusLibrary(convexClient: convexClient);
 
-  ConvexityClient convexityClient() => ConvexityClient(
+  ConvexityClient get convexityClient => ConvexityClient(
         convexClient: convexClient,
         actor: model.convexityAddress,
       );

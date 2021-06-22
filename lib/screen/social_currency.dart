@@ -53,7 +53,7 @@ class SocialCurrencyScreen extends StatelessWidget {
 
   Widget buildDetails(BuildContext context, Address socialCurrency) {
     final appState = context.watch<AppState>();
-    final convexityClient = appState.convexityClient();
+    final convexityClient = appState.convexityClient;
     final convexClient = appState.convexClient;
 
     List<Future> futures = [];
