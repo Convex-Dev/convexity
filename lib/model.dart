@@ -500,6 +500,9 @@ class AppState with ChangeNotifier {
 
   AppState({required this.model});
 
+  /// Convex client to interface with convex.world.
+  ///
+  /// Credentials is set if there's an active address.
   ConvexClient get convexClient => ConvexClient(
         client: client,
         server: model.convexServerUri,
@@ -514,18 +517,23 @@ class AppState with ChangeNotifier {
             : null,
       );
 
+  /// Library to interface with the Fungible Convex Lisp library.
   FungibleLibrary get fungibleLibrary =>
       FungibleLibrary(convexClient: convexClient);
 
+  /// Library to interface with the Asset Convex Lisp library.
   AssetLibrary get assetLibrary => AssetLibrary(convexClient: convexClient);
 
+  /// Library to interface with the Torus Convex Lisp library.
   TorusLibrary get torus => TorusLibrary(convexClient: convexClient);
 
+  /// Library to interface with Convexity (Smart Contract).
   ConvexityClient get convexityClient => ConvexityClient(
         convexClient: convexClient,
         actor: model.convexityAddress,
       );
 
+  /// Update model and notify listeners.
   void setState(Model f(Model m)) {
     model = f(model);
 
