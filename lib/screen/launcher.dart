@@ -91,9 +91,9 @@ class _LauncherScreenState extends State<LauncherScreen> {
 
       var appState = context.read<AppState>();
 
-      final generatedAddress = await appState.convexClient().createAccount(
-            AccountKey.fromBin(generatedKeyPair.pk),
-          );
+      final generatedAddress = await appState.convexClient.createAccount(
+        AccountKey.fromBin(generatedKeyPair.pk),
+      );
 
       if (generatedAddress != null) {
         appState.addToKeyring(
@@ -110,10 +110,10 @@ class _LauncherScreenState extends State<LauncherScreen> {
           ),
         );
 
-        appState.convexClient().faucet(
-              address: generatedAddress,
-              amount: 100000000,
-            );
+        appState.convexClient.faucet(
+          address: generatedAddress,
+          amount: 100000000,
+        );
       } else {
         logger.e('Failed to create Account.');
       }

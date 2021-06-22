@@ -304,7 +304,7 @@ class _NonFungibleBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final convexClient = appState.convexClient();
+    final convexClient = appState.convexClient;
 
     final myListings = shop.myListings(
       convexClient: convexClient,

@@ -500,7 +500,7 @@ class AppState with ChangeNotifier {
 
   AppState({required this.model});
 
-  ConvexClient convexClient() => ConvexClient(
+  ConvexClient get convexClient => ConvexClient(
         client: client,
         server: model.convexServerUri,
         credentials: model.activeAddress != null &&
@@ -515,14 +515,14 @@ class AppState with ChangeNotifier {
       );
 
   FungibleLibrary fungibleLibrary() =>
-      FungibleLibrary(convexClient: convexClient());
+      FungibleLibrary(convexClient: convexClient);
 
-  AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
+  AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient);
 
-  TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
+  TorusLibrary torus() => TorusLibrary(convexClient: convexClient);
 
   ConvexityClient convexityClient() => ConvexityClient(
-        convexClient: convexClient(),
+        convexClient: convexClient,
         actor: model.convexityAddress,
       );
 

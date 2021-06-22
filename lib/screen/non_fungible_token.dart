@@ -159,7 +159,7 @@ class _NonFungibleTokenScreenBodyState
         child: SingleChildScrollView(
           child: FutureBuilder(
             future: shop.addListing(
-              convexClient: appState.convexClient(),
+              convexClient: appState.convexClient,
               newListing: newListing,
             ),
             builder: (context, snapshot) {

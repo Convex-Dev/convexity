@@ -249,8 +249,8 @@ class _ListingScreenState extends State<ListingScreen> {
 
     if (confirmation == true) {
       final Future result = isOwnerSelf
-          ? shop.removeListing(appState.convexClient(), id: listing.id)
-          : shop.buyListing(appState.convexClient(), listing: listing);
+          ? shop.removeListing(appState.convexClient, id: listing.id)
+          : shop.buyListing(appState.convexClient, listing: listing);
 
       showModalBottomSheet(
         context: context,

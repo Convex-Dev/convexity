@@ -21,7 +21,7 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final convexClient = appState.convexClient();
+    final convexClient = appState.convexClient;
 
     return Scaffold(
       appBar: AppBar(title: Text('NFT Shop')),

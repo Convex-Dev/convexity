@@ -53,7 +53,7 @@ class _StakingPeerScreenBodyState extends State<StakingPeerScreenBody> {
 
     final appState = context.read<AppState>();
     _account =
-        appState.convexClient().accountDetails(appState.model.activeAddress);
+        appState.convexClient.accountDetails(appState.model.activeAddress);
   }
 
   @override
@@ -377,9 +377,9 @@ class _TransactStakeState extends State<_TransactStake> {
 
       final appState = context.read<AppState>();
 
-      return await appState.convexClient().transact(
-            source: '(stake ${widget.peer!.address} $amount)',
-          );
+      return await appState.convexClient.transact(
+        source: '(stake ${widget.peer!.address} $amount)',
+      );
     } finally {
       setState(() {
         isProcessing = false;

@@ -219,7 +219,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
 
     // Single query to check the price of all Tokens.
     // Return a list of maps where each map contains the Token address and price.
-    _prices = context.read<AppState>().convexClient().query(
+    _prices = context.read<AppState>().convexClient.query(
           source: '(import torus.exchange :as torus) [$sexp]',
         );
   }

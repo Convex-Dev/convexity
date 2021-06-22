@@ -705,7 +705,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     final ofToken = _params!.ofToken;
 
     _ofBalance = ofToken == null
-        ? appState.convexClient().balance()
+        ? appState.convexClient.balance()
         : appState.assetLibrary().balance(asset: ofToken.address);
   }
 
@@ -715,7 +715,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     final withToken = _params!.withToken;
 
     _withBalance = withToken == null
-        ? appState.convexClient().balance()
+        ? appState.convexClient.balance()
         : appState.assetLibrary().balance(asset: withToken.address);
   }
 
@@ -1184,10 +1184,10 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
 
     final activeAddress = appState.model.activeAddress;
 
-    balance = appState.convexClient().query(
-          source: '(import convex.asset :as asset)'
-              '[(balance $activeAddress) (asset/balance ${widget.token!.address} $activeAddress)]',
-        );
+    balance = appState.convexClient.query(
+      source: '(import convex.asset :as asset)'
+          '[(balance $activeAddress) (asset/balance ${widget.token!.address} $activeAddress)]',
+    );
   }
 
   @override

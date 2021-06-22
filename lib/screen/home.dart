@@ -93,7 +93,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     final widgets = [
       AccountCard(
         address: activeAddress!,
-        account: appState.convexClient().accountDetails(activeAddress),
+        account: appState.convexClient.accountDetails(activeAddress),
       ),
       ListTile(
         leading: Icon(Icons.person),
