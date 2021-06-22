@@ -519,7 +519,7 @@ class AppState with ChangeNotifier {
 
   AssetLibrary get assetLibrary => AssetLibrary(convexClient: convexClient);
 
-  TorusLibrary torus() => TorusLibrary(convexClient: convexClient);
+  TorusLibrary get torus => TorusLibrary(convexClient: convexClient);
 
   ConvexityClient convexityClient() => ConvexityClient(
         convexClient: convexClient,

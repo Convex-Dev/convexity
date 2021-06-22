@@ -528,41 +528,41 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
     switch (_params!.action!) {
       case ExchangeAction.buy:
         if (_ofToken == CVX) {
-          x = appState.torus().buyCVX(
-                amount: _params!.amountInt,
-                withToken: _params!.withToken!.address,
-              );
+          x = appState.torus.buyCVX(
+            amount: _params!.amountInt,
+            withToken: _params!.withToken!.address,
+          );
         } else if (_withToken != CVX) {
-          x = appState.torus().buy(
-                ofToken: _params!.ofToken!.address,
-                amount: _params!.amountInt,
-                withToken: _params!.withToken!.address,
-              );
+          x = appState.torus.buy(
+            ofToken: _params!.ofToken!.address,
+            amount: _params!.amountInt,
+            withToken: _params!.withToken!.address,
+          );
         } else {
-          x = appState.torus().buyTokens(
-                ofToken: _params!.ofToken!.address,
-                amount: _params!.amountInt,
-              );
+          x = appState.torus.buyTokens(
+            ofToken: _params!.ofToken!.address,
+            amount: _params!.amountInt,
+          );
         }
 
         break;
       case ExchangeAction.sell:
         if (_ofToken == CVX) {
-          x = appState.torus().sellCVX(
-                amount: _params!.amountInt,
-                withToken: _params!.withToken!.address,
-              );
+          x = appState.torus.sellCVX(
+            amount: _params!.amountInt,
+            withToken: _params!.withToken!.address,
+          );
         } else if (_withToken != CVX) {
-          x = appState.torus().sell(
-                ofToken: _params!.ofToken!.address,
-                amount: _params!.amountInt,
-                withToken: _params!.withToken!.address,
-              );
+          x = appState.torus.sell(
+            ofToken: _params!.ofToken!.address,
+            amount: _params!.amountInt,
+            withToken: _params!.withToken!.address,
+          );
         } else {
-          x = appState.torus().sellTokens(
-                ofToken: _params!.ofToken!.address,
-                amount: _params!.amountInt,
-              );
+          x = appState.torus.sellTokens(
+            ofToken: _params!.ofToken!.address,
+            amount: _params!.amountInt,
+          );
         }
 
         break;
@@ -725,7 +725,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   }
 
   void _refreshPrice() {
-    final torus = context.read<AppState>().torus();
+    final torus = context.read<AppState>().torus;
 
     logger.i(
       'Refresh price. Of Token: ${_params!.ofToken?.address}, With Token: ${_params!.withToken?.address}',
@@ -747,7 +747,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
       return;
     }
 
-    final torus = context.read<AppState>().torus();
+    final torus = context.read<AppState>().torus;
 
     _ofMarketPrice = torus.price(ofToken: _params!.ofToken!.address);
   }
@@ -762,7 +762,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
       return;
     }
 
-    final torus = context.read<AppState>().torus();
+    final torus = context.read<AppState>().torus;
 
     _withMarketPrice = torus.price(ofToken: _params!.withToken!.address);
   }
@@ -788,7 +788,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
       return;
     }
 
-    final torus = context.read<AppState>().torus();
+    final torus = context.read<AppState>().torus;
 
     if (_params!.action == ExchangeAction.buy) {
       _quote = _ofToken == CVX
@@ -821,10 +821,10 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
   void _refreshLiquidity() async {
     final appState = context.read<AppState>();
 
-    _liquidity = appState.torus().liquidity(
-          ofToken: _params!.ofToken?.address,
-          withToken: _params!.withToken?.address,
-        );
+    _liquidity = appState.torus.liquidity(
+      ofToken: _params!.ofToken?.address,
+      withToken: _params!.withToken?.address,
+    );
   }
 
   /// Whenever 'of Token' changes, there are a few things that needs to refresh:
@@ -1391,7 +1391,7 @@ class _TokenLiquidityState extends State<_TokenLiquidity> {
                               setState(() {
                                 liquidity = context
                                     .read<AppState>()
-                                    .torus()
+                                    .torus
                                     .addLiquidity(
                                       token: widget.token!.address,
                                       tokenAmount: format.readFungibleCurrency(
