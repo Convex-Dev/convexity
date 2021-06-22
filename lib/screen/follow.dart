@@ -113,10 +113,10 @@ class _RecommendedState extends State<_Recommended> {
             .map(
               (aasset) => MapEntry(
                 aasset.asset.address as Address?,
-                appState.assetLibrary().balance(
-                      asset: aasset.asset.address,
-                      owner: appState.model.activeAddress,
-                    ),
+                appState.assetLibrary.balance(
+                  asset: aasset.asset.address,
+                  owner: appState.model.activeAddress,
+                ),
               ),
             );
 
@@ -330,10 +330,10 @@ class _AssetIDState extends State<_AssetID> {
               child: aasset!.type == AssetType.fungible
                   ? FungibleTokenCard(
                       fungible: aasset!.asset,
-                      balance: appState.assetLibrary().balance(
-                            asset: aasset!.asset.address,
-                            owner: appState.model.activeAddress,
-                          ),
+                      balance: appState.assetLibrary.balance(
+                        asset: aasset!.asset.address,
+                        owner: appState.model.activeAddress,
+                      ),
                     )
                   : NonFungibleTokenCard(
                       nonFungible: aasset!.asset,

@@ -155,8 +155,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
                     type: AssetType.fungible,
                     asset: token,
                   ),
-                  balance:
-                      appState.assetLibrary().balance(asset: token.address),
+                  balance: appState.assetLibrary.balance(asset: token.address),
                 );
 
                 result.then(

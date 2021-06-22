@@ -517,7 +517,7 @@ class AppState with ChangeNotifier {
   FungibleLibrary get fungibleLibrary =>
       FungibleLibrary(convexClient: convexClient);
 
-  AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient);
+  AssetLibrary get assetLibrary => AssetLibrary(convexClient: convexClient);
 
   TorusLibrary torus() => TorusLibrary(convexClient: convexClient);
 

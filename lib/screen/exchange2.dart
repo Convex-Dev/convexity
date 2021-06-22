@@ -706,7 +706,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     _ofBalance = ofToken == null
         ? appState.convexClient.balance()
-        : appState.assetLibrary().balance(asset: ofToken.address);
+        : appState.assetLibrary.balance(asset: ofToken.address);
   }
 
   void _refreshWithBalance() {
@@ -716,7 +716,7 @@ class _ExchangeScreenBody2State extends State<ExchangeScreenBody2> {
 
     _withBalance = withToken == null
         ? appState.convexClient.balance()
-        : appState.assetLibrary().balance(asset: withToken.address);
+        : appState.assetLibrary.balance(asset: withToken.address);
   }
 
   void _refreshBalance() {

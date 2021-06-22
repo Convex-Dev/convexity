@@ -75,10 +75,10 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Future<dynamic> queryBalance(BuildContext context) {
     final appState = context.read<AppState>();
 
-    return appState.assetLibrary().balance(
-          asset: widget.aasset.asset.address,
-          owner: appState.model.activeAddress,
-        );
+    return appState.assetLibrary.balance(
+      asset: widget.aasset.asset.address,
+      owner: appState.model.activeAddress,
+    );
   }
 
   @override
