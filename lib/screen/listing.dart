@@ -30,7 +30,7 @@ class _ListingScreenState extends State<ListingScreen> {
       setState(() {
         _fungible = context
             .read<AppState>()
-            .convexityClient()
+            .convexityClient
             .asset(_listing.price.item2!);
       });
     }
@@ -40,10 +40,7 @@ class _ListingScreenState extends State<ListingScreen> {
     final isOwnerSelf = _listing.owner == appState.model.activeAddress;
 
     final Future<AAsset?>? aasset = _listing.price.item2 != null
-        ? context
-            .watch<AppState>()
-            .convexityClient()
-            .asset(_listing.price.item2!)
+        ? context.watch<AppState>().convexityClient.asset(_listing.price.item2!)
         : null;
 
     final Widget priceWidget = aasset == null
@@ -249,8 +246,8 @@ class _ListingScreenState extends State<ListingScreen> {
 
     if (confirmation == true) {
       final Future result = isOwnerSelf
-          ? shop.removeListing(appState.convexClient(), id: listing.id)
-          : shop.buyListing(appState.convexClient(), listing: listing);
+          ? shop.removeListing(appState.convexClient, id: listing.id)
+          : shop.buyListing(appState.convexClient, listing: listing);
 
       showModalBottomSheet(
         context: context,

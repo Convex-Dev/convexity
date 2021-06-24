@@ -120,19 +120,6 @@ class ExchangeParams {
       );
 
   ExchangeParams copyWith({
-    ExchangeAction? action,
-    FungibleToken? ofToken,
-    String? amount,
-    FungibleToken? withToken,
-  }) =>
-      ExchangeParams(
-        action: action ?? this.action,
-        ofToken: ofToken ?? this.ofToken,
-        amount: amount ?? this.amount,
-        withToken: withToken ?? this.withToken,
-      );
-
-  ExchangeParams copyWith2({
     ExchangeAction Function()? action,
     FungibleToken Function()? ofToken,
     String Function()? amount,
@@ -416,37 +403,7 @@ class Model {
   AccountKey? get activeAccountKey =>
       activeKeyPair?.pk != null ? AccountKey.fromBin(activeKeyPair!.pk) : null;
 
-  // Deprecated. Use copyWith2 instead.
-  // TODO: replace usages.
   Model copyWith({
-    Uri? convexServerUri,
-    Address? convexityAddress,
-    KeyPair? activeKeyPair,
-    Set<AAsset>? following,
-    Set<AAsset>? myTokens,
-    List<Activity>? activities,
-    Set<Contact>? contacts,
-    Map<Address, KeyPair>? keyring,
-    Address? activeAddress,
-    FungibleToken? defaultWithToken,
-    Address? socialCurrency,
-    Address? socialCurrencyOwner,
-  }) =>
-      Model(
-        convexServerUri: convexServerUri ?? this.convexServerUri,
-        convexityAddress: convexityAddress ?? this.convexityAddress,
-        following: following ?? this.following,
-        myTokens: myTokens ?? this.myTokens,
-        activities: activities ?? this.activities,
-        contacts: contacts ?? this.contacts,
-        keyring: keyring ?? this.keyring,
-        activeAddress: activeAddress ?? this.activeAddress,
-        defaultWithToken: defaultWithToken ?? this.defaultWithToken,
-        socialCurrency: socialCurrency ?? this.socialCurrency,
-        socialCurrencyOwner: socialCurrencyOwner ?? this.socialCurrencyOwner,
-      );
-
-  Model copyWith2({
     Uri Function()? convexServerUri,
     Address Function()? convexityAddress,
     KeyPair Function()? activeKeyPair,
@@ -455,7 +412,7 @@ class Model {
     List<Activity> Function()? activities,
     Set<Contact> Function()? contacts,
     Map<Address, KeyPair> Function()? keyring,
-    Address Function()? activeAddress,
+    Address? Function()? activeAddress,
     FungibleToken? Function()? defaultWithToken,
     Address? Function()? socialCurrency,
     Address? Function()? socialCurrencyOwner,
@@ -543,7 +500,10 @@ class AppState with ChangeNotifier {
 
   AppState({required this.model});
 
-  ConvexClient convexClient() => ConvexClient(
+  /// Convex client to interface with convex.world.
+  ///
+  /// Credentials is set if there's an active address.
+  ConvexClient get convexClient => ConvexClient(
         client: client,
         server: model.convexServerUri,
         credentials: model.activeAddress != null &&
@@ -557,19 +517,24 @@ class AppState with ChangeNotifier {
             : null,
       );
 
-  FungibleLibrary fungibleLibrary() =>
-      FungibleLibrary(convexClient: convexClient());
+  /// Library to interface with the Fungible Convex Lisp library.
+  FungibleLibrary get fungibleLibrary =>
+      FungibleLibrary(convexClient: convexClient);
 
-  AssetLibrary assetLibrary() => AssetLibrary(convexClient: convexClient());
+  /// Library to interface with the Asset Convex Lisp library.
+  AssetLibrary get assetLibrary => AssetLibrary(convexClient: convexClient);
 
-  TorusLibrary torus() => TorusLibrary(convexClient: convexClient());
+  /// Library to interface with the Torus Convex Lisp library.
+  TorusLibrary get torus => TorusLibrary(convexClient: convexClient);
 
-  ConvexityClient convexityClient() => ConvexityClient(
-        convexClient: convexClient(),
+  /// Library to interface with Convexity (Smart Contract).
+  ConvexityClient get convexityClient => ConvexityClient(
+        convexClient: convexClient,
         actor: model.convexityAddress,
       );
 
-  void setState(Model f(Model? m)) {
+  /// Update model and notify listeners.
+  void setState(Model f(Model m)) {
     model = f(model);
 
     notifyListeners();
@@ -582,7 +547,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m!.copyWith(following: Set<AAsset>.from(following)));
+    setState((m) => m.copyWith(following: () => Set<AAsset>.from(following)));
   }
 
   void follow(AAsset aasset, {bool isPersistent = true}) {
@@ -608,8 +573,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
-        myTokens: myTokens,
+      (model) => model.copyWith(
+        myTokens: () => myTokens,
       ),
     );
   }
@@ -625,8 +590,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
-        activities: activities,
+      (model) => model.copyWith(
+        activities: () => activities,
       ),
     );
   }
@@ -648,8 +613,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
-        contacts: contacts,
+      (model) => model.copyWith(
+        contacts: () => contacts,
       ),
     );
   }
@@ -666,8 +631,8 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (model) => model!.copyWith(
-        contacts: contacts,
+      (model) => model.copyWith(
+        contacts: () => contacts,
       ),
     );
   }
@@ -707,7 +672,7 @@ class AppState with ChangeNotifier {
     }
 
     setState((m) {
-      return m!.copyWith(keyring: _keyring);
+      return m.copyWith(keyring: () => _keyring);
     });
   }
 
@@ -722,7 +687,7 @@ class AppState with ChangeNotifier {
 
     setState(
       (m) {
-        return m!.copyWith(keyring: _keyring);
+        return m.copyWith(keyring: () => _keyring);
       },
     );
   }
@@ -737,7 +702,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m!.copyWith(activeAddress: address));
+    setState((m) => m.copyWith(activeAddress: () => address));
   }
 
   void setDefaultWithToken(
@@ -750,7 +715,7 @@ class AppState with ChangeNotifier {
       );
     }
 
-    setState((m) => m!.copyWith2(defaultWithToken: () => defaultWithToken));
+    setState((m) => m.copyWith(defaultWithToken: () => defaultWithToken));
   }
 
   void setSocialCurrency({
@@ -766,7 +731,7 @@ class AppState with ChangeNotifier {
     }
 
     setState(
-      (m) => m!.copyWith2(
+      (m) => m.copyWith(
         socialCurrency: () => address,
         socialCurrencyOwner: () => owner,
       ),

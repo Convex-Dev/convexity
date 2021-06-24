@@ -73,7 +73,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
   /// Sets [_balancheCache].
   void _refreshBalanceCache(BuildContext context) {
     final appState = context.read<AppState>();
-    final assetLibrary = appState.assetLibrary();
+    final assetLibrary = appState.assetLibrary;
 
     // Query/cache balance for each Asset the user follows.
     _balancheCache = Map.fromEntries(

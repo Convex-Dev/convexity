@@ -125,7 +125,7 @@ class _NonFungibleTransferScreenBodyState
     }
 
     // Asset transfer.
-    var transferInProgress = appState.assetLibrary().transferNonFungible(
+    var transferInProgress = appState.assetLibrary.transferNonFungible(
       holder: appState.model.activeAddress,
       holderSecretKey: appState.model.activeKeyPair!.sk,
       holderAccountKey: appState.model.activeAccountKey,

@@ -380,10 +380,10 @@ class _AssetCollectionState extends State<AssetCollection> {
         // if there's already one available in the cache.
         // Notice that the cache *is not* updated.
         final balance = widget.balanceCache[aasset] ??
-            appState.assetLibrary().balance(
-                  asset: aasset.asset.address,
-                  owner: appState.model.activeAddress,
-                );
+            appState.assetLibrary.balance(
+              asset: aasset.asset.address,
+              owner: appState.model.activeAddress,
+            );
 
         if (aasset.type == AssetType.fungible) {
           final mine = appState.model.myTokens.firstWhereOrNull(
@@ -669,12 +669,12 @@ class AccountCard extends StatelessWidget {
   final Future<Account> account;
   final bool showDetails;
 
-  const AccountCard({
-    Key? key,
-    required this.address,
-    required this.account,
-    this.showDetails = true
-  }) : super(key: key);
+  const AccountCard(
+      {Key? key,
+      required this.address,
+      required this.account,
+      this.showDetails = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -682,35 +682,36 @@ class AccountCard extends StatelessWidget {
       child: Column(
         children: [
           AddressTile(address: address, showDetails: showDetails),
-          if (showDetails) FutureBuilder<Account>(
-            future: account,
-            builder: (context, snapshot) {
-              var animatedChild;
+          if (showDetails)
+            FutureBuilder<Account>(
+              future: account,
+              builder: (context, snapshot) {
+                var animatedChild;
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                animatedChild = SizedBox(
-                  height: 63,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'loading...',
-                      style: TextStyle(color: Colors.black38),
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  animatedChild = SizedBox(
+                    height: 63,
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        'loading...',
+                        style: TextStyle(color: Colors.black38),
+                      ),
                     ),
-                  ),
-                );
-              } else {
-                animatedChild = Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: AccountTable(account: snapshot.data!),
-                );
-              }
+                  );
+                } else {
+                  animatedChild = Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: AccountTable(account: snapshot.data!),
+                  );
+                }
 
-              return AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
-                child: animatedChild,
-              );
-            },
-          ),
+                return AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+                  child: animatedChild,
+                );
+              },
+            ),
         ],
       ),
     );
@@ -726,7 +727,7 @@ class AddressTile extends StatelessWidget {
     Key? key,
     this.address,
     this.onTap,
-    this.showDetails=true,
+    this.showDetails = true,
   }) : super(key: key);
 
   @override
@@ -747,7 +748,7 @@ class AddressTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (showDetails&&isAddressMine)
+        if (showDetails && isAddressMine)
           Text(
             '(Owned by me)',
             style: Theme.of(context).textTheme.overline,

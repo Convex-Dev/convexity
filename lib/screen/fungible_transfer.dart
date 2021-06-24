@@ -40,32 +40,32 @@ class FungibleTransferScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              // mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Transfer ${_token.metadata.tickerSymbol}',
-                ),
-                FutureBuilder(
-                  future: _balance,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Transfer ${_token.metadata.tickerSymbol}',
+              ),
+              FutureBuilder(
+                future: _balance,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
 
-                    var formattedBalance = formatFungibleCurrency(
-                      metadata: _token.metadata,
-                      number: snapshot.data as int?,
-                    );
+                  var formattedBalance = formatFungibleCurrency(
+                    metadata: _token.metadata,
+                    number: snapshot.data as int?,
+                  );
 
-                    return Text(
-                      'Balance $formattedBalance',
-                      style: TextStyle(fontSize: 14),
-                    );
-                  },
-                )
-              ],
+                  return Text(
+                    'Balance $formattedBalance',
+                    style: TextStyle(fontSize: 14),
+                  );
+                },
+              )
+            ],
           ),
         ),
         body: FungibleTransferScreenBody(token: _token),
@@ -171,14 +171,14 @@ class _FungibleTransferScreenBodyState
       return;
     }
 
-    var transferInProgress = appState.fungibleLibrary().transfer(
-          token: widget.token!.address,
-          holder: appState.model.activeAddress,
-          holderSecretKey: appState.model.activeKeyPair!.sk,
-          holderAccountKey: appState.model.activeAccountKey,
-          receiver: _receiver,
-          amount: _amount,
-        );
+    var transferInProgress = appState.fungibleLibrary.transfer(
+      token: widget.token!.address,
+      holder: appState.model.activeAddress,
+      holderSecretKey: appState.model.activeKeyPair!.sk,
+      holderAccountKey: appState.model.activeAccountKey,
+      receiver: _receiver,
+      amount: _amount,
+    );
 
     showModalBottomSheet(
       context: context,
@@ -292,7 +292,7 @@ class _FungibleTransferScreenBodyState
                         //Navigator.popUntil(
                         //  context,
                         //  ModalRoute.withName(route.ASSET),
-                       // );
+                        // );
                       },
                     )
                   ],
@@ -324,8 +324,8 @@ class _FungibleTransferScreenBodyState
                 ? SizedBox(
                     height: 120,
                     child: Center(
-                        child: Text('Select a destination Account for the transfer, and an amount to transfer.')
-                  ))
+                        child: Text(
+                            'Select a destination Account for the transfer, and an amount to transfer.')))
                 : aidenticon(
                     _receiver!,
                     height: 120,
