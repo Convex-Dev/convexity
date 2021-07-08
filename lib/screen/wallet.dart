@@ -277,9 +277,9 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
 
       final appState = context.read<AppState>();
 
-      final generatedAddress = await appState.convexClient().createAccount(
-            AccountKey.fromBin(generatedKeyPair.pk),
-          );
+      final generatedAddress = await appState.convexClient.createAccount(
+        AccountKey.fromBin(generatedKeyPair.pk),
+      );
 
       if (generatedAddress != null) {
         appState.addToKeyring(
@@ -292,10 +292,10 @@ class _WalletScreenBodyState extends State<WalletScreenBody> {
           address: generatedAddress,
         ));
 
-        appState.convexClient().faucet(
-              address: generatedAddress,
-              amount: 100000000,
-            );
+        appState.convexClient.faucet(
+          address: generatedAddress,
+          amount: 100000000,
+        );
       } else {
         logger.e('Failed to create Account.');
       }

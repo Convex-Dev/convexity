@@ -75,10 +75,10 @@ class _AssetScreenBodyState extends State<AssetScreenBody> {
   Future<dynamic> queryBalance(BuildContext context) {
     final appState = context.read<AppState>();
 
-    return appState.assetLibrary().balance(
-          asset: widget.aasset.asset.address,
-          owner: appState.model.activeAddress,
-        );
+    return appState.assetLibrary.balance(
+      asset: widget.aasset.asset.address,
+      owner: appState.model.activeAddress,
+    );
   }
 
   @override
@@ -304,7 +304,7 @@ class _NonFungibleBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final convexClient = appState.convexClient();
+    final convexClient = appState.convexClient;
 
     final myListings = shop.myListings(
       convexClient: convexClient,

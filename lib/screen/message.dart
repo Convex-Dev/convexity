@@ -14,13 +14,10 @@ class MessageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final message = ModalRoute
-        .of(context)!
-        .settings
-        .arguments as inbox.Message;
+    final message = ModalRoute.of(context)!.settings.arguments as inbox.Message;
 
     final appState = context.watch<AppState>();
-    Future<Account> account = appState.convexClient().accountDetails();
+    Future<Account> account = appState.convexClient.accountDetails();
 
     GridView buttons = GridView.count(
         crossAxisCount: 2,
@@ -39,7 +36,6 @@ class MessageScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(message.subject)),
-
       body: Container(
         padding: defaultScreenPadding,
         child: Column(
@@ -82,17 +78,15 @@ class MessageScreen extends StatelessWidget {
                 size: 80,
                 color: Colors.black12,
               ),
-
               Gap(10),
               Text("Press Confirm to accept this proposal"),
               Gap(10),
               ElevatedButton(
-                  child: const Text('Confirm'),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                ),
-
+                child: const Text('Confirm'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
             ],
           ),
         );

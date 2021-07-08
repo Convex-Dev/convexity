@@ -122,10 +122,10 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
       return;
     }
 
-    final transferInProgress = appState.convexClient().transact(
-          source:
-              '(transfer $to ${currency.toCopper(currency.decimal(amount), fromUnit: currency.CvxUnit.gold)})',
-        );
+    final transferInProgress = appState.convexClient.transact(
+      source:
+          '(transfer $to ${currency.toCopper(currency.decimal(amount), fromUnit: currency.CvxUnit.gold)})',
+    );
 
     showModalBottomSheet(
       context: context,
@@ -235,7 +235,7 @@ class _TransferScreenBodyState extends State<TransferScreenBody> {
 
     final appState = context.read<AppState>();
 
-    _balance = appState.convexClient().balance(appState.model.activeAddress);
+    _balance = appState.convexClient.balance(appState.model.activeAddress);
   }
 
   @override

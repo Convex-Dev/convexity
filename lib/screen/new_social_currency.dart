@@ -66,7 +66,8 @@ class _NewSocialCurrencyScreenBodyState
           child: ElevatedButton(
             child: const Text('Confirm'),
             onPressed: () {
-              createSocialCurrency(context, supply: _supply, description: _description );
+              createSocialCurrency(context,
+                  supply: _supply, description: _description);
             },
           ),
         )
@@ -74,10 +75,8 @@ class _NewSocialCurrencyScreenBodyState
     );
   }
 
-  createSocialCurrency(
-    BuildContext context, {
-    required int supply, required String description
-  }) async {
+  createSocialCurrency(BuildContext context,
+      {required int supply, required String description}) async {
     try {
       setState(() {
         _isPending = true;
@@ -86,18 +85,17 @@ class _NewSocialCurrencyScreenBodyState
       final appState = context.read<AppState>();
 
       Result result =
-          await appState.fungibleLibrary().createToken(supply: supply);
+          await appState.fungibleLibrary.createToken(supply: supply);
 
       if (result.errorCode == null) {
         Address socialCurrencyAddress = Address(result.value);
 
         var metadata = FungibleTokenMetadata(
-          name: 'Mike Anderson Token',
-          description: description,
-          tickerSymbol: 'SC'+socialCurrencyAddress.value.toString(),
-          currencySymbol: '',
-          decimals: 0
-        );
+            name: 'Mike Anderson Token',
+            description: description,
+            tickerSymbol: 'SC' + socialCurrencyAddress.value.toString(),
+            currencySymbol: '',
+            decimals: 0);
 
         var fungible = FungibleToken(
           address: socialCurrencyAddress,
@@ -109,7 +107,7 @@ class _NewSocialCurrencyScreenBodyState
           asset: fungible,
         );
 
-        await appState.convexityClient().requestToRegister(aasset: aasset);
+        await appState.convexityClient.requestToRegister(aasset: aasset);
 
         appState.setSocialCurrency(
           address: socialCurrencyAddress,

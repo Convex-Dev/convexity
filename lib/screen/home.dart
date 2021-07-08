@@ -93,19 +93,13 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     final widgets = [
       AccountCard(
         address: activeAddress!,
-        account: appState.convexClient().accountDetails(activeAddress),
+        account: appState.convexClient.accountDetails(activeAddress),
       ),
       ListTile(
         leading: Icon(Icons.person),
         title: Text('Personal Token'),
         subtitle: Text('Manage your own personal token'),
         onTap: () => nav.pushSocialCurrency(context).then(rebuild),
-      ),
-      ListTile(
-        leading: Icon(Icons.mail),
-        title: Text('Inbox'),
-        subtitle: Text('View your mailbox'),
-        onTap: () => nav.pushInbox(context).then(rebuild),
       ),
       ListTile(
         leading: Icon(Icons.show_chart),

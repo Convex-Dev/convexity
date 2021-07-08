@@ -21,7 +21,7 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
 
-    final convexClient = appState.convexClient();
+    final convexClient = appState.convexClient;
 
     return Scaffold(
       appBar: AppBar(title: Text('NFT Shop')),
@@ -110,10 +110,7 @@ class _ListingGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Future<AAsset?>? aasset = listing.price.item2 != null
-        ? context
-            .watch<AppState>()
-            .convexityClient()
-            .asset(listing.price.item2!)
+        ? context.watch<AppState>().convexityClient.asset(listing.price.item2!)
         : null;
 
     final Widget priceWidget = aasset == null

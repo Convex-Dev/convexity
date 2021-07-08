@@ -33,7 +33,8 @@ class SocialCurrencyScreen extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Create your own Currency, backed by your time and skills.'),
+                    Text(
+                        'Create your own Currency, backed by your time and skills.'),
                     Gap(20),
                     Center(
                       child: ElevatedButton(
@@ -52,16 +53,17 @@ class SocialCurrencyScreen extends StatelessWidget {
 
   Widget buildDetails(BuildContext context, Address socialCurrency) {
     final appState = context.watch<AppState>();
-    final convexityClient = appState.convexityClient();
-    final convexClient = appState.convexClient();
+    final convexityClient = appState.convexityClient;
+    final convexClient = appState.convexClient;
 
     List<Future> futures = [];
 
     futures.addAll([
       convexityClient.asset(appState.model.socialCurrency!),
-      convexClient.query(source: '(let [sc #${socialCurrency.value}]'
-          '[sc/supply '
-          '(call sc (balance *address*))])'),
+      convexClient.query(
+          source: '(let [sc #${socialCurrency.value}]'
+              '[sc/supply '
+              '(call sc (balance *address*))])'),
     ]);
 
     return FutureBuilder<List>(
@@ -73,12 +75,12 @@ class SocialCurrencyScreen extends StatelessWidget {
           );
         }
 
-        List data=snapshot.data!;
+        List data = snapshot.data!;
         FungibleToken? fungible = data.first?.asset as FungibleToken?;
         Result queryResult = (data.elementAt(1) as Result);
-        List resultList=queryResult.value as List;
+        List resultList = queryResult.value as List;
 
-        int balance=resultList[1] as int;
+        int balance = resultList[1] as int;
 
         print(snapshot.data?.last.toString());
         String? symbol = fungible?.metadata.tickerSymbol;
@@ -90,50 +92,50 @@ class SocialCurrencyScreen extends StatelessWidget {
             childAspectRatio: 8.0,
             padding: EdgeInsets.all(20),
             children: [
-              Text("Token Symbol:",textAlign: TextAlign.right),
+              Text("Token Symbol:", textAlign: TextAlign.right),
               Text((symbol != null) ? symbol : "not defined"),
-              Text("Total Issued:",textAlign: TextAlign.right),
+              Text("Total Issued:", textAlign: TextAlign.right),
               Text(resultList[0].toString()),
-              Text("Your Holding:",textAlign: TextAlign.right),
+              Text("Your Holding:", textAlign: TextAlign.right),
               Text(balance.toString())
             ]);
 
         GridView buttons = GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          childAspectRatio: 5.0,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          padding: EdgeInsets.all(20),
-          children: [
-            Components.button("Gift",
-              onPressed: () {
-                nav.pushFungibleTransfer(
-                  context,
-                  fungible,
-                  Future<int>.value(balance),
-                );
-              },
-            ),
-            Components.button("Mint",
-              onPressed: () {
-                nav.pushFungibleTransfer(
-                  context,
-                  fungible,
-                  Future<int>.value(balance),
-                );
-              },
-            ),
-            Components.button("Edit Profile...",
-              onPressed: () {
-              },
-            ),
-            Components.button("Inbox",onPressed: () {
-              nav.pushInbox(context);
-            })
-          ]
-
-        );
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            childAspectRatio: 5.0,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            padding: EdgeInsets.all(20),
+            children: [
+              Components.button(
+                "Gift",
+                onPressed: () {
+                  nav.pushFungibleTransfer(
+                    context,
+                    fungible,
+                    Future<int>.value(balance),
+                  );
+                },
+              ),
+              Components.button(
+                "Mint",
+                onPressed: () {
+                  nav.pushFungibleTransfer(
+                    context,
+                    fungible,
+                    Future<int>.value(balance),
+                  );
+                },
+              ),
+              Components.button(
+                "Edit Profile...",
+                onPressed: () {},
+              ),
+              Components.button("Inbox", onPressed: () {
+                nav.pushInbox(context);
+              })
+            ]);
 
         return Column(children: [
           Text(description != null ? description : "No description"),
@@ -147,18 +149,15 @@ class SocialCurrencyScreen extends StatelessWidget {
   }
 
   Widget image() {
-    return Stack(
-        alignment:AlignmentDirectional.center,
-        children: [
-          Container(
-            width: 180.0,
-            height: 180.0,
-            decoration: new BoxDecoration(
-              color: Colors.blueGrey,
-              shape: BoxShape.circle,
-            )),
-          Image.asset('assets/mike.png', width: 160)
-        ]
-    );
+    return Stack(alignment: AlignmentDirectional.center, children: [
+      Container(
+          width: 180.0,
+          height: 180.0,
+          decoration: new BoxDecoration(
+            color: Colors.blueGrey,
+            shape: BoxShape.circle,
+          )),
+      Image.asset('assets/mike.png', width: 160)
+    ]);
   }
 }
