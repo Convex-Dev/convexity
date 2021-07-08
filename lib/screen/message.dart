@@ -55,6 +55,7 @@ class MessageScreen extends StatelessWidget {
             Gap(20),
             Text(message.text),
             Divider(),
+            Text("Tokens Offered",style: Theme.of(context).textTheme.headline6),
             if (message.amount != null) Text(message.amount!.toString()),
             Spacer(),
             buttons
