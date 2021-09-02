@@ -1,5 +1,3 @@
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -220,32 +218,6 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
   Address? scannedAddress;
   AAsset? aasset;
 
-  void scan() async {
-    var r = await BarcodeScanner.scan();
-    var rawContent = r.rawContent ?? "";
-
-    if (rawContent.isNotEmpty) {
-      var scannedAddress = Address.fromStr(rawContent);
-
-      setState(() {
-        this.scannedAddress = scannedAddress;
-        this.status = _ScanQRCodeStatus.loading;
-      });
-
-      var convexity = context.read<AppState>().convexityClient;
-
-      print('Asset Metadata $scannedAddress');
-
-      var token = await convexity.asset(scannedAddress);
-
-      setState(() {
-        status = _ScanQRCodeStatus.loaded;
-      });
-
-      print('Token $token');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     switch (status) {
@@ -258,9 +230,7 @@ class _ScanQRCodeState extends State<_ScanQRCode> {
             ),
             ElevatedButton(
               child: Text('Scan QR Code'),
-              onPressed: () {
-                scan();
-              },
+              onPressed: () {},
             ),
           ],
         );
