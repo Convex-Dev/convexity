@@ -41,7 +41,7 @@ dependencies:
   charts_flutter: ^0.11.0
   decimal: ^1.0.0
   flag: ^5.0.0-nullsafety
-  currency_icons: ^0.2.0
+  currency_icons: ^0.3.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
