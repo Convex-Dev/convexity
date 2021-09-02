@@ -428,9 +428,8 @@ class Model {
         activities: activities != null ? activities() : this.activities,
         contacts: contacts != null ? contacts() : this.contacts,
         keyring: keyring != null ? keyring() : this.keyring,
-        activeAddress: activeAddress != null
-            ? activeAddress as Address?
-            : this.activeAddress,
+        activeAddress:
+            activeAddress != null ? activeAddress() : this.activeAddress,
         defaultWithToken: defaultWithToken != null
             ? defaultWithToken()
             : this.defaultWithToken,
