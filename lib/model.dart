@@ -30,15 +30,16 @@ final CVX = FungibleToken(
 
 bool isDefaultFungibleToken(FungibleToken token) {
   final defaultTokens = {
-    34,
-    28,
-    40,
-    42,
-    30,
-    32,
-    44,
-    38,
-    36,
+    29,
+    35,
+    27,
+    37,
+    23,
+    19,
+    33,
+    31,
+    25,
+    39,
   };
 
   return defaultTokens.contains(token.address.value);
