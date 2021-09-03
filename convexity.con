@@ -63,7 +63,8 @@
               :decimals 2}})
 
       (defn all-assets
-        ^{:doc
+        ^{:callable? true
+          :doc
           {:type :function
            :signature [{:params []}]
            :description "Returns a mapping of Address to metadata."}}
@@ -71,7 +72,8 @@
         registry)
 
       (defn asset-metadata
-        ^{:doc
+        ^{:callable? true
+          :doc
           {:type :function
            :signature [{:params []}]
            :description "Returns metadata for a particular Asset."}}
@@ -79,7 +81,8 @@
         (get registry (address addr)))
 
       (defn register-asset
-        ^{:doc
+        ^{:callable? true
+          :doc
           {:type :function
            :signature [{:params [address metadata]}]
            :description "Registers metadata for a particular Asset. Returns registry.
@@ -103,7 +106,8 @@
 
       ;; TODO
       (defn request-registry
-        ^{:doc
+        ^{:callable? true
+          :doc
           {:type :function
            :signature [{:params [address metadata]}]
            :description "Requests to register metadata for a particular Asset."}}
@@ -111,18 +115,17 @@
         (def registry (assoc registry (address addr) metadata)))
 
       (defn unregister-asset
-        ^{:doc
+        ^{:callable? true
+          :doc
           {:type :function
            :signature [{:params [address]}]
            :description "Unregisters metadata for a particular Asset."}}
         [addr]
         (if (trust/trusted? trust-monitor *caller*)
           (def registry (dissoc registry (address addr)))
-          (fail :unauthorized "You're not authorized to modify the registry.")))
+          (fail :unauthorized "You're not authorized to modify the registry."))))))
 
-      (export all-assets asset-metadata register-asset request-registry unregister-asset))))
-
-(import asset.nft-tokens :as nft)
+(import asset.nft.tokens :as nft)
 
 (call convexity (register-asset #25 {:name "NFTs"
                                      :description "Convex NFT Library"
