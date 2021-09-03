@@ -79,11 +79,6 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                   labelText: 'Convexity Address',
                 ),
               ),
-              Gap(20),
-              Icon(
-                Icons.qr_code,
-                size: 80,
-              ),
               Gap(40),
               ElevatedButton(
                 child: Text('Start'),
