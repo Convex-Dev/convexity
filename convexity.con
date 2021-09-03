@@ -2,60 +2,69 @@
   (deploy
    '(do
       (import convex.trust :as trust)
+      (import currency.GBP :as GBP)
+      (import currency.USD :as USD)
+      (import currency.MYR :as MYR)
+      (import currency.CHF :as CHF)
+      (import currency.JPY :as JPY)
+      (import currency.EUR :as EUR)
+      (import currency.HKD :as HKD)
+      (import currency.VND :as VND)
+      (import currency.THB :as THB)
 
       (def trust-monitor
         (deploy (trust/build-whitelist {:controller *caller* :whitelist [*caller*]})))
 
       (def registry
-        {#34 {:type :fungible
+        {GBP {:type :fungible
               :symbol "GBP"
               :name "Pound Sterling"
               :description "UK National Currency"
               :currency-symbol "£"
               :decimals 2}
-         #28 {:type :fungible
+         USD {:type :fungible
               :symbol "USD"
               :name "US Dollar"
               :description "US National Currency"
               :currency-symbol "$"
               :decimals 2}
-         #40 {:type :fungible
+         MYR {:type :fungible
               :symbol "MYR"
               :name "Malaysian Ringgit"
               :description "Malaysian National Currency"
               :currency-symbol "RM"
               :decimals 2}
-         #42 {:type :fungible
+         CHF {:type :fungible
               :symbol "CHF"
               :name "Swiss Franc"
               :description "Swiss National Currency"
               :currency-symbol "Fr."
               :decimals 2}
-         #30 {:type :fungible
+         JPY {:type :fungible
               :symbol "JPY"
               :name "Japanese Yen"
               :description "Japanese National Currency"
               :currency-symbol "¥"
               :decimals 0}
-         #32 {:type :fungible
+         EUR {:type :fungible
               :symbol "EUR"
               :name "Euro"
               :description "European Union Currency"
               :currency-symbol "€"
               :decimals 2}
-         #44 {:type :fungible
+         HKD {:type :fungible
               :symbol "HKD"
               :name "Hong Kong Dollar"
               :description "Hong Kong Currency"
               :currency-symbol "HK$"
               :decimals 2}
-         #38 {:type :fungible
+         VND {:type :fungible
               :symbol "VND"
               :name "Vietnamese Dong"
               :description "Vietnamese National Currency"
               :currency-symbol "₫"
               :decimals 2}
-         #36 {:type :fungible
+         THB {:type :fungible
               :symbol "THB"
               :name "Thai Baht"
               :description "Thai National Currency"
@@ -65,17 +74,14 @@
       (defn all-assets
         ^{:callable? true
           :doc
-          {:type :function
-           :signature [{:params []}]
-           :description "Returns a mapping of Address to metadata."}}
+          {:description "Returns a mapping of Address to metadata."}}
         []
         registry)
 
       (defn asset-metadata
         ^{:callable? true
           :doc
-          {:type :function
-           :signature [{:params []}]
+          {:signature [{:params [addr]}]
            :description "Returns metadata for a particular Asset."}}
         [addr]
         (get registry (address addr)))
@@ -83,8 +89,7 @@
       (defn register-asset
         ^{:callable? true
           :doc
-          {:type :function
-           :signature [{:params [address metadata]}]
+          {:signature [{:params [addr metadata]}]
            :description "Registers metadata for a particular Asset. Returns registry.
 
                          Metadata is an open map and its keys will be different depending on its type.
@@ -108,7 +113,7 @@
       (defn request-registry
         ^{:callable? true
           :doc
-          {:type :function
+          {
            :signature [{:params [address metadata]}]
            :description "Requests to register metadata for a particular Asset."}}
         [addr metadata]
@@ -117,7 +122,7 @@
       (defn unregister-asset
         ^{:callable? true
           :doc
-          {:type :function
+          {
            :signature [{:params [address]}]
            :description "Unregisters metadata for a particular Asset."}}
         [addr]
@@ -127,7 +132,7 @@
 
 (import asset.nft.tokens :as nft)
 
-(call convexity (register-asset #25 {:name "NFTs"
+(call convexity (register-asset nft {:name "NFTs"
                                      :description "Convex NFT Library"
                                      :type :non-fungible}))
 convexity
