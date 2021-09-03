@@ -47,8 +47,8 @@ Future<dynamic> pushAssets(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushAsset(
   BuildContext context, {
-  AAsset? aasset,
-  Future? balance,
+  required AAsset aasset,
+  required Future balance,
 }) =>
     Navigator.pushNamed(
       context,

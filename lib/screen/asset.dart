@@ -28,7 +28,7 @@ class AssetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final arguments =
-        ModalRoute.of(context)!.settings.arguments as Tuple2<AAsset, Future>?;
+        ModalRoute.of(context)?.settings.arguments as Tuple2<AAsset, Future>?;
 
     // AAsset and balance can be passed directly to the constructor,
     // or via Navigator arguments.
