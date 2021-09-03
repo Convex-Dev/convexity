@@ -16,24 +16,19 @@ import '../nav.dart' as nav;
 import '../shop.dart' as shop;
 
 class AssetScreen extends StatelessWidget {
-  final AAsset? aasset;
-  final Future? balance;
-
   const AssetScreen({
     Key? key,
-    this.aasset,
-    this.balance,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final arguments =
-        ModalRoute.of(context)!.settings.arguments as Tuple2<AAsset, Future>?;
+        ModalRoute.of(context)!.settings.arguments as Tuple2<AAsset, Future>;
 
     // AAsset and balance can be passed directly to the constructor,
     // or via Navigator arguments.
-    AAsset _aasset = aasset ?? arguments!.item1;
-    Future _balance = balance ?? arguments!.item2;
+    AAsset _aasset = arguments.item1;
+    Future _balance = arguments.item2;
 
     final title = _aasset.type == AssetType.fungible
         ? (_aasset.asset as FungibleToken).metadata.tickerSymbol

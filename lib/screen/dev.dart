@@ -1,8 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -30,22 +27,6 @@ class _DevScreenBodyState extends State<DevScreenBody> {
   var formKey = GlobalKey<FormState>();
 
   var convexityController = TextEditingController();
-
-  void scan() async {
-    var result = await BarcodeScanner.scan();
-
-    if (result.rawContent.isNotEmpty) {
-      log('Scanned QR Code: ${result.rawContent}');
-
-      context.read<AppState>().setState(
-            (model) => model.copyWith(
-              convexityAddress: () => Address.fromStr(result.rawContent),
-            ),
-          );
-    } else {
-      log('Scanned QR Code is empty. Will not set Convexity Address.');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,17 +78,6 @@ class _DevScreenBodyState extends State<DevScreenBody> {
                 decoration: InputDecoration(
                   labelText: 'Convexity Address',
                 ),
-              ),
-              Gap(20),
-              Icon(
-                Icons.qr_code,
-                size: 80,
-              ),
-              TextButton(
-                child: Text('Scan Convexity QR Code'),
-                onPressed: () {
-                  scan();
-                },
               ),
               Gap(40),
               ElevatedButton(

@@ -28,7 +28,7 @@ class TopTokensScreenBody extends StatefulWidget {
 }
 
 class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
-  Future<Set<AAsset>?>? _assets;
+  late Future<Set<AAsset>?> _assets;
   Future<Result>? _prices;
 
   FungibleToken _withToken(BuildContext context) =>
@@ -39,7 +39,7 @@ class _TopTokensScreenBodyState extends State<TopTokensScreenBody> {
     super.initState();
 
     _assets = context.read<AppState>().convexityClient.assets();
-    _assets!.then((assets) {
+    _assets.then((assets) {
       setState(() {
         _refreshPrices(
           context: context,
