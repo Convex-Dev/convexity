@@ -1,0 +1,21 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "folder_exclude_patterns": [
+                ".vscode",
+                ".dart_tool",
+                "android",
+                "ios",
+                "macos",
+                "build"
+            ],
+            "file_exclude_patterns": [
+                "*.iml",
+                ".flutter-plugins",
+                ".flutter-plugins-dependencies",
+                ".packages"
+            ]
+        }
+    ]
+}

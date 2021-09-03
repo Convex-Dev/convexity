@@ -9,6 +9,9 @@
 .history
 .svn/
 
+# Sublime Text related
+convexity.sublime-workspace
+
 # IntelliJ related
 *.iml
 *.ipr
