@@ -28,6 +28,7 @@ final CVX = FungibleToken(
   ),
 );
 
+// See currencies in convexity.con e.g: currency.USD
 bool isDefaultFungibleToken(FungibleToken token) {
   final defaultTokens = {
     29,
