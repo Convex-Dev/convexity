@@ -113,8 +113,7 @@
       (defn request-registry
         ^{:callable? true
           :doc
-          {
-           :signature [{:params [address metadata]}]
+          {:signature [{:params [address metadata]}]
            :description "Requests to register metadata for a particular Asset."}}
         [addr metadata]
         (def registry (assoc registry (address addr) metadata)))
@@ -122,8 +121,7 @@
       (defn unregister-asset
         ^{:callable? true
           :doc
-          {
-           :signature [{:params [address]}]
+          {:signature [{:params [address]}]
            :description "Unregisters metadata for a particular Asset."}}
         [addr]
         (if (trust/trusted? trust-monitor *caller*)
