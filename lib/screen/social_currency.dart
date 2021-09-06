@@ -31,6 +31,7 @@ class SocialCurrencyScreen extends StatelessWidget {
           socialCurrency != null
               ? buildDetails(context, socialCurrency)
               : Column(
+
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
@@ -138,7 +139,11 @@ class SocialCurrencyScreen extends StatelessWidget {
             ]);
 
         return Column(children: [
-          Text(description != null ? description : "No description"),
+          Padding(
+            padding: EdgeInsets.fromLTRB(40.0,0,40,0),
+            child:
+              Text(description != null ? description : "No description"),),
+
           Divider(height: 20),
           SizedBox(child: tab),
           Divider(height: 20),
