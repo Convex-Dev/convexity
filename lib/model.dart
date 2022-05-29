@@ -28,17 +28,19 @@ final CVX = FungibleToken(
   ),
 );
 
+// See currencies in convexity.con e.g: currency.USD
 bool isDefaultFungibleToken(FungibleToken token) {
   final defaultTokens = {
-    34,
-    28,
-    40,
-    42,
-    30,
-    32,
-    44,
-    38,
-    36,
+    29,
+    35,
+    27,
+    37,
+    23,
+    19,
+    33,
+    31,
+    25,
+    39,
   };
 
   return defaultTokens.contains(token.address.value);
@@ -365,7 +367,7 @@ enum AddressInputOption {
   scan,
 }
 
-const CONVEXITY_ADDRESS = Address(2167);
+const CONVEXITY_ADDRESS = Address(97);
 
 /// Immutable Model data class.
 ///
@@ -428,9 +430,8 @@ class Model {
         activities: activities != null ? activities() : this.activities,
         contacts: contacts != null ? contacts() : this.contacts,
         keyring: keyring != null ? keyring() : this.keyring,
-        activeAddress: activeAddress != null
-            ? activeAddress as Address?
-            : this.activeAddress,
+        activeAddress:
+            activeAddress != null ? activeAddress() : this.activeAddress,
         defaultWithToken: defaultWithToken != null
             ? defaultWithToken()
             : this.defaultWithToken,

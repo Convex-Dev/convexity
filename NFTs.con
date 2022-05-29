@@ -24,11 +24,14 @@
    ["Perspective" "https://pbs.twimg.com/media/EzvUEWUXIAMFVP0.png" "Perspective"]])
 
 
+(import asset.nft.tokens :as nft)
+(import currency.USD :as USD)
+
 ;; This addreess is unlikely to change.
-(def NFT-actor-address #25)
+(def NFT-actor-address nft)
 
 ;; This address changes whenever we reset the database and deploy a new Actor.
-(def shop-actor-address #2169)
+(def shop-actor-address #108)
 
 (def NFTs
   (map
@@ -42,10 +45,10 @@
   (map
    (fn [token-id [name uri description]]
      (do
-      (asset/offer shop-actor-address [NFT-actor-address token-id])
+       (asset/offer shop-actor-address [NFT-actor-address token-id])
       
        (call shop-actor-address (add-listing {:description description
-                                            :image uri
-                                            :asset [NFT-actor-address token-id]
-                                            :price [1000 #28]}))))
+                                              :image uri
+                                              :asset [NFT-actor-address token-id]
+                                              :price [1000 USD]}))))
    NFTs images))

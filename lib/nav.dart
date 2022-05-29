@@ -47,8 +47,8 @@ Future<dynamic> pushAssets(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushAsset(
   BuildContext context, {
-  AAsset? aasset,
-  Future? balance,
+  required AAsset aasset,
+  required Future balance,
 }) =>
     Navigator.pushNamed(
       context,
@@ -124,9 +124,9 @@ Future<dynamic> pushNewWhitelist(BuildContext context) => Navigator.pushNamed(
 
 Future<dynamic> pushNonFungibleToken(
   BuildContext context, {
-  convex.NonFungibleToken? nonFungibleToken,
-  int? tokenId,
-  Future<convex.Result>? data,
+  required convex.NonFungibleToken nonFungibleToken,
+  required int tokenId,
+  required Future<convex.Result> data,
 }) =>
     Navigator.pushNamed(
       context,
@@ -140,8 +140,8 @@ Future<dynamic> pushNonFungibleToken(
 
 Future<dynamic> pushNonFungibleTransfer(
   BuildContext context, {
-  convex.NonFungibleToken? nonFungibleToken,
-  int? tokenId,
+  required convex.NonFungibleToken nonFungibleToken,
+  required int tokenId,
 }) =>
     Navigator.pushNamed(
       context,

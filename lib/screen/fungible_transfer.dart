@@ -13,7 +13,6 @@ import '../widget.dart';
 import '../model.dart';
 import '../format.dart';
 import '../logger.dart';
-import '../route.dart' as route;
 import '../nav.dart' as nav;
 
 class FungibleTransferScreen extends StatelessWidget {

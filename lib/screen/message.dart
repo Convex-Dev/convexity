@@ -62,9 +62,7 @@ class MessageScreen extends StatelessWidget {
   }
 
   void accept(BuildContext context) async {
-    var appState = context.read<AppState>();
-
-    var confirmation = await showModalBottomSheet(
+    showModalBottomSheet(
       context: context,
       builder: (context) {
         return Container(

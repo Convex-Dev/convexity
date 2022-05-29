@@ -8,7 +8,7 @@
       ;; Listings indexed by ID.
       (def listings {})
 
-      (defn add-listing [listing]
+      (defn ^{:callable? true} add-listing [listing]
         (let [owner *caller*
 
               ;; Counter is a good-enough mechanism to manage IDs.
@@ -26,7 +26,7 @@
 
           id))
 
-      (defn remove-listing [id]
+      (defn ^{:callable? true} remove-listing [id]
         (let [owner *caller*]
 
           ;; The owner is the only one allowed to remove the Listing.
@@ -42,10 +42,10 @@
           nil))
 
       ;; Returns a list with all Listings.
-      (defn shop []
+      (defn ^{:callable? true} shop []
         (values listings))
 
-      (defn buy-listing [id]
+      (defn ^{:callable? true} buy-listing [id]
         (let [listing (get listings id)
 
               buyer *caller*
@@ -71,6 +71,4 @@
           ;; Remove listing.
           (def listings (dissoc listings id))
 
-          true))
-
-      (export add-listing remove-listing shop buy-listing))))
+          true)))))
